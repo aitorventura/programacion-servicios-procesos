@@ -1,0 +1,1335 @@
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../actividad_0_1/">
+      
+      
+        <link rel="next" href="../actividad_0_2/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>Colecciones - Programación de Servicios y Procesos</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="brown" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#3-colecciones" class="md-skip">
+          Saltar a contenido
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabecera">
+    <a href="../.." title="Programación de Servicios y Procesos" class="md-header__button md-logo" aria-label="Programación de Servicios y Procesos" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Programación de Servicios y Procesos
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Colecciones
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="brown" data-md-color-accent="amber"  aria-label="Modo oscuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Modo oscuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="brown" data-md-color-accent="amber"  aria-label="Modo Claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Modo Claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Búsqueda" placeholder="Búsqueda" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Buscar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpiar" aria-label="Limpiar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando búsqueda
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegación" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Programación de Servicios y Procesos" class="md-nav__button md-logo" aria-label="Programación de Servicios y Procesos" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Programación de Servicios y Procesos
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Inicio
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tema 0 - Repaso
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Tema 0 - Repaso
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tema 0 - Introducción
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-repaso-rapido/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Repaso rápido: variables, condicionales y bucles
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-relaciones-clases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Relaciones entre clases
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../actividad_0_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Actividad 0.1 - Relaciones entre clases
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Colecciones
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Colecciones
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#31-tipos-de-colecciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.1 Tipos de colecciones
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#32-listas" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.2 Listas
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#33-mapas" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.3 Mapas
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#34-otras-colecciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.4 Otras colecciones
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.4 Otras colecciones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pilas-lifo" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pilas (LIFO)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#colas-fifo" class="md-nav__link">
+    <span class="md-ellipsis">
+      Colas (FIFO)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conjuntos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conjuntos
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#35-java-collection-framework" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.5 Java Collection Framework
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../actividad_0_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Actividad 0.2 - Colecciones
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-programacion-funcional/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Programación funcional
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../actividad_0_3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Actividad 0.3 - Programación funcional
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tema 1
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tema 1
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tema1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tema 1 - Introducción
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tema1/ejemplo-apartado/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Ejemplo de apartado
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tema1/actividad_1_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Actividad 1.1
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#31-tipos-de-colecciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.1 Tipos de colecciones
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#32-listas" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.2 Listas
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#33-mapas" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.3 Mapas
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#34-otras-colecciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.4 Otras colecciones
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.4 Otras colecciones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pilas-lifo" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pilas (LIFO)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#colas-fifo" class="md-nav__link">
+    <span class="md-ellipsis">
+      Colas (FIFO)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conjuntos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conjuntos
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#35-java-collection-framework" class="md-nav__link">
+    <span class="md-ellipsis">
+      3.5 Java Collection Framework
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<div><p><a id="colecciones"></a></p>
+<h1 id="3-colecciones">3. Colecciones<a class="headerlink" href="#3-colecciones" title="Permanent link">¶</a></h1>
+<p><embed alt="Diapositivas" src="../diapositivas/03-colecciones.pdf" style="width:100%;min-height:80vh" type="application/pdf"></embed></p>
+<div class="admonition info">
+<p class="admonition-title">Descarga de diapositivas</p>
+<p><a href="../diapositivas/03-colecciones.pptx" rel="noopener" target="_blank">Descarga las diapositivas</a></p>
+</div>
+<p>Cuando necesitas guardar un número de elementos que no conoces de antemano —y que puede cambiar mientras el programa se ejecuta— un array clásico se queda corto porque su tamaño es fijo. Para eso están las colecciones: estructuras dinámicas del paquete <code>java.util</code> que crecen y encogen a medida que añades o quitas elementos.</p>
+<hr>
+<h2 id="31-tipos-de-colecciones">3.1 Tipos de colecciones<a class="headerlink" href="#31-tipos-de-colecciones" title="Permanent link">¶</a></h2>
+<p>Java agrupa las colecciones en tres grandes familias según cómo se accede a sus elementos:</p>
+<table>
+<thead>
+<tr>
+<th>Familia</th>
+<th>Cómo se accede</th>
+<th>Ejemplos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Listas</td>
+<td>por posición (índice numérico)</td>
+<td><code>ArrayList</code>, <code>LinkedList</code></td>
+</tr>
+<tr>
+<td>Mapas</td>
+<td>por clave (par clave-valor)</td>
+<td><code>HashMap</code>, <code>TreeMap</code></td>
+</tr>
+<tr>
+<td>Otras</td>
+<td>por reglas propias de entrada/salida</td>
+<td>pilas, colas, conjuntos</td>
+</tr>
+</tbody>
+</table>
+<h2 id="32-listas">3.2 Listas<a class="headerlink" href="#32-listas" title="Permanent link">¶</a></h2>
+<div class="admonition info">
+<p class="admonition-title">Idea clave</p>
+<p>Una lista guarda elementos ordenados, cada uno accesible por su posición. La interfaz <code>List</code> tiene dos implementaciones principales, y la diferencia entre ellas está en cómo guardan los datos en memoria.</p>
+</div>
+<div class="tabs-colored">
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked id="__tabbed_1_1" name="__tabbed_1" type="radio"><input id="__tabbed_1_2" name="__tabbed_1" type="radio"><div class="tabbed-labels"><label for="__tabbed_1_1">🔵 ArrayList</label><label for="__tabbed_1_2">🟢 LinkedList</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Basada en un array que crece internamente. Los elementos están contiguos en memoria: uno pegado al siguiente, como las casillas numeradas de una estantería.</p>
+<pre class="mermaid"><code>flowchart LR
+    c0["índice 0\n'Uno'"] --- c1["índice 1\n'Dos'"] --- c2["índice 2\n'Tres'"]</code></pre>
+<ul>
+<li>Acceso por índice: rápido, O(1).</li>
+<li>Insertar o borrar en medio de la lista: lento, O(n), porque hay que desplazar el resto de elementos.</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<p>Lista doblemente enlazada: cada elemento (cada <em>nodo</em>) no vive pegado a los demás en memoria, sino que guarda dos referencias — a cuál es el nodo anterior y a cuál es el siguiente. Es más como una cadena de personas dadas de la mano: cada una solo conoce a las de al lado.</p>
+<pre class="mermaid"><code>flowchart LR
+    n0["nodo\n'Uno'"] -- siguiente --&gt; n1["nodo\n'Dos'"]
+    n1 -- siguiente --&gt; n2["nodo\n'Tres'"]
+    n1 -- anterior --&gt; n0
+    n2 -- anterior --&gt; n1</code></pre>
+<ul>
+<li>Acceso por índice: más lento, O(n), porque hay que recorrer nodo a nodo.</li>
+<li>Insertar o borrar al principio o al final: rápido, O(1).</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<p>Esa diferencia de rendimiento no es cosa de magia, sale directamente de cómo está organizada la memoria en cada caso. En un <code>ArrayList</code>, <code>get(2)</code> calcula la dirección de memoria del elemento directamente (la posición de partida más 2 huecos), así que da igual si la lista tiene 3 elementos o 3 millones: siempre es un único cálculo. En una <code>LinkedList</code>, en cambio, no hay forma de "saltar" al nodo 2 sin pasar antes por el nodo 0 y el nodo 1, porque cada nodo solo sabe dónde está el siguiente — de ahí el O(n).</p>
+<p>Con la inserción pasa lo simétrico. Insertar en medio de un <code>ArrayList</code> obliga a desplazar una posición hacia la derecha a todos los elementos que van después, para dejar el hueco libre. Insertar en una <code>LinkedList</code> no mueve ningún dato: solo hay que cambiar a qué apuntan dos o tres referencias del nodo anterior y del nuevo nodo, sin tocar el resto de la cadena — por eso es O(1) en los extremos.</p>
+<div class="admonition tip">
+<p class="admonition-title">Recuerda</p>
+<p>Si vas a acceder mucho por posición (<code>get(i)</code>), usa <code>ArrayList</code>. Si vas a insertar y borrar mucho por los extremos, <code>LinkedList</code> sale más a cuenta.</p>
+</div>
+<p>Independientemente de la implementación, toda <code>List</code> ofrece métodos para añadir al final o en una posición concreta, borrar por posición, consultar el tamaño y acceder a un elemento:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-0-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-0-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-0-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-0-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-0-10">10</a></span>
+<span class="normal"><a href="#__codelineno-0-11">11</a></span>
+<span class="normal"><a href="#__codelineno-0-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">textos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="n">textos</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="s">"Uno"</span><span class="p">);</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="n">textos</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="s">"Dos"</span><span class="p">);</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="n">textos</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="s">"Tres"</span><span class="p">);</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="n">textos</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="s">"Dos y medio"</span><span class="p">);</span><span class="w"> </span><span class="c1">// se inserta entre "Dos" y "Tres"</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7"></a>
+<a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="n">textos</span><span class="p">.</span><span class="na">remove</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w"> </span><span class="c1">// elimina "Dos" (posición 1)</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9"></a>
+<a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">textos</span><span class="p">.</span><span class="na">size</span><span class="p">();</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">textos</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">i</span><span class="p">));</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<div class="admonition warning">
+<p class="admonition-title">Cuidado</p>
+<p>Si recorres una lista con <code>for-each</code> e intentas borrar un elemento dentro del propio bucle con <code>remove()</code>, Java lanza un <code>ConcurrentModificationException</code>: no se puede modificar una colección mientras se está iterando sobre ella con <code>for-each</code>. Para borrar mientras recorres, usa un <code>Iterator</code> y su método <code>remove()</code> (o, como verás más adelante en el tema, un stream que filtre lo que no quieres conservar).</p>
+</div>
+<h2 id="33-mapas">3.3 Mapas<a class="headerlink" href="#33-mapas" title="Permanent link">¶</a></h2>
+<div class="admonition info">
+<p class="admonition-title">Idea clave</p>
+<p>Un mapa (<code>Map</code>) guarda pares clave-valor y permite acceder a un elemento por su clave en lugar de por un índice. También se les llama tablas hash o diccionarios.</p>
+</div>
+<p><code>HashMap</code> es la implementación más habitual: internamente calcula un valor numérico (el <em>hash</em>) a partir de la clave para decidir en qué posición de una tabla interna guarda cada par.</p>
+<pre class="mermaid"><code>flowchart LR
+    K["Clave: 'Jake'"] --&gt; H["Función hash H('Jake')"]
+    H --&gt; P["Posición 3 de la tabla"]
+    P --&gt; V["'Jake', 250"]</code></pre>
+<p>Ese cálculo se repite para cada par que añades, y el resultado es una tabla interna con huecos numerados, cada uno con el par que le ha tocado (o vacío, si ninguna clave ha caído ahí todavía):</p>
+<pre class="mermaid"><code>flowchart TB
+    subgraph tabla["Tabla interna del HashMap (extracto)"]
+        direction TB
+        p3["3 — 'Jake' → 250"]
+        p4["4 — vacío"]
+        p5["5 — 'Olivia' → 22"]
+        p6["6 — 'Emma' → 242"]
+        p7["6 — 'Lucía' → 19 (colisión)"]
+        p3 ~~~ p4 ~~~ p5 ~~~ p6
+    end
+    p6 -.-&gt;|encadenado con| p7</code></pre>
+<p>Cuando dos claves distintas producen la misma posición (aquí, <code>'Emma'</code> y <code>'Lucía'</code> han caído las dos en la posición 6: es una <strong>colisión</strong>), la solución más habitual es encadenar en esa posición una lista con los pares que han colisionado, y recorrerla hasta encontrar la clave exacta que buscas.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>HashMap</th>
+<th>TreeMap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Orden de los elementos</td>
+<td>no garantizado</td>
+<td>ordenados según la clave</td>
+</tr>
+<tr>
+<td>Inserción / borrado / acceso</td>
+<td>O(1) en promedio</td>
+<td>O(log n)</td>
+</tr>
+<tr>
+<td>Memoria</td>
+<td>usa más memoria</td>
+<td>usa menos, solo lo almacenado</td>
+</tr>
+</tbody>
+</table>
+<p><code>HashMap</code> y <code>TreeMap</code> no se llevan mal solo en velocidad: por dentro organizan las claves de formas completamente distintas. <code>HashMap</code> las dispersa por la tabla de posiciones que acabas de ver, según su hash, sin ningún criterio de orden. <code>TreeMap</code>, en cambio, las mantiene en un árbol (un árbol rojo-negro) comparando claves entre sí para decidir a qué rama va cada una — por eso, cuando recorres un <code>TreeMap</code>, siempre obtienes las claves ordenadas de menor a mayor, sin tener que ordenarlas tú:</p>
+<pre class="mermaid"><code>flowchart TB
+    L["'Luis'"] --&gt; A["'Ana'"]
+    L --&gt; S["'Sofía'"]</code></pre>
+<div class="admonition tip">
+<p class="admonition-title">Recuerda</p>
+<p>Este mismo patrón se repite exactamente en los conjuntos, que ves a continuación: <code>HashSet</code> dispersa sus elementos por hash igual que <code>HashMap</code> (de hecho, es un <code>HashMap</code> por dentro), y <code>TreeSet</code> mantiene el mismo árbol ordenado que <code>TreeMap</code>. La elección entre <code>Hash*</code> y <code>Tree*</code> es la misma pregunta tanto si usas un mapa como si usas un conjunto: ¿te importa el orden, o prefieres la velocidad?</p>
+</div>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-1-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-1-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-1-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-1-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-1-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-1-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-1-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-1-10">10</a></span>
+<span class="normal"><a href="#__codelineno-1-11">11</a></span>
+<span class="normal"><a href="#__codelineno-1-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Producto</span><span class="o">&gt;</span><span class="w"> </span><span class="n">productos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="n">productos</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"111A"</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Producto</span><span class="p">(</span><span class="s">"111A"</span><span class="p">,</span><span class="w"> </span><span class="s">"Monitor LG 22 pulg"</span><span class="p">,</span><span class="w"> </span><span class="mf">99.95f</span><span class="p">));</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="n">productos</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"222B"</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Producto</span><span class="p">(</span><span class="s">"222B"</span><span class="p">,</span><span class="w"> </span><span class="s">"Disco duro 512GB SSD"</span><span class="p">,</span><span class="w"> </span><span class="mf">109.95f</span><span class="p">));</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="n">productos</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"333C"</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Producto</span><span class="p">(</span><span class="s">"333C"</span><span class="p">,</span><span class="w"> </span><span class="s">"Ratón bluetooth"</span><span class="p">,</span><span class="w"> </span><span class="mf">19.35f</span><span class="p">));</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6"></a>
+<a id="__codelineno-1-7" name="__codelineno-1-7"></a><span class="n">productos</span><span class="p">.</span><span class="na">remove</span><span class="p">(</span><span class="s">"222B"</span><span class="p">);</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8"></a>
+<a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="c1">// keySet() obtiene todas las claves del mapa</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10"></a><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">codigo</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">productos</span><span class="p">.</span><span class="na">keySet</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11"></a><span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">productos</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">codigo</span><span class="p">));</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<div class="admonition warning">
+<p class="admonition-title">Cuidado</p>
+<p><code>HashMap</code> usa <code>equals()</code> y <code>hashCode()</code> de la clave para calcular en qué posición de la tabla guardar y buscar cada par. Con <code>String</code> no tienes que pensar en ello porque ya vienen bien definidos. Pero si usas una clase propia como clave (por ejemplo, un <code>Producto</code> entero en vez de su código), tienes que sobrescribir tú <code>equals()</code> y <code>hashCode()</code> en esa clase — si no, el mapa no va a encontrar el par aunque el objeto que busques "parezca" idéntico al que guardaste.</p>
+</div>
+<h2 id="34-otras-colecciones">3.4 Otras colecciones<a class="headerlink" href="#34-otras-colecciones" title="Permanent link">¶</a></h2>
+<p>Listas y mapas cubren casi todo lo que vas a necesitar, pero hay tres estructuras más que aparecen constantemente porque imponen una regla estricta sobre el orden de entrada y salida (o sobre la repetición) de los elementos: pilas, colas y conjuntos.</p>
+<h3 id="pilas-lifo">Pilas (LIFO)<a class="headerlink" href="#pilas-lifo" title="Permanent link">¶</a></h3>
+<div class="admonition info">
+<p class="admonition-title">Idea clave</p>
+<p>Una pila sigue la regla <strong>LIFO</strong> (<em>Last In, First Out</em>: el último en entrar es el primero en salir), como una pila de platos: solo puedes coger el de arriba, que es justo el que has dejado el último.</p>
+</div>
+<pre class="mermaid"><code>flowchart TB
+    subgraph Pila["Pila — solo se opera por la cima"]
+        direction TB
+        t3["'tercero'  ← cima: aquí actúan push() y pop()"]
+        t2["'segundo'"]
+        t1["'primero'"]
+    end</code></pre>
+<p>En Java, la interfaz recomendada para pilas hoy en día es <code>Deque</code> (doble cola), implementada por ejemplo con <code>ArrayDeque</code>. La antigua clase <code>Stack</code> todavía existe, pero ya no se recomienda su uso.</p>
+<table>
+<thead>
+<tr>
+<th>Método</th>
+<th>Qué hace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>push(e)</code></td>
+<td>añade <code>e</code> en la cima</td>
+</tr>
+<tr>
+<td><code>pop()</code></td>
+<td>quita y devuelve el elemento de la cima</td>
+</tr>
+<tr>
+<td><code>peek()</code></td>
+<td>consulta el elemento de la cima, sin quitarlo</td>
+</tr>
+<tr>
+<td><code>isEmpty()</code></td>
+<td>comprueba si la pila está vacía</td>
+</tr>
+</tbody>
+</table>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
+<span class="normal"><a href="#__codelineno-2-2">2</a></span>
+<span class="normal"><a href="#__codelineno-2-3">3</a></span>
+<span class="normal"><a href="#__codelineno-2-4">4</a></span>
+<span class="normal"><a href="#__codelineno-2-5">5</a></span>
+<span class="normal"><a href="#__codelineno-2-6">6</a></span>
+<span class="normal"><a href="#__codelineno-2-7">7</a></span>
+<span class="normal"><a href="#__codelineno-2-8">8</a></span>
+<span class="normal"><a href="#__codelineno-2-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="n">Deque</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">pila</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayDeque</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="n">pila</span><span class="p">.</span><span class="na">push</span><span class="p">(</span><span class="s">"primero"</span><span class="p">);</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="n">pila</span><span class="p">.</span><span class="na">push</span><span class="p">(</span><span class="s">"segundo"</span><span class="p">);</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="n">pila</span><span class="p">.</span><span class="na">push</span><span class="p">(</span><span class="s">"tercero"</span><span class="p">);</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">pila</span><span class="p">.</span><span class="na">peek</span><span class="p">());</span><span class="w"> </span><span class="c1">// "tercero": mira la cima sin sacarla</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">pila</span><span class="p">.</span><span class="na">pop</span><span class="p">());</span><span class="w">  </span><span class="c1">// "tercero": el último en entrar es el primero en salir</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">pila</span><span class="p">.</span><span class="na">pop</span><span class="p">());</span><span class="w">  </span><span class="c1">// "segundo"</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="colas-fifo">Colas (FIFO)<a class="headerlink" href="#colas-fifo" title="Permanent link">¶</a></h3>
+<div class="admonition info">
+<p class="admonition-title">Idea clave</p>
+<p>Una cola sigue la regla <strong>FIFO</strong> (<em>First In, First Out</em>: el primero en entrar es el primero en salir), como una cola de gente en una tienda: el primero en ponerse en la fila es el primero en ser atendido.</p>
+</div>
+<pre class="mermaid"><code>flowchart LR
+    IN["offer() añade aquí"] --&gt; t3["'tercero'"]
+    t1["'primero'"] --- t2["'segundo'"] --- t3
+    t1 --&gt; OUT["poll() saca de aquí"]</code></pre>
+<p><code>LinkedList</code> implementa la interfaz <code>Queue</code>, así que puedes usarla directamente como cola sin tener que crear ninguna clase nueva.</p>
+<table>
+<thead>
+<tr>
+<th>Método</th>
+<th>Qué hace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>offer(e)</code></td>
+<td>añade <code>e</code> al final de la cola</td>
+</tr>
+<tr>
+<td><code>poll()</code></td>
+<td>quita y devuelve el primer elemento</td>
+</tr>
+<tr>
+<td><code>peek()</code></td>
+<td>consulta el primer elemento, sin quitarlo</td>
+</tr>
+<tr>
+<td><code>isEmpty()</code></td>
+<td>comprueba si la cola está vacía</td>
+</tr>
+</tbody>
+</table>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
+<span class="normal"><a href="#__codelineno-3-2">2</a></span>
+<span class="normal"><a href="#__codelineno-3-3">3</a></span>
+<span class="normal"><a href="#__codelineno-3-4">4</a></span>
+<span class="normal"><a href="#__codelineno-3-5">5</a></span>
+<span class="normal"><a href="#__codelineno-3-6">6</a></span>
+<span class="normal"><a href="#__codelineno-3-7">7</a></span>
+<span class="normal"><a href="#__codelineno-3-8">8</a></span>
+<span class="normal"><a href="#__codelineno-3-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="n">Queue</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cola</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LinkedList</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="n">cola</span><span class="p">.</span><span class="na">offer</span><span class="p">(</span><span class="s">"primero"</span><span class="p">);</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="n">cola</span><span class="p">.</span><span class="na">offer</span><span class="p">(</span><span class="s">"segundo"</span><span class="p">);</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="n">cola</span><span class="p">.</span><span class="na">offer</span><span class="p">(</span><span class="s">"tercero"</span><span class="p">);</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6"></a>
+<a id="__codelineno-3-7" name="__codelineno-3-7"></a><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">cola</span><span class="p">.</span><span class="na">peek</span><span class="p">());</span><span class="w"> </span><span class="c1">// "primero": mira el primero sin sacarlo</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8"></a><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">cola</span><span class="p">.</span><span class="na">poll</span><span class="p">());</span><span class="w"> </span><span class="c1">// "primero": el primero en entrar es el primero en salir</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9"></a><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">cola</span><span class="p">.</span><span class="na">poll</span><span class="p">());</span><span class="w"> </span><span class="c1">// "segundo"</span>
+</code></pre></div></td></tr></table></div>
+<div class="admonition warning">
+<p class="admonition-title">Cuidado</p>
+<p>No confundas <code>push</code>/<code>pop</code> (pila) con <code>offer</code>/<code>poll</code> (cola): las dos operan sobre un <code>Deque</code> o una <code>Queue</code>, pero sacan el elemento por un extremo distinto. Fíjate en cuál has llamado, porque el código compila igual de bien saques el elemento correcto o el equivocado.</p>
+</div>
+<h3 id="conjuntos">Conjuntos<a class="headerlink" href="#conjuntos" title="Permanent link">¶</a></h3>
+<div class="admonition info">
+<p class="admonition-title">Idea clave</p>
+<p>Un conjunto (<code>Set</code>) guarda elementos sin admitir repetidos: si intentas añadir un elemento que ya está (según <code>equals()</code>), la segunda llamada a <code>add()</code> simplemente no hace nada.</p>
+</div>
+<p>Las tres implementaciones más comunes se diferencian en el orden en que luego recorres los elementos:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><code>HashSet</code></th>
+<th><code>LinkedHashSet</code></th>
+<th><code>TreeSet</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Orden de iteración</td>
+<td>no garantizado</td>
+<td>orden de inserción</td>
+<td>ordenado según el valor</td>
+</tr>
+<tr>
+<td>Inserción / borrado / acceso</td>
+<td>O(1) en promedio</td>
+<td>O(1) en promedio</td>
+<td>O(log n)</td>
+</tr>
+</tbody>
+</table>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span>
+<span class="normal"><a href="#__codelineno-4-2">2</a></span>
+<span class="normal"><a href="#__codelineno-4-3">3</a></span>
+<span class="normal"><a href="#__codelineno-4-4">4</a></span>
+<span class="normal"><a href="#__codelineno-4-5">5</a></span>
+<span class="normal"><a href="#__codelineno-4-6">6</a></span>
+<span class="normal"><a href="#__codelineno-4-7">7</a></span>
+<span class="normal"><a href="#__codelineno-4-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">nombres</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashSet</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="n">nombres</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="s">"Ana"</span><span class="p">);</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="n">nombres</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="s">"Luis"</span><span class="p">);</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="n">nombres</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="s">"Ana"</span><span class="p">);</span><span class="w"> </span><span class="c1">// ya estaba: no se añade una segunda vez</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6"></a>
+<a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">nombres</span><span class="p">.</span><span class="na">size</span><span class="p">());</span><span class="w"> </span><span class="c1">// 2, no 3</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">nombres</span><span class="p">.</span><span class="na">contains</span><span class="p">(</span><span class="s">"Luis"</span><span class="p">));</span><span class="w"> </span><span class="c1">// true</span>
+</code></pre></div></td></tr></table></div>
+<table>
+<thead>
+<tr>
+<th>Método</th>
+<th>Qué hace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>add(e)</code></td>
+<td>añade <code>e</code>, si no estaba ya</td>
+</tr>
+<tr>
+<td><code>remove(e)</code></td>
+<td>quita <code>e</code>, si estaba</td>
+</tr>
+<tr>
+<td><code>contains(e)</code></td>
+<td>comprueba si <code>e</code> está en el conjunto</td>
+</tr>
+<tr>
+<td><code>size()</code></td>
+<td>número de elementos</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">Recuerda</p>
+<p>Por dentro, un <code>HashSet</code> es literalmente un <code>HashMap</code> donde tus elementos son las claves y el valor no se usa para nada (es un relleno interno). Por eso usa la misma tabla con posiciones y el mismo mecanismo de <code>equals()</code>/<code>hashCode()</code> que ya has visto en los mapas: si <code>equals()</code> dice que dos objetos son iguales, el segundo no se llega a añadir.</p>
+</div>
+<h2 id="35-java-collection-framework">3.5 Java Collection Framework<a class="headerlink" href="#35-java-collection-framework" title="Permanent link">¶</a></h2>
+<p>Todas estas estructuras encajan en una jerarquía de interfaces. Lo importante para no liarse: <code>List</code>, <code>Set</code> y <code>Queue</code> heredan de <code>Collection</code>, pero <strong><code>Map</code> va por su cuenta y no extiende de <code>Collection</code></strong>, porque no guarda elementos sueltos, sino pares clave-valor.</p>
+<pre class="mermaid"><code>flowchart TD
+    Collection --&gt; List
+    Collection --&gt; Set
+    Collection --&gt; Queue
+    List --&gt; ArrayList
+    List --&gt; LinkedList
+    Set --&gt; HashSet
+    Set --&gt; TreeSet
+    Queue --&gt; Deque
+    Deque --&gt; Stack
+
+    Map --&gt; HashMap
+    Map --&gt; TreeMap</code></pre>
+<div class="admonition warning">
+<p class="admonition-title">Cuidado</p>
+<p>Es un error común dar por hecho que <code>Map</code> es una <code>Collection</code> más solo porque vive en el mismo paquete <code>java.util</code>. No lo es: no tiene <code>add()</code> ni se puede recorrer directamente con un <code>for-each</code> sin pasar antes por <code>keySet()</code>, <code>values()</code> o <code>entrySet()</code>.</p>
+</div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Volver al principio
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Pie" >
+        
+          
+          <a href="../actividad_0_1/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Actividad 0.1 - Relaciones entre clases">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Anterior
+              </span>
+              <div class="md-ellipsis">
+                Actividad 0.1 - Relaciones entre clases
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../actividad_0_2/" class="md-footer__link md-footer__link--next" aria-label="Siguiente: Actividad 0.2 - Colecciones">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Siguiente
+              </span>
+              <div class="md-ellipsis">
+                Actividad 0.2 - Colecciones
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      
+<p style="margin: 0 auto; text-align: center; font-size: 0.7rem;">
+  © 2026 Alejandro Roig y Aitor Ventura —
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener">
+    Licencia CC BY-NC-SA 4.0
+  </a>
+</p>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.top", "navigation.tracking", "navigation.footer", "content.code.copy", "content.code.select"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado al portapapeles", "clipboard.copy": "Copiar al portapapeles", "search.result.more.one": "1 m\u00e1s en esta p\u00e1gina", "search.result.more.other": "# m\u00e1s en esta p\u00e1gina", "search.result.none": "No se encontraron documentos", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Teclee para comenzar b\u00fasqueda", "search.result.term.missing": "Falta", "select.version": "Seleccionar versi\u00f3n"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+    
+  </body>
+</html>
