@@ -1,0 +1,210 @@
+/* Cambiar el fondo del footer (anterior/siguiente + made with...) */
+.md-footer {
+  background-color: #4e342e !important;  /* Marrón oscuro */
+}
+
+/* Cambiar el color del texto dentro del footer */
+.md-footer,
+.md-footer__link,
+.md-footer__direction {
+  color: #ffffff !important;
+}
+
+.md-footer-meta {
+  background-color: #341f1a !important; /* marrón más oscuro del fondo lateral */
+}
+
+.md-footer-meta__inner {
+  max-width: 100% !important;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  font-size: 0.7rem;
+  color: white !important;
+  background-color: inherit !important; /* mantiene el mismo fondo */
+}
+
+.md-footer-meta__inner a {
+  color: white !important;
+  text-decoration: underline;
+}
+
+.md-footer-meta__inner a:hover {
+  color: #ffcc80 !important;
+}
+
+
+/* Tabs coloreadas (funciona con pymdownx.tabbed con y sin alternate_style) */
+.md-typeset .tabs-colored .tabbed-set .tabbed-labels > label,
+.md-typeset .tabs-colored .tabbed-set > label{
+  box-shadow:none!important;
+  border-radius:.35rem .35rem 0 0!important;
+  margin-right:.15rem!important;
+}
+
+/* Paleta cálida en tono tierra, coherente con el marrón/ámbar del tema.
+   1=azul empolvado (🔵), 2=verde salvia (🟢), 3=malva, 4=oro (mismo tono que
+   --shot-accent), 5=terracota, 6=marrón topo — mismo timbre que el resto del sitio. */
+
+/* Base (no activo) */
+.md-typeset .tabs-colored .tabbed-set .tabbed-labels > label:nth-of-type(1),
+.md-typeset .tabs-colored .tabbed-set > label:nth-of-type(1){
+  background:#e3eaf1!important;  /* azul empolvado claro */
+  color:#23425c!important;
+}
+.md-typeset .tabs-colored .tabbed-set .tabbed-labels > label:nth-of-type(2),
+.md-typeset .tabs-colored .tabbed-set > label:nth-of-type(2){
+  background:#e6ede3!important;  /* verde salvia claro */
+  color:#2e4a2e!important;
+}
+.md-typeset .tabs-colored .tabbed-set .tabbed-labels > label:nth-of-type(3),
+.md-typeset .tabs-colored .tabbed-set > label:nth-of-type(3){
+  background:#f1e4ee!important;  /* malva claro */
+  color:#4a2a44!important;
+}
+
+/* Base (no activo) — pestañas 4, 5 y 6 */
+.md-typeset .tabs-colored .tabbed-set .tabbed-labels > label:nth-of-type(4),
+.md-typeset .tabs-colored .tabbed-set > label:nth-of-type(4){
+  background:#f6ebcf!important;  /* oro claro */
+  color:#6b4e08!important;
+}
+.md-typeset .tabs-colored .tabbed-set .tabbed-labels > label:nth-of-type(5),
+.md-typeset .tabs-colored .tabbed-set > label:nth-of-type(5){
+  background:#f3dcd4!important;  /* terracota claro */
+  color:#6b2e1f!important;
+}
+.md-typeset .tabs-colored .tabbed-set .tabbed-labels > label:nth-of-type(6),
+.md-typeset .tabs-colored .tabbed-set > label:nth-of-type(6){
+  background:#ece4e1!important;  /* marrón topo claro */
+  color:#4a362f!important;
+}
+
+/* Activo (alternate_style) */
+.md-typeset .tabs-colored .tabbed-set.tabbed-alternate > input:nth-of-type(1):checked ~ .tabbed-labels > label:nth-of-type(1){
+  background:#4c6b8a!important; color:#fff!important;
+}
+.md-typeset .tabs-colored .tabbed-set.tabbed-alternate > input:nth-of-type(2):checked ~ .tabbed-labels > label:nth-of-type(2){
+  background:#5b7f5b!important; color:#fff!important;
+}
+.md-typeset .tabs-colored .tabbed-set.tabbed-alternate > input:nth-of-type(3):checked ~ .tabbed-labels > label:nth-of-type(3){
+  background:#8b5a7c!important; color:#fff!important;
+}
+.md-typeset .tabs-colored .tabbed-set.tabbed-alternate > input:nth-of-type(4):checked ~ .tabbed-labels > label:nth-of-type(4){
+  background:#b8860b!important; color:#fff!important;
+}
+.md-typeset .tabs-colored .tabbed-set.tabbed-alternate > input:nth-of-type(5):checked ~ .tabbed-labels > label:nth-of-type(5){
+  background:#b5533c!important; color:#fff!important;
+}
+.md-typeset .tabs-colored .tabbed-set.tabbed-alternate > input:nth-of-type(6):checked ~ .tabbed-labels > label:nth-of-type(6){
+  background:#8d6e63!important; color:#fff!important;
+}
+
+/* Activo (sin alternate_style) */
+.md-typeset .tabs-colored .tabbed-set > input:nth-of-type(1):checked + label{
+  background:#4c6b8a!important; color:#fff!important;
+}
+.md-typeset .tabs-colored .tabbed-set > input:nth-of-type(2):checked + label{
+  background:#5b7f5b!important; color:#fff!important;
+}
+.md-typeset .tabs-colored .tabbed-set > input:nth-of-type(3):checked + label{
+  background:#8b5a7c!important; color:#fff!important;
+}
+.md-typeset .tabs-colored .tabbed-set > input:nth-of-type(4):checked + label{
+  background:#b8860b!important; color:#fff!important;
+}
+.md-typeset .tabs-colored .tabbed-set > input:nth-of-type(5):checked + label{
+  background:#b5533c!important; color:#fff!important;
+}
+.md-typeset .tabs-colored .tabbed-set > input:nth-of-type(6):checked + label{
+  background:#8d6e63!important; color:#fff!important;
+}
+
+/* Fondo + borde completo redondeado del panel de contenido según la pestaña activa (alternate_style) */
+.md-typeset .tabs-colored .tabbed-set.tabbed-alternate > input:nth-of-type(1):checked ~ .tabbed-content{ background:#eef3f7!important; border:1px solid #4c6b8a!important; border-top:2px solid #4c6b8a!important; border-radius:0 0 .5rem .5rem!important; padding:1rem 1.2rem!important; }
+.md-typeset .tabs-colored .tabbed-set.tabbed-alternate > input:nth-of-type(2):checked ~ .tabbed-content{ background:#eff4ec!important; border:1px solid #5b7f5b!important; border-top:2px solid #5b7f5b!important; border-radius:0 0 .5rem .5rem!important; padding:1rem 1.2rem!important; }
+.md-typeset .tabs-colored .tabbed-set.tabbed-alternate > input:nth-of-type(3):checked ~ .tabbed-content{ background:#f8effe!important; border:1px solid #8b5a7c!important; border-top:2px solid #8b5a7c!important; border-radius:0 0 .5rem .5rem!important; padding:1rem 1.2rem!important; }
+.md-typeset .tabs-colored .tabbed-set.tabbed-alternate > input:nth-of-type(4):checked ~ .tabbed-content{ background:#fbf3de!important; border:1px solid #b8860b!important; border-top:2px solid #b8860b!important; border-radius:0 0 .5rem .5rem!important; padding:1rem 1.2rem!important; }
+.md-typeset .tabs-colored .tabbed-set.tabbed-alternate > input:nth-of-type(5):checked ~ .tabbed-content{ background:#faebe6!important; border:1px solid #b5533c!important; border-top:2px solid #b5533c!important; border-radius:0 0 .5rem .5rem!important; padding:1rem 1.2rem!important; }
+.md-typeset .tabs-colored .tabbed-set.tabbed-alternate > input:nth-of-type(6):checked ~ .tabbed-content{ background:#f5f0ee!important; border:1px solid #8d6e63!important; border-top:2px solid #8d6e63!important; border-radius:0 0 .5rem .5rem!important; padding:1rem 1.2rem!important; }
+
+/* Fondo + borde completo redondeado del panel de contenido según la pestaña activa (sin alternate_style) */
+.md-typeset .tabs-colored .tabbed-set > input:nth-of-type(1):checked + label + .tabbed-content{ background:#eef3f7!important; border:1px solid #4c6b8a!important; border-top:2px solid #4c6b8a!important; border-radius:0 0 .5rem .5rem!important; padding:1rem 1.2rem!important; }
+.md-typeset .tabs-colored .tabbed-set > input:nth-of-type(2):checked + label + .tabbed-content{ background:#eff4ec!important; border:1px solid #5b7f5b!important; border-top:2px solid #5b7f5b!important; border-radius:0 0 .5rem .5rem!important; padding:1rem 1.2rem!important; }
+.md-typeset .tabs-colored .tabbed-set > input:nth-of-type(3):checked + label + .tabbed-content{ background:#f8effe!important; border:1px solid #8b5a7c!important; border-top:2px solid #8b5a7c!important; border-radius:0 0 .5rem .5rem!important; padding:1rem 1.2rem!important; }
+.md-typeset .tabs-colored .tabbed-set > input:nth-of-type(4):checked + label + .tabbed-content{ background:#fbf3de!important; border:1px solid #b8860b!important; border-top:2px solid #b8860b!important; border-radius:0 0 .5rem .5rem!important; padding:1rem 1.2rem!important; }
+.md-typeset .tabs-colored .tabbed-set > input:nth-of-type(5):checked + label + .tabbed-content{ background:#faebe6!important; border:1px solid #b5533c!important; border-top:2px solid #b5533c!important; border-radius:0 0 .5rem .5rem!important; padding:1rem 1.2rem!important; }
+.md-typeset .tabs-colored .tabbed-set > input:nth-of-type(6):checked + label + .tabbed-content{ background:#f5f0ee!important; border:1px solid #8d6e63!important; border-top:2px solid #8d6e63!important; border-radius:0 0 .5rem .5rem!important; padding:1rem 1.2rem!important; }
+
+/* Oculta ambos por defecto */
+.only-light, .only-dark {
+  display: none;
+}
+
+/* Muestra la imagen en modo claro */
+[data-md-color-scheme="default"] .only-light {
+  display: block;
+}
+
+/* Muestra la imagen en modo oscuro */
+[data-md-color-scheme="slate"] .only-dark {
+  display: block;
+}
+
+
+:root{
+  --shot-accent: #b8860b;   /* ámbar/dorado */
+  --shot-ring: 1px;         /* grosor del anillo (puedes 0.75px si quieres aún más fino) */
+  --shot-radius: 12px;      /* redondeo sutil */
+}
+
+/* Aplica en el contenido (Material for MkDocs) */
+.md-typeset img:not(.no-ring){
+  display:block;
+  margin:12px auto;
+  max-width:100%;
+  border-radius: var(--shot-radius);
+  box-shadow:
+    0 0 0 var(--shot-ring) var(--shot-accent),   /* anillo turquesa */
+    0 8px 20px rgba(0,0,0,.06);                  /* sombra suave */
+}
+
+/* Opcional: ajusta sombra en modo oscuro */
+[data-md-color-scheme="slate"] .md-typeset img:not(.no-ring){
+  box-shadow:
+    0 0 0 var(--shot-ring) var(--shot-accent),
+    0 8px 20px rgba(0,0,0,.24);
+}
+
+/* ── DARK MODE — tabs-colored ──────────────────────────────────────────────
+   En modo oscuro reemplazamos los fondos claros de etiquetas y paneles
+   por versiones oscuras de los mismos colores.                            */
+
+/* Etiquetas inactivas */
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set .tabbed-labels > label:nth-of-type(1),
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set > label:nth-of-type(1){ background:#1e2e3d!important; color:#9dc0dc!important; }
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set .tabbed-labels > label:nth-of-type(2),
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set > label:nth-of-type(2){ background:#1e2a1e!important; color:#a8c7a0!important; }
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set .tabbed-labels > label:nth-of-type(3),
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set > label:nth-of-type(3){ background:#301f2c!important; color:#d8a8cc!important; }
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set .tabbed-labels > label:nth-of-type(4),
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set > label:nth-of-type(4){ background:#3d2e06!important; color:#e8c97a!important; }
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set .tabbed-labels > label:nth-of-type(5),
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set > label:nth-of-type(5){ background:#3d1d14!important; color:#e8a896!important; }
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set .tabbed-labels > label:nth-of-type(6),
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set > label:nth-of-type(6){ background:#2e241f!important; color:#c9afa3!important; }
+
+/* Paneles de contenido activos (alternate_style) */
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set.tabbed-alternate > input:nth-of-type(1):checked ~ .tabbed-content{ background:#16232e!important; border-color:#4c6b8a!important; }
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set.tabbed-alternate > input:nth-of-type(2):checked ~ .tabbed-content{ background:#172117!important; border-color:#5b7f5b!important; }
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set.tabbed-alternate > input:nth-of-type(3):checked ~ .tabbed-content{ background:#241722!important; border-color:#8b5a7c!important; }
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set.tabbed-alternate > input:nth-of-type(4):checked ~ .tabbed-content{ background:#2e2204!important; border-color:#b8860b!important; }
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set.tabbed-alternate > input:nth-of-type(5):checked ~ .tabbed-content{ background:#2e140d!important; border-color:#b5533c!important; }
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set.tabbed-alternate > input:nth-of-type(6):checked ~ .tabbed-content{ background:#221a16!important; border-color:#8d6e63!important; }
+
+/* Paneles de contenido activos (sin alternate_style) */
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set > input:nth-of-type(1):checked + label + .tabbed-content{ background:#16232e!important; border-color:#4c6b8a!important; }
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set > input:nth-of-type(2):checked + label + .tabbed-content{ background:#172117!important; border-color:#5b7f5b!important; }
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set > input:nth-of-type(3):checked + label + .tabbed-content{ background:#241722!important; border-color:#8b5a7c!important; }
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set > input:nth-of-type(4):checked + label + .tabbed-content{ background:#2e2204!important; border-color:#b8860b!important; }
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set > input:nth-of-type(5):checked + label + .tabbed-content{ background:#2e140d!important; border-color:#b5533c!important; }
+body[data-md-color-scheme="slate"] .md-typeset .tabs-colored .tabbed-set > input:nth-of-type(6):checked + label + .tabbed-content{ background:#221a16!important; border-color:#8d6e63!important; }

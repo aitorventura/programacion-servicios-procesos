@@ -1,0 +1,83 @@
+site_name: Programación de Servicios y Procesos
+
+theme:
+  name: material
+  language: es
+  custom_dir: overrides
+  palette:
+    - scheme: default
+      primary: brown
+      accent: amber
+      toggle:
+        icon: material/weather-night
+        name: Modo oscuro
+    - scheme: slate
+      primary: brown
+      accent: amber
+      toggle:
+        icon: material/weather-sunny
+        name: Modo Claro
+  features:
+    - navigation.top
+    - navigation.tracking
+    - navigation.footer
+    - content.code.copy
+    - content.code.select
+
+nav:
+  - Inicio: index.md
+  - Tema 0 - Repaso:
+      - Tema 0 - Introducción: tema0/index.md
+      - "Repaso rápido: variables, condicionales y bucles": tema0/01-repaso-rapido.md
+      - Relaciones entre clases: tema0/02-relaciones-clases.md
+      - Actividad 0.1 - Relaciones entre clases: tema0/actividad_0_1.md
+      - Colecciones: tema0/03-colecciones.md
+      - Actividad 0.2 - Colecciones: tema0/actividad_0_2.md
+      - Programación funcional: tema0/04-programacion-funcional.md
+      - Actividad 0.3 - Programación funcional: tema0/actividad_0_3.md
+  - Tema 1:
+      - Tema 1 - Introducción: tema1/index.md
+      - Ejemplo de apartado: tema1/ejemplo-apartado.md
+      - Actividad 1.1: tema1/actividad_1_1.md
+
+  # A medida que crees temas nuevos, añade aquí sus páginas siguiendo el mismo
+  # patrón: index.md del tema, luego apartados de teoría intercalados con sus
+  # actividades en el orden en que se deben estudiar.
+  #
+  # - Tema 2:
+  #     - Tema 2 - Introducción: tema2/index.md
+  #     - ...
+
+markdown_extensions:
+  - md_in_html
+  - attr_list
+  - admonition             # (solo una vez)
+  - toc:
+      permalink: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - pymdownx.inlinehilite
+  - pymdownx.highlight:    # usa este, NO 'codehilite'
+      anchor_linenums: true
+      linenums: true
+      auto_title: true
+      pygments_lang_class: true
+  - pymdownx.mark
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.superfences:  # habilita Mermaid como fence
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+extra_css:
+  - css/extra.css
+
+plugins:
+  - search
+  - mkdocs-pdf
