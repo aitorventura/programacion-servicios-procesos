@@ -1261,9 +1261,72 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prompt-para-improve-notes" class="md-nav__link">
+  <a href="#que-vas-a-practicar" class="md-nav__link">
     <span class="md-ellipsis">
-      Prompt para /improve-notes
+      Qué vas a practicar
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requisitos-previos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Requisitos previos
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-1-el-listener-guiado-al-completo" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 1 — El listener, guiado al completo
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-2-verificar-el-hilo-y-retirar-el-listener-de-prueba" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 2 — Verificar el hilo, y retirar el listener de prueba
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-3-la-medicion-estrella" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 3 — La medición estrella
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-4-experimento-sobre-after_commit" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 4 — Experimento sobre AFTER_COMMIT
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pregunta-final" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pregunta final
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cierre" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Cierre
     </span>
   </a>
   
@@ -1564,9 +1627,72 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prompt-para-improve-notes" class="md-nav__link">
+  <a href="#que-vas-a-practicar" class="md-nav__link">
     <span class="md-ellipsis">
-      Prompt para /improve-notes
+      Qué vas a practicar
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requisitos-previos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Requisitos previos
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-1-el-listener-guiado-al-completo" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 1 — El listener, guiado al completo
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-2-verificar-el-hilo-y-retirar-el-listener-de-prueba" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 2 — Verificar el hilo, y retirar el listener de prueba
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-3-la-medicion-estrella" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 3 — La medición estrella
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-4-experimento-sobre-after_commit" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 4 — Experimento sobre AFTER_COMMIT
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pregunta-final" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pregunta final
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cierre" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Cierre
     </span>
   </a>
   
@@ -1589,15 +1715,23 @@
 
 
 <div><h1 id="actividad-33-el-listener-async-del-warm-up-22">🧪 Actividad 3.3: El listener <code>@Async</code> del warm-up (2/2)<a class="headerlink" href="#actividad-33-el-listener-async-del-warm-up-22" title="Permanent link">¶</a></h1>
-<div class="admonition warning">
-<p class="admonition-title">🚧 Contenido pendiente de desarrollo</p>
-<p>Esta actividad todavía no está redactada. Usa el prompt de más abajo con
-<code>/improve-notes</code>, apoyándote en el proyecto <strong>GameVault</strong> adjunto, para generar el
-enunciado definitivo.</p>
+<div class="admonition info">
+<p class="admonition-title">Práctica guiada — pieza 2 de 2</p>
+<p>Hoy completas el warm-up: el listener asíncrono que recalienta la caché, y la medición real de que ya no se paga el coste tras cada escritura.</p>
 </div>
+<h2 id="que-vas-a-practicar">Qué vas a practicar<a class="headerlink" href="#que-vas-a-practicar" title="Permanent link">¶</a></h2>
+<ul>
+<li>Construir un listener <code>@Async</code> + <code>@TransactionalEventListener(AFTER_COMMIT)</code>.</li>
+<li>Verificar en el log que el listener corre en un hilo distinto.</li>
+<li>Medir la mejora real de rendimiento.</li>
+<li>Entender por qué <code>AFTER_COMMIT</code> importa, provocando el problema que evita.</li>
+</ul>
 <hr>
-<h2 id="prompt-para-improve-notes">Prompt para <code>/improve-notes</code><a class="headerlink" href="#prompt-para-improve-notes" title="Permanent link">¶</a></h2>
-<div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
+<h2 id="requisitos-previos">Requisitos previos<a class="headerlink" href="#requisitos-previos" title="Permanent link">¶</a></h2>
+<p>Tu evento <code>TopNovedadesInvalidadoEvent</code> y su publicación (Actividad 3.2).</p>
+<hr>
+<h2 id="paso-1-el-listener-guiado-al-completo">Paso 1 — El listener, guiado al completo<a class="headerlink" href="#paso-1-el-listener-guiado-al-completo" title="Permanent link">¶</a></h2>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
 <span class="normal"><a href="#__codelineno-0-4"> 4</a></span>
@@ -1622,57 +1756,91 @@ enunciado definitivo.</p>
 <span class="normal"><a href="#__codelineno-0-23">23</a></span>
 <span class="normal"><a href="#__codelineno-0-24">24</a></span>
 <span class="normal"><a href="#__codelineno-0-25">25</a></span>
-<span class="normal"><a href="#__codelineno-0-26">26</a></span>
-<span class="normal"><a href="#__codelineno-0-27">27</a></span>
-<span class="normal"><a href="#__codelineno-0-28">28</a></span>
-<span class="normal"><a href="#__codelineno-0-29">29</a></span>
-<span class="normal"><a href="#__codelineno-0-30">30</a></span>
-<span class="normal"><a href="#__codelineno-0-31">31</a></span>
-<span class="normal"><a href="#__codelineno-0-32">32</a></span>
-<span class="normal"><a href="#__codelineno-0-33">33</a></span>
-<span class="normal"><a href="#__codelineno-0-34">34</a></span>
-<span class="normal"><a href="#__codelineno-0-35">35</a></span>
-<span class="normal"><a href="#__codelineno-0-36">36</a></span>
-<span class="normal"><a href="#__codelineno-0-37">37</a></span>
-<span class="normal"><a href="#__codelineno-0-38">38</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a>Redacta la Actividad 3.3 del Tema 3 (RA2 - Programación multihilo) del módulo
-<a id="__codelineno-0-2" name="__codelineno-0-2"></a>Programación de Servicios y Procesos (0490), semana real 15 del calendario. Si necesita
-<a id="__codelineno-0-3" name="__codelineno-0-3"></a>plantilla/solución en .docx, crea antes la skill de plantilla de PSP clonando
-<a id="__codelineno-0-4" name="__codelineno-0-4"></a>/actividad-plantilla-acceso-a-datos con la paleta marrón/ámbar.
-<a id="__codelineno-0-5" name="__codelineno-0-5"></a>
-<a id="__codelineno-0-6" name="__codelineno-0-6"></a>IMPORTANTE — enfoque: es una PRÁCTICA GUIADA, no un reto. El alumnado trabaja sobre su
-<a id="__codelineno-0-7" name="__codelineno-0-7"></a>propia copia de GameVault. El enunciado debe guiar paso a paso, mostrando el código y
-<a id="__codelineno-0-8" name="__codelineno-0-8"></a>explicando cada decisión; solo se deja sin guiar, como mini-reto, lo que repita un
-<a id="__codelineno-0-9" name="__codelineno-0-9"></a>patrón idéntico ya mostrado. Completa la MEJORA del warm-up iniciada en la Actividad
-<a id="__codelineno-0-10" name="__codelineno-0-10"></a>3.2.
-<a id="__codelineno-0-11" name="__codelineno-0-11"></a>
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a>Objetivo (RA2, criterios d, f, j, k): construir el listener asíncrono que recalienta la
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a>caché de topNovedades y demostrar el resultado con mediciones.
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a>
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a>Estructura sugerida de pasos guiados:
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a>1. El listener guiado al completo, código mostrado y explicado: una clase
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a>   TopNovedadesWarmupListener (@Service) con un método anotado
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a>   @TransactionalEventListener(phase = AFTER_COMMIT) + @Async que recibe el
-<a id="__codelineno-0-19" name="__codelineno-0-19"></a>   TopNovedadesInvalidadoEvent y llama a videojuegoService.getTopNovedades() para
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a>   recalentar la caché; con una traza de log del nombre del hilo al empezar y al
-<a id="__codelineno-0-21" name="__codelineno-0-21"></a>   terminar.
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>2. Verificación guiada del hilo: crear un videojuego y comparar en el log el hilo de la
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a>   petición con el hilo del listener (con @Async debe ser distinto — contrastar con la
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a>   anotación tomada en la Actividad 3.2 sin @Async). Retirar el listener trivial de
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a>   prueba de la 3.2 si sigue ahí.
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>3. La medición estrella, guiada (repite el protocolo de medición de la Actividad 3.2):
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>   crear un videojuego, esperar ~3 segundos, y medir /api/v1/videojuegos/top — ahora
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>   responde al instante, porque el warm-up ya pagó los 2 segundos en su propio hilo.
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a>   Comparar con las mediciones "antes" de la 3.2 y documentar la mejora.
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a>4. Experimento guiado sobre AFTER_COMMIT (criterio f): cambiar temporalmente a
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a>   @EventListener a secas (sin fase), añadir un log en el listener que consulte cuántos
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a>   videojuegos ve, y razonar con ayuda del enunciado qué podría salir mal (leer datos
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a>   pre-commit); volver a @TransactionalEventListener y explicar con sus palabras la
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a>   diferencia.
-<a id="__codelineno-0-35" name="__codelineno-0-35"></a>5. Pregunta de comprensión (criterio k): si dos profesores del centro crean dos
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a>   videojuegos casi a la vez, ¿cuántos eventos se publican y cuántos hilos recalientan?
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a>   ¿Es un error grave o solo trabajo duplicado? ¿Se les ocurre alguna forma de evitarlo?
-<a id="__codelineno-0-38" name="__codelineno-0-38"></a>   (razonar, no implementar).
-</code></pre></div></td></tr></table></div></div>
+<span class="normal"><a href="#__codelineno-0-26">26</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.tunombre.gamevault.catalogo.eventos</span><span class="p">;</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.tunombre.gamevault.catalogo.VideojuegoService</span><span class="p">;</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">lombok.RequiredArgsConstructor</span><span class="p">;</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.scheduling.annotation.Async</span><span class="p">;</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.stereotype.Service</span><span class="p">;</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.transaction.event.TransactionPhase</span><span class="p">;</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.transaction.event.TransactionalEventListener</span><span class="p">;</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9"></a>
+<a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="nd">@Service</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="nd">@RequiredArgsConstructor</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">TopNovedadesWarmupListener</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a>
+<a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">VideojuegoService</span><span class="w"> </span><span class="n">videojuegoService</span><span class="p">;</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15"></a>
+<a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="w">    </span><span class="nd">@TransactionalEventListener</span><span class="p">(</span><span class="n">phase</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TransactionPhase</span><span class="p">.</span><span class="na">AFTER_COMMIT</span><span class="p">)</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="w">    </span><span class="nd">@Async</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onTopNovedadesInvalidado</span><span class="p">(</span><span class="n">TopNovedadesInvalidadoEvent</span><span class="w"> </span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"[WARMUP] Empieza en hilo: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">().</span><span class="na">getName</span><span class="p">()</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="w">                </span><span class="o">+</span><span class="w"> </span><span class="s">" - evento de: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="na">momento</span><span class="p">());</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21"></a>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="w">        </span><span class="n">videojuegoService</span><span class="p">.</span><span class="na">getTopNovedades</span><span class="p">();</span><span class="w"> </span><span class="c1">// recalienta la caché</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"[WARMUP] Termina en hilo: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">().</span><span class="na">getName</span><span class="p">());</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><code>@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)</code> espera a que la transacción que publicó el evento termine con éxito antes de disparar este método; <code>@Async</code> hace que, cuando se dispare, corra en un hilo aparte. Llamar de nuevo a <code>getTopNovedades()</code> es lo que recalienta la caché — como sigue anotado <code>@Cacheable</code>, este propio hilo va a pagar los 2 segundos del <code>Thread.sleep</code>, pero <strong>en segundo plano</strong>, sin que ningún usuario esté esperando esa respuesta.</p>
+<hr>
+<h2 id="paso-2-verificar-el-hilo-y-retirar-el-listener-de-prueba">Paso 2 — Verificar el hilo, y retirar el listener de prueba<a class="headerlink" href="#paso-2-verificar-el-hilo-y-retirar-el-listener-de-prueba" title="Permanent link">¶</a></h2>
+<p>Si todavía tienes el <code>ListenerDePruebaTemporal</code> de la Actividad 3.2, <strong>retíralo ahora</strong> — ya no lo necesitas.</p>
+<p>Crea un videojuego y mira el log:</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
+<span class="normal"><a href="#__codelineno-1-2">2</a></span>
+<span class="normal"><a href="#__codelineno-1-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/videojuegos<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"titulo":"Test2","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Anota</strong> los dos nombres de hilo que ves en las trazas <code>[WARMUP] Empieza...</code>/<code>Termina...</code>. <strong>Compara</strong> con el nombre de hilo que anotaste en la Actividad 3.2 (sin <code>@Async</code>): ¿son el mismo tipo de hilo, o claramente distintos?</p>
+<hr>
+<h2 id="paso-3-la-medicion-estrella">Paso 3 — La medición estrella<a class="headerlink" href="#paso-3-la-medicion-estrella" title="Permanent link">¶</a></h2>
+<p>Repite el protocolo de medición de la Actividad 3.2, pero ahora con el warm-up completo:</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-2-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-2-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-2-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-2-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-2-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-2-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-2-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-2-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-2-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="c1"># Crea un videojuego (dispara el warm-up en segundo plano)</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/videojuegos<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"titulo":"Test3","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="c1"># Espera unos segundos a que el warm-up termine en segundo plano</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7"></a>sleep<span class="w"> </span><span class="m">3</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="c1"># Mide /top — ¿cuánto tarda ahora?</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="nb">time</span><span class="w"> </span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/videojuegos/top<span class="w"> </span>&gt;<span class="w"> </span>/dev/null
+</code></pre></div></td></tr></table></div>
+<p><strong>Anota</strong> el tiempo. <strong>Compara</strong> con las mediciones "antes" que hiciste en la Actividad 3.2 (donde el tercer usuario pagaba ~2 segundos). Documenta la diferencia con tus propios números.</p>
+<hr>
+<h2 id="paso-4-experimento-sobre-after_commit">Paso 4 — Experimento sobre <code>AFTER_COMMIT</code><a class="headerlink" href="#paso-4-experimento-sobre-after_commit" title="Permanent link">¶</a></h2>
+<p>Cambia temporalmente tu listener a <code>@EventListener</code> a secas (sin <code>@TransactionalEventListener</code>, sin fase):</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
+<span class="normal"><a href="#__codelineno-3-2">2</a></span>
+<span class="normal"><a href="#__codelineno-3-3">3</a></span>
+<span class="normal"><a href="#__codelineno-3-4">4</a></span>
+<span class="normal"><a href="#__codelineno-3-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nd">@EventListener</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="nd">@Async</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onTopNovedadesInvalidado</span><span class="p">(</span><span class="n">TopNovedadesInvalidadoEvent</span><span class="w"> </span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="w">    </span><span class="c1">// ...</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Añade, también temporalmente, un log que consulte cuántos videojuegos ve el listener justo al empezar (por ejemplo, contando el resultado de <code>videojuegoService.findAll().size()</code> antes de recalentar).</p>
+<p><strong>Razona</strong>, sin necesidad de reproducirlo de forma determinista (es una condición de carrera, puede que no falle siempre): si este listener se disparara justo antes de que el <code>INSERT</code> del nuevo videojuego se confirmara en la base de datos, ¿qué vería exactamente al consultar? ¿Qué consecuencia tendría eso sobre el contenido de la caché recalentada?</p>
+<p>Vuelve a <code>@TransactionalEventListener(phase = AFTER_COMMIT)</code> y explica con tus palabras qué diferencia concreta soluciona respecto al <code>@EventListener</code> a secas que acabas de probar.</p>
+<hr>
+<h2 id="pregunta-final">Pregunta final<a class="headerlink" href="#pregunta-final" title="Permanent link">¶</a></h2>
+<p>Si dos profesores del centro crean dos videojuegos casi a la vez (segundos de diferencia), ¿cuántos eventos se publican y cuántos hilos intentan recalentar la caché? ¿Es esto un error grave del sistema, o solo trabajo duplicado sin consecuencias incorrectas? Propón, sin implementarla, alguna forma de evitar ese trabajo duplicado (piensa en si haría falta algún tipo de coordinación entre los hilos, o si bastaría con alguna comprobación previa).</p>
+<hr>
+<h2 id="cierre">✅ Cierre<a class="headerlink" href="#cierre" title="Permanent link">¶</a></h2>
+<p>El warm-up está completo y medido: tu GameVault ya no hace pagar al primer usuario los 2 segundos tras cada escritura. En el apartado siguiente configuras manualmente el <code>TaskExecutor</code> que hay detrás de este <code>@Async</code>, con nombre y prioridad propios.</p></div>
 
 
 

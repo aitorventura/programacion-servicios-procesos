@@ -1398,9 +1398,63 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prompt-para-improve-notes" class="md-nav__link">
+  <a href="#que-es-un-socket" class="md-nav__link">
     <span class="md-ellipsis">
-      Prompt para /improve-notes
+      🔌 Qué es un socket
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#roles-cliente-y-servidor" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎭 Roles cliente y servidor
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tipos-de-socket-tcp-vs-udp" class="md-nav__link">
+    <span class="md-ellipsis">
+      🆚 Tipos de socket: TCP vs. UDP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modelos-de-comunicacion-en-arquitecturas-distribuidas" class="md-nav__link">
+    <span class="md-ellipsis">
+      🌐 Modelos de comunicación en arquitecturas distribuidas
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#escenarios-que-necesitan-algo-mas-que-peticion-respuesta" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚨 Escenarios que necesitan algo más que petición-respuesta
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lo-que-viene-la-actividad-41" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧭 Lo que viene: la Actividad 4.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ideas-clave" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Ideas clave
     </span>
   </a>
   
@@ -1564,9 +1618,63 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prompt-para-improve-notes" class="md-nav__link">
+  <a href="#que-es-un-socket" class="md-nav__link">
     <span class="md-ellipsis">
-      Prompt para /improve-notes
+      🔌 Qué es un socket
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#roles-cliente-y-servidor" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎭 Roles cliente y servidor
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tipos-de-socket-tcp-vs-udp" class="md-nav__link">
+    <span class="md-ellipsis">
+      🆚 Tipos de socket: TCP vs. UDP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modelos-de-comunicacion-en-arquitecturas-distribuidas" class="md-nav__link">
+    <span class="md-ellipsis">
+      🌐 Modelos de comunicación en arquitecturas distribuidas
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#escenarios-que-necesitan-algo-mas-que-peticion-respuesta" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚨 Escenarios que necesitan algo más que petición-respuesta
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lo-que-viene-la-actividad-41" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧭 Lo que viene: la Actividad 4.1
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ideas-clave" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Ideas clave
     </span>
   </a>
   
@@ -1590,104 +1698,91 @@
 
 <div><p><a id="sockets-cliente-servidor"></a></p>
 <h1 id="1-sockets-la-base-de-toda-comunicacion-en-red">🧩 1. Sockets: la base de toda comunicación en red<a class="headerlink" href="#1-sockets-la-base-de-toda-comunicacion-en-red" title="Permanent link">¶</a></h1>
-<div class="admonition warning">
-<p class="admonition-title">🚧 Contenido pendiente de desarrollo</p>
-<p>Esta página todavía no tiene la teoría redactada. Usa el prompt de más abajo con
-<code>/improve-notes</code>, apoyándote en el proyecto <strong>GameVault</strong> adjunto, para generar el
-contenido definitivo.</p>
+<p>Todo lo que has hecho hasta ahora en este módulo —peticiones REST, JWT, RabbitMQ— viaja, por debajo, sobre una pieza que nunca has tocado directamente: el <strong>socket</strong>. Esta semana la sacas a la superficie.</p>
+<hr>
+<h2 id="que-es-un-socket">🔌 Qué es un socket<a class="headerlink" href="#que-es-un-socket" title="Permanent link">¶</a></h2>
+<p>Un <strong>socket</strong> es el extremo programable de una conexión de red: una combinación de IP y puerto por la que un programa envía y recibe datos. Es la pieza que hay <strong>debajo</strong> de todo lo que ya has usado sin saberlo: cuando <code>curl</code> habla con GameVault en el puerto 8080, cuando tu aplicación se conecta a PostgreSQL (5432), MongoDB (27017) o RabbitMQ (5672), hay sockets TCP funcionando por debajo, en cada uno de esos casos.</p>
+<p>Compruébalo en vivo, con tu aplicación arrancada:</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
+<span class="normal"><a href="#__codelineno-0-2">2</a></span>
+<span class="normal"><a href="#__codelineno-0-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a>netstat<span class="w"> </span>-an<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="m">8080</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="c1"># o, en sistemas más recientes:</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3"></a>ss<span class="w"> </span>-tan<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="m">8080</span>
+</code></pre></div></td></tr></table></div>
+<p>Verás las conexiones establecidas de tu propia aplicación — cada una es un socket real.</p>
+<hr>
+<h2 id="roles-cliente-y-servidor">🎭 Roles cliente y servidor<a class="headerlink" href="#roles-cliente-y-servidor" title="Permanent link">¶</a></h2>
+<p>Dos papeles bien diferenciados:</p>
+<ul>
+<li><strong>Servidor</strong>: <strong>escucha</strong> en un puerto concreto, esperando conexiones — como Tomcat, escuchando en el 8080 de tu GameVault. En Java clásico, esto es un <code>ServerSocket</code>.</li>
+<li><strong>Cliente</strong>: <strong>inicia</strong> la conexión hacia el servidor — como <code>curl</code>, o como tu propia aplicación cuando se conecta a PostgreSQL. En Java clásico, esto es un <code>Socket</code>.</li>
+</ul>
+<p>El servidor sigue la secuencia <em>bind</em> (asociarse a un puerto) → <em>listen</em> (empezar a escuchar) → <em>accept</em> (aceptar una conexión entrante); el cliente hace <em>connect</em> (iniciar la conexión). Una vez establecida la conexión, ambos lados intercambian datos a través de <strong>streams</strong> de entrada y salida sobre el socket — exactamente como los flujos que ya conoces de Java para leer y escribir.</p>
+<hr>
+<h2 id="tipos-de-socket-tcp-vs-udp">🆚 Tipos de socket: TCP vs. UDP<a class="headerlink" href="#tipos-de-socket-tcp-vs-udp" title="Permanent link">¶</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Stream / TCP</th>
+<th>Datagrama / UDP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Conexión</strong></td>
+<td>Orientado a conexión — se establece antes de intercambiar datos</td>
+<td>Sin conexión — cada paquete viaja independiente</td>
+</tr>
+<tr>
+<td><strong>Fiabilidad</strong></td>
+<td>Garantiza entrega y orden</td>
+<td>Sin garantías</td>
+</tr>
+<tr>
+<td><strong>Dónde se usa</strong></td>
+<td>Todo lo que usa GameVault (HTTP, conexiones a BD, RabbitMQ)</td>
+<td>Streaming en tiempo real, juegos en tiempo real, donde perder algún paquete es aceptable a cambio de velocidad</td>
+</tr>
+</tbody>
+</table>
+<p>Todo lo que has construido en este curso usa TCP — la fiabilidad importa más que la velocidad extrema cuando hablamos de peticiones REST o de guardar datos en una base de datos.</p>
+<hr>
+<h2 id="modelos-de-comunicacion-en-arquitecturas-distribuidas">🌐 Modelos de comunicación en arquitecturas distribuidas<a class="headerlink" href="#modelos-de-comunicacion-en-arquitecturas-distribuidas" title="Permanent link">¶</a></h2>
+<p>Tres modelos, cada uno anclado a algo que ya conoces del curso:</p>
+<pre class="mermaid"><code>flowchart TB
+    A["🔄 Petición-respuesta síncrono&lt;br/&gt;(REST — todo el curso)"]
+    B["📢 Publicación-suscripción asíncrono&lt;br/&gt;(RabbitMQ — Tema 3)"]
+    C["🔗 Canal bidireccional persistente&lt;br/&gt;(WebSocket — próxima semana)"]</code></pre>
+<ul>
+<li><strong>Petición-respuesta síncrono</strong>: el cliente pide, el servidor responde, ahí termina esa conversación — el modelo de todo REST que has construido en PSP y AD.</li>
+<li><strong>Publicación-suscripción asíncrono</strong>: productor y consumidor no se conocen ni tienen que estar activos a la vez — RabbitMQ, del Tema 3.</li>
+<li><strong>Canal bidireccional persistente</strong>: una conexión que permanece abierta, por la que ambos lados pueden enviar datos en cualquier momento sin volver a conectar — el modelo que falta por conocer, WebSocket, la próxima semana.</li>
+</ul>
+<hr>
+<h2 id="escenarios-que-necesitan-algo-mas-que-peticion-respuesta">🚨 Escenarios que necesitan algo más que petición-respuesta<a class="headerlink" href="#escenarios-que-necesitan-algo-mas-que-peticion-respuesta" title="Permanent link">¶</a></h2>
+<p>¿Cuándo no basta con petición-respuesta? Cuando el <strong>servidor</strong> necesita avisar al cliente de algo que acaba de pasar, <strong>sin que el cliente pregunte primero</strong>. Con REST puro, el cliente tendría que estar preguntando constantemente ("¿ha pasado algo? ¿y ahora? ¿y ahora?") para enterarse a tiempo — ineficiente y con retraso.</p>
+<p>El caso concreto que vas a construir en las próximas dos semanas: un panel de actividad en vivo de GameVault, donde el servidor empuja cada evento del catálogo (crear, actualizar, borrar un videojuego) hacia los clientes conectados, en el instante en que ocurre — sin que ellos tengan que preguntar.</p>
+<hr>
+<h2 id="lo-que-viene-la-actividad-41">🧭 Lo que viene: la Actividad 4.1<a class="headerlink" href="#lo-que-viene-la-actividad-41" title="Permanent link">¶</a></h2>
+<p>La práctica de esta semana (Actividad 4.1) construye un mini cliente/servidor de consola con <code>ServerSocket</code>/<code>Socket</code> e hilos — para tocar con las manos exactamente lo que Spring normalmente esconde.</p>
+<div class="admonition tip">
+<p class="admonition-title">Esta actividad, con sockets reales, ya cubre el contenido de forma completa</p>
+<p>La Actividad 4.1, con <code>java.net.Socket</code>/<code>ServerSocket</code> reales y multihilo, cubre de forma <strong>completa</strong> el uso de sockets — no es un aperitivo antes de la "cobertura real" con WebSocket: es ya la cobertura real. Las semanas 18-19 (WebSocket) amplían el mismo contenido sobre un caso de aplicación real, pero no son necesarias para tenerlo cubierto.</p>
 </div>
 <hr>
-<h2 id="prompt-para-improve-notes">Prompt para <code>/improve-notes</code><a class="headerlink" href="#prompt-para-improve-notes" title="Permanent link">¶</a></h2>
-<div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-0-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-0-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-0-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-0-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-0-10">10</a></span>
-<span class="normal"><a href="#__codelineno-0-11">11</a></span>
-<span class="normal"><a href="#__codelineno-0-12">12</a></span>
-<span class="normal"><a href="#__codelineno-0-13">13</a></span>
-<span class="normal"><a href="#__codelineno-0-14">14</a></span>
-<span class="normal"><a href="#__codelineno-0-15">15</a></span>
-<span class="normal"><a href="#__codelineno-0-16">16</a></span>
-<span class="normal"><a href="#__codelineno-0-17">17</a></span>
-<span class="normal"><a href="#__codelineno-0-18">18</a></span>
-<span class="normal"><a href="#__codelineno-0-19">19</a></span>
-<span class="normal"><a href="#__codelineno-0-20">20</a></span>
-<span class="normal"><a href="#__codelineno-0-21">21</a></span>
-<span class="normal"><a href="#__codelineno-0-22">22</a></span>
-<span class="normal"><a href="#__codelineno-0-23">23</a></span>
-<span class="normal"><a href="#__codelineno-0-24">24</a></span>
-<span class="normal"><a href="#__codelineno-0-25">25</a></span>
-<span class="normal"><a href="#__codelineno-0-26">26</a></span>
-<span class="normal"><a href="#__codelineno-0-27">27</a></span>
-<span class="normal"><a href="#__codelineno-0-28">28</a></span>
-<span class="normal"><a href="#__codelineno-0-29">29</a></span>
-<span class="normal"><a href="#__codelineno-0-30">30</a></span>
-<span class="normal"><a href="#__codelineno-0-31">31</a></span>
-<span class="normal"><a href="#__codelineno-0-32">32</a></span>
-<span class="normal"><a href="#__codelineno-0-33">33</a></span>
-<span class="normal"><a href="#__codelineno-0-34">34</a></span>
-<span class="normal"><a href="#__codelineno-0-35">35</a></span>
-<span class="normal"><a href="#__codelineno-0-36">36</a></span>
-<span class="normal"><a href="#__codelineno-0-37">37</a></span>
-<span class="normal"><a href="#__codelineno-0-38">38</a></span>
-<span class="normal"><a href="#__codelineno-0-39">39</a></span>
-<span class="normal"><a href="#__codelineno-0-40">40</a></span>
-<span class="normal"><a href="#__codelineno-0-41">41</a></span>
-<span class="normal"><a href="#__codelineno-0-42">42</a></span>
-<span class="normal"><a href="#__codelineno-0-43">43</a></span>
-<span class="normal"><a href="#__codelineno-0-44">44</a></span>
-<span class="normal"><a href="#__codelineno-0-45">45</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a>Redacta el apartado de teoría "Sockets: la base de toda comunicación en red" del Tema 4
-<a id="__codelineno-0-2" name="__codelineno-0-2"></a>(RA3 - Programación de comunicaciones en red) del módulo Programación de Servicios y
-<a id="__codelineno-0-3" name="__codelineno-0-3"></a>Procesos (0490), semana real 17 del calendario. Sigue las convenciones de estilo del
-<a id="__codelineno-0-4" name="__codelineno-0-4"></a>README.md del repo. Este apartado es principalmente teórico y sus ejercicios se hacen en
-<a id="__codelineno-0-5" name="__codelineno-0-5"></a>pequeños programas de consola FUERA de GameVault (así lo marca el calendario: "sin
-<a id="__codelineno-0-6" name="__codelineno-0-6"></a>proyecto") — pero usa GameVault como referencia constante de "esto ya lo estás usando
-<a id="__codelineno-0-7" name="__codelineno-0-7"></a>sin saberlo".
-<a id="__codelineno-0-8" name="__codelineno-0-8"></a>
-<a id="__codelineno-0-9" name="__codelineno-0-9"></a>Criterios de evaluación de RA3 que cubre este apartado (curriculum.md):
-<a id="__codelineno-0-10" name="__codelineno-0-10"></a>- a) Escenarios que precisan comunicación en red entre aplicaciones.
-<a id="__codelineno-0-11" name="__codelineno-0-11"></a>- b) Roles de cliente y de servidor y sus funciones.
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a>- d) Concepto de socket, tipos y características.
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a>- i) Modelos de comunicación en arquitecturas distribuidas.
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a>
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a>Contenido central:
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a>- Qué es un socket: el extremo programable de una conexión de red (IP + puerto),
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a>  la pieza que hay DEBAJO de todo lo que el alumnado ya ha usado — cuando curl habla con
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a>  GameVault en el puerto 8080, cuando la aplicación se conecta a PostgreSQL (5432),
-<a id="__codelineno-0-19" name="__codelineno-0-19"></a>  MongoDB (27017) o RabbitMQ (5672), hay sockets TCP por debajo. Usa los puertos reales
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a>  del docker-compose.yaml de GameVault para hacerlo tangible, y una comprobación en vivo
-<a id="__codelineno-0-21" name="__codelineno-0-21"></a>  con netstat/ss (comando dado) mostrando las conexiones establecidas de la aplicación.
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>- Roles cliente y servidor (criterio b): quién escucha (bind/listen/accept — el servidor,
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a>  como Tomcat en el 8080) y quién inicia (connect — el cliente); en Java clásico:
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a>  ServerSocket (servidor) y Socket (cliente), con los streams de entrada/salida para
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a>  intercambiar datos.
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>- Tipos de socket (criterio d): stream/TCP (orientado a conexión, fiable — todo lo que
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>  usa GameVault) frente a datagrama/UDP (sin conexión, sin garantía — dónde se usa:
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>  streaming, juegos en tiempo real), en una tabla comparativa.
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a>- Modelos de comunicación (criterio i), cada uno anclado a algo que el alumnado ya ha
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a>  visto en el curso: petición-respuesta síncrono (REST, Temas 1 de PSP y todo AD),
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a>  publicación-suscripción asíncrono (RabbitMQ, Tema 3), y el que falta por conocer:
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a>  el canal bidireccional persistente (WebSocket, próxima semana). Un diagrama comparando
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a>  los tres.
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a>- Escenarios (criterio a): ¿cuándo NO basta petición-respuesta? Cuando el SERVIDOR tiene
-<a id="__codelineno-0-35" name="__codelineno-0-35"></a>  que avisar al cliente de algo que acaba de pasar sin que este pregunte — presenta el
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a>  caso concreto del proyecto: el panel de actividad en vivo de GameVault que se
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a>  construirá las semanas 18-19.
-<a id="__codelineno-0-38" name="__codelineno-0-38"></a>
-<a id="__codelineno-0-39" name="__codelineno-0-39"></a>Cierra anticipando la práctica (Actividad 4.1): un mini cliente/servidor de consola con
-<a id="__codelineno-0-40" name="__codelineno-0-40"></a>ServerSocket/Socket e hilos, para tocar con las manos lo que Spring normalmente esconde.
-<a id="__codelineno-0-41" name="__codelineno-0-41"></a>Deja explícito que la Actividad 4.1, con sockets reales y multihilo, cubre de forma
-<a id="__codelineno-0-42" name="__codelineno-0-42"></a>LITERAL los criterios b, c, d, e, f, g y h de RA3 — no son un "aperitivo" antes de la
-<a id="__codelineno-0-43" name="__codelineno-0-43"></a>cobertura real vía WebSocket: son ya la cobertura real. Las semanas 18-19 (WebSocket)
-<a id="__codelineno-0-44" name="__codelineno-0-44"></a>amplían el mismo RA3 sobre un caso de aplicación real, pero no son necesarias para tener
-<a id="__codelineno-0-45" name="__codelineno-0-45"></a>el RA3 cubierto.
-</code></pre></div></td></tr></table></div></div>
+<h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
+<details class="tip">
+<summary>Abrir resumen</summary>
+<ul>
+<li>Un <strong>socket</strong> es el extremo programable de una conexión de red (IP + puerto) — está debajo de toda comunicación que ya has usado en el curso.</li>
+<li><strong>Servidor</strong> (<code>ServerSocket</code>: bind/listen/accept) escucha; <strong>cliente</strong> (<code>Socket</code>: connect) inicia la conexión.</li>
+<li><strong>TCP</strong> (orientado a conexión, fiable) es lo que usa todo GameVault; <strong>UDP</strong> (sin conexión, sin garantías) se usa donde la velocidad importa más que la fiabilidad total.</li>
+<li>Tres modelos de comunicación: petición-respuesta síncrono (REST), publicación-suscripción asíncrono (RabbitMQ), canal bidireccional persistente (WebSocket).</li>
+<li>Un servidor necesita avisar proactivamente al cliente cuando petición-respuesta no basta — el escenario que resuelve el panel de actividad en vivo de las próximas semanas.</li>
+<li>La Actividad 4.1, con sockets reales, cubre el contenido de forma completa — WebSocket es ampliación, no requisito.</li>
+</ul>
+</details></div>
 
 
 

@@ -1284,9 +1284,69 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prompt-para-improve-notes" class="md-nav__link">
+  <a href="#por-que-un-pool-en-serio-esta-vez" class="md-nav__link">
     <span class="md-ellipsis">
-      Prompt para /improve-notes
+      🏊 Por qué un pool, en serio esta vez
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#que-es-la-prioridad-de-un-hilo-con-honestidad-tecnica" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎚️ Qué es la prioridad de un hilo — con honestidad técnica
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aterrizaje-un-taskexecutor-propio-para-el-warm-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎮 Aterrizaje: un TaskExecutor propio para el warm-up
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎮 Aterrizaje: un TaskExecutor propio para el warm-up">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dirigir-async-a-este-pool-concreto" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dirigir @Async a este pool concreto
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#depuracion-y-documentacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔍 Depuración y documentación
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recapitulacion-del-tema" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧭 Recapitulación del tema
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ideas-clave" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Ideas clave
     </span>
   </a>
   
@@ -1564,9 +1624,69 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prompt-para-improve-notes" class="md-nav__link">
+  <a href="#por-que-un-pool-en-serio-esta-vez" class="md-nav__link">
     <span class="md-ellipsis">
-      Prompt para /improve-notes
+      🏊 Por qué un pool, en serio esta vez
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#que-es-la-prioridad-de-un-hilo-con-honestidad-tecnica" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎚️ Qué es la prioridad de un hilo — con honestidad técnica
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aterrizaje-un-taskexecutor-propio-para-el-warm-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎮 Aterrizaje: un TaskExecutor propio para el warm-up
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎮 Aterrizaje: un TaskExecutor propio para el warm-up">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dirigir-async-a-este-pool-concreto" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dirigir @Async a este pool concreto
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#depuracion-y-documentacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔍 Depuración y documentación
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recapitulacion-del-tema" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧭 Recapitulación del tema
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ideas-clave" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Ideas clave
     </span>
   </a>
   
@@ -1590,15 +1710,28 @@
 
 <div><p><a id="taskexecutor-prioridades"></a></p>
 <h1 id="4-taskexecutor-propio-y-prioridades">🧩 4. <code>TaskExecutor</code> propio y prioridades<a class="headerlink" href="#4-taskexecutor-propio-y-prioridades" title="Permanent link">¶</a></h1>
-<div class="admonition warning">
-<p class="admonition-title">🚧 Contenido pendiente de desarrollo</p>
-<p>Esta página todavía no tiene la teoría redactada. Usa el prompt de más abajo con
-<code>/improve-notes</code>, apoyándote en el proyecto <strong>GameVault</strong> adjunto, para generar el
-contenido definitivo. Este apartado cierra el RA2.</p>
-</div>
+<p>Tomas el control fino de algo que, hasta ahora, ha funcionado "por defecto": el pool de hilos que hay detrás de <code>@Async</code>.</p>
 <hr>
-<h2 id="prompt-para-improve-notes">Prompt para <code>/improve-notes</code><a class="headerlink" href="#prompt-para-improve-notes" title="Permanent link">¶</a></h2>
-<div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
+<h2 id="por-que-un-pool-en-serio-esta-vez">🏊 Por qué un pool, en serio esta vez<a class="headerlink" href="#por-que-un-pool-en-serio-esta-vez" title="Permanent link">¶</a></h2>
+<p>Ya mencionaste la idea en la Actividad 3.1: crear un hilo nuevo por cada tarea no escala. Ahora, en detalle: cada hilo tiene un coste real de creación y ocupa memoria propia mientras existe — si un pico de tareas provocara crear miles de hilos de golpe, podría llegar a tumbar el proceso entero por agotamiento de recursos.</p>
+<p>Un <strong>pool de hilos</strong> resuelve esto con un grupo de hilos reutilizables que toman tareas de una cola, en vez de crear un hilo nuevo por tarea. Tres parámetros lo definen:</p>
+<pre class="mermaid"><code>flowchart LR
+    T["📥 Tareas nuevas"] --&gt; Q["📋 Cola&lt;br/&gt;(queueCapacity)"]
+    Q --&gt; P["👷 Pool de hilos&lt;br/&gt;corePoolSize ... maxPoolSize"]</code></pre>
+<ul>
+<li><strong><code>corePoolSize</code></strong>: cuántos hilos se mantienen siempre activos, incluso sin tareas que hacer.</li>
+<li><strong><code>maxPoolSize</code></strong>: el límite máximo de hilos que el pool puede llegar a crear si la carga aumenta.</li>
+<li><strong><code>queueCapacity</code></strong>: cuántas tareas pueden esperar en cola antes de que el pool decida crear más hilos (hasta <code>maxPoolSize</code>) o, si ya está en el máximo, rechazar la tarea.</li>
+</ul>
+<p>Si la cola se llena y ya se ha alcanzado <code>maxPoolSize</code>, la tarea nueva no tiene dónde ir — el comportamiento exacto (bloquear, descartar, lanzar una excepción) depende de la política configurada.</p>
+<hr>
+<h2 id="que-es-la-prioridad-de-un-hilo-con-honestidad-tecnica">🎚️ Qué es la prioridad de un hilo — con honestidad técnica<a class="headerlink" href="#que-es-la-prioridad-de-un-hilo-con-honestidad-tecnica" title="Permanent link">¶</a></h2>
+<p>La <strong>prioridad</strong> de un hilo es una pista que le das al planificador del sistema operativo sobre a quién dar turno de ejecución antes cuando varios hilos compiten por CPU. Es importante ser honesto sobre sus límites: es una <strong>sugerencia</strong>, no una garantía — el planificador puede (y a menudo lo hace) ignorarla parcialmente, según el sistema operativo y su carga real.</p>
+<p>Por eso, la práctica moderna prefiere <strong>pools separados y tamaños acotados</strong> antes que jugar con prioridades para controlar el comportamiento del sistema: es un mecanismo más fiable y predecible que confiar en que el sistema operativo respete una sugerencia de prioridad.</p>
+<hr>
+<h2 id="aterrizaje-un-taskexecutor-propio-para-el-warm-up">🎮 Aterrizaje: un <code>TaskExecutor</code> propio para el warm-up<a class="headerlink" href="#aterrizaje-un-taskexecutor-propio-para-el-warm-up" title="Permanent link">¶</a></h2>
+<p>Hasta ahora, el <code>@Async</code> del warm-up usa el executor <strong>por defecto</strong> de Spring — genérico, compartido con cualquier otra tarea asíncrona que pudiera existir en la aplicación. Es una mejora que GameVault no tiene todavía (no hay ningún bean <code>TaskExecutor</code> en <code>config/</code>): definir un pool propio, pequeño y con nombre reconocible, específico para el warm-up.</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
 <span class="normal"><a href="#__codelineno-0-4"> 4</a></span>
@@ -1612,88 +1745,57 @@ contenido definitivo. Este apartado cierra el RA2.</p>
 <span class="normal"><a href="#__codelineno-0-12">12</a></span>
 <span class="normal"><a href="#__codelineno-0-13">13</a></span>
 <span class="normal"><a href="#__codelineno-0-14">14</a></span>
-<span class="normal"><a href="#__codelineno-0-15">15</a></span>
-<span class="normal"><a href="#__codelineno-0-16">16</a></span>
-<span class="normal"><a href="#__codelineno-0-17">17</a></span>
-<span class="normal"><a href="#__codelineno-0-18">18</a></span>
-<span class="normal"><a href="#__codelineno-0-19">19</a></span>
-<span class="normal"><a href="#__codelineno-0-20">20</a></span>
-<span class="normal"><a href="#__codelineno-0-21">21</a></span>
-<span class="normal"><a href="#__codelineno-0-22">22</a></span>
-<span class="normal"><a href="#__codelineno-0-23">23</a></span>
-<span class="normal"><a href="#__codelineno-0-24">24</a></span>
-<span class="normal"><a href="#__codelineno-0-25">25</a></span>
-<span class="normal"><a href="#__codelineno-0-26">26</a></span>
-<span class="normal"><a href="#__codelineno-0-27">27</a></span>
-<span class="normal"><a href="#__codelineno-0-28">28</a></span>
-<span class="normal"><a href="#__codelineno-0-29">29</a></span>
-<span class="normal"><a href="#__codelineno-0-30">30</a></span>
-<span class="normal"><a href="#__codelineno-0-31">31</a></span>
-<span class="normal"><a href="#__codelineno-0-32">32</a></span>
-<span class="normal"><a href="#__codelineno-0-33">33</a></span>
-<span class="normal"><a href="#__codelineno-0-34">34</a></span>
-<span class="normal"><a href="#__codelineno-0-35">35</a></span>
-<span class="normal"><a href="#__codelineno-0-36">36</a></span>
-<span class="normal"><a href="#__codelineno-0-37">37</a></span>
-<span class="normal"><a href="#__codelineno-0-38">38</a></span>
-<span class="normal"><a href="#__codelineno-0-39">39</a></span>
-<span class="normal"><a href="#__codelineno-0-40">40</a></span>
-<span class="normal"><a href="#__codelineno-0-41">41</a></span>
-<span class="normal"><a href="#__codelineno-0-42">42</a></span>
-<span class="normal"><a href="#__codelineno-0-43">43</a></span>
-<span class="normal"><a href="#__codelineno-0-44">44</a></span>
-<span class="normal"><a href="#__codelineno-0-45">45</a></span>
-<span class="normal"><a href="#__codelineno-0-46">46</a></span>
-<span class="normal"><a href="#__codelineno-0-47">47</a></span>
-<span class="normal"><a href="#__codelineno-0-48">48</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a>Redacta el apartado de teoría "TaskExecutor propio y prioridades" del Tema 3 (RA2 -
-<a id="__codelineno-0-2" name="__codelineno-0-2"></a>Programación multihilo) del módulo Programación de Servicios y Procesos (0490), semana
-<a id="__codelineno-0-3" name="__codelineno-0-3"></a>real 16 del calendario — apartado que CIERRA el RA2. Sigue las convenciones de estilo
-<a id="__codelineno-0-4" name="__codelineno-0-4"></a>del README.md del repo.
-<a id="__codelineno-0-5" name="__codelineno-0-5"></a>
-<a id="__codelineno-0-6" name="__codelineno-0-6"></a>Criterios de evaluación de RA2 que cubre este apartado (curriculum.md):
-<a id="__codelineno-0-7" name="__codelineno-0-7"></a>- g) Establecimiento y control de la prioridad de los hilos.
-<a id="__codelineno-0-8" name="__codelineno-0-8"></a>- h) Depuración y documentación de los programas.
-<a id="__codelineno-0-9" name="__codelineno-0-9"></a>
-<a id="__codelineno-0-10" name="__codelineno-0-10"></a>ESTRUCTURA — teoría primero: retoma y profundiza el concepto de pool de hilos
-<a id="__codelineno-0-11" name="__codelineno-0-11"></a>presentado en el apartado 1, ahora en serio y desde cero: por qué crear un hilo nuevo
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a>por tarea no escala (coste de creación, memoria por hilo, y un pico de tareas puede
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a>tumbar el proceso), y cómo lo resuelve un pool — un grupo fijo de hilos reutilizables
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a>que toman tareas de una cola. Explica sus tres parámetros universales con un diagrama
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a>(hilos base / hilos máximos / capacidad de la cola) y qué pasa cuando la cola se llena.
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a>Explica también qué es la prioridad de un hilo en general (una pista al planificador del
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a>SO sobre a quién dar turno antes — sugerencia, no garantía) antes de tocar la API.
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a>
-<a id="__codelineno-0-19" name="__codelineno-0-19"></a>Contenido central: hasta ahora el @Async del warm-up usa el executor por defecto de
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a>Spring — este apartado enseña a definir un TaskExecutor propio para controlar cuántos
-<a id="__codelineno-0-21" name="__codelineno-0-21"></a>hilos, cómo se llaman y con qué prioridad ejecutan las tareas en segundo plano. Es una
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>MEJORA que no existe en la referencia adjunta (no hay ningún bean TaskExecutor en
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a>config/).
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a>Explica, con código de ejemplo que la Actividad 3.4 construirá guiado:
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>- Un bean ThreadPoolTaskExecutor en una clase de configuración (siguiendo el estilo del
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>  paquete config/ del proyecto, como RabbitMQConfig.java): corePoolSize, maxPoolSize,
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>  queueCapacity y, sobre todo, threadNamePrefix (por ejemplo "warmup-") — el nombre del
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a>  hilo como herramienta de DEPURACIÓN (criterio h): con un prefijo propio, las trazas
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a>  del warm-up se distinguen a simple vista en el log y en jconsole, conectando con lo
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a>  aprendido en la Actividad 3.1.
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a>- Cómo dirigir el @Async a ese executor concreto: @Async("nombreDelBean") — y por qué
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a>  aislar las tareas de fondo en su propio pool pequeño evita que un warm-up masivo
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a>  robe hilos a las peticiones de los usuarios.
-<a id="__codelineno-0-35" name="__codelineno-0-35"></a>- Prioridades (criterio g), con honestidad técnica: ThreadPoolTaskExecutor permite
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a>  setThreadPriority() (Thread.MIN_PRIORITY a MAX_PRIORITY); explica qué significa la
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a>  prioridad de un hilo en Java (una sugerencia al planificador del SO, no una garantía)
-<a id="__codelineno-0-38" name="__codelineno-0-38"></a>  y por qué la práctica moderna prefiere pools separados y tamaños acotados a jugar con
-<a id="__codelineno-0-39" name="__codelineno-0-39"></a>  prioridades — el warm-up es justo el caso de tarea de fondo que debe ceder el paso:
-<a id="__codelineno-0-40" name="__codelineno-0-40"></a>  prioridad baja + pool propio.
-<a id="__codelineno-0-41" name="__codelineno-0-41"></a>- Depuración y documentación (criterio h): ver los hilos "warmup-1..." en un thread
-<a id="__codelineno-0-42" name="__codelineno-0-42"></a>  dump/jconsole, y documentar la decisión de configuración (por qué esos tamaños de
-<a id="__codelineno-0-43" name="__codelineno-0-43"></a>  pool) en un comentario o en el README del proyecto del alumno.
-<a id="__codelineno-0-44" name="__codelineno-0-44"></a>
-<a id="__codelineno-0-45" name="__codelineno-0-45"></a>Cierra recapitulando todo RA2 en 4-5 frases (analizar los hilos existentes → evento
-<a id="__codelineno-0-46" name="__codelineno-0-46"></a>interno → listener @Async sincronizado con la transacción → executor propio con nombre y
-<a id="__codelineno-0-47" name="__codelineno-0-47"></a>prioridad) y conectando con el Tema 4 (RA3): en sockets y WebSocket volverán a aparecer
-<a id="__codelineno-0-48" name="__codelineno-0-48"></a>hilos, esta vez gestionados a mano.
-</code></pre></div></td></tr></table></div></div>
+<span class="normal"><a href="#__codelineno-0-15">15</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nd">@Configuration</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">WarmupExecutorConfig</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="w">    </span><span class="nd">@Bean</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"warmupExecutor"</span><span class="p">)</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">TaskExecutor</span><span class="w"> </span><span class="nf">warmupExecutor</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="w">        </span><span class="n">ThreadPoolTaskExecutor</span><span class="w"> </span><span class="n">executor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ThreadPoolTaskExecutor</span><span class="p">();</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="w">        </span><span class="n">executor</span><span class="p">.</span><span class="na">setCorePoolSize</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="w">        </span><span class="n">executor</span><span class="p">.</span><span class="na">setMaxPoolSize</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="w">        </span><span class="n">executor</span><span class="p">.</span><span class="na">setQueueCapacity</span><span class="p">(</span><span class="mi">20</span><span class="p">);</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="w">        </span><span class="n">executor</span><span class="p">.</span><span class="na">setThreadNamePrefix</span><span class="p">(</span><span class="s">"warmup-"</span><span class="p">);</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="w">        </span><span class="n">executor</span><span class="p">.</span><span class="na">setThreadPriority</span><span class="p">(</span><span class="n">Thread</span><span class="p">.</span><span class="na">MIN_PRIORITY</span><span class="p">);</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="w">        </span><span class="n">executor</span><span class="p">.</span><span class="na">initialize</span><span class="p">();</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">executor</span><span class="p">;</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<ul>
+<li><code>corePoolSize(2)</code>/<code>maxPoolSize(4)</code>: un pool deliberadamente pequeño — el warm-up no necesita mucha capacidad, es una tarea de fondo ocasional, no el núcleo de la aplicación.</li>
+<li><code>threadNamePrefix("warmup-")</code>: esto es, en la práctica, la herramienta de <strong>depuración</strong> más útil de todo el apartado — con este prefijo, cualquier hilo llamado <code>warmup-1</code>, <code>warmup-2</code>... se distingue a simple vista en el log o en jconsole, sin confundirse con los hilos genéricos <code>http-nio-*</code> de Tomcat o los del pool por defecto.</li>
+<li><code>setThreadPriority(Thread.MIN_PRIORITY)</code>: prioridad baja, con honestidad sobre sus límites — es exactamente el caso de tarea de fondo que debe ceder el paso ante trabajo más urgente (las peticiones de usuarios reales).</li>
+</ul>
+<h3 id="dirigir-async-a-este-pool-concreto">Dirigir <code>@Async</code> a este pool concreto<a class="headerlink" href="#dirigir-async-a-este-pool-concreto" title="Permanent link">¶</a></h3>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
+<span class="normal"><a href="#__codelineno-1-2">2</a></span>
+<span class="normal"><a href="#__codelineno-1-3">3</a></span>
+<span class="normal"><a href="#__codelineno-1-4">4</a></span>
+<span class="normal"><a href="#__codelineno-1-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nd">@TransactionalEventListener</span><span class="p">(</span><span class="n">phase</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TransactionPhase</span><span class="p">.</span><span class="na">AFTER_COMMIT</span><span class="p">)</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="nd">@Async</span><span class="p">(</span><span class="s">"warmupExecutor"</span><span class="p">)</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onTopNovedadesInvalidado</span><span class="p">(</span><span class="n">TopNovedadesInvalidadoEvent</span><span class="w"> </span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">    </span><span class="c1">// ...</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><code>@Async("warmupExecutor")</code>, con el nombre del bean entre paréntesis, dirige explícitamente la ejecución a ese pool concreto — en vez del genérico por defecto. Aislar las tareas de fondo en su propio pool pequeño evita que un pico de warm-ups (por ejemplo, muchas escrituras seguidas) "robe" hilos que deberían estar disponibles para atender peticiones de usuarios reales.</p>
+<hr>
+<h2 id="depuracion-y-documentacion">🔍 Depuración y documentación<a class="headerlink" href="#depuracion-y-documentacion" title="Permanent link">¶</a></h2>
+<p>Con el nombre de hilo distintivo, localizar los hilos <code>warmup-*</code> en un thread dump o en jconsole (las mismas herramientas de la Actividad 3.1) es inmediato — y puedes comprobar directamente su prioridad configurada. <strong>Documentar</strong> la decisión de configuración significa dejar por escrito, en un comentario junto al bean o en la documentación del proyecto, por qué se eligieron esos tamaños de pool y esa prioridad — no basta con que el código "funcione", debe quedar claro el razonamiento detrás de cada número.</p>
+<hr>
+<h2 id="recapitulacion-del-tema">🧭 Recapitulación del tema<a class="headerlink" href="#recapitulacion-del-tema" title="Permanent link">¶</a></h2>
+<p>Con esto se completa el recorrido: analizar los hilos que ya existían en tu aplicación sin haberlos programado (apartado 1) → construir un evento interno inmutable y publicarlo (apartado 2) → un listener <code>@Async</code> sincronizado con el commit de la transacción (apartado 3) → un <code>TaskExecutor</code> propio, con nombre y prioridad controlados (este apartado). En el Tema 4 los hilos vuelven a aparecer, esta vez gestionados completamente a mano: sockets y WebSocket.</p>
+<hr>
+<h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
+<details class="tip">
+<summary>Abrir resumen</summary>
+<ul>
+<li>Un pool de hilos se define por <code>corePoolSize</code> (mínimo activo), <code>maxPoolSize</code> (límite) y <code>queueCapacity</code> (cola de espera).</li>
+<li>La <strong>prioridad</strong> de un hilo es una sugerencia al planificador del SO, no una garantía — por eso se prefieren pools separados y acotados antes que confiar en prioridades.</li>
+<li><code>threadNamePrefix</code> es la herramienta de depuración más práctica: hilos identificables a simple vista en logs y herramientas de monitorización.</li>
+<li><code>@Async("nombreDelBean")</code> dirige la ejecución a un <code>TaskExecutor</code> concreto, en vez del genérico por defecto — aislar tareas de fondo evita que roben hilos a las peticiones reales.</li>
+<li>Documentar la configuración (por qué esos tamaños, por qué esa prioridad) es parte del trabajo de depuración y documentación, no un extra opcional.</li>
+</ul>
+</details></div>
 
 
 

@@ -894,9 +894,54 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prompt-para-improve-notes" class="md-nav__link">
+  <a href="#lo-primero-que-hace-spring-security-cerrarlo-todo" class="md-nav__link">
     <span class="md-ellipsis">
-      Prompt para /improve-notes
+      🔒 Lo primero que hace Spring Security: cerrarlo todo
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#autenticacion-vs-autorizacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎭 Autenticación vs. autorización
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#http-basic-como-viaja-usuario-y-contrasena" class="md-nav__link">
+    <span class="md-ellipsis">
+      📦 HTTP Basic: cómo viaja usuario y contraseña
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usuarios-en-memoria-y-una-primera-politica-de-rutas" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧑‍🤝‍🧑 Usuarios en memoria y una primera política de rutas
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#las-limitaciones-de-esta-version-a-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      ⚠️ Las limitaciones de esta versión — a propósito
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ideas-clave" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Ideas clave
     </span>
   </a>
   
@@ -1564,9 +1609,54 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prompt-para-improve-notes" class="md-nav__link">
+  <a href="#lo-primero-que-hace-spring-security-cerrarlo-todo" class="md-nav__link">
     <span class="md-ellipsis">
-      Prompt para /improve-notes
+      🔒 Lo primero que hace Spring Security: cerrarlo todo
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#autenticacion-vs-autorizacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎭 Autenticación vs. autorización
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#http-basic-como-viaja-usuario-y-contrasena" class="md-nav__link">
+    <span class="md-ellipsis">
+      📦 HTTP Basic: cómo viaja usuario y contraseña
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usuarios-en-memoria-y-una-primera-politica-de-rutas" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧑‍🤝‍🧑 Usuarios en memoria y una primera política de rutas
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#las-limitaciones-de-esta-version-a-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      ⚠️ Las limitaciones de esta versión — a propósito
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ideas-clave" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Ideas clave
     </span>
   </a>
   
@@ -1590,86 +1680,120 @@
 
 <div><p><a id="seguridad-basica-http-basic"></a></p>
 <h1 id="2-seguridad-basica-usuarios-en-memoria-y-http-basic">🧩 2. Seguridad básica: usuarios en memoria y HTTP Basic<a class="headerlink" href="#2-seguridad-basica-usuarios-en-memoria-y-http-basic" title="Permanent link">¶</a></h1>
-<div class="admonition warning">
-<p class="admonition-title">🚧 Contenido pendiente de desarrollo</p>
-<p>Esta página todavía no tiene la teoría redactada. Usa el prompt de más abajo con
-<code>/improve-notes</code>, apoyándote en el proyecto <strong>GameVault</strong> adjunto, para generar el
-contenido definitivo.</p>
+<div class="admonition tip">
+<p class="admonition-title">Vas a construir un estado intermedio, no el final</p>
+<p>El <code>SecurityConfig.java</code> que tendrás al final del módulo usará autenticación con JWT, con HTTP Basic desactivado. Este apartado construye el paso <strong>intermedio</strong> por el que se pasa para llegar ahí — usuarios en memoria y HTTP Basic — y las próximas dos semanas lo van sustituyendo. Recorrer el camino completo (Basic → BCrypt → JWT) es deliberado: cada paso resuelve un problema concreto del anterior, y entenderlo así vale más que llegar directo al resultado final.</p>
 </div>
 <hr>
-<h2 id="prompt-para-improve-notes">Prompt para <code>/improve-notes</code><a class="headerlink" href="#prompt-para-improve-notes" title="Permanent link">¶</a></h2>
-<div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-0-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-0-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-0-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-0-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-0-10">10</a></span>
-<span class="normal"><a href="#__codelineno-0-11">11</a></span>
-<span class="normal"><a href="#__codelineno-0-12">12</a></span>
-<span class="normal"><a href="#__codelineno-0-13">13</a></span>
-<span class="normal"><a href="#__codelineno-0-14">14</a></span>
-<span class="normal"><a href="#__codelineno-0-15">15</a></span>
-<span class="normal"><a href="#__codelineno-0-16">16</a></span>
-<span class="normal"><a href="#__codelineno-0-17">17</a></span>
-<span class="normal"><a href="#__codelineno-0-18">18</a></span>
-<span class="normal"><a href="#__codelineno-0-19">19</a></span>
-<span class="normal"><a href="#__codelineno-0-20">20</a></span>
-<span class="normal"><a href="#__codelineno-0-21">21</a></span>
-<span class="normal"><a href="#__codelineno-0-22">22</a></span>
-<span class="normal"><a href="#__codelineno-0-23">23</a></span>
-<span class="normal"><a href="#__codelineno-0-24">24</a></span>
-<span class="normal"><a href="#__codelineno-0-25">25</a></span>
-<span class="normal"><a href="#__codelineno-0-26">26</a></span>
-<span class="normal"><a href="#__codelineno-0-27">27</a></span>
-<span class="normal"><a href="#__codelineno-0-28">28</a></span>
-<span class="normal"><a href="#__codelineno-0-29">29</a></span>
-<span class="normal"><a href="#__codelineno-0-30">30</a></span>
-<span class="normal"><a href="#__codelineno-0-31">31</a></span>
-<span class="normal"><a href="#__codelineno-0-32">32</a></span>
-<span class="normal"><a href="#__codelineno-0-33">33</a></span>
-<span class="normal"><a href="#__codelineno-0-34">34</a></span>
-<span class="normal"><a href="#__codelineno-0-35">35</a></span>
-<span class="normal"><a href="#__codelineno-0-36">36</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a>Redacta el apartado de teoría "Seguridad básica: usuarios en memoria y HTTP Basic" del
-<a id="__codelineno-0-2" name="__codelineno-0-2"></a>Tema 2 (RA5 - Programación segura) del módulo Programación de Servicios y Procesos
-<a id="__codelineno-0-3" name="__codelineno-0-3"></a>(0490), semana real 8 del calendario. Sigue las convenciones de estilo del README.md del
-<a id="__codelineno-0-4" name="__codelineno-0-4"></a>repo.
-<a id="__codelineno-0-5" name="__codelineno-0-5"></a>
-<a id="__codelineno-0-6" name="__codelineno-0-6"></a>Criterios de evaluación de RA5 que cubre este apartado (curriculum.md):
-<a id="__codelineno-0-7" name="__codelineno-0-7"></a>- c) Políticas de seguridad para limitar y controlar el acceso de los usuarios.
-<a id="__codelineno-0-8" name="__codelineno-0-8"></a>- d) Esquemas de seguridad basados en roles (primera aproximación).
-<a id="__codelineno-0-9" name="__codelineno-0-9"></a>
-<a id="__codelineno-0-10" name="__codelineno-0-10"></a>AVISO IMPORTANTE sobre la referencia: el SecurityConfig.java del GameVault adjunto
-<a id="__codelineno-0-11" name="__codelineno-0-11"></a>muestra el ESTADO FINAL del proyecto (JWT, con `httpBasic(AbstractHttpConfigurer::
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a>disable)`). Este apartado enseña el estado INTERMEDIO por el que se pasa para llegar
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a>ahí: Spring Security recién añadido, usuarios en memoria y HTTP Basic. Esa evolución
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a>está documentada en docs/seguridad/autenticacion-y-autorizacion.md del proyecto — úsala
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a>como fuente. Deja claro al alumnado que esta versión se sustituirá en las semanas 9-10,
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a>y que ver el camino completo (Basic → BCrypt → JWT) es deliberado: entender qué problema
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a>resuelve cada paso.
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a>
-<a id="__codelineno-0-19" name="__codelineno-0-19"></a>Contenido central:
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a>- Qué hace spring-boot-starter-security nada más añadirse al pom: todo queda cerrado por
-<a id="__codelineno-0-21" name="__codelineno-0-21"></a>  defecto (contrasta con el principio de "mínima exposición" del apartado 1).
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>- Conceptos de autenticación vs. autorización, con ejemplos del propio GameVault (¿quién
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a>  eres? vs. ¿puedes borrar un videojuego?).
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a>- HTTP Basic: cómo viaja usuario:contraseña en Base64 en la cabecera Authorization —
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a>  demuéstralo decodificando una cabecera de ejemplo, para dejar claro que Base64 NO es
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>  cifrado (gancho hacia la necesidad de HTTPS y de mecanismos mejores).
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>- Usuarios en memoria (InMemoryUserDetailsManager) con dos usuarios y roles distintos
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>  (user/admin), y una primera política de acceso sencilla con authorizeHttpRequests
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a>  (lectura pública del catálogo, escritura autenticada) — versión simplificada de la
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a>  matriz de rutas final que verán en la semana 11.
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a>- Los roles ADMIN y USER que usa el proyecto final (com/aleroig/gamevault/seguridad/
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a>  RolUsuario.java) como referencia de a dónde se llegará.
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a>
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a>Limitaciones a señalar como cierre (y motivación de las semanas siguientes): usuarios
-<a id="__codelineno-0-35" name="__codelineno-0-35"></a>hardcodeados que se pierden al reiniciar y contraseñas que viajan en cada petición —
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a>la semana 9 mueve los usuarios a PostgreSQL con BCrypt, la 10 sustituye Basic por JWT.
-</code></pre></div></td></tr></table></div></div>
+<h2 id="lo-primero-que-hace-spring-security-cerrarlo-todo">🔒 Lo primero que hace Spring Security: cerrarlo todo<a class="headerlink" href="#lo-primero-que-hace-spring-security-cerrarlo-todo" title="Permanent link">¶</a></h2>
+<p>En cuanto añades <code>spring-boot-starter-security</code> a un proyecto, sin configurar nada más, <strong>toda</strong> tu API deja de responder libremente — cada petición exige autenticarse. Es el principio de "mínima exposición" que viste el apartado anterior, llevado al extremo por defecto: Spring Security asume que, si no le dices explícitamente qué dejar abierto, todo debe estar cerrado.</p>
+<hr>
+<h2 id="autenticacion-vs-autorizacion">🎭 Autenticación vs. autorización<a class="headerlink" href="#autenticacion-vs-autorizacion" title="Permanent link">¶</a></h2>
+<p>Dos preguntas distintas, que conviene no confundir:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Pregunta que responde</th>
+<th>Ejemplo en GameVault</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Autenticación</strong></td>
+<td>¿Quién eres?</td>
+<td>Comprobar que el usuario y la contraseña son correctos.</td>
+</tr>
+<tr>
+<td><strong>Autorización</strong></td>
+<td>¿Puedes hacer esto?</td>
+<td>Comprobar que, siendo tú, tienes permiso para borrar un videojuego.</td>
+</tr>
+</tbody>
+</table>
+<p>Puedes estar autenticado (Spring Security sabe quién eres) y aun así no autorizado para una acción concreta (no tienes el rol necesario). Son dos capas distintas, y las vas a ver aplicadas por separado.</p>
+<hr>
+<h2 id="http-basic-como-viaja-usuario-y-contrasena">📦 HTTP Basic: cómo viaja usuario y contraseña<a class="headerlink" href="#http-basic-como-viaja-usuario-y-contrasena" title="Permanent link">¶</a></h2>
+<p><strong>HTTP Basic</strong> es el mecanismo de autenticación más simple de HTTP: el cliente manda usuario y contraseña en una cabecera <code>Authorization</code>, codificados en <strong>Base64</strong>:</p>
+<div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a>Authorization: Basic dXNlcjp1c2VyMTIz
+</code></pre></div></td></tr></table></div>
+<div class="admonition danger">
+<p class="admonition-title">Base64 NO es cifrado</p>
+<p>Decodifica tú mismo esa cabecera: <code>echo "dXNlcjp1c2VyMTIz" | base64 -d</code> — obtienes <code>user:user123</code>, en texto legible. Base64 es solo una <strong>codificación</strong> (una forma de representar bytes como texto), no una forma de ocultar información: cualquiera que intercepte esa cabecera lee la contraseña directamente. HTTP Basic solo es aceptable sobre una conexión cifrada con HTTPS — sin eso, la contraseña viaja prácticamente en claro en cada petición.</p>
+</div>
+<hr>
+<h2 id="usuarios-en-memoria-y-una-primera-politica-de-rutas">🧑‍🤝‍🧑 Usuarios en memoria y una primera política de rutas<a class="headerlink" href="#usuarios-en-memoria-y-una-primera-politica-de-rutas" title="Permanent link">¶</a></h2>
+<p>Para empezar, sin base de datos todavía de por medio, Spring Security permite declarar usuarios directamente en código con <code>InMemoryUserDetailsManager</code>:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-1-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-1-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-1-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-1-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-1-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-1-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-1-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-1-10">10</a></span>
+<span class="normal"><a href="#__codelineno-1-11">11</a></span>
+<span class="normal"><a href="#__codelineno-1-12">12</a></span>
+<span class="normal"><a href="#__codelineno-1-13">13</a></span>
+<span class="normal"><a href="#__codelineno-1-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nd">@Bean</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">UserDetailsService</span><span class="w"> </span><span class="nf">userDetailsService</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">    </span><span class="n">UserDetails</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">User</span><span class="p">.</span><span class="na">withUsername</span><span class="p">(</span><span class="s">"user"</span><span class="p">)</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">            </span><span class="p">.</span><span class="na">password</span><span class="p">(</span><span class="s">"{noop}user123"</span><span class="p">)</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="w">            </span><span class="p">.</span><span class="na">roles</span><span class="p">(</span><span class="s">"USER"</span><span class="p">)</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7"></a>
+<a id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="w">    </span><span class="n">UserDetails</span><span class="w"> </span><span class="n">admin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">User</span><span class="p">.</span><span class="na">withUsername</span><span class="p">(</span><span class="s">"admin"</span><span class="p">)</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="w">            </span><span class="p">.</span><span class="na">password</span><span class="p">(</span><span class="s">"{noop}admin123"</span><span class="p">)</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10"></a><span class="w">            </span><span class="p">.</span><span class="na">roles</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11"></a><span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12"></a>
+<a id="__codelineno-1-13" name="__codelineno-1-13"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">InMemoryUserDetailsManager</span><span class="p">(</span><span class="n">user</span><span class="p">,</span><span class="w"> </span><span class="n">admin</span><span class="p">);</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>El prefijo <code>{noop}</code> le dice a Spring Security "esta contraseña no está cifrada, compárala tal cual" — una simplificación deliberada para este paso intermedio (la próxima semana la sustituyes por contraseñas de verdad protegidas con BCrypt).</p>
+<p>Y una primera política de acceso, con <code>authorizeHttpRequests</code>:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-2-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-2-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-2-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-2-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-2-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-2-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-2-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-2-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-2-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nd">@Bean</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">SecurityFilterChain</span><span class="w"> </span><span class="nf">securityFilterChain</span><span class="p">(</span><span class="n">HttpSecurity</span><span class="w"> </span><span class="n">http</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">http</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">            </span><span class="p">.</span><span class="na">authorizeHttpRequests</span><span class="p">(</span><span class="n">auth</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">auth</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">                    </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">                    </span><span class="p">.</span><span class="na">anyRequest</span><span class="p">().</span><span class="na">authenticated</span><span class="p">()</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">            </span><span class="p">)</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="w">            </span><span class="p">.</span><span class="na">httpBasic</span><span class="p">(</span><span class="n">Customizer</span><span class="p">.</span><span class="na">withDefaults</span><span class="p">())</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Esta es una versión simplificada — lectura del catálogo pública, todo lo demás exige estar autenticado — de la matriz de rutas completa que construirás en la semana 11. Los roles <code>ADMIN</code> y <code>USER</code> que acabas de usar son los mismos que vas a formalizar más adelante como un enum <code>RolUsuario</code> — solo esos dos valores, sin más complicación.</p>
+<hr>
+<h2 id="las-limitaciones-de-esta-version-a-proposito">⚠️ Las limitaciones de esta versión — a propósito<a class="headerlink" href="#las-limitaciones-de-esta-version-a-proposito" title="Permanent link">¶</a></h2>
+<p>Esta configuración tiene dos problemas serios, y son intencionados: sirven de motivación para lo que viene.</p>
+<ol>
+<li><strong>Usuarios hardcodeados</strong>: viven en el propio código Java, se pierden cada vez que reinicias la aplicación, y cualquiera con acceso al código ve las contraseñas. La semana 9 los mueve a PostgreSQL, con contraseñas protegidas por BCrypt.</li>
+<li><strong>Credenciales que viajan en cada petición</strong>: con HTTP Basic, cada única petición vuelve a mandar usuario y contraseña, apenas ofuscados en Base64. La semana 10 sustituye esto por JWT: te autenticas una vez, y presentas un token en las peticiones siguientes.</li>
+</ol>
+<hr>
+<h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
+<details class="tip">
+<summary>Abrir resumen</summary>
+<ul>
+<li>Spring Security, nada más añadirse, cierra <strong>todo</strong> por defecto — mínima exposición llevada al extremo.</li>
+<li><strong>Autenticación</strong> (¿quién eres?) y <strong>autorización</strong> (¿puedes hacer esto?) son capas distintas.</li>
+<li><strong>HTTP Basic</strong> manda usuario:contraseña en Base64 en la cabecera <code>Authorization</code> — Base64 no es cifrado, así que Basic solo es seguro sobre HTTPS.</li>
+<li><code>InMemoryUserDetailsManager</code> declara usuarios directamente en código — útil para empezar, pero se pierden al reiniciar.</li>
+<li>Esta configuración es un estado <strong>intermedio</strong> deliberado: la semana 9 resuelve los usuarios hardcodeados (BCrypt + PostgreSQL), la semana 10 resuelve las credenciales viajando en cada petición (JWT).</li>
+</ul>
+</details></div>
 
 
 

@@ -848,9 +848,78 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prompt-para-improve-notes" class="md-nav__link">
+  <a href="#que-significa-que-una-aplicacion-sea-segura" class="md-nav__link">
     <span class="md-ellipsis">
-      Prompt para /improve-notes
+      🔒 Qué significa que una aplicación sea "segura"
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#el-modelo-mental-del-atacante" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 El modelo mental del atacante
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#principios-generales-de-programacion-segura" class="md-nav__link">
+    <span class="md-ellipsis">
+      🛡️ Principios generales de programación segura
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aterrizaje-en-gamevault-dos-practicas-concretas" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎮 Aterrizaje en GameVault: dos prácticas concretas
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎮 Aterrizaje en GameVault: dos prácticas concretas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#validacion-de-entrada-con-bean-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validación de entrada con Bean Validation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gestion-centralizada-de-errores" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gestión centralizada de errores
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lo-que-viene" class="md-nav__link">
+    <span class="md-ellipsis">
+      🗺️ Lo que viene
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ideas-clave" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Ideas clave
     </span>
   </a>
   
@@ -1564,9 +1633,78 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prompt-para-improve-notes" class="md-nav__link">
+  <a href="#que-significa-que-una-aplicacion-sea-segura" class="md-nav__link">
     <span class="md-ellipsis">
-      Prompt para /improve-notes
+      🔒 Qué significa que una aplicación sea "segura"
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#el-modelo-mental-del-atacante" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 El modelo mental del atacante
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#principios-generales-de-programacion-segura" class="md-nav__link">
+    <span class="md-ellipsis">
+      🛡️ Principios generales de programación segura
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aterrizaje-en-gamevault-dos-practicas-concretas" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎮 Aterrizaje en GameVault: dos prácticas concretas
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎮 Aterrizaje en GameVault: dos prácticas concretas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#validacion-de-entrada-con-bean-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validación de entrada con Bean Validation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gestion-centralizada-de-errores" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gestión centralizada de errores
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lo-que-viene" class="md-nav__link">
+    <span class="md-ellipsis">
+      🗺️ Lo que viene
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ideas-clave" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Ideas clave
     </span>
   </a>
   
@@ -1590,15 +1728,61 @@
 
 <div><p><a id="principios-programacion-segura"></a></p>
 <h1 id="1-principios-de-programacion-segura-validacion-y-gestion-de-errores">🧩 1. Principios de programación segura: validación y gestión de errores<a class="headerlink" href="#1-principios-de-programacion-segura-validacion-y-gestion-de-errores" title="Permanent link">¶</a></h1>
+<p>Tu GameVault, tal y como está ahora, no comprueba quién hace las peticiones ni les pone ningún límite. Antes de tocar autenticación (eso empieza el apartado que viene), este apartado sienta las bases: qué significa que una aplicación sea "segura" y cómo se traduce eso en decisiones concretas de código, sin necesitar todavía ni un login.</p>
+<hr>
+<h2 id="que-significa-que-una-aplicacion-sea-segura">🔒 Qué significa que una aplicación sea "segura"<a class="headerlink" href="#que-significa-que-una-aplicacion-sea-segura" title="Permanent link">¶</a></h2>
+<p>La seguridad de una aplicación se apoya, clásicamente, en tres pilares:</p>
+<table>
+<thead>
+<tr>
+<th>Pilar</th>
+<th>En una aplicación web</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Confidencialidad</strong></td>
+<td>Que nadie lea lo que no debe (datos de otro usuario, contraseñas...).</td>
+</tr>
+<tr>
+<td><strong>Integridad</strong></td>
+<td>Que nadie modifique lo que no debe (cambiar el precio de un producto ajeno, alterar un pedido).</td>
+</tr>
+<tr>
+<td><strong>Disponibilidad</strong></td>
+<td>Que el servicio siga funcionando (no se caiga por un ataque o un uso malintencionado).</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="el-modelo-mental-del-atacante">🎯 El modelo mental del atacante<a class="headerlink" href="#el-modelo-mental-del-atacante" title="Permanent link">¶</a></h2>
+<p>Toda API tiene una <strong>superficie de ataque</strong>: todo endpoint expuesto, todo dato de entrada que acepta, todo mensaje de error que devuelve — cualquier punto por el que algo externo puede interactuar con tu sistema es, potencialmente, un punto de ataque.</p>
 <div class="admonition warning">
-<p class="admonition-title">🚧 Contenido pendiente de desarrollo</p>
-<p>Esta página todavía no tiene la teoría redactada. Usa el prompt de más abajo con
-<code>/improve-notes</code>, apoyándote en el proyecto <strong>GameVault</strong> adjunto, para generar el
-contenido definitivo.</p>
+<p class="admonition-title">La regla de oro</p>
+<p><strong>Nunca te fíes de lo que llega de fuera.</strong> Todo dato de entrada es hostil hasta que se valida — no porque asumas mala fe de cada usuario, sino porque no controlas qué envía realmente el cliente: puede ser un formulario mal rellenado, un bug del cliente, o alguien probando deliberadamente a romper tu API.</p>
 </div>
 <hr>
-<h2 id="prompt-para-improve-notes">Prompt para <code>/improve-notes</code><a class="headerlink" href="#prompt-para-improve-notes" title="Permanent link">¶</a></h2>
-<div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
+<h2 id="principios-generales-de-programacion-segura">🛡️ Principios generales de programación segura<a class="headerlink" href="#principios-generales-de-programacion-segura" title="Permanent link">¶</a></h2>
+<ul>
+<li><strong>Validar en la frontera</strong>: comprobar los datos de entrada en el punto donde entran al sistema, antes de que lleguen a la lógica de negocio — no confiar en que "ya vendrán bien" desde el cliente.</li>
+<li><strong>Mínimo privilegio / mínima exposición</strong>: por defecto, todo cerrado; se abre explícitamente solo lo necesario — no al revés.</li>
+<li><strong>No filtrar información interna en los errores</strong>: un mensaje de error no debería revelar detalles de implementación (nombres de tablas, rutas del servidor, versiones de librerías) que ayuden a un atacante.</li>
+<li><strong>No guardar secretos en el código</strong>: contraseñas, claves, tokens — nunca escritos directamente en una clase Java; viven en configuración externa.</li>
+<li><strong>Defensa en profundidad</strong>: varias capas de protección, no una sola barrera — si una falla, las siguientes siguen ahí.</li>
+</ul>
+<p>Estos principios no son abstractos: detrás de cada uno hay un ataque real que previenen. Un vistazo rápido, sin profundizar todavía (irás viendo cada uno con más detalle):</p>
+<ul>
+<li><strong>Inyección</strong>: ya la viste de primera mano en Acceso a Datos, con JDBC puro y <code>Statement</code> — código que trata datos externos como si fueran código.</li>
+<li><strong>Datos malformados</strong>: entradas que rompen la lógica de la aplicación si no se comprueban antes de usarlas.</li>
+<li><strong>Fuerza bruta sobre logins</strong>: probar contraseñas una tras otra hasta acertar.</li>
+<li><strong>Robo de credenciales en tránsito</strong>: interceptar datos sensibles mientras viajan por la red.</li>
+</ul>
+<hr>
+<h2 id="aterrizaje-en-gamevault-dos-practicas-concretas">🎮 Aterrizaje en GameVault: dos prácticas concretas<a class="headerlink" href="#aterrizaje-en-gamevault-dos-practicas-concretas" title="Permanent link">¶</a></h2>
+<p>La seguridad no empieza en el login — empieza mucho antes: en no fiarte nunca de la entrada del usuario y en no filtrar información en los errores. GameVault ya tiene ambas cosas resueltas.</p>
+<h3 id="validacion-de-entrada-con-bean-validation">Validación de entrada con Bean Validation<a class="headerlink" href="#validacion-de-entrada-con-bean-validation" title="Permanent link">¶</a></h3>
+<p><code>VideojuegoController.create(...)</code> ya usa <code>@Valid</code> sobre su DTO de entrada, y <code>VideojuegoCreateDTO</code> lleva las anotaciones de <code>jakarta.validation</code>:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
 <span class="normal"><a href="#__codelineno-0-4"> 4</a></span>
@@ -1607,107 +1791,91 @@ contenido definitivo.</p>
 <span class="normal"><a href="#__codelineno-0-7"> 7</a></span>
 <span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
 <span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-0-10">10</a></span>
-<span class="normal"><a href="#__codelineno-0-11">11</a></span>
-<span class="normal"><a href="#__codelineno-0-12">12</a></span>
-<span class="normal"><a href="#__codelineno-0-13">13</a></span>
-<span class="normal"><a href="#__codelineno-0-14">14</a></span>
-<span class="normal"><a href="#__codelineno-0-15">15</a></span>
-<span class="normal"><a href="#__codelineno-0-16">16</a></span>
-<span class="normal"><a href="#__codelineno-0-17">17</a></span>
-<span class="normal"><a href="#__codelineno-0-18">18</a></span>
-<span class="normal"><a href="#__codelineno-0-19">19</a></span>
-<span class="normal"><a href="#__codelineno-0-20">20</a></span>
-<span class="normal"><a href="#__codelineno-0-21">21</a></span>
-<span class="normal"><a href="#__codelineno-0-22">22</a></span>
-<span class="normal"><a href="#__codelineno-0-23">23</a></span>
-<span class="normal"><a href="#__codelineno-0-24">24</a></span>
-<span class="normal"><a href="#__codelineno-0-25">25</a></span>
-<span class="normal"><a href="#__codelineno-0-26">26</a></span>
-<span class="normal"><a href="#__codelineno-0-27">27</a></span>
-<span class="normal"><a href="#__codelineno-0-28">28</a></span>
-<span class="normal"><a href="#__codelineno-0-29">29</a></span>
-<span class="normal"><a href="#__codelineno-0-30">30</a></span>
-<span class="normal"><a href="#__codelineno-0-31">31</a></span>
-<span class="normal"><a href="#__codelineno-0-32">32</a></span>
-<span class="normal"><a href="#__codelineno-0-33">33</a></span>
-<span class="normal"><a href="#__codelineno-0-34">34</a></span>
-<span class="normal"><a href="#__codelineno-0-35">35</a></span>
-<span class="normal"><a href="#__codelineno-0-36">36</a></span>
-<span class="normal"><a href="#__codelineno-0-37">37</a></span>
-<span class="normal"><a href="#__codelineno-0-38">38</a></span>
-<span class="normal"><a href="#__codelineno-0-39">39</a></span>
-<span class="normal"><a href="#__codelineno-0-40">40</a></span>
-<span class="normal"><a href="#__codelineno-0-41">41</a></span>
-<span class="normal"><a href="#__codelineno-0-42">42</a></span>
-<span class="normal"><a href="#__codelineno-0-43">43</a></span>
-<span class="normal"><a href="#__codelineno-0-44">44</a></span>
-<span class="normal"><a href="#__codelineno-0-45">45</a></span>
-<span class="normal"><a href="#__codelineno-0-46">46</a></span>
-<span class="normal"><a href="#__codelineno-0-47">47</a></span>
-<span class="normal"><a href="#__codelineno-0-48">48</a></span>
-<span class="normal"><a href="#__codelineno-0-49">49</a></span>
-<span class="normal"><a href="#__codelineno-0-50">50</a></span>
-<span class="normal"><a href="#__codelineno-0-51">51</a></span>
-<span class="normal"><a href="#__codelineno-0-52">52</a></span>
-<span class="normal"><a href="#__codelineno-0-53">53</a></span>
-<span class="normal"><a href="#__codelineno-0-54">54</a></span>
-<span class="normal"><a href="#__codelineno-0-55">55</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a>Redacta el apartado de teoría "Principios de programación segura: validación y gestión
-<a id="__codelineno-0-2" name="__codelineno-0-2"></a>de errores" del Tema 2 (RA5 - Programación segura) del módulo Programación de Servicios
-<a id="__codelineno-0-3" name="__codelineno-0-3"></a>y Procesos (0490), semana real 7 del calendario. Sigue las convenciones de estilo del
-<a id="__codelineno-0-4" name="__codelineno-0-4"></a>README.md del repo.
+<span class="normal"><a href="#__codelineno-0-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">record</span> <span class="nc">VideojuegoCreateDTO</span><span class="p">(</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="w">        </span><span class="nd">@NotBlank</span><span class="p">(</span><span class="n">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"El título no puede estar vacío"</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="w">        </span><span class="nd">@Size</span><span class="p">(</span><span class="n">max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">150</span><span class="p">)</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">titulo</span><span class="p">,</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5"></a>
-<a id="__codelineno-0-6" name="__codelineno-0-6"></a>Criterio de evaluación de RA5 que cubre este apartado (curriculum.md):
-<a id="__codelineno-0-7" name="__codelineno-0-7"></a>- a) Principios y prácticas de programación segura.
-<a id="__codelineno-0-8" name="__codelineno-0-8"></a>
-<a id="__codelineno-0-9" name="__codelineno-0-9"></a>ESTRUCTURA OBLIGATORIA — teoría primero, proyecto después. El alumnado no ha visto
-<a id="__codelineno-0-10" name="__codelineno-0-10"></a>nunca seguridad informática aplicada al desarrollo.
-<a id="__codelineno-0-11" name="__codelineno-0-11"></a>
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a>PARTE 1 — Teoría general, desde cero:
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a>- Qué significa que una aplicación sea "segura": los tres pilares clásicos
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a>  (confidencialidad, integridad, disponibilidad) explicados con ejemplos cotidianos de
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a>  una aplicación web (que nadie lea lo que no debe, que nadie modifique lo que no debe,
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a>  que el servicio siga funcionando).
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a>- El modelo mental del atacante: qué es la superficie de ataque de una API (todo
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a>  endpoint expuesto, todo dato de entrada, todo mensaje de error) y la regla de oro:
-<a id="__codelineno-0-19" name="__codelineno-0-19"></a>  NUNCA te fíes de lo que llega de fuera — todo dato de entrada es hostil hasta que se
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a>  valide.
-<a id="__codelineno-0-21" name="__codelineno-0-21"></a>- Los principios generales de programación segura, cada uno definido en 2-3 frases con
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>  un ejemplo genérico: validar en la frontera, mínimo privilegio / mínima exposición
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a>  (cerrado por defecto), no filtrar información interna en los errores, no guardar
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a>  secretos en el código, defensa en profundidad (varias capas, no una sola barrera).
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a>- Un vistazo a los ataques más comunes contra una API para que los principios no queden
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>  abstractos (una frase cada uno): inyección (ya la demostraron en AD con JDBC y
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>  Statement), datos malformados que rompen la lógica, fuerza bruta sobre logins, robo de
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>  credenciales en tránsito.
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a>
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a>PARTE 2 — Aterrizaje en GameVault: la seguridad no empieza en el login — empieza en no
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a>fiarse nunca de la entrada del usuario y en no filtrar información en los errores. Dos
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a>prácticas concretas sobre el proyecto real: validación de entrada con Bean Validation y
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a>gestión centralizada de errores. Apóyate en:
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a>- Validación de entrada: la anotación `@Valid` que ya usan VideojuegoController.java y
-<a id="__codelineno-0-35" name="__codelineno-0-35"></a>  VideojuegoReviewController.java sobre sus DTOs de entrada, y las anotaciones de
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a>  jakarta.validation en los propios DTOs (ábrelos y usa las que realmente tengan:
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a>  revisa VideojuegoCreateDTO.java y ReviewRequestDTO.java) — explica el principio
-<a id="__codelineno-0-38" name="__codelineno-0-38"></a>  "valida en la frontera": ningún dato del exterior entra sin pasar el filtro.
-<a id="__codelineno-0-39" name="__codelineno-0-39"></a>- Gestión centralizada de errores: com/aleroig/gamevault/exception/
-<a id="__codelineno-0-40" name="__codelineno-0-40"></a>  GlobalExceptionHandler.java y ErrorResponse.java — explica `@RestControllerAdvice` /
-<a id="__codelineno-0-41" name="__codelineno-0-41"></a>  `@ExceptionHandler` (un único punto donde las excepciones se convierten en respuestas
-<a id="__codelineno-0-42" name="__codelineno-0-42"></a>  HTTP coherentes) y el principio de seguridad detrás: no devolver al cliente trazas de
-<a id="__codelineno-0-43" name="__codelineno-0-43"></a>  pila ni mensajes internos (¿qué aprendería un atacante de un stacktrace con nombres de
-<a id="__codelineno-0-44" name="__codelineno-0-44"></a>  tablas y versiones de librerías?).
-<a id="__codelineno-0-45" name="__codelineno-0-45"></a>- Conecta con lo que el alumnado ya ha visto: los 404 de ResponseStatusException del
-<a id="__codelineno-0-46" name="__codelineno-0-46"></a>  Tema 1 y el ErrorResponse uniforme son parte de la misma política de errores.
-<a id="__codelineno-0-47" name="__codelineno-0-47"></a>- Añade una panorámica breve de otros principios de programación segura aplicados al
-<a id="__codelineno-0-48" name="__codelineno-0-48"></a>  proyecto, cada uno en 2-3 frases y señalando dónde se materializará en las próximas
-<a id="__codelineno-0-49" name="__codelineno-0-49"></a>  semanas: mínima exposición (rutas cerradas por defecto — semana 11), no guardar
-<a id="__codelineno-0-50" name="__codelineno-0-50"></a>  secretos en el código (el jwt.secret como propiedad externa — semana 10), no almacenar
-<a id="__codelineno-0-51" name="__codelineno-0-51"></a>  contraseñas en claro (BCrypt — semana 9), y la inyección SQL ya demostrada en AD con
-<a id="__codelineno-0-52" name="__codelineno-0-52"></a>  JDBC puro (referencia cruzada).
-<a id="__codelineno-0-53" name="__codelineno-0-53"></a>
-<a id="__codelineno-0-54" name="__codelineno-0-54"></a>No entres todavía en Spring Security ni autenticación: eso empieza en el siguiente
-<a id="__codelineno-0-55" name="__codelineno-0-55"></a>apartado, seguridad-basica-http-basic.md.
-</code></pre></div></td></tr></table></div></div>
+<a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="w">        </span><span class="nd">@NotNull</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="w">        </span><span class="nd">@PositiveOrZero</span><span class="p">(</span><span class="n">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"El precio no puede ser negativo"</span><span class="p">)</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="w">        </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">precio</span><span class="p">,</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="w">        </span><span class="c1">// ...</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+</code></pre></div></td></tr></table></div>
+<p><code>@Valid</code>, en la firma del método del controller, activa la comprobación de estas anotaciones <strong>antes</strong> de que el cuerpo del método se ejecute — si algo no cumple, ni siquiera llega a tu lógica de negocio. Esto es "validar en la frontera" hecho código: el dato hostil se rechaza en la puerta, no dentro de la casa.</p>
+<h3 id="gestion-centralizada-de-errores">Gestión centralizada de errores<a class="headerlink" href="#gestion-centralizada-de-errores" title="Permanent link">¶</a></h3>
+<p>Sin nada más, cuando una validación falla, Spring devuelve una respuesta por defecto — funcional, pero poco cuidada y potencialmente reveladora. GameVault centraliza esto en un único punto:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-1-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-1-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-1-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-1-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-1-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-1-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-1-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-1-10">10</a></span>
+<span class="normal"><a href="#__codelineno-1-11">11</a></span>
+<span class="normal"><a href="#__codelineno-1-12">12</a></span>
+<span class="normal"><a href="#__codelineno-1-13">13</a></span>
+<span class="normal"><a href="#__codelineno-1-14">14</a></span>
+<span class="normal"><a href="#__codelineno-1-15">15</a></span>
+<span class="normal"><a href="#__codelineno-1-16">16</a></span>
+<span class="normal"><a href="#__codelineno-1-17">17</a></span>
+<span class="normal"><a href="#__codelineno-1-18">18</a></span>
+<span class="normal"><a href="#__codelineno-1-19">19</a></span>
+<span class="normal"><a href="#__codelineno-1-20">20</a></span>
+<span class="normal"><a href="#__codelineno-1-21">21</a></span>
+<span class="normal"><a href="#__codelineno-1-22">22</a></span>
+<span class="normal"><a href="#__codelineno-1-23">23</a></span>
+<span class="normal"><a href="#__codelineno-1-24">24</a></span>
+<span class="normal"><a href="#__codelineno-1-25">25</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nd">@RestControllerAdvice</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">GlobalExceptionHandler</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">    </span><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">MethodArgumentNotValidException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">ErrorResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">handleValidationExceptions</span><span class="p">(</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="w">            </span><span class="n">MethodArgumentNotValidException</span><span class="w"> </span><span class="n">ex</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7"></a>
+<a id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="w">        </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fields</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LinkedHashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">FieldError</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ex</span><span class="p">.</span><span class="na">getBindingResult</span><span class="p">().</span><span class="na">getFieldErrors</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10"></a><span class="w">            </span><span class="n">fields</span><span class="p">.</span><span class="na">putIfAbsent</span><span class="p">(</span><span class="n">error</span><span class="p">.</span><span class="na">getField</span><span class="p">(),</span><span class="w"> </span><span class="n">error</span><span class="p">.</span><span class="na">getDefaultMessage</span><span class="p">());</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12"></a>
+<a id="__codelineno-1-13" name="__codelineno-1-13"></a><span class="w">        </span><span class="n">ErrorResponse</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ErrorResponse</span><span class="p">(</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14"></a><span class="w">                </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">(),</span><span class="w"> </span><span class="mi">400</span><span class="p">,</span><span class="w"> </span><span class="s">"Error de validación"</span><span class="p">,</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15"></a><span class="w">                </span><span class="s">"La petición contiene campos inválidos"</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getRequestURI</span><span class="p">(),</span><span class="w"> </span><span class="n">fields</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16"></a><span class="w">        </span><span class="p">);</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">BAD_REQUEST</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19"></a>
+<a id="__codelineno-1-20" name="__codelineno-1-20"></a><span class="w">    </span><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">ResponseStatusException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">ErrorResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">handleResponseStatusException</span><span class="p">(</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22"></a><span class="w">            </span><span class="n">ResponseStatusException</span><span class="w"> </span><span class="n">ex</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-23" name="__codelineno-1-23"></a><span class="w">        </span><span class="c1">// convierte cualquier ResponseStatusException (los 404 que ya conoces) en el mismo formato</span>
+<a id="__codelineno-1-24" name="__codelineno-1-24"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-1-25" name="__codelineno-1-25"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><code>@RestControllerAdvice</code> marca esta clase como un punto <strong>transversal</strong>: se aplica a todos los controllers de la aplicación, no a uno concreto. <code>@ExceptionHandler(TipoDeExcepcion.class)</code> declara qué método atrapa qué tipo de excepción. El resultado: sea cual sea el error (una validación fallida, un <code>ResponseStatusException</code> de "no encontrado"...), la respuesta siempre tiene la misma forma — un <code>ErrorResponse</code> con <code>timestamp</code>, <code>status</code>, <code>error</code>, <code>message</code> y <code>path</code>.</p>
+<div class="admonition danger">
+<p class="admonition-title">Lo que este handler evita filtrar</p>
+<p>Sin él, una excepción no controlada puede acabar devolviendo al cliente una traza de pila completa: nombres de clases internas, de tablas, incluso versiones de librerías. Eso es información gratis para un atacante sobre cómo está construido tu sistema por dentro. <code>GlobalExceptionHandler</code> garantiza que, pase lo que pase, el cliente solo ve el mensaje controlado que tú decides — nunca los detalles internos.</p>
+</div>
+<p>Esto conecta con algo que ya conocías: los <code>404</code> de <code>ResponseStatusException</code> que viste en el Tema 1 pasan también por este mismo handler — es la misma política de errores, ahora aplicada de forma uniforme a toda la aplicación.</p>
+<hr>
+<h2 id="lo-que-viene">🗺️ Lo que viene<a class="headerlink" href="#lo-que-viene" title="Permanent link">¶</a></h2>
+<p>El resto de este tema va a materializar, uno a uno, los principios que has visto hoy: mínima exposición se convierte en rutas cerradas por defecto (semana 11), no guardar secretos en el código se convierte en el <code>jwt.secret</code> como propiedad externa (semana 10), no almacenar contraseñas en claro se convierte en BCrypt (semana 9). Hoy has visto los principios; las próximas semanas les pones nombre y apellido en Spring Security.</p>
+<hr>
+<h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
+<details class="tip">
+<summary>Abrir resumen</summary>
+<ul>
+<li>Los tres pilares clásicos de la seguridad: <strong>confidencialidad</strong>, <strong>integridad</strong>, <strong>disponibilidad</strong>.</li>
+<li>La <strong>superficie de ataque</strong> es todo punto por el que algo externo interactúa con tu sistema; la regla de oro es no fiarse nunca de los datos de entrada.</li>
+<li>Principios clave: validar en la frontera, mínima exposición, no filtrar información en los errores, no guardar secretos en el código, defensa en profundidad.</li>
+<li><code>@Valid</code> + anotaciones de <code>jakarta.validation</code> en los DTOs validan la entrada antes de que llegue a la lógica de negocio.</li>
+<li><code>@RestControllerAdvice</code> + <code>@ExceptionHandler</code> centralizan la conversión de excepciones en respuestas HTTP coherentes, sin filtrar detalles internos.</li>
+</ul>
+</details></div>
 
 
 

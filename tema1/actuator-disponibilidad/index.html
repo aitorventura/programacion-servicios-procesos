@@ -734,9 +734,45 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prompt-para-improve-notes" class="md-nav__link">
+  <a href="#que-es-la-disponibilidad-de-un-servicio" class="md-nav__link">
     <span class="md-ellipsis">
-      Prompt para /improve-notes
+      🩺 Qué es la disponibilidad de un servicio
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spring-boot-actuator" class="md-nav__link">
+    <span class="md-ellipsis">
+      🛠️ Spring Boot Actuator
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#el-endpoint-actuatorhealth" class="md-nav__link">
+    <span class="md-ellipsis">
+      🟢 El endpoint /actuator/health
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recapitulacion-del-tema" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧭 Recapitulación del tema
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ideas-clave" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Ideas clave
     </span>
   </a>
   
@@ -1564,9 +1600,45 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prompt-para-improve-notes" class="md-nav__link">
+  <a href="#que-es-la-disponibilidad-de-un-servicio" class="md-nav__link">
     <span class="md-ellipsis">
-      Prompt para /improve-notes
+      🩺 Qué es la disponibilidad de un servicio
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spring-boot-actuator" class="md-nav__link">
+    <span class="md-ellipsis">
+      🛠️ Spring Boot Actuator
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#el-endpoint-actuatorhealth" class="md-nav__link">
+    <span class="md-ellipsis">
+      🟢 El endpoint /actuator/health
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recapitulacion-del-tema" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧭 Recapitulación del tema
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ideas-clave" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Ideas clave
     </span>
   </a>
   
@@ -1590,104 +1662,78 @@
 
 <div><p><a id="actuator-disponibilidad"></a></p>
 <h1 id="4-disponibilidad-del-servicio-actuator">🧩 4. Disponibilidad del servicio: Actuator<a class="headerlink" href="#4-disponibilidad-del-servicio-actuator" title="Permanent link">¶</a></h1>
-<div class="admonition warning">
-<p class="admonition-title">🚧 Contenido pendiente de desarrollo</p>
-<p>Esta página todavía no tiene la teoría redactada. Usa el prompt de más abajo con
-<code>/improve-notes</code>, apoyándote en el proyecto <strong>GameVault</strong> adjunto, para generar el
-contenido definitivo. Este apartado cierra el RA4.</p>
-</div>
+<p>Un servicio en red, una vez desplegado, corre sin que nadie lo esté mirando en pantalla constantemente. Este apartado responde a una pregunta distinta de todo lo visto hasta ahora: no "¿funciona esta petición concreta?", sino "¿está el servicio, en general, sano y disponible ahora mismo?".</p>
 <hr>
-<h2 id="prompt-para-improve-notes">Prompt para <code>/improve-notes</code><a class="headerlink" href="#prompt-para-improve-notes" title="Permanent link">¶</a></h2>
-<div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-0-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-0-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-0-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-0-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-0-10">10</a></span>
-<span class="normal"><a href="#__codelineno-0-11">11</a></span>
-<span class="normal"><a href="#__codelineno-0-12">12</a></span>
-<span class="normal"><a href="#__codelineno-0-13">13</a></span>
-<span class="normal"><a href="#__codelineno-0-14">14</a></span>
-<span class="normal"><a href="#__codelineno-0-15">15</a></span>
-<span class="normal"><a href="#__codelineno-0-16">16</a></span>
-<span class="normal"><a href="#__codelineno-0-17">17</a></span>
-<span class="normal"><a href="#__codelineno-0-18">18</a></span>
-<span class="normal"><a href="#__codelineno-0-19">19</a></span>
-<span class="normal"><a href="#__codelineno-0-20">20</a></span>
-<span class="normal"><a href="#__codelineno-0-21">21</a></span>
-<span class="normal"><a href="#__codelineno-0-22">22</a></span>
-<span class="normal"><a href="#__codelineno-0-23">23</a></span>
-<span class="normal"><a href="#__codelineno-0-24">24</a></span>
-<span class="normal"><a href="#__codelineno-0-25">25</a></span>
-<span class="normal"><a href="#__codelineno-0-26">26</a></span>
-<span class="normal"><a href="#__codelineno-0-27">27</a></span>
-<span class="normal"><a href="#__codelineno-0-28">28</a></span>
-<span class="normal"><a href="#__codelineno-0-29">29</a></span>
-<span class="normal"><a href="#__codelineno-0-30">30</a></span>
-<span class="normal"><a href="#__codelineno-0-31">31</a></span>
-<span class="normal"><a href="#__codelineno-0-32">32</a></span>
-<span class="normal"><a href="#__codelineno-0-33">33</a></span>
-<span class="normal"><a href="#__codelineno-0-34">34</a></span>
-<span class="normal"><a href="#__codelineno-0-35">35</a></span>
-<span class="normal"><a href="#__codelineno-0-36">36</a></span>
-<span class="normal"><a href="#__codelineno-0-37">37</a></span>
-<span class="normal"><a href="#__codelineno-0-38">38</a></span>
-<span class="normal"><a href="#__codelineno-0-39">39</a></span>
-<span class="normal"><a href="#__codelineno-0-40">40</a></span>
-<span class="normal"><a href="#__codelineno-0-41">41</a></span>
-<span class="normal"><a href="#__codelineno-0-42">42</a></span>
-<span class="normal"><a href="#__codelineno-0-43">43</a></span>
-<span class="normal"><a href="#__codelineno-0-44">44</a></span>
-<span class="normal"><a href="#__codelineno-0-45">45</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a>Redacta el apartado de teoría "Disponibilidad del servicio: Actuator" del Tema 1 (RA4 -
-<a id="__codelineno-0-2" name="__codelineno-0-2"></a>Generación de servicios en red) del módulo Programación de Servicios y Procesos (0490),
-<a id="__codelineno-0-3" name="__codelineno-0-3"></a>semana real 6 del calendario — apartado que CIERRA el RA4. Sigue las convenciones de
-<a id="__codelineno-0-4" name="__codelineno-0-4"></a>estilo del README.md del repo.
-<a id="__codelineno-0-5" name="__codelineno-0-5"></a>
-<a id="__codelineno-0-6" name="__codelineno-0-6"></a>Criterios de evaluación de RA4 que cubre este apartado (curriculum.md):
-<a id="__codelineno-0-7" name="__codelineno-0-7"></a>- d) Desarrollo y prueba de servicios de comunicación en red (segunda parte: el DELETE
-<a id="__codelineno-0-8" name="__codelineno-0-8"></a>  de Estudio, en la actividad).
-<a id="__codelineno-0-9" name="__codelineno-0-9"></a>- g) Verificación de la disponibilidad del servicio.
-<a id="__codelineno-0-10" name="__codelineno-0-10"></a>
-<a id="__codelineno-0-11" name="__codelineno-0-11"></a>ESTRUCTURA — teoría primero: explica desde cero qué es la disponibilidad de un servicio
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a>y por qué se monitoriza: un servicio en red corre sin nadie mirándolo, así que hace
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a>falta una forma automática de saber si está vivo y sano; qué es un health check como
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a>concepto general (una comprobación periódica que una máquina puede hacer sola), la
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a>diferencia entre "el proceso está arrancado", "responde peticiones" y "sus dependencias
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a>funcionan" (tres niveles distintos de "estar bien"), y quién consume esa información en
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a>el mundo real (monitores de alertas, orquestadores que reinician contenedores caídos, el
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a>CI). Después, Spring Boot Actuator como la implementación de todo eso.
-<a id="__codelineno-0-19" name="__codelineno-0-19"></a>
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a>Contenido central: monitorización de un servicio en red con Spring Boot Actuator — qué
-<a id="__codelineno-0-21" name="__codelineno-0-21"></a>significa que un servicio esté "disponible" (responde, y además sus dependencias
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>funcionan), y cómo se comprueba de forma automatizable.
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a>Apóyate en el proyecto GameVault (com.aleroig.gamevault) como ejemplo real:
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a>- Comprueba primero si el pom.xml de la referencia incluye spring-boot-starter-actuator;
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>  si no lo incluye, preséntalo como MEJORA que se añade esta semana (dependencia +
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>  configuración mínima en application.yaml para exponer /actuator/health).
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>- El endpoint /actuator/health: qué devuelve (UP/DOWN) y, con detalles activados
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a>  (management.endpoint.health.show-details), cómo agrega el estado de las dependencias
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a>  reales de GameVault — PostgreSQL, MongoDB, RabbitMQ y Redis, los cuatro servicios del
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a>  docker-compose.yaml — de modo que si se para el contenedor de Mongo, el health pasa a
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a>  DOWN aunque la aplicación siga respondiendo. Para Redis basta con nombrarlo aquí como
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a>  "una base de datos en memoria más, cuya salud también se agrega" — su explicación de
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a>  fondo (qué es y para qué lo usa el proyecto) llega en el Tema 3 (RA2, semana 14, el
-<a id="__codelineno-0-35" name="__codelineno-0-35"></a>  warm-up de caché), no la dupliques aquí.
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a>- Conecta con lo ya visto: el health check es "un GET más" (protocolo estándar otra
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a>  vez), pensado para que lo consulte una máquina (un orquestador, un monitor, el CI) y
-<a id="__codelineno-0-38" name="__codelineno-0-38"></a>  no una persona — cierra así el criterio g).
-<a id="__codelineno-0-39" name="__codelineno-0-39"></a>- Menciona brevemente otros endpoints útiles de Actuator (info, metrics) sin
-<a id="__codelineno-0-40" name="__codelineno-0-40"></a>  profundizar.
-<a id="__codelineno-0-41" name="__codelineno-0-41"></a>
-<a id="__codelineno-0-42" name="__codelineno-0-42"></a>Cierra el apartado recapitulando todo RA4 en 3-4 frases (leer la API y su protocolo →
-<a id="__codelineno-0-43" name="__codelineno-0-43"></a>escribir y documentar con OpenAPI → probar con MockMvc y varios clientes → verificar
-<a id="__codelineno-0-44" name="__codelineno-0-44"></a>disponibilidad) y presentando la Actividad 1.4, que completa la pareja de mejoras sobre
-<a id="__codelineno-0-45" name="__codelineno-0-45"></a>Estudio con el DELETE (el PUT se hizo en la Actividad 1.3).
-</code></pre></div></td></tr></table></div></div>
+<h2 id="que-es-la-disponibilidad-de-un-servicio">🩺 Qué es la disponibilidad de un servicio<a class="headerlink" href="#que-es-la-disponibilidad-de-un-servicio" title="Permanent link">¶</a></h2>
+<p>Que un servicio esté <strong>disponible</strong> no es una única cosa binaria — hay distintos niveles de "estar bien":</p>
+<ol>
+<li><strong>El proceso está arrancado</strong>: la aplicación no se ha caído, sigue viva.</li>
+<li><strong>Responde peticiones</strong>: acepta conexiones y contesta algo, lo que sea.</li>
+<li><strong>Sus dependencias funcionan</strong>: la base de datos, la cola de mensajería, cualquier servicio del que dependa, están accesibles — un proceso vivo que no puede hablar con su base de datos no está realmente "disponible" para hacer su trabajo.</li>
+</ol>
+<p>Un <strong>health check</strong> (comprobación de salud) es una forma automática — pensada para que la ejecute una máquina, sin intervención humana — de responder a estas preguntas. Quien consume esa información no eres tú mirando una pantalla: son <strong>monitores de alertas</strong> (que avisan si algo cae), <strong>orquestadores</strong> (que reinician automáticamente un contenedor que no responde) o el propio <strong>CI</strong> (que puede comprobar que el servicio arranca correctamente antes de darlo por bueno).</p>
+<hr>
+<h2 id="spring-boot-actuator">🛠️ Spring Boot Actuator<a class="headerlink" href="#spring-boot-actuator" title="Permanent link">¶</a></h2>
+<p><strong>Spring Boot Actuator</strong> es la implementación de todo esto para una aplicación Spring Boot: un conjunto de endpoints HTTP listos para usar que exponen información operativa sobre tu aplicación — entre ellos, su salud.</p>
+<p>Tu propio GameVault no incluye Actuator todavía (revisa tu <code>pom.xml</code>: no está la dependencia) — es la mejora que añades esta semana:</p>
+<div class="language-xml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">XML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
+<span class="normal"><a href="#__codelineno-0-2">2</a></span>
+<span class="normal"><a href="#__codelineno-0-3">3</a></span>
+<span class="normal"><a href="#__codelineno-0-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nt">&lt;dependency&gt;</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-actuator<span class="nt">&lt;/artifactId&gt;</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></td></tr></table></div>
+<p>Con solo esa dependencia, Spring Boot expone automáticamente <code>/actuator/health</code>. Para ver el detalle de cada dependencia (y no solo un <code>UP</code>/<code>DOWN</code> genérico), hace falta una línea de configuración:</p>
+<div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
+<span class="normal"><a href="#__codelineno-1-2">2</a></span>
+<span class="normal"><a href="#__codelineno-1-3">3</a></span>
+<span class="normal"><a href="#__codelineno-1-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nt">management</span><span class="p">:</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">    </span><span class="nt">health</span><span class="p">:</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">      </span><span class="nt">show-details</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always</span>
+</code></pre></div></td></tr></table></div>
+<hr>
+<h2 id="el-endpoint-actuatorhealth">🟢 El endpoint <code>/actuator/health</code><a class="headerlink" href="#el-endpoint-actuatorhealth" title="Permanent link">¶</a></h2>
+<p>Con los detalles activados, <code>/actuator/health</code> no solo dice si tu aplicación responde — agrega el estado de <strong>cada dependencia real</strong> que Spring Boot detecta en el classpath. En GameVault, eso significa PostgreSQL, MongoDB, RabbitMQ y Redis (los cuatro servicios de <code>docker-compose.yaml</code> — de Redis basta con que sepas, por ahora, que es "una base de datos en memoria más" cuya salud también se agrega aquí; verás para qué la usa realmente el proyecto en el Tema 3, con la caché de novedades):</p>
+<div class="language-json highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">JSON</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
+<span class="normal"><a href="#__codelineno-2-2">2</a></span>
+<span class="normal"><a href="#__codelineno-2-3">3</a></span>
+<span class="normal"><a href="#__codelineno-2-4">4</a></span>
+<span class="normal"><a href="#__codelineno-2-5">5</a></span>
+<span class="normal"><a href="#__codelineno-2-6">6</a></span>
+<span class="normal"><a href="#__codelineno-2-7">7</a></span>
+<span class="normal"><a href="#__codelineno-2-8">8</a></span>
+<span class="normal"><a href="#__codelineno-2-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="p">{</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">  </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UP"</span><span class="p">,</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">  </span><span class="nt">"components"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">    </span><span class="nt">"db"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UP"</span><span class="w"> </span><span class="p">},</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">    </span><span class="nt">"mongo"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UP"</span><span class="w"> </span><span class="p">},</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">    </span><span class="nt">"rabbit"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UP"</span><span class="w"> </span><span class="p">},</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">    </span><span class="nt">"redis"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UP"</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Fíjate en la implicación: si el contenedor de MongoDB se cae, <code>/actuator/health</code> pasa a <code>DOWN</code> con el detalle del componente <code>mongo</code> marcado como el culpable — <strong>aunque la aplicación siga respondiendo peticiones sobre PostgreSQL sin ningún problema</strong>. Es exactamente el matiz del punto 3 de más arriba: "responder" y "estar realmente sano" no son lo mismo.</p>
+<div class="admonition tip">
+<p class="admonition-title">Es un GET más, pensado para máquinas</p>
+<p><code>/actuator/health</code> no deja de ser una petición HTTP estándar — el mismo protocolo de siempre. La diferencia es quién lo consulta: normalmente no una persona con un navegador, sino un orquestador o un monitor, cada pocos segundos, de forma automática. Eso es exactamente para lo que sirve: verificar la disponibilidad del servicio.</p>
+</div>
+<p>Actuator trae también otros endpoints útiles, como <code>/actuator/info</code> (metadatos de la aplicación) o <code>/actuator/metrics</code> (métricas de rendimiento) — no vas a profundizar en ellos ahora, pero conviene que sepas que existen.</p>
+<hr>
+<h2 id="recapitulacion-del-tema">🧭 Recapitulación del tema<a class="headerlink" href="#recapitulacion-del-tema" title="Permanent link">¶</a></h2>
+<p>Con esto se completa el recorrido: leíste la API y su protocolo (apartado 1), la documentaste y entendiste su semántica de escritura con OpenAPI (apartado 2), la probaste con MockMvc y con varios clientes simultáneos (apartado 3), y hoy verificas su disponibilidad de forma automatizable. En la Actividad 1.4 completas el CRUD de <code>Estudio</code> con el <code>DELETE</code> que falta y pones en marcha Actuator sobre tu propio proyecto.</p>
+<hr>
+<h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
+<details class="tip">
+<summary>Abrir resumen</summary>
+<ul>
+<li>La <strong>disponibilidad</strong> de un servicio tiene varios niveles: proceso vivo, responde peticiones, dependencias funcionando — no son lo mismo.</li>
+<li>Un <strong>health check</strong> es una comprobación automática, pensada para que la consulte una máquina (monitor, orquestador, CI), no una persona.</li>
+<li><strong>Spring Boot Actuator</strong> expone <code>/actuator/health</code> con la dependencia <code>spring-boot-starter-actuator</code>; <code>management.endpoint.health.show-details: always</code> muestra el detalle de cada dependencia.</li>
+<li>GameVault agrega en <code>/actuator/health</code> el estado de PostgreSQL, MongoDB, RabbitMQ y Redis — si uno cae, el estado general pasa a <code>DOWN</code> aunque el resto siga funcionando.</li>
+</ul>
+</details></div>
 
 
 

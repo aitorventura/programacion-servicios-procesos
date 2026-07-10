@@ -1238,9 +1238,54 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prompt-para-improve-notes" class="md-nav__link">
+  <a href="#async-que-hace-exactamente" class="md-nav__link">
     <span class="md-ellipsis">
-      Prompt para /improve-notes
+      ⚡ @Async: qué hace exactamente
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transactionaleventlistenerphase-after_commit" class="md-nav__link">
+    <span class="md-ellipsis">
+      ⏱️ @TransactionalEventListener(phase = AFTER_COMMIT)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estados-de-un-hilo-ahora-observables-de-verdad" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔄 Estados de un hilo, ahora observables de verdad
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#problemas-de-comparticion-en-este-caso-concreto" class="md-nav__link">
+    <span class="md-ellipsis">
+      ⚠️ Problemas de compartición, en este caso concreto
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#el-resultado-que-vas-a-medir" class="md-nav__link">
+    <span class="md-ellipsis">
+      📈 El resultado que vas a medir
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ideas-clave" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Ideas clave
     </span>
   </a>
   
@@ -1564,9 +1609,54 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prompt-para-improve-notes" class="md-nav__link">
+  <a href="#async-que-hace-exactamente" class="md-nav__link">
     <span class="md-ellipsis">
-      Prompt para /improve-notes
+      ⚡ @Async: qué hace exactamente
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transactionaleventlistenerphase-after_commit" class="md-nav__link">
+    <span class="md-ellipsis">
+      ⏱️ @TransactionalEventListener(phase = AFTER_COMMIT)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estados-de-un-hilo-ahora-observables-de-verdad" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔄 Estados de un hilo, ahora observables de verdad
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#problemas-de-comparticion-en-este-caso-concreto" class="md-nav__link">
+    <span class="md-ellipsis">
+      ⚠️ Problemas de compartición, en este caso concreto
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#el-resultado-que-vas-a-medir" class="md-nav__link">
+    <span class="md-ellipsis">
+      📈 El resultado que vas a medir
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ideas-clave" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Ideas clave
     </span>
   </a>
   
@@ -1590,94 +1680,51 @@
 
 <div><p><a id="listeners-asincronos"></a></p>
 <h1 id="3-listeners-asincronos-el-warm-up-de-cache-22">🧩 3. Listeners asíncronos: el warm-up de caché (2/2)<a class="headerlink" href="#3-listeners-asincronos-el-warm-up-de-cache-22" title="Permanent link">¶</a></h1>
-<div class="admonition warning">
-<p class="admonition-title">🚧 Contenido pendiente de desarrollo</p>
-<p>Esta página todavía no tiene la teoría redactada. Usa el prompt de más abajo con
-<code>/improve-notes</code>, apoyándote en el proyecto <strong>GameVault</strong> adjunto, para generar el
-contenido definitivo.</p>
-</div>
+<p>La semana pasada construiste el evento y su publicación — sin ningún efecto visible todavía. Hoy construyes la pieza que le da sentido a todo: el listener que reacciona, recalentando la caché en un hilo aparte. Aquí es donde el <code>@EnableAsync</code> "durmiente" que localizaste en la Actividad 3.1 entra por fin en juego.</p>
 <hr>
-<h2 id="prompt-para-improve-notes">Prompt para <code>/improve-notes</code><a class="headerlink" href="#prompt-para-improve-notes" title="Permanent link">¶</a></h2>
-<div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-0-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-0-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-0-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-0-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-0-10">10</a></span>
-<span class="normal"><a href="#__codelineno-0-11">11</a></span>
-<span class="normal"><a href="#__codelineno-0-12">12</a></span>
-<span class="normal"><a href="#__codelineno-0-13">13</a></span>
-<span class="normal"><a href="#__codelineno-0-14">14</a></span>
-<span class="normal"><a href="#__codelineno-0-15">15</a></span>
-<span class="normal"><a href="#__codelineno-0-16">16</a></span>
-<span class="normal"><a href="#__codelineno-0-17">17</a></span>
-<span class="normal"><a href="#__codelineno-0-18">18</a></span>
-<span class="normal"><a href="#__codelineno-0-19">19</a></span>
-<span class="normal"><a href="#__codelineno-0-20">20</a></span>
-<span class="normal"><a href="#__codelineno-0-21">21</a></span>
-<span class="normal"><a href="#__codelineno-0-22">22</a></span>
-<span class="normal"><a href="#__codelineno-0-23">23</a></span>
-<span class="normal"><a href="#__codelineno-0-24">24</a></span>
-<span class="normal"><a href="#__codelineno-0-25">25</a></span>
-<span class="normal"><a href="#__codelineno-0-26">26</a></span>
-<span class="normal"><a href="#__codelineno-0-27">27</a></span>
-<span class="normal"><a href="#__codelineno-0-28">28</a></span>
-<span class="normal"><a href="#__codelineno-0-29">29</a></span>
-<span class="normal"><a href="#__codelineno-0-30">30</a></span>
-<span class="normal"><a href="#__codelineno-0-31">31</a></span>
-<span class="normal"><a href="#__codelineno-0-32">32</a></span>
-<span class="normal"><a href="#__codelineno-0-33">33</a></span>
-<span class="normal"><a href="#__codelineno-0-34">34</a></span>
-<span class="normal"><a href="#__codelineno-0-35">35</a></span>
-<span class="normal"><a href="#__codelineno-0-36">36</a></span>
-<span class="normal"><a href="#__codelineno-0-37">37</a></span>
-<span class="normal"><a href="#__codelineno-0-38">38</a></span>
-<span class="normal"><a href="#__codelineno-0-39">39</a></span>
-<span class="normal"><a href="#__codelineno-0-40">40</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a>Redacta el apartado de teoría "Listeners asíncronos: el warm-up de caché (2/2)" del
-<a id="__codelineno-0-2" name="__codelineno-0-2"></a>Tema 3 (RA2 - Programación multihilo) del módulo Programación de Servicios y Procesos
-<a id="__codelineno-0-3" name="__codelineno-0-3"></a>(0490), semana real 15 del calendario. Sigue las convenciones de estilo del README.md
-<a id="__codelineno-0-4" name="__codelineno-0-4"></a>del repo.
-<a id="__codelineno-0-5" name="__codelineno-0-5"></a>
-<a id="__codelineno-0-6" name="__codelineno-0-6"></a>Criterios de evaluación de RA2 que cubre este apartado (curriculum.md):
-<a id="__codelineno-0-7" name="__codelineno-0-7"></a>- d) Estados de ejecución de un hilo y aplicaciones que los gestionan.
-<a id="__codelineno-0-8" name="__codelineno-0-8"></a>- f) Hilos sincronizados mediante técnicas específicas.
-<a id="__codelineno-0-9" name="__codelineno-0-9"></a>- j) Librerías específicas del lenguaje para multihilo.
-<a id="__codelineno-0-10" name="__codelineno-0-10"></a>- k) Problemas derivados de la compartición de información entre hilos.
-<a id="__codelineno-0-11" name="__codelineno-0-11"></a>
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a>Contenido central: la pieza 2 del warm-up — el listener que reacciona al
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a>TopNovedadesInvalidadoEvent (Actividad 3.2) y recalienta la caché en un hilo aparte.
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a>Aquí es donde el @EnableAsync "durmiente" de GamevaultApplication.java entra por fin en
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a>juego.
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a>
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a>Explica, con código de ejemplo que la Actividad 3.3 construirá guiado:
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a>- @Async sobre el método listener: qué hace exactamente Spring (proxy que despacha la
-<a id="__codelineno-0-19" name="__codelineno-0-19"></a>  ejecución a un pool de hilos) y el contraste medido en la Actividad 3.2: sin @Async el
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a>  listener corría en el hilo de la petición; con @Async corre en otro (verificable por
-<a id="__codelineno-0-21" name="__codelineno-0-21"></a>  el nombre del hilo en el log).
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>- @TransactionalEventListener(phase = AFTER_COMMIT) frente a @EventListener a secas
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a>  (criterio f — sincronización entre hilos con técnicas específicas): el problema real
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a>  que resuelve — si el listener se lanza ANTES de que la transacción de
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a>  VideojuegoService.create() haga commit, el hilo del warm-up puede leer de la base de
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>  datos un estado sin el videojuego nuevo y recalentar la caché con datos viejos.
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>  Sincronizar el arranque del hilo con el commit de la transacción es la técnica
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>  específica de este caso. (El alumnado conoce @Transactional de AD — apóyate en eso.)
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a>- Estados de un hilo (criterio d): el ciclo NEW → RUNNABLE → TIMED_WAITING (el
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a>  Thread.sleep(2000) del getTopNovedades es un ejemplo perfecto y observable) →
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a>  TERMINATED, conectado con lo que verían en jconsole/VisualVM en la Actividad 3.1.
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a>- Problemas de compartición (criterio k), aterrizados en este caso concreto: ¿qué pasa
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a>  si dos escrituras casi simultáneas publican dos eventos y dos hilos recalientan a la
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a>  vez? (trabajo duplicado, carreras sobre la caché); ¿y si el listener leyera una
-<a id="__codelineno-0-35" name="__codelineno-0-35"></a>  entidad JPA compartida en vez de un record inmutable? Menciona también, como
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a>  panorámica breve (criterio j), las piezas de java.util.concurrent que Spring usa por
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a>  debajo (ExecutorService, pools) — la configuración fina llega en el apartado 4.
-<a id="__codelineno-0-38" name="__codelineno-0-38"></a>
-<a id="__codelineno-0-39" name="__codelineno-0-39"></a>Cierra con el resultado final medible: tras el warm-up, el "primer usuario tras una
-<a id="__codelineno-0-40" name="__codelineno-0-40"></a>escritura" ya no paga los 2 segundos — la medición de la Actividad 3.3 lo demostrará.
-</code></pre></div></td></tr></table></div></div>
+<h2 id="async-que-hace-exactamente">⚡ <code>@Async</code>: qué hace exactamente<a class="headerlink" href="#async-que-hace-exactamente" title="Permanent link">¶</a></h2>
+<p><code>@Async</code> sobre un método le dice a Spring: "no ejecutes este método en el hilo de quien lo llama — despáchalo a un pool de hilos aparte, y devuelve el control inmediatamente a quien llamó". Por debajo, Spring construye un <strong>proxy</strong> alrededor de tu bean: cuando alguien invoca un método <code>@Async</code>, en realidad no lo ejecuta directamente — el proxy intercepta la llamada, la envía a un <code>ExecutorService</code> (recuerda la escala de abstracción de la Actividad 3.1), y el método original se ejecuta en uno de esos hilos del pool.</p>
+<p>Ya tienes el contraste medido en la Actividad 3.2: sin <code>@Async</code>, tu listener trivial de prueba corría en el <strong>mismo hilo</strong> de la petición HTTP que publicó el evento. Con <code>@Async</code>, va a correr en un hilo <strong>distinto</strong> — lo vas a verificar de nuevo hoy, comparando los nombres de hilo en el log.</p>
+<hr>
+<h2 id="transactionaleventlistenerphase-after_commit">⏱️ <code>@TransactionalEventListener(phase = AFTER_COMMIT)</code><a class="headerlink" href="#transactionaleventlistenerphase-after_commit" title="Permanent link">¶</a></h2>
+<p>Aquí aparece un problema real, sutil, que un <code>@EventListener</code> a secas no resuelve: si el listener se dispara <strong>antes</strong> de que la transacción de <code>VideojuegoService.create()</code> haga <em>commit</em>, el hilo del warm-up podría leer la base de datos en un estado que <strong>todavía no incluye</strong> el videojuego recién creado — y recalentaría la caché con datos viejos, justo lo contrario de lo que quieres.</p>
+<p><code>@TransactionalEventListener(phase = AFTER_COMMIT)</code> resuelve esto: en vez de dispararse en el momento de <code>publishEvent(...)</code>, espera a que la transacción que publicó el evento haga <em>commit</em> con éxito, y solo entonces ejecuta el listener. Es la <strong>técnica específica de sincronización</strong> que necesitas para este caso concreto: sincronizar el arranque del hilo del listener con el momento exacto en que los datos ya son consistentes y visibles. Ya conoces <code>@Transactional</code> de Acceso a Datos — esto es la contrapartida del lado "quien reacciona a que una transacción ha terminado", no del lado "quien abre la transacción".</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
+<span class="normal"><a href="#__codelineno-0-2">2</a></span>
+<span class="normal"><a href="#__codelineno-0-3">3</a></span>
+<span class="normal"><a href="#__codelineno-0-4">4</a></span>
+<span class="normal"><a href="#__codelineno-0-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nd">@TransactionalEventListener</span><span class="p">(</span><span class="n">phase</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TransactionPhase</span><span class="p">.</span><span class="na">AFTER_COMMIT</span><span class="p">)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="nd">@Async</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onTopNovedadesInvalidado</span><span class="p">(</span><span class="n">TopNovedadesInvalidadoEvent</span><span class="w"> </span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="w">    </span><span class="c1">// se ejecuta DESPUÉS del commit, EN OTRO HILO</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<hr>
+<h2 id="estados-de-un-hilo-ahora-observables-de-verdad">🔄 Estados de un hilo, ahora observables de verdad<a class="headerlink" href="#estados-de-un-hilo-ahora-observables-de-verdad" title="Permanent link">¶</a></h2>
+<p>Retoma el ciclo de estados de la Actividad 3.1 (NEW → RUNNABLE → BLOCKED/WAITING → TERMINATED), esta vez con un caso perfectamente observable: el <code>Thread.sleep(2000)</code> dentro de <code>getTopNovedades()</code>. Mientras ese <code>sleep</code> está activo, el hilo que ejecuta el warm-up está en estado <strong>TIMED_WAITING</strong> — puedes verlo tú mismo con jconsole o VisualVM (las mismas herramientas de la Actividad 3.1), capturando el estado del hilo justo durante esos 2 segundos.</p>
+<hr>
+<h2 id="problemas-de-comparticion-en-este-caso-concreto">⚠️ Problemas de compartición, en este caso concreto<a class="headerlink" href="#problemas-de-comparticion-en-este-caso-concreto" title="Permanent link">¶</a></h2>
+<p>Dos preguntas que conviene hacerse antes de dar el warm-up por terminado:</p>
+<ul>
+<li><strong>¿Qué pasa si dos escrituras casi simultáneas publican dos eventos?</strong> Dos hilos distintos intentarían recalentar la misma caché casi a la vez — trabajo duplicado (ambos recalculan lo mismo) y, en el peor caso, una carrera sobre qué resultado queda finalmente guardado en la caché. No es un error grave (el resultado final sigue siendo correcto), pero sí ineficiente.</li>
+<li><strong>¿Y si el listener leyera una entidad JPA compartida en vez de un evento inmutable?</strong> Si <code>TopNovedadesInvalidadoEvent</code> no fuera un <code>record</code> inmutable, sino que el listener leyera directamente un objeto mutable compartido con el hilo que publicó, existiría el riesgo de que ese objeto cambiara mientras el listener aún lo está usando — exactamente el tipo de condición de carrera que viste en la Actividad 3.1. La inmutabilidad del evento elimina ese riesgo por diseño.</li>
+</ul>
+<p>Como panorámica breve: por debajo de <code>@Async</code>, Spring usa piezas de <code>java.util.concurrent</code> — típicamente un <code>ExecutorService</code>/pool de hilos configurable. La configuración fina de ese pool (cuántos hilos, con qué nombre, con qué prioridad) es exactamente lo que vas a construir en el apartado siguiente.</p>
+<hr>
+<h2 id="el-resultado-que-vas-a-medir">📈 El resultado que vas a medir<a class="headerlink" href="#el-resultado-que-vas-a-medir" title="Permanent link">¶</a></h2>
+<p>Con las dos piezas montadas (evento + listener asíncrono sincronizado con el commit), el "primer usuario tras una escritura" ya no paga los 2 segundos de <code>getTopNovedades()</code> — el warm-up los paga por él, en segundo plano, mientras nadie espera. La Actividad 3.3 lo va a demostrar con mediciones reales, comparando el "antes" (Actividad 3.2) con el "después" (hoy).</p>
+<hr>
+<h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
+<details class="tip">
+<summary>Abrir resumen</summary>
+<ul>
+<li><code>@Async</code> despacha la ejecución de un método a un pool de hilos aparte, mediante un proxy — el llamador no espera a que termine.</li>
+<li><code>@TransactionalEventListener(phase = AFTER_COMMIT)</code> sincroniza el arranque del listener con el momento en que la transacción que publicó el evento ya ha hecho commit — evita leer datos "a medias".</li>
+<li>El <code>Thread.sleep(2000)</code> de <code>getTopNovedades()</code> es un caso observable real del estado <strong>TIMED_WAITING</strong>.</li>
+<li>Publicaciones casi simultáneas pueden causar trabajo duplicado (no un error grave); un evento <strong>inmutable</strong> evita condiciones de carrera al compartir información entre hilos.</li>
+<li>Por debajo de <code>@Async</code>, Spring usa <code>java.util.concurrent</code> — la configuración fina del pool llega en el apartado siguiente.</li>
+</ul>
+</details></div>
 
 
 

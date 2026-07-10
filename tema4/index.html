@@ -1627,26 +1627,18 @@
 <ol>
 <li><a href="sockets-cliente-servidor/">Sockets: la base de toda comunicación en red</a></li>
 <li><a href="websocket-gamevault/">WebSocket en GameVault: el canal de actividad en vivo</a></li>
-<li><a href="actividad-en-vivo-cierre/">Actividad en vivo y seguridad del canal — cierre de RA3</a></li>
+<li><a href="actividad-en-vivo-cierre/">Actividad en vivo y seguridad del canal</a></li>
 </ol>
 <p><strong>Actividades:</strong></p>
 <ul>
 <li><a href="actividad_4_1/">Actividad 4.1 — Cliente y servidor con sockets clásicos</a></li>
 <li><a href="actividad_4_2/">Actividad 4.2 — El endpoint <code>/ws-actividad</code> con STOMP</a></li>
-<li><a href="actividad_4_3/">Actividad 4.3 — Actividad en vivo desde <code>ActividadService</code> — cierre de RA3</a></li>
+<li><a href="actividad_4_3/">Actividad 4.3 — Actividad en vivo desde <code>ActividadService</code></a></li>
 </ul>
 <hr>
 <div class="admonition info">
 <p class="admonition-title">¿Cómo avanzar por el contenido?</p>
 <p>Utiliza el índice o las flechas de navegación al final de cada página para desplazarte por los distintos apartados de este tema.</p>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Nota para el profesorado</p>
-<p>Este tema corresponde a las semanas reales 17-19 del calendario (RA3, bloque cerrado que también cierra el módulo).</p>
-<p><strong>Cobertura literal de RA3 (revisado):</strong> los criterios b, c, d, e, f, g, h del currículo (roles cliente/servidor, librerías del lenguaje, tipos de socket, cliente que se comunica con un servidor, servidor verificado, intercambio de información, hilos para varios clientes simultáneos) quedan cubiertos de forma LITERAL, con <code>java.net.Socket</code>/<code>ServerSocket</code> reales, en la semana 17 (<code>sockets-cliente-servidor.md</code> + Actividad 4.1). No dependen de WebSocket para estar satisfechos. Antes se marcaban como "Adaptado" dando a entender que solo se cumplían vía WebSocket en las semanas 18-19 — eso subestimaba el trabajo real ya hecho en la 4.1 y generaba un riesgo innecesario si se auditara el RA3 contra el currículo literal.</p>
-<p>Las semanas 18-19 (WebSocket/STOMP sobre GameVault, el canal <code>/ws-actividad</code>) se reencuadran como una AMPLIACIÓN de profundidad sobre el mismo RA3 (mismo concepto de "canal bidireccional persistente" ya presentado en la teoría de la semana 17, esta vez sobre un escenario real de aplicación) y como puente hacia RA4 (servicios en red), no como sustituto necesario de los criterios ya cubiertos. Consecuencia práctica: si un alumno completara solo la Actividad 4.1 y no llegara a las Actividades 4.2/4.3, RA3 seguiría estando cubierto en su literal — las últimas dos semanas añaden valor pero no son la única vía de cumplimiento.</p>
-<p>Aviso aparte, distinto del anterior: el canal <code>/ws-actividad</code> de las semanas 18-19 es una MEJORA que no existe en la referencia adjunta (no hay <code>spring-boot-starter-websocket</code> ni configuración WebSocket en el <code>pom.xml</code>/código entregado). A diferencia del resto del curso, donde el alumnado siempre puede comparar su trabajo con un estado final ya construido en la referencia, aquí construye sin ese punto de comparación — coméntalo explícitamente en la teoría y en las actividades para que no se sorprendan al no encontrar un <code>WebSocketConfig.java</code> en el proyecto adjunto.</p>
-<p>Los apartados de teoría y las actividades están pendientes de redactar: cada <code>.md</code> contiene el prompt que debe usarse con <code>/improve-notes</code> para generarlo, apoyándose en el proyecto GameVault adjunto.</p>
 </div></div>
 
 

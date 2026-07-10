@@ -1636,16 +1636,12 @@
 <li><a href="actividad_3_1/">Actividad 3.1 — Cazando hilos en GameVault (análisis, sin código)</a></li>
 <li><a href="actividad_3_2/">Actividad 3.2 — El evento del warm-up de caché (1/2)</a></li>
 <li><a href="actividad_3_3/">Actividad 3.3 — El listener <code>@Async</code> del warm-up (2/2)</a></li>
-<li><a href="actividad_3_4/">Actividad 3.4 — <code>TaskExecutor</code> propio — cierre de RA2</a></li>
+<li><a href="actividad_3_4/">Actividad 3.4 — <code>TaskExecutor</code> propio</a></li>
 </ul>
 <hr>
 <div class="admonition info">
 <p class="admonition-title">¿Cómo avanzar por el contenido?</p>
 <p>Utiliza el índice o las flechas de navegación al final de cada página para desplazarte por los distintos apartados de este tema.</p>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Nota para el profesorado</p>
-<p>Este tema corresponde a las semanas reales 12, 14, 15 y 16 del calendario (RA2; la semana 13 natural es de exámenes y entre la 12 y la 14 median las vacaciones de Navidad). El hilo conductor es el <strong>warm-up de la caché de <code>topNovedades</code></strong>: en la referencia adjunta, <code>GamevaultApplication.java</code> declara <code>@EnableAsync</code> pero ningún método lo usa todavía, y <code>VideojuegoService.getTopNovedades()</code> (<code>@Cacheable</code>, con un retardo simulado de 2 s) paga la lentitud en la primera petición tras cada invalidación — la mejora que construye el alumnado (evento interno + listener <code>@Async</code> + <code>TaskExecutor</code> propio) resuelve exactamente eso. Cada <code>.md</code> contiene el prompt para generarlo con <code>/improve-notes</code>.</p>
 </div></div>
 
 

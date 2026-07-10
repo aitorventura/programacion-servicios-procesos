@@ -596,9 +596,72 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prompt-para-improve-notes" class="md-nav__link">
+  <a href="#como-funciona-la-web-en-una-peticion" class="md-nav__link">
     <span class="md-ellipsis">
-      Prompt para /improve-notes
+      🌐 Cómo funciona la web en una petición
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#que-es-http" class="md-nav__link">
+    <span class="md-ellipsis">
+      📨 Qué es HTTP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verbos-y-codigos-de-estado" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔤 Verbos y códigos de estado
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#json-como-formato-del-cuerpo" class="md-nav__link">
+    <span class="md-ellipsis">
+      📦 JSON como formato del cuerpo
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#que-es-una-api-y-que-es-rest" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧩 Qué es una API y qué es REST
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aterrizaje-en-gamevault-leyendo-videojuegocontroller" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎮 Aterrizaje en GameVault: leyendo VideojuegoController
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#por-que-un-protocolo-estandar" class="md-nav__link">
+    <span class="md-ellipsis">
+      🆚 Por qué un protocolo estándar
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ideas-clave" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Ideas clave
     </span>
   </a>
   
@@ -1564,9 +1627,72 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prompt-para-improve-notes" class="md-nav__link">
+  <a href="#como-funciona-la-web-en-una-peticion" class="md-nav__link">
     <span class="md-ellipsis">
-      Prompt para /improve-notes
+      🌐 Cómo funciona la web en una petición
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#que-es-http" class="md-nav__link">
+    <span class="md-ellipsis">
+      📨 Qué es HTTP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verbos-y-codigos-de-estado" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔤 Verbos y códigos de estado
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#json-como-formato-del-cuerpo" class="md-nav__link">
+    <span class="md-ellipsis">
+      📦 JSON como formato del cuerpo
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#que-es-una-api-y-que-es-rest" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧩 Qué es una API y qué es REST
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aterrizaje-en-gamevault-leyendo-videojuegocontroller" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎮 Aterrizaje en GameVault: leyendo VideojuegoController
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#por-que-un-protocolo-estandar" class="md-nav__link">
+    <span class="md-ellipsis">
+      🆚 Por qué un protocolo estándar
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ideas-clave" class="md-nav__link">
+    <span class="md-ellipsis">
+      ✅ Ideas clave
     </span>
   </a>
   
@@ -1590,128 +1716,278 @@
 
 <div><p><a id="protocolos-y-rest"></a></p>
 <h1 id="1-protocolos-estandar-y-servicios-rest-leyendo-el-controlador">🧩 1. Protocolos estándar y servicios REST: leyendo el controlador<a class="headerlink" href="#1-protocolos-estandar-y-servicios-rest-leyendo-el-controlador" title="Permanent link">¶</a></h1>
-<div class="admonition warning">
-<p class="admonition-title">🚧 Contenido pendiente de desarrollo</p>
-<p>Esta página todavía no tiene la teoría redactada. Usa el prompt de más abajo con
-<code>/improve-notes</code>, apoyándote en el proyecto <strong>GameVault</strong> adjunto, para generar el
-contenido definitivo.</p>
+<p>Llegas a este módulo sabiendo Java, Git/Docker y bases de datos — pero nada de cómo dos programas hablan entre sí por red. Esta semana, en Acceso a Datos (AD), estás creando las entidades <code>Videojuego</code>/<code>Estudio</code> de tu propio GameVault; aquí vas a mirar el mismo proyecto desde el otro extremo: cómo llega una petición desde fuera hasta que ese código se ejecuta. Esta semana no vas a escribir código nuevo — vas a aprender a <strong>leer</strong> un controlador REST, con el ejemplo real de <code>VideojuegoController</code> que construirás tú mismo la semana que viene.</p>
+<hr>
+<h2 id="como-funciona-la-web-en-una-peticion">🌐 Cómo funciona la web en una petición<a class="headerlink" href="#como-funciona-la-web-en-una-peticion" title="Permanent link">¶</a></h2>
+<p>Cuando escribes una URL en el navegador o llamas a una API desde tu código, pasan siempre los mismos dos papeles: un <strong>cliente</strong> (quien pide) y un <strong>servidor</strong> (quien responde). El cliente puede ser un navegador, una app móvil, otro servidor, o simplemente <code>curl</code> desde tu terminal — lo único que importa es que inicia la conversación.</p>
+<p>Toda esa conversación viaja hacia una dirección concreta: una <strong>URL</strong>. Diseccionada pieza a pieza:</p>
+<div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
+<span class="normal"><a href="#__codelineno-0-2">2</a></span>
+<span class="normal"><a href="#__codelineno-0-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a>http://localhost:8080/api/v1/videojuegos/3
+<a id="__codelineno-0-2" name="__codelineno-0-2"></a>└─┬──┘ └────┬───────┘└──────────┬──────────┘
+<a id="__codelineno-0-3" name="__codelineno-0-3"></a>protocolo  host:puerto          ruta
+</code></pre></div></td></tr></table></div>
+<ul>
+<li><strong>Protocolo</strong> (<code>http</code>): las reglas de comunicación que van a usar los dos.</li>
+<li><strong>Host y puerto</strong> (<code>localhost:8080</code>): dónde está el servidor y por qué puerta escucha.</li>
+<li><strong>Ruta</strong> (<code>/api/v1/videojuegos/3</code>): qué recurso concreto se pide dentro de ese servidor.</li>
+</ul>
+<hr>
+<h2 id="que-es-http">📨 Qué es HTTP<a class="headerlink" href="#que-es-http" title="Permanent link">¶</a></h2>
+<p><strong>HTTP</strong> (<em>HyperText Transfer Protocol</em>) es el protocolo de petición-respuesta que usa la web: el cliente manda una petición con un formato fijo, el servidor responde con una respuesta con otro formato fijo, y ahí termina esa conversación (la siguiente petición empieza de cero). Por debajo del navegador o de Postman, una petición HTTP real es texto plano con esta forma:</p>
+<div class="language-http highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">HTTP</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
+<span class="normal"><a href="#__codelineno-1-2">2</a></span>
+<span class="normal"><a href="#__codelineno-1-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nf">GET</span> <span class="nn">/api/v1/videojuegos/3</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="na">Host</span><span class="o">:</span> <span class="l">localhost:8080</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="na">Accept</span><span class="o">:</span> <span class="l">application/json</span>
+</code></pre></div></td></tr></table></div>
+<p>Y la respuesta, también texto plano:</p>
+<div class="language-http highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">HTTP</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
+<span class="normal"><a href="#__codelineno-2-2">2</a></span>
+<span class="normal"><a href="#__codelineno-2-3">3</a></span>
+<span class="normal"><a href="#__codelineno-2-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/json</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="p">{</span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="nt">"titulo"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Hollow Knight"</span><span class="p">,</span><span class="w"> </span><span class="nt">"precio"</span><span class="p">:</span><span class="w"> </span><span class="mf">14.99</span><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<table>
+<thead>
+<tr>
+<th>Parte</th>
+<th>En la petición</th>
+<th>En la respuesta</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Primera línea</td>
+<td>Método + ruta + versión</td>
+<td>Versión + código de estado</td>
+</tr>
+<tr>
+<td>Cabeceras (<em>headers</em>)</td>
+<td>Metadatos: qué formato aceptas, quién eres...</td>
+<td>Metadatos: qué formato devuelve, tamaño...</td>
+</tr>
+<tr>
+<td>Cuerpo (<em>body</em>)</td>
+<td>Datos que envías (puede no haberlo)</td>
+<td>Datos que devuelve (puede no haberlo)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="verbos-y-codigos-de-estado">🔤 Verbos y códigos de estado<a class="headerlink" href="#verbos-y-codigos-de-estado" title="Permanent link">¶</a></h2>
+<p>Cada petición HTTP declara un <strong>verbo</strong> (o método) que expresa la intención de la operación:</p>
+<table>
+<thead>
+<tr>
+<th>Verbo</th>
+<th>Qué expresa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET</code></td>
+<td>Leer un recurso, sin modificarlo.</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td>Crear un recurso nuevo.</td>
+</tr>
+<tr>
+<td><code>PUT</code></td>
+<td>Reemplazar un recurso existente.</td>
+</tr>
+<tr>
+<td><code>DELETE</code></td>
+<td>Eliminar un recurso.</td>
+</tr>
+</tbody>
+</table>
+<p>El servidor responde siempre con un <strong>código de estado</strong> de tres cifras que resume qué ha pasado, agrupado por familias:</p>
+<table>
+<thead>
+<tr>
+<th>Familia</th>
+<th>Significa</th>
+<th>Ejemplos que vas a usar todo el curso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>2xx</code></td>
+<td>Todo ha ido bien</td>
+<td><code>200 OK</code>, <code>201 Created</code>, <code>204 No Content</code></td>
+</tr>
+<tr>
+<td><code>4xx</code></td>
+<td>Error del cliente</td>
+<td><code>400 Bad Request</code>, <code>401/403</code>, <code>404 Not Found</code></td>
+</tr>
+<tr>
+<td><code>5xx</code></td>
+<td>Error del servidor</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">No hace falta memorizar todos los códigos</p>
+<p>Con estos 5-6 tienes cubierto casi todo lo que verás en el curso: <code>200</code> (petición de lectura correcta), <code>201</code> (se ha creado algo), <code>204</code> (correcto, pero no hay nada que devolver — típico en un <code>DELETE</code>), <code>400</code> (la petición está mal formada), <code>401</code>/<code>403</code> (no autenticado / autenticado pero sin permiso — se ve en detalle en el Tema 2), <code>404</code> (el recurso no existe).</p>
 </div>
 <hr>
-<h2 id="prompt-para-improve-notes">Prompt para <code>/improve-notes</code><a class="headerlink" href="#prompt-para-improve-notes" title="Permanent link">¶</a></h2>
-<div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-0-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-0-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-0-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-0-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-0-10">10</a></span>
-<span class="normal"><a href="#__codelineno-0-11">11</a></span>
-<span class="normal"><a href="#__codelineno-0-12">12</a></span>
-<span class="normal"><a href="#__codelineno-0-13">13</a></span>
-<span class="normal"><a href="#__codelineno-0-14">14</a></span>
-<span class="normal"><a href="#__codelineno-0-15">15</a></span>
-<span class="normal"><a href="#__codelineno-0-16">16</a></span>
-<span class="normal"><a href="#__codelineno-0-17">17</a></span>
-<span class="normal"><a href="#__codelineno-0-18">18</a></span>
-<span class="normal"><a href="#__codelineno-0-19">19</a></span>
-<span class="normal"><a href="#__codelineno-0-20">20</a></span>
-<span class="normal"><a href="#__codelineno-0-21">21</a></span>
-<span class="normal"><a href="#__codelineno-0-22">22</a></span>
-<span class="normal"><a href="#__codelineno-0-23">23</a></span>
-<span class="normal"><a href="#__codelineno-0-24">24</a></span>
-<span class="normal"><a href="#__codelineno-0-25">25</a></span>
-<span class="normal"><a href="#__codelineno-0-26">26</a></span>
-<span class="normal"><a href="#__codelineno-0-27">27</a></span>
-<span class="normal"><a href="#__codelineno-0-28">28</a></span>
-<span class="normal"><a href="#__codelineno-0-29">29</a></span>
-<span class="normal"><a href="#__codelineno-0-30">30</a></span>
-<span class="normal"><a href="#__codelineno-0-31">31</a></span>
-<span class="normal"><a href="#__codelineno-0-32">32</a></span>
-<span class="normal"><a href="#__codelineno-0-33">33</a></span>
-<span class="normal"><a href="#__codelineno-0-34">34</a></span>
-<span class="normal"><a href="#__codelineno-0-35">35</a></span>
-<span class="normal"><a href="#__codelineno-0-36">36</a></span>
-<span class="normal"><a href="#__codelineno-0-37">37</a></span>
-<span class="normal"><a href="#__codelineno-0-38">38</a></span>
-<span class="normal"><a href="#__codelineno-0-39">39</a></span>
-<span class="normal"><a href="#__codelineno-0-40">40</a></span>
-<span class="normal"><a href="#__codelineno-0-41">41</a></span>
-<span class="normal"><a href="#__codelineno-0-42">42</a></span>
-<span class="normal"><a href="#__codelineno-0-43">43</a></span>
-<span class="normal"><a href="#__codelineno-0-44">44</a></span>
-<span class="normal"><a href="#__codelineno-0-45">45</a></span>
-<span class="normal"><a href="#__codelineno-0-46">46</a></span>
-<span class="normal"><a href="#__codelineno-0-47">47</a></span>
-<span class="normal"><a href="#__codelineno-0-48">48</a></span>
-<span class="normal"><a href="#__codelineno-0-49">49</a></span>
-<span class="normal"><a href="#__codelineno-0-50">50</a></span>
-<span class="normal"><a href="#__codelineno-0-51">51</a></span>
-<span class="normal"><a href="#__codelineno-0-52">52</a></span>
-<span class="normal"><a href="#__codelineno-0-53">53</a></span>
-<span class="normal"><a href="#__codelineno-0-54">54</a></span>
-<span class="normal"><a href="#__codelineno-0-55">55</a></span>
-<span class="normal"><a href="#__codelineno-0-56">56</a></span>
-<span class="normal"><a href="#__codelineno-0-57">57</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a>Redacta el apartado de teoría "Protocolos estándar y servicios REST: leyendo el
-<a id="__codelineno-0-2" name="__codelineno-0-2"></a>controlador" del Tema 1 (RA4 - Generación de servicios en red) del módulo Programación
-<a id="__codelineno-0-3" name="__codelineno-0-3"></a>de Servicios y Procesos (0490), semana real 3 del calendario. Sigue las convenciones de
-<a id="__codelineno-0-4" name="__codelineno-0-4"></a>estilo del README.md del repo (tabs-colored, admonitions, densidad visual, pretérito
-<a id="__codelineno-0-5" name="__codelineno-0-5"></a>perfecto compuesto). Este módulo usa la paleta marrón/ámbar.
-<a id="__codelineno-0-6" name="__codelineno-0-6"></a>
-<a id="__codelineno-0-7" name="__codelineno-0-7"></a>Criterios de evaluación de RA4 que cubre este apartado (curriculum.md):
-<a id="__codelineno-0-8" name="__codelineno-0-8"></a>- a) Protocolos estándar de comunicación para la implementación de servicios en red.
-<a id="__codelineno-0-9" name="__codelineno-0-9"></a>- c) Librerías que permiten implementar servicios en red con protocolos estándar.
-<a id="__codelineno-0-10" name="__codelineno-0-10"></a>
-<a id="__codelineno-0-11" name="__codelineno-0-11"></a>ESTRUCTURA OBLIGATORIA — teoría primero, proyecto después. El alumnado NO sabe qué es
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a>HTTP, ni una API, ni REST: llega sabiendo Java, Git/Docker y bases de datos. Explica
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a>todo desde cero. (Qué es Spring Boot y cómo se estructura GameVault se explica esa
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a>misma semana en Acceso a Datos, Tema 1, apartado "Spring Boot: el chasis de GameVault" —
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a>remite a ese apartado y no lo dupliques aquí.)
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a>
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a>PARTE 1 — Teoría general, desde cero y sin GameVault todavía:
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a>- Cómo funciona la web en una petición: un CLIENTE (navegador, aplicación) pide y un
-<a id="__codelineno-0-19" name="__codelineno-0-19"></a>  SERVIDOR responde; anatomía de una URL (protocolo, host, puerto, ruta) pieza a pieza.
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a>- Qué es HTTP: un protocolo de texto de petición-respuesta. Muestra una petición y una
-<a id="__codelineno-0-21" name="__codelineno-0-21"></a>  respuesta HTTP REALES y crudas (texto completo con su primera línea, cabeceras y
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>  cuerpo) y disecciónalas etiquetando cada parte: método/verbo, ruta, versión, código de
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a>  estado, Content-Type, cuerpo.
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a>- Los verbos (GET/POST/PUT/DELETE: qué expresa cada uno) y los códigos de estado por
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a>  familias (2xx bien, 3xx redirección, 4xx culpa del cliente, 5xx culpa del servidor)
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>  con los 5-6 códigos que se usarán todo el curso (200, 201, 204, 400, 401/403, 404).
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>- Qué es JSON como formato del cuerpo (repaso breve con un ejemplo — lo han tocado, no
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>  lo dominan).
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a>- Qué es una API y qué es REST: exponer los DATOS de tu aplicación como RECURSOS con
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a>  direcciones (URLs) sobre los que se actúa con los verbos — el ejemplo genérico de una
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a>  API de biblioteca (GET /libros, GET /libros/3, POST /libros...) antes de ver la de
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a>  videojuegos.
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a>
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a>PARTE 2 — Aterrizaje en GameVault. Esta semana NO se escribe código nuevo: se aprende a
-<a id="__codelineno-0-35" name="__codelineno-0-35"></a>LEER el controlador REST que ya existe, entendiendo qué papel juega cada pieza en la
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a>comunicación en red. Contexto de coordinación: el alumnado trabaja sobre su propia copia
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a>de GameVault, el MISMO proyecto compartido con Acceso a Datos (0486) — esta misma
-<a id="__codelineno-0-38" name="__codelineno-0-38"></a>semana, en AD, están creando las entidades Videojuego/Estudio; aquí se mira el mismo
-<a id="__codelineno-0-39" name="__codelineno-0-39"></a>proyecto desde el ángulo de la comunicación en red. Apóyate en:
-<a id="__codelineno-0-40" name="__codelineno-0-40"></a>- com/aleroig/gamevault/catalogo/VideojuegoController.java, solo los métodos GET:
-<a id="__codelineno-0-41" name="__codelineno-0-41"></a>  explica anotación a anotación qué significa cada cosa desde la óptica HTTP —
-<a id="__codelineno-0-42" name="__codelineno-0-42"></a>  `@RestController` (respuestas serializadas al cuerpo HTTP), `@RequestMapping("/api/v1/
-<a id="__codelineno-0-43" name="__codelineno-0-43"></a>  videojuegos")` (la ruta como identificador del recurso, el versionado /v1),
-<a id="__codelineno-0-44" name="__codelineno-0-44"></a>  `@GetMapping` y `@GetMapping("/{id}")` (verbo + ruta = operación), `@PathVariable`,
-<a id="__codelineno-0-45" name="__codelineno-0-45"></a>  `ResponseEntity.ok(...)` (código de estado 200 explícito).
-<a id="__codelineno-0-46" name="__codelineno-0-46"></a>- El flujo completo de una petición: cliente → puerto 8080 → Spring Web (Tomcat
-<a id="__codelineno-0-47" name="__codelineno-0-47"></a>  embebido) → controller → service → respuesta JSON — con un diagrama mermaid sencillo.
-<a id="__codelineno-0-48" name="__codelineno-0-48"></a>- Contrasta HTTP/REST con alternativas no estándar (un protocolo binario propio sobre
-<a id="__codelineno-0-49" name="__codelineno-0-49"></a>  sockets, que se verá en el Tema 4/RA3) para justificar el criterio a): por qué usar un
-<a id="__codelineno-0-50" name="__codelineno-0-50"></a>  protocolo estándar hace que cualquier cliente (navegador, curl, Postman, otra
-<a id="__codelineno-0-51" name="__codelineno-0-51"></a>  aplicación) pueda hablar con el servicio sin acordar nada más.
-<a id="__codelineno-0-52" name="__codelineno-0-52"></a>- Menciona que Spring Web viene de la dependencia spring-boot-starter-web del pom.xml, y
-<a id="__codelineno-0-53" name="__codelineno-0-53"></a>  que el servidor embebido (Tomcat) es quien escucha en el puerto — la "librería que
-<a id="__codelineno-0-54" name="__codelineno-0-54"></a>  implementa el servicio en red" del criterio c).
-<a id="__codelineno-0-55" name="__codelineno-0-55"></a>
-<a id="__codelineno-0-56" name="__codelineno-0-56"></a>No entres todavía en los endpoints de escritura (POST/PUT/DELETE) ni en Swagger: eso es
-<a id="__codelineno-0-57" name="__codelineno-0-57"></a>el siguiente apartado, escritura-y-openapi.md.
-</code></pre></div></td></tr></table></div></div>
+<h2 id="json-como-formato-del-cuerpo">📦 JSON como formato del cuerpo<a class="headerlink" href="#json-como-formato-del-cuerpo" title="Permanent link">¶</a></h2>
+<p>Ya has visto JSON antes, aunque sea de pasada — es el formato en el que casi todas las APIs modernas envían y reciben datos dentro del cuerpo de la petición/respuesta: pares clave-valor, anidables, sin tipos estrictos declarados:</p>
+<div class="language-json highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">JSON</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
+<span class="normal"><a href="#__codelineno-3-2">2</a></span>
+<span class="normal"><a href="#__codelineno-3-3">3</a></span>
+<span class="normal"><a href="#__codelineno-3-4">4</a></span>
+<span class="normal"><a href="#__codelineno-3-5">5</a></span>
+<span class="normal"><a href="#__codelineno-3-6">6</a></span>
+<span class="normal"><a href="#__codelineno-3-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="p">{</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">  </span><span class="nt">"titulo"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Hollow Knight"</span><span class="p">,</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">  </span><span class="nt">"precio"</span><span class="p">:</span><span class="w"> </span><span class="mf">14.99</span><span class="p">,</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="w">  </span><span class="nt">"estudio"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="w">    </span><span class="nt">"nombre"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Team Cherry"</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Volverás a JSON con más detalle cuando lo necesites de verdad (al construir cuerpos de petición en la Actividad 1.1 y, en Acceso a Datos, al persistir estructuras JSON completas en el Tema 3) — de momento basta con reconocer la forma.</p>
+<hr>
+<h2 id="que-es-una-api-y-que-es-rest">🧩 Qué es una API y qué es REST<a class="headerlink" href="#que-es-una-api-y-que-es-rest" title="Permanent link">¶</a></h2>
+<p>Una <strong>API</strong> (<em>Application Programming Interface</em>) es el conjunto de operaciones que una aplicación expone para que otros programas la usen, sin que necesiten conocer cómo está construida por dentro. <strong>REST</strong> es un estilo concreto de diseñar APIs sobre HTTP: los datos se modelan como <strong>recursos</strong>, cada recurso tiene una <strong>URL</strong> propia, y las operaciones sobre ese recurso se expresan con los verbos HTTP que ya has visto.</p>
+<div class="admonition example">
+<p class="admonition-title">Una API de biblioteca, antes de ver la de videojuegos</p>
+<table>
+<thead>
+<tr>
+<th>Operación</th>
+<th>Verbo + ruta</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Listar todos los libros</td>
+<td><code>GET /libros</code></td>
+</tr>
+<tr>
+<td>Ver un libro concreto</td>
+<td><code>GET /libros/3</code></td>
+</tr>
+<tr>
+<td>Añadir un libro nuevo</td>
+<td><code>POST /libros</code></td>
+</tr>
+<tr>
+<td>Reemplazar un libro</td>
+<td><code>PUT /libros/3</code></td>
+</tr>
+<tr>
+<td>Borrar un libro</td>
+<td><code>DELETE /libros/3</code></td>
+</tr>
+</tbody>
+</table>
+<p>Fíjate en el patrón: la <strong>ruta</strong> identifica <em>qué</em> recurso, y el <strong>verbo</strong> identifica <em>qué operación</em> — no hace falta una ruta distinta para cada acción (<code>/libros/borrar/3</code> sería el estilo antiguo, no REST).</p>
+</div>
+<hr>
+<h2 id="aterrizaje-en-gamevault-leyendo-videojuegocontroller">🎮 Aterrizaje en GameVault: leyendo <code>VideojuegoController</code><a class="headerlink" href="#aterrizaje-en-gamevault-leyendo-videojuegocontroller" title="Permanent link">¶</a></h2>
+<p>Con esa base, ya puedes leer el controlador REST real del proyecto — de momento, solo los métodos <code>GET</code> (los de escritura llegan la semana que viene):</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-4-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-4-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-4-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-4-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-4-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-4-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-4-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-4-10">10</a></span>
+<span class="normal"><a href="#__codelineno-4-11">11</a></span>
+<span class="normal"><a href="#__codelineno-4-12">12</a></span>
+<span class="normal"><a href="#__codelineno-4-13">13</a></span>
+<span class="normal"><a href="#__codelineno-4-14">14</a></span>
+<span class="normal"><a href="#__codelineno-4-15">15</a></span>
+<span class="normal"><a href="#__codelineno-4-16">16</a></span>
+<span class="normal"><a href="#__codelineno-4-17">17</a></span>
+<span class="normal"><a href="#__codelineno-4-18">18</a></span>
+<span class="normal"><a href="#__codelineno-4-19">19</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="nd">@RestController</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="nd">@RequestMapping</span><span class="p">(</span><span class="s">"/api/v1/videojuegos"</span><span class="p">)</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="nd">@RequiredArgsConstructor</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">VideojuegoController</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">VideojuegoService</span><span class="w"> </span><span class="n">videojuegoService</span><span class="p">;</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6"></a>
+<a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="w">    </span><span class="nd">@GetMapping</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">Page</span><span class="o">&lt;</span><span class="n">VideojuegoResponseDTO</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="nf">getAll</span><span class="p">(</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="w">            </span><span class="nd">@ModelAttribute</span><span class="w"> </span><span class="n">VideojuegoFiltroDTO</span><span class="w"> </span><span class="n">filtro</span><span class="p">,</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="w">            </span><span class="nd">@PageableDefault</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="n">Pageable</span><span class="w"> </span><span class="n">pageable</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11"></a><span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="n">videojuegoService</span><span class="p">.</span><span class="na">findAllPaginated</span><span class="p">(</span><span class="n">filtro</span><span class="p">,</span><span class="w"> </span><span class="n">pageable</span><span class="p">));</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14"></a>
+<a id="__codelineno-4-15" name="__codelineno-4-15"></a><span class="w">    </span><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">VideojuegoResponseDTO</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">getById</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="n">videojuegoService</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">));</span>
+<a id="__codelineno-4-18" name="__codelineno-4-18"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Anotación a anotación, desde la óptica HTTP (la óptica de "qué hace cada cosa con la persistencia" es de Acceso a Datos, no la repitas aquí):</p>
+<table>
+<thead>
+<tr>
+<th>Anotación / elemento</th>
+<th>Qué representa en HTTP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@RestController</code></td>
+<td>Marca la clase como controlador cuyas respuestas se serializan directamente al cuerpo HTTP (a JSON, en este proyecto).</td>
+</tr>
+<tr>
+<td><code>@RequestMapping("/api/v1/videojuegos")</code></td>
+<td>La ruta base del recurso — todo lo que hay dentro de esta clase cuelga de <code>/api/v1/videojuegos</code>. El <code>/v1</code> es el <strong>versionado</strong> de la API: si el día de mañana cambia el contrato, se puede publicar un <code>/v2</code> sin romper a los clientes que siguen usando la v1.</td>
+</tr>
+<tr>
+<td><code>@GetMapping</code> / <code>@GetMapping("/{id}")</code></td>
+<td>Verbo (<code>GET</code>) + ruta = una operación concreta. <code>{id}</code> es una parte variable de la ruta.</td>
+</tr>
+<tr>
+<td><code>@PathVariable Long id</code></td>
+<td>Extrae ese trozo variable de la URL y lo entrega como parámetro Java.</td>
+</tr>
+<tr>
+<td><code>ResponseEntity.ok(...)</code></td>
+<td>Construye la respuesta con el código de estado <code>200</code> explícito y el cuerpo indicado.</td>
+</tr>
+</tbody>
+</table>
+<p>El viaje completo de una petición <code>GET /api/v1/videojuegos/3</code>:</p>
+<pre class="mermaid"><code>flowchart LR
+    A["🌐 Cliente&lt;br/&gt;curl/Postman"] -- "GET :8080/api/v1/videojuegos/3" --&gt; B["🐱 Tomcat&lt;br/&gt;(embebido)"]
+    B --&gt; C["VideojuegoController"]
+    C --&gt; D["VideojuegoService"]
+    D --&gt; E["Respuesta JSON"]
+    E -.-&gt; A</code></pre>
+<p>El puerto <code>8080</code> y el servidor <strong>Tomcat</strong> que escucha en él no son magia: los trae la dependencia <code>spring-boot-starter-webmvc</code> del <code>pom.xml</code> que viste el apartado anterior — es la "librería que implementa el servicio en red" de la que habla el currículo. Tú no arrancas ningún servidor a mano: Spring Boot lo hace por ti al ejecutar <code>GamevaultApplication</code>.</p>
+<hr>
+<h2 id="por-que-un-protocolo-estandar">🆚 Por qué un protocolo estándar<a class="headerlink" href="#por-que-un-protocolo-estandar" title="Permanent link">¶</a></h2>
+<p>Podrías diseñar tu propio protocolo casero sobre sockets (lo verás en el Tema 4) en vez de usar HTTP/REST. La diferencia es que HTTP es un protocolo <strong>estándar</strong>: cualquier cliente que exista — un navegador, <code>curl</code>, Postman, otra aplicación escrita en otro lenguaje — ya sabe hablarlo, sin que tengas que documentar ni acordar nada a medida. Con un protocolo propio, cada cliente nuevo tendría que aprender tus reglas particulares desde cero.</p>
+<hr>
+<h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
+<details class="tip">
+<summary>Abrir resumen</summary>
+<ul>
+<li>Toda comunicación HTTP es petición-respuesta entre un <strong>cliente</strong> y un <strong>servidor</strong>, con la URL como dirección (protocolo, host, puerto, ruta).</li>
+<li>HTTP es texto con una primera línea, cabeceras y cuerpo opcional; los <strong>verbos</strong> (<code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>DELETE</code>) expresan la intención, los <strong>códigos de estado</strong> (2xx/4xx/5xx) resumen el resultado.</li>
+<li><strong>JSON</strong> es el formato habitual del cuerpo de petición/respuesta en las APIs modernas.</li>
+<li><strong>REST</strong> modela los datos como recursos con URL propia, y usa los verbos HTTP para operar sobre ellos — la ruta identifica <em>qué</em>, el verbo identifica <em>qué operación</em>.</li>
+<li><code>@RestController</code> + <code>@RequestMapping</code> + <code>@GetMapping</code> son las anotaciones que traducen "verbo + ruta" en un método Java concreto; <code>ResponseEntity</code> construye la respuesta con su código de estado.</li>
+<li>El servidor embebido (Tomcat) que atiende las peticiones lo trae <code>spring-boot-starter-webmvc</code> — no lo arrancas tú a mano.</li>
+<li>Usar un protocolo estándar como HTTP significa que cualquier cliente existente ya sabe hablar con tu API, sin acordar nada a medida.</li>
+</ul>
+</details></div>
 
 
 
