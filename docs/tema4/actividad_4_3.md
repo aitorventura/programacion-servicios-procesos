@@ -1,63 +1,166 @@
-# 🧪 Actividad 4.3: Actividad en vivo desde `ActividadService` — cierre de RA3
+# 🧪 Actividad 4.3: Actividad en vivo desde `ActividadService`
 
-!!! warning "🚧 Contenido pendiente de desarrollo"
-    Esta actividad todavía no está redactada. Usa el prompt de más abajo con
-    `/improve-notes`, apoyándote en el proyecto **GameVault** adjunto, para generar el
-    enunciado definitivo. Es la actividad final del módulo.
+!!! info "Práctica guiada — última actividad del módulo"
+    Conectas el canal WebSocket a los datos reales, auditas su seguridad, y la corriges — no basta con detectarla.
+
+## Qué vas a practicar
+
+- Emitir datos reales por el canal WebSocket que construiste en la Actividad 4.2.
+- Trazar el viaje completo de un dato a través de todo lo construido en el curso.
+- Detectar **y corregir** una vulnerabilidad real de seguridad.
 
 ---
 
-## Prompt para `/improve-notes`
+## Requisitos previos
 
-```text
-Redacta la Actividad 4.3 del Tema 4 (RA3 - Programación de comunicaciones en red) del
-módulo Programación de Servicios y Procesos (0490), semana real 19 del calendario —
-actividad que CIERRA el RA3 y es la ÚLTIMA del módulo 0490. Si necesita
-plantilla/solución en .docx, crea antes la skill de plantilla de PSP clonando
-/actividad-plantilla-acceso-a-datos con la paleta marrón/ámbar.
+Tu endpoint `/ws-actividad` (Actividad 4.2) y tu `ActividadService`/consumer de RabbitMQ (Tema 3).
 
-IMPORTANTE — enfoque: es una PRÁCTICA GUIADA, no un reto. El alumnado trabaja sobre su
-propia copia de GameVault. El enunciado debe guiar paso a paso, mostrando el código y
-explicando cada decisión; solo se deja sin guiar, como mini-reto, lo que repita un
-patrón idéntico ya mostrado. Completa la MEJORA del canal de actividad en vivo
-(Actividad 4.2).
+---
 
-Objetivo (RA3, criterios g, h, j — cierre del RA y del módulo): emitir el registro de
-actividad real por /topic/actividad, evaluar la seguridad del canal Y CORREGIRLA con la
-remediación mínima (exigir JWT en el handshake) — no basta con detectar y documentar el
-agujero, hay que cerrarlo antes de dar el módulo por terminado.
+## Paso 1 — La emisión real, guiada al completo
 
-Estructura sugerida de pasos guiados:
-1. La emisión guiada: inyectar SimpMessagingTemplate en ActividadService (con
-   @RequiredArgsConstructor, como todo el proyecto) y, en registrar(), publicar en
-   /topic/actividad un DTO con los datos del registro (reutilizar o adaptar
-   ActividadResponseDTO) — código mostrado y explicado. Retirar el emisor de prueba de
-   la Actividad 4.2.
-2. La demostración completa, guiada: abrir el cliente STOMP de la Actividad 4.2 en dos
-   pestañas, crear un videojuego por Swagger/curl, y ver aparecer el registro EN VIVO en
-   ambas pestañas — documentar con una captura. Trazar el viaje completo del dato con
-   los nombres de hilo en el log (traza dada): hilo HTTP → hilo del listener de
-   RabbitMQ → push WebSocket.
-3. Mini-reto (repite el patrón del paso 2): comprobar que el update y el delete de
-   videojuegos también aparecen en vivo (ya funcionan solos si el paso 1 se hizo en
-   registrar() — el reto es explicar POR QUÉ funcionan sin tocar nada más, siguiendo el
-   flujo RabbitMQ → consumer → registrar()).
-4. La auditoría de seguridad guiada (el "aviso del handshake" del calendario): con una
-   ventana de incógnito (sin login), conectar al WebSocket y suscribirse — comprobar que
-   un anónimo ve en vivo lo que GET /api/v1/actividad solo permite a ADMIN. Con ayuda
-   del enunciado, escribir el hallazgo como una mini-incidencia de seguridad (qué se
-   expone, a quién, opciones de mitigación).
-5. REMEDIACIÓN MÍNIMA OBLIGATORIA (entregable, no opcional — cambio respecto a versiones
-   anteriores de este prompt): aplicar guiadamente la solución mostrada en la teoría de
-   actividad-en-vivo-cierre.md — exigir un token JWT válido en el handshake de
-   /ws-actividad (por ejemplo, pasado como parámetro de consulta y validado en un
-   interceptor de handshake antes de aceptar la conexión), con el código mostrado y
-   explicado paso a paso. Repetir la prueba con la ventana de incógnito del paso 4 y
-   comprobar que ahora el handshake es rechazado sin token válido. El cierre del módulo
-   de Programación Segura no puede terminar con un agujero documentado pero sin
-   corregir.
-6. Cierre del módulo: un repaso propio (5-6 líneas) del recorrido completo de PSP sobre
-   su GameVault — API REST probada y monitorizada (RA4), asegurada con JWT y roles
-   (RA5), con tareas en segundo plano (RA2) y ahora con comunicación en vivo (RA3) — y
-   qué pieza le ha costado más y por qué (respuesta personal, no genérica).
+Modifica `ActividadService`:
+
+```java
+@Service
+@RequiredArgsConstructor
+public class ActividadService {
+
+    private final ActividadRepository actividadRepository;
+    private final SimpMessagingTemplate messagingTemplate;
+
+    public void registrar(String tipo, String entidad, String entidadId, String descripcion) {
+        Actividad actividad = new Actividad();
+        actividad.setTipo(tipo);
+        actividad.setEntidad(entidad);
+        actividad.setEntidadId(entidadId);
+        actividad.setDescripcion(descripcion);
+        actividad.setFecha(LocalDateTime.now());
+
+        actividadRepository.save(actividad);
+
+        ActividadResponseDTO dto = mapToDTO(actividad);
+        messagingTemplate.convertAndSend("/topic/actividad", dto);
+    }
+
+    // ... resto de métodos ya existentes ...
+}
 ```
+
+Cada registro que ya se guardaba en PostgreSQL ahora **también** se publica en `/topic/actividad`, reutilizando el mismo `ActividadResponseDTO` que ya usa el endpoint REST. **Retira** el `WebSocketTestController` de emisión manual de la Actividad 4.2 — ya no lo necesitas, la emisión real ha ocupado su lugar.
+
+---
+
+## Paso 2 — La demostración completa
+
+Abre tu página `actividad.html` (Actividad 4.2) en **dos** pestañas. Crea un videojuego desde Swagger o `curl`:
+
+```bash
+curl -X POST http://localhost:8080/api/v1/videojuegos \
+  -H "Authorization: Bearer $ADMIN_TOKEN" -H "Content-Type: application/json" \
+  -d '{"titulo":"EnVivo","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'
+```
+
+**Comprueba**: que el registro aparece **en vivo**, en las dos pestañas a la vez, sin recargar nada.
+
+**Captura**: una pantalla mostrando ambas pestañas con el registro recién llegado.
+
+**Traza** el viaje completo del dato en tus logs (añade trazas temporales de `Thread.currentThread().getName()` si no las tienes ya de los Temas 3-4): un nombre de hilo para la petición HTTP, otro distinto para el listener de RabbitMQ que ejecuta `registrar()` (y, por tanto, el propio push WebSocket).
+
+---
+
+## Mini-reto — `update` y `delete` en vivo también
+
+Sin tocar nada más, comprueba que actualizar y borrar un videojuego **también** aparecen en vivo en tus pestañas. Deberían funcionar solos, sin ningún cambio adicional.
+
+**Explica por qué**: sigue el flujo completo (RabbitMQ → consumer → `registrar()`) y razona por qué añadir la emisión dentro de `registrar()` en el Paso 1 basta para cubrir los tres tipos de evento (crear, actualizar, borrar), sin tener que tocar tres sitios distintos.
+
+---
+
+## Paso 4 — La auditoría de seguridad
+
+Abre una ventana de **incógnito** (sin ninguna sesión iniciada, sin token) y conecta tu página `actividad.html` a `/ws-actividad` tal como está ahora mismo (sin la remediación todavía).
+
+**Comprueba**: que, sin haber hecho login, ves en vivo exactamente los mismos registros que `GET /api/v1/actividad` solo permite consultar a `ADMIN`.
+
+**Escribe el hallazgo** como una mini-incidencia de seguridad: qué se expone (el contenido concreto), a quién (cualquiera, sin autenticar), y qué opciones de mitigación existen (las tres de la teoría: restringir el handshake, filtrar qué se emite, o documentarlo como decisión consciente).
+
+---
+
+## Paso 5 — Remediación mínima obligatoria
+
+Aplica la solución de la teoría: exige un token válido en el handshake.
+
+```java
+@Component
+@RequiredArgsConstructor
+public class JwtHandshakeInterceptor implements HandshakeInterceptor {
+
+    private final JwtDecoder jwtDecoder;
+
+    @Override
+    public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
+                                    WebSocketHandler wsHandler, Map<String, Object> attributes) {
+        String query = request.getURI().getQuery();
+        String token = extraerToken(query);
+
+        if (token == null) {
+            response.setStatusCode(HttpStatus.UNAUTHORIZED);
+            return false;
+        }
+
+        try {
+            jwtDecoder.decode(token);
+            return true;
+        } catch (JwtException e) {
+            response.setStatusCode(HttpStatus.UNAUTHORIZED);
+            return false;
+        }
+    }
+
+    @Override
+    public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
+                                WebSocketHandler wsHandler, Exception exception) { }
+
+    private String extraerToken(String query) {
+        if (query == null) return null;
+        for (String param : query.split("&")) {
+            if (param.startsWith("token=")) return param.substring(6);
+        }
+        return null;
+    }
+}
+```
+
+Regístralo en `WebSocketConfig`:
+
+```java
+@Override
+public void registerStompEndpoints(StompEndpointRegistry registry) {
+    registry.addEndpoint("/ws-actividad")
+            .setAllowedOriginPatterns("*")
+            .addInterceptors(jwtHandshakeInterceptor);
+}
+```
+
+Actualiza tu cliente `actividad.html` para pasar el token en la conexión:
+
+```javascript
+const client = new StompJs.Client({
+    brokerURL: `ws://localhost:8080/ws-actividad?token=${miToken}`
+});
+```
+
+Repite la prueba de la ventana de incógnito **sin** token: **comprueba** que ahora el handshake es rechazado. Repite con un token válido: **comprueba** que sigue funcionando exactamente igual que antes.
+
+---
+
+## Cierre del módulo
+
+Escribe un repaso propio (5-6 líneas) de todo tu recorrido por PSP sobre este mismo GameVault: API REST leída, escrita, probada y monitorizada → asegurada con validación, BCrypt, JWT y roles → con tareas en segundo plano gestionadas con hilos propios → y ahora con comunicación en tiempo real, de sockets a mano a WebSocket seguro. ¿Qué pieza de todo el módulo te ha costado más entender, y por qué? Respuesta personal, no genérica.
+
+---
+
+## ✅ Cierre
+
+Con esto se completa el módulo 0490 entero. Tu GameVault ya tiene servicios en red, seguridad, tareas asíncronas y comunicación en tiempo real — construido pieza a pieza, semana a semana, sobre el mismo proyecto que también trabajaste en Acceso a Datos.

@@ -2,50 +2,100 @@
 
 # 🧩 2. Seguridad básica: usuarios en memoria y HTTP Basic
 
-!!! warning "🚧 Contenido pendiente de desarrollo"
-    Esta página todavía no tiene la teoría redactada. Usa el prompt de más abajo con
-    `/improve-notes`, apoyándote en el proyecto **GameVault** adjunto, para generar el
-    contenido definitivo.
+!!! tip "Vas a construir un estado intermedio, no el final"
+    El `SecurityConfig.java` que tendrás al final del módulo usará autenticación con JWT, con HTTP Basic desactivado. Este apartado construye el paso **intermedio** por el que se pasa para llegar ahí — usuarios en memoria y HTTP Basic — y las próximas dos semanas lo van sustituyendo. Recorrer el camino completo (Basic → BCrypt → JWT) es deliberado: cada paso resuelve un problema concreto del anterior, y entenderlo así vale más que llegar directo al resultado final.
 
 ---
 
-## Prompt para `/improve-notes`
+## 🔒 Lo primero que hace Spring Security: cerrarlo todo
 
-```text
-Redacta el apartado de teoría "Seguridad básica: usuarios en memoria y HTTP Basic" del
-Tema 2 (RA5 - Programación segura) del módulo Programación de Servicios y Procesos
-(0490), semana real 8 del calendario. Sigue las convenciones de estilo del README.md del
-repo.
+En cuanto añades `spring-boot-starter-security` a un proyecto, sin configurar nada más, **toda** tu API deja de responder libremente — cada petición exige autenticarse. Es el principio de "mínima exposición" que viste el apartado anterior, llevado al extremo por defecto: Spring Security asume que, si no le dices explícitamente qué dejar abierto, todo debe estar cerrado.
 
-Criterios de evaluación de RA5 que cubre este apartado (curriculum.md):
-- c) Políticas de seguridad para limitar y controlar el acceso de los usuarios.
-- d) Esquemas de seguridad basados en roles (primera aproximación).
+---
 
-AVISO IMPORTANTE sobre la referencia: el SecurityConfig.java del GameVault adjunto
-muestra el ESTADO FINAL del proyecto (JWT, con `httpBasic(AbstractHttpConfigurer::
-disable)`). Este apartado enseña el estado INTERMEDIO por el que se pasa para llegar
-ahí: Spring Security recién añadido, usuarios en memoria y HTTP Basic. Esa evolución
-está documentada en docs/seguridad/autenticacion-y-autorizacion.md del proyecto — úsala
-como fuente. Deja claro al alumnado que esta versión se sustituirá en las semanas 9-10,
-y que ver el camino completo (Basic → BCrypt → JWT) es deliberado: entender qué problema
-resuelve cada paso.
+## 🎭 Autenticación vs. autorización
 
-Contenido central:
-- Qué hace spring-boot-starter-security nada más añadirse al pom: todo queda cerrado por
-  defecto (contrasta con el principio de "mínima exposición" del apartado 1).
-- Conceptos de autenticación vs. autorización, con ejemplos del propio GameVault (¿quién
-  eres? vs. ¿puedes borrar un videojuego?).
-- HTTP Basic: cómo viaja usuario:contraseña en Base64 en la cabecera Authorization —
-  demuéstralo decodificando una cabecera de ejemplo, para dejar claro que Base64 NO es
-  cifrado (gancho hacia la necesidad de HTTPS y de mecanismos mejores).
-- Usuarios en memoria (InMemoryUserDetailsManager) con dos usuarios y roles distintos
-  (user/admin), y una primera política de acceso sencilla con authorizeHttpRequests
-  (lectura pública del catálogo, escritura autenticada) — versión simplificada de la
-  matriz de rutas final que verán en la semana 11.
-- Los roles ADMIN y USER que usa el proyecto final (com/aleroig/gamevault/seguridad/
-  RolUsuario.java) como referencia de a dónde se llegará.
+Dos preguntas distintas, que conviene no confundir:
 
-Limitaciones a señalar como cierre (y motivación de las semanas siguientes): usuarios
-hardcodeados que se pierden al reiniciar y contraseñas que viajan en cada petición —
-la semana 9 mueve los usuarios a PostgreSQL con BCrypt, la 10 sustituye Basic por JWT.
+| | Pregunta que responde | Ejemplo en GameVault |
+|---|---|---|
+| **Autenticación** | ¿Quién eres? | Comprobar que el usuario y la contraseña son correctos. |
+| **Autorización** | ¿Puedes hacer esto? | Comprobar que, siendo tú, tienes permiso para borrar un videojuego. |
+
+Puedes estar autenticado (Spring Security sabe quién eres) y aun así no autorizado para una acción concreta (no tienes el rol necesario). Son dos capas distintas, y las vas a ver aplicadas por separado.
+
+---
+
+## 📦 HTTP Basic: cómo viaja usuario y contraseña
+
+**HTTP Basic** es el mecanismo de autenticación más simple de HTTP: el cliente manda usuario y contraseña en una cabecera `Authorization`, codificados en **Base64**:
+
 ```
+Authorization: Basic dXNlcjp1c2VyMTIz
+```
+
+!!! danger "Base64 NO es cifrado"
+    Decodifica tú mismo esa cabecera: `echo "dXNlcjp1c2VyMTIz" | base64 -d` — obtienes `user:user123`, en texto legible. Base64 es solo una **codificación** (una forma de representar bytes como texto), no una forma de ocultar información: cualquiera que intercepte esa cabecera lee la contraseña directamente. HTTP Basic solo es aceptable sobre una conexión cifrada con HTTPS — sin eso, la contraseña viaja prácticamente en claro en cada petición.
+
+---
+
+## 🧑‍🤝‍🧑 Usuarios en memoria y una primera política de rutas
+
+Para empezar, sin base de datos todavía de por medio, Spring Security permite declarar usuarios directamente en código con `InMemoryUserDetailsManager`:
+
+```java
+@Bean
+public UserDetailsService userDetailsService() {
+    UserDetails user = User.withUsername("user")
+            .password("{noop}user123")
+            .roles("USER")
+            .build();
+
+    UserDetails admin = User.withUsername("admin")
+            .password("{noop}admin123")
+            .roles("ADMIN")
+            .build();
+
+    return new InMemoryUserDetailsManager(user, admin);
+}
+```
+
+El prefijo `{noop}` le dice a Spring Security "esta contraseña no está cifrada, compárala tal cual" — una simplificación deliberada para este paso intermedio (la próxima semana la sustituyes por contraseñas de verdad protegidas con BCrypt).
+
+Y una primera política de acceso, con `authorizeHttpRequests`:
+
+```java
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    return http
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers(HttpMethod.GET, "/api/v1/videojuegos/**").permitAll()
+                    .anyRequest().authenticated()
+            )
+            .httpBasic(Customizer.withDefaults())
+            .build();
+}
+```
+
+Esta es una versión simplificada — lectura del catálogo pública, todo lo demás exige estar autenticado — de la matriz de rutas completa que construirás en la semana 11. Los roles `ADMIN` y `USER` que acabas de usar son los mismos que vas a formalizar más adelante como un enum `RolUsuario` — solo esos dos valores, sin más complicación.
+
+---
+
+## ⚠️ Las limitaciones de esta versión — a propósito
+
+Esta configuración tiene dos problemas serios, y son intencionados: sirven de motivación para lo que viene.
+
+1. **Usuarios hardcodeados**: viven en el propio código Java, se pierden cada vez que reinicias la aplicación, y cualquiera con acceso al código ve las contraseñas. La semana 9 los mueve a PostgreSQL, con contraseñas protegidas por BCrypt.
+2. **Credenciales que viajan en cada petición**: con HTTP Basic, cada única petición vuelve a mandar usuario y contraseña, apenas ofuscados en Base64. La semana 10 sustituye esto por JWT: te autenticas una vez, y presentas un token en las peticiones siguientes.
+
+---
+
+## ✅ Ideas clave
+
+??? tip "Abrir resumen"
+
+    - Spring Security, nada más añadirse, cierra **todo** por defecto — mínima exposición llevada al extremo.
+    - **Autenticación** (¿quién eres?) y **autorización** (¿puedes hacer esto?) son capas distintas.
+    - **HTTP Basic** manda usuario:contraseña en Base64 en la cabecera `Authorization` — Base64 no es cifrado, así que Basic solo es seguro sobre HTTPS.
+    - `InMemoryUserDetailsManager` declara usuarios directamente en código — útil para empezar, pero se pierden al reiniciar.
+    - Esta configuración es un estado **intermedio** deliberado: la semana 9 resuelve los usuarios hardcodeados (BCrypt + PostgreSQL), la semana 10 resuelve las credenciales viajando en cada petición (JWT).

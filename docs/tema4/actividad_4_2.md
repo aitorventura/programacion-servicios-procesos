@@ -1,56 +1,162 @@
 # 🧪 Actividad 4.2: El endpoint `/ws-actividad` con STOMP
 
-!!! warning "🚧 Contenido pendiente de desarrollo"
-    Esta actividad todavía no está redactada. Usa el prompt de más abajo con
-    `/improve-notes`, apoyándote en el proyecto **GameVault** adjunto, para generar el
-    enunciado definitivo.
+!!! warning "Se construye completamente guiado, desde cero"
+    No hay ningún ejemplo previo con el que comparar tu resultado — vas a seguir el enunciado paso a paso. Es una ampliación de profundidad sobre lo ya construido con sockets clásicos en la Actividad 4.1, no un punto de partida distinto.
+
+## Qué vas a practicar
+
+- Configurar un endpoint WebSocket con STOMP en Spring.
+- Abrir esa ruta en tu política de seguridad.
+- Probar el canal con un cliente STOMP mínimo.
 
 ---
 
-## Prompt para `/improve-notes`
+## Requisitos previos
 
-```text
-Redacta la Actividad 4.2 del Tema 4 (RA3 - Programación de comunicaciones en red) del
-módulo Programación de Servicios y Procesos (0490), semana real 18 del calendario. Si
-necesita plantilla/solución en .docx, crea antes la skill de plantilla de PSP clonando
-/actividad-plantilla-acceso-a-datos con la paleta marrón/ámbar.
+Tu `SecurityConfig` con `anyRequest().denyAll()` (Tema 2), y el módulo `actividad` con `ActividadService.registrar()` ya funcionando.
 
-IMPORTANTE — enfoque: es una PRÁCTICA GUIADA, no un reto. El alumnado trabaja sobre su
-propia copia de GameVault. El enunciado debe guiar paso a paso, mostrando el código y
-explicando cada decisión; solo se deja sin guiar, como mini-reto, lo que repita un
-patrón idéntico ya mostrado. Es una MEJORA que no existe en la referencia adjunta: a
-diferencia de otras actividades del curso, aquí no hay ningún fichero de referencia con
-el que comparar el resultado — dilo explícitamente en el enunciado para que el
-alumnado no lo busque.
+---
 
-Objetivo (RA3, criterios c, e, f — de profundización, ya cubiertos literalmente en la
-Actividad 4.1 con sockets reales; esta actividad los amplía sobre un protocolo de más
-alto nivel, no los sustituye): montar en su GameVault el endpoint WebSocket
-/ws-actividad con STOMP y verificarlo con un cliente, enviando un primer mensaje de
-prueba.
+## Paso 1 — La dependencia y la configuración
 
-Estructura sugerida de pasos guiados:
-1. La dependencia spring-boot-starter-websocket en el pom (fragmento dado) y la clase de
-   configuración WebSocketConfig en config/ (código mostrado y explicado:
-   @EnableWebSocketMessageBroker, endpoint /ws-actividad en registerStompEndpoints,
-   broker simple con prefijo /topic en configureMessageBroker).
-2. Atención a la seguridad, guiado: con el anyRequest().denyAll() del Tema 2, el
-   handshake a /ws-actividad quedará bloqueado — añadir la regla que lo permite en
-   SecurityConfig (dada y explicada; la discusión de fondo sobre qué implica abrirlo
-   llega en la Actividad 4.3).
-3. Un endpoint de prueba guiado para poder emitir algo: un pequeño método (por ejemplo
-   en un controller de prueba, o directamente con SimpMessagingTemplate desde un
-   endpoint temporal) que publique un mensaje fijo en /topic/actividad — código dado.
-4. El cliente guiado (elegir UNA vía y guiarla al completo): página HTML mínima con
-   STOMP.js servida en estático (código completo dado, con cada parte comentada:
-   conexión a /ws-actividad, suscripción a /topic/actividad, pintar lo recibido), o
-   Postman si se prefiere sin código. Conectar, lanzar el mensaje de prueba del paso 3 y
-   verlo llegar.
-5. Demostración guiada del pub-sub (criterio f): abrir el cliente en DOS pestañas a la
-   vez, lanzar un mensaje y verlo llegar a ambas — la diferencia clave con
-   petición-respuesta, observada en directo.
-6. Pregunta de comprensión: en la pestaña de red del navegador (F12), localizar el
-   handshake de /ws-actividad — ¿qué código de estado tiene y qué cabecera lo delata?
-   (101 Switching Protocols, Upgrade) ¿En qué se diferencia de todas las peticiones que
-   habéis hecho en el curso hasta hoy?
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-websocket</artifactId>
+</dependency>
 ```
+
+```java
+package com.tunombre.gamevault.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.web.socket.config.annotation.*;
+
+@Configuration
+@EnableWebSocketMessageBroker
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/ws-actividad").setAllowedOriginPatterns("*");
+    }
+
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry registry) {
+        registry.enableSimpleBroker("/topic");
+        registry.setApplicationDestinationPrefixes("/app");
+    }
+}
+```
+
+Reinicia tu aplicación.
+
+---
+
+## Paso 2 — Abrir la ruta en `SecurityConfig`
+
+Con tu `anyRequest().denyAll()` del Tema 2, el handshake a `/ws-actividad` va a quedar bloqueado si no le añades su propia regla:
+
+```java
+.requestMatchers("/ws-actividad/**").permitAll()
+```
+
+!!! tip "La discusión de fondo llega en la Actividad 4.3"
+    Abrir esta ruta sin autenticación es, a propósito, una simplificación para poder probar el canal hoy. Si te preguntas si esto es sensato dejarlo así — buena intuición: es exactamente lo que vas a auditar y valorar en la última actividad del módulo.
+
+---
+
+## Paso 3 — Un endpoint de prueba para emitir algo
+
+Para comprobar que el canal funciona antes de conectarlo al flujo real, añade un endpoint temporal:
+
+```java
+@RestController
+@RequestMapping("/api/v1/test")
+@RequiredArgsConstructor
+public class WebSocketTestController {
+
+    private final SimpMessagingTemplate messagingTemplate;
+
+    @PostMapping("/emitir")
+    public ResponseEntity<Void> emitir() {
+        messagingTemplate.convertAndSend("/topic/actividad", "Mensaje de prueba: " + java.time.Instant.now());
+        return ResponseEntity.ok().build();
+    }
+}
+```
+
+`SimpMessagingTemplate` es la pieza que te permite publicar manualmente en un destino STOMP, sin que tenga que originarse en un cliente. Añade también esta ruta a tu política de seguridad (`permitAll()`, temporal, solo para esta prueba).
+
+---
+
+## Paso 4 — El cliente, guiado al completo
+
+<div class="tabs-colored" markdown>
+
+=== "🟢 Página HTML mínima con STOMP.js"
+    Crea `src/main/resources/static/actividad.html`:
+
+    ```html
+    <!DOCTYPE html>
+    <html>
+    <head><title>Actividad en vivo</title></head>
+    <body>
+        <h1>Actividad en vivo</h1>
+        <ul id="mensajes"></ul>
+
+        <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
+        <script>
+            const client = new StompJs.Client({
+                brokerURL: 'ws://localhost:8080/ws-actividad'  // conexión al endpoint
+            });
+
+            client.onConnect = () => {
+                client.subscribe('/topic/actividad', (mensaje) => {  // suscripción al topic
+                    const li = document.createElement('li');
+                    li.textContent = mensaje.body;
+                    document.getElementById('mensajes').appendChild(li);  // pintar lo recibido
+                });
+            };
+
+            client.activate();
+        </script>
+    </body>
+    </html>
+    ```
+
+    Ábrela en `http://localhost:8080/actividad.html`.
+
+=== "🔵 Postman"
+    Postman soporta WebSocket/STOMP nativamente: crea una nueva petición de tipo WebSocket, conecta a `ws://localhost:8080/ws-actividad`, y usa el panel STOMP para suscribirte a `/topic/actividad`.
+
+</div>
+
+Con el cliente conectado y suscrito, dispara el mensaje de prueba:
+
+```bash
+curl -X POST http://localhost:8080/api/v1/test/emitir
+```
+
+**Comprueba**: que el mensaje aparece en tu cliente (la página HTML o Postman) casi al instante.
+
+---
+
+## Paso 5 — Demostración del pub-sub
+
+Abre tu página `actividad.html` en **dos** pestañas del navegador a la vez (ambas deberían conectarse y suscribirse). Dispara de nuevo el mensaje de prueba.
+
+**Comprueba**: que el mensaje llega a **ambas** pestañas — esta es la diferencia clave con petición-respuesta, observada en directo: nadie ha vuelto a pedir nada, y aun así ambos clientes se han enterado.
+
+---
+
+## Pregunta de comprensión
+
+Abre las herramientas de desarrollador del navegador (F12), pestaña de red, y localiza la petición del *handshake* hacia `/ws-actividad`. **Anota**: ¿qué código de estado tiene? ¿Qué cabecera de la respuesta lo delata como distinto de una petición HTTP normal? ¿En qué se diferencia esta petición de todas las que has hecho en el curso hasta hoy (piensa en cuánto dura la conexión después de recibir esa respuesta)?
+
+---
+
+## ✅ Cierre
+
+Tienes un canal WebSocket funcionando, probado con un mensaje manual. En la última actividad lo conectas al flujo real de `ActividadService` y auditas la seguridad del handshake que has dejado abierta hoy.

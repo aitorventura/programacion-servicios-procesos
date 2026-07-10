@@ -31,12 +31,9 @@
 - [Actividad 2.2 — Primera línea de defensa: HTTP Basic](actividad_2_2.md)
 - [Actividad 2.3 — Usuarios reales en PostgreSQL con BCrypt](actividad_2_3.md)
 - [Actividad 2.4 — Login con JWT](actividad_2_4.md)
-- [Actividad 2.5 — Roles y rutas protegidas — cierre de RA5](actividad_2_5.md)
+- [Actividad 2.5 — Roles y rutas protegidas](actividad_2_5.md)
 
 ---
 
 !!! info "¿Cómo avanzar por el contenido?"
     Utiliza el índice o las flechas de navegación al final de cada página para desplazarte por los distintos apartados de este tema.
-
-!!! note "Nota para el profesorado"
-    Este tema corresponde a las semanas reales 7-11 del calendario (RA5, bloque cerrado). La seguridad se construye de forma evolutiva sobre el GameVault del alumnado: validación → HTTP Basic con usuarios en memoria (estado intermedio que NO aparece en la referencia final) → usuarios persistidos con BCrypt → JWT → roles y rutas. La referencia adjunta muestra solo el estado final (paquete `seguridad`, `SecurityConfig` con JWT y HTTP Basic deshabilitado); el documento `docs/seguridad/autenticacion-y-autorizacion.md` del proyecto describe la evolución completa. El JWT construido aquí es prerrequisito del PUT de reseñas con autoría de AD (semana real 16). Cada `.md` contiene el prompt para generarlo con `/improve-notes`.

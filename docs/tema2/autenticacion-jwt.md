@@ -2,76 +2,199 @@
 
 # 🧩 4. Autenticación con JWT
 
-!!! warning "🚧 Contenido pendiente de desarrollo"
-    Esta página todavía no tiene la teoría redactada. Usa el prompt de más abajo con
-    `/improve-notes`, apoyándote en el proyecto **GameVault** adjunto, para generar el
-    contenido definitivo.
+HTTP es un protocolo **sin estado**: cada petición llega sola, sin memoria de la anterior. El servidor no "recuerda" que hace un segundo te autenticaste — por eso, hasta ahora, cada petición ha tenido que volver a mandar usuario y contraseña. Hoy sustituyes eso por algo mejor.
 
 ---
 
-## Prompt para `/improve-notes`
+## 🍪 Dos soluciones históricas al problema de "recordar quién eres"
 
-```text
-Redacta el apartado de teoría "Autenticación con JWT" del Tema 2 (RA5 - Programación
-segura) del módulo Programación de Servicios y Procesos (0490), semana real 10 del
-calendario. Sigue las convenciones de estilo del README.md del repo.
+### Sesión en el servidor
 
-Criterios de evaluación de RA5 que cubre este apartado (curriculum.md):
-- f) Métodos para asegurar la información transmitida.
-- g) Aplicaciones que utilizan comunicaciones seguras para la transmisión de
-  información.
+El servidor, tras el login, guarda en su propia memoria (o en una base de datos de sesiones) quién eres, y te entrega una **cookie** con un identificador de sesión. En cada petición posterior, mandas esa cookie, y el servidor busca en su almacén "¿quién es el dueño de esta sesión?".
 
-ESTRUCTURA — teoría primero: antes del JWT concreto, explica desde cero el problema
-general de "recordar quién eres" en un protocolo sin estado como HTTP (cada petición
-llega sola, sin memoria de la anterior) y las dos soluciones históricas comparadas: la
-SESIÓN en el servidor (el servidor guarda quién eres y te da una cookie con el número de
-sesión — cómo funciona y sus límites) frente al TOKEN autocontenido (el servidor no
-guarda nada: te firma un "carné" con tus datos y tú lo presentas en cada petición).
-Explica qué significa "firmado" retomando la criptografía de la semana anterior: firmar
-no oculta el contenido, garantiza que no se ha modificado y quién lo emitió.
+Límite: el servidor tiene que **guardar** el estado de cada sesión activa — si tienes muchos servidores detrás de un balanceador, todos necesitan acceso a ese mismo almacén de sesiones, o coordinarse de alguna forma.
 
-Contenido central: sustituir HTTP Basic (credenciales en cada petición) por JWT (un
-token firmado que se obtiene una vez en el login y se presenta en las siguientes
-peticiones). Este es el estado final de la referencia adjunta.
+### Token autocontenido
 
-Apóyate en el proyecto GameVault (com.aleroig.gamevault, paquete `seguridad`) como
-ejemplo real:
-- Anatomía de un JWT con un token real de ejemplo: header.payload.signature en Base64,
-  decodificable (¡el contenido NO va cifrado!) pero no falsificable (la firma HMAC con
-  el secreto). Conecta con la criptografía de la semana anterior: firmar ≠ cifrar.
-- JwtService.java: cómo se genera el token en el login (claims: subject, roles,
-  expiración) usando el JwtEncoder.
-- AuthController.java + LoginRequestDTO/LoginResponseDTO: el endpoint público
-  POST /api/v1/auth/login — recibe credenciales, las verifica con el
-  AuthenticationManager contra los usuarios BCrypt de la semana anterior, y devuelve el
-  token.
-- SecurityConfig.java, la parte JWT: `oauth2ResourceServer(oauth2 -> oauth2.jwt(...))`,
-  los beans JwtEncoder/JwtDecoder con el secreto compartido
-  (`@Value("${gamevault.jwt.secret}")` — principio de la semana 7: el secreto vive en la
-  configuración, no en el código), el JwtAuthenticationConverter que convierte el claim
-  "roles" en autoridades ROLE_*, `SessionCreationPolicy.STATELESS` (por qué con JWT no
-  hay sesión en el servidor) y el `httpBasic(disable)` que retira oficialmente el
-  mecanismo provisional de las semanas 8-9.
-- AuthMeController.java (GET /api/v1/auth/me): el endpoint que devuelve quién eres según
-  tu token — útil para probar y para entender qué información viaja dentro.
-- HTTPS (criterio f y, sobre todo, g): el JWT evita reenviar la contraseña en cada
-  petición, pero el canal en sí sigue viajando en claro si no hay TLS — la firma
-  garantiza integridad del token, no confidencialidad del transporte. El criterio g
-  pide "aplicaciones que UTILICEN comunicaciones seguras", no solo la mención de que
-  existen: por eso esta página no puede quedarse en 3-4 frases teóricas sobre HTTPS.
-  Incluye un paso práctico mínimo y real, no solo teoría: generar un certificado
-  autofirmado (`keytool -genkeypair`, comando dado), configurar
-  `server.ssl.key-store`/`server.ssl.key-store-password`/`server.ssl.key-store-type` en
-  `application-dev.yaml` (o un perfil `https` aparte para no romper el resto del curso
-  en HTTP), levantar GameVault sirviendo por `https://localhost:8443` y hacer una
-  petición con curl (`-k` para aceptar el certificado autofirmado) o Postman contra el
-  login y contra un endpoint protegido. Explica también, en 3-4 frases, por qué en
-  producción real se usaría un certificado de una CA reconocida o TLS terminado en un
-  proxy/gateway (Nginx, un balanceador), y por qué en el resto del curso se sigue
-  trabajando en HTTP simple: para no complicar cada actividad con certificados, dejando
-  claro que es una simplificación deliberada de entorno de aprendizaje, no la
-  recomendación para producción.
+El servidor no guarda nada. En el login, te entrega un **token**: un "carné" firmado que contiene, dentro de sí mismo, quién eres y qué puedes hacer. En cada petición posterior, presentas ese token, y el servidor solo necesita **verificar la firma** — no consultar ningún almacén de sesiones, porque toda la información ya viaja dentro del propio token.
 
-Cierra recordando la conexión con AD: este Principal/JWT es el que usará el PUT de
-reseñas con control de autoría (AD, semana real 16).
+```mermaid
+flowchart LR
+    A["🔑 Login<br/>usuario + contraseña"] --> B["🖥️ Servidor<br/>verifica y firma un token"]
+    B --> C["🎫 Token"]
+    C -.-> D["Peticiones siguientes:<br/>presenta el token"]
+    D -.-> E["🖥️ Servidor<br/>solo verifica la firma"]
 ```
+
+**JWT** (*JSON Web Token*) es el formato estándar de ese token autocontenido, y es lo que vas a implementar hoy.
+
+---
+
+## ✍️ Qué significa "firmado"
+
+Retoma la criptografía de la semana pasada: **firmar no es lo mismo que cifrar**. Firmar un dato no oculta su contenido — sigue siendo legible por cualquiera — pero garantiza dos cosas: que no se ha modificado desde que se firmó, y quién lo firmó (si conoces la clave de verificación). Un JWT está firmado, no cifrado: su contenido es legible por cualquiera que lo intercepte, pero nadie puede modificarlo sin invalidar la firma.
+
+---
+
+## 🧬 Anatomía de un JWT
+
+Un JWT tiene tres partes separadas por puntos: `header.payload.signature`. Cada parte va codificada en Base64:
+
+```
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGVzIjpbIkFETUlOIl19.SflKxwRJ...
+└──────header───────┘└──────────payload──────────┘└───signature───┘
+```
+
+Decodifica el `payload` de cualquier JWT (por ejemplo, en [jwt.io](https://jwt.io) o con `base64 -d`) y verás algo como:
+
+```json
+{"sub": "admin", "roles": ["ADMIN"], "iat": 1730000000, "exp": 1730003600}
+```
+
+!!! danger "El contenido NO va cifrado"
+    Cualquiera que capture un JWT puede leer su payload completo, sin necesitar ninguna clave — igual que decodificaste HTTP Basic la semana pasada. Lo que impide falsificarlo es la **firma** (la tercera parte), calculada con un algoritmo criptográfico (HMAC, en el caso de GameVault) y un secreto que solo conoce el servidor. Si alguien modificara el payload a mano, la firma dejaría de coincidir, y el servidor lo rechazaría.
+
+---
+
+## 🎮 Aterrizaje en GameVault: el flujo completo
+
+### Generar el token: `JwtService`
+
+```java
+@Service
+@RequiredArgsConstructor
+public class JwtService {
+
+    private final JwtEncoder jwtEncoder;
+
+    @Value("${gamevault.jwt.expiration-minutes}")
+    private long expirationMinutes;
+
+    public String generarToken(Authentication authentication) {
+        Instant ahora = Instant.now();
+        List<String> roles = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .filter(a -> a.startsWith("ROLE_"))
+                .map(a -> a.replace("ROLE_", ""))
+                .toList();
+
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .issuer("gamevault")
+                .issuedAt(ahora)
+                .expiresAt(ahora.plusSeconds(expirationMinutes * 60))
+                .subject(authentication.getName())
+                .claim("roles", roles)
+                .build();
+
+        JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS256).build();
+        return jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
+    }
+}
+```
+
+Los **claims** son los datos que viajan dentro del token: `subject` (quién eres), `roles` (qué puedes hacer, extraído de las autoridades que ya tenía la `Authentication` tras el login), `issuedAt`/`expiresAt` (cuándo se emitió y cuándo caduca). `jwtEncoder.encode(...)` firma todo esto con el algoritmo `HS256` (HMAC-SHA256) y el secreto configurado.
+
+### El endpoint de login
+
+```java
+@RestController
+@RequestMapping("/api/v1/auth")
+@RequiredArgsConstructor
+public class AuthController {
+
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO dto) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(dto.username(), dto.password())
+        );
+        String token = jwtService.generarToken(authentication);
+        return ResponseEntity.ok(new LoginResponseDTO(token, "Bearer", jwtService.getExpiresInSeconds()));
+    }
+}
+```
+
+`AuthenticationManager.authenticate(...)` es quien verifica de verdad las credenciales — por debajo, usa el `GamevaultUserDetailsService` y el `PasswordEncoder` que ya construiste la semana pasada. Si las credenciales son correctas, genera el token; si no, lanza una excepción (que `GlobalExceptionHandler`, del apartado 1, convierte en una respuesta coherente).
+
+### El cambio de modo en `SecurityConfig`
+
+```java
+.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+.authorizeHttpRequests(auth -> auth
+        .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+        .anyRequest().authenticated()
+)
+.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
+.httpBasic(AbstractHttpConfigurer::disable)
+```
+
+`SessionCreationPolicy.STATELESS` es la consecuencia directa de usar tokens autocontenidos: con JWT no hace falta que el servidor guarde ninguna sesión, así que se lo dices explícitamente a Spring Security. `oauth2ResourceServer(oauth2 -> oauth2.jwt(...))` activa la validación de JWT en cada petición protegida — Spring verifica la firma automáticamente, usando el `JwtDecoder` configurado con el mismo secreto. `httpBasic(AbstractHttpConfigurer::disable)` retira oficialmente el mecanismo provisional de las semanas 8-9: JWT es ahora el único mecanismo de autenticación.
+
+Sobre el secreto (`@Value("${gamevault.jwt.secret}")`): sigue el mismo principio que viste en el apartado 1 — nunca en el código, siempre en configuración externa (`application-dev.yaml`), para que en un entorno real ese valor pueda ser distinto y no viaje en el propio código fuente.
+
+### `GET /api/v1/auth/me`
+
+```java
+@GetMapping("/me")
+public ResponseEntity<AuthMeResponse> getCurrentUser() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    // construir la respuesta con authentication.getName() y sus roles
+}
+```
+
+Un endpoint sencillo para verificar qué información viaja dentro de tu propio token: útil tanto para probar como para entender qué sabe el servidor de ti en cada petición autenticada.
+
+---
+
+## 🔒 HTTPS: lo que JWT resuelve y lo que no
+
+JWT evita reenviar la contraseña en cada petición — un avance real. Pero el **canal** en sí sigue siendo el mismo: si no hay HTTPS, tanto el login como el propio token viajan en claro por la red, interceptables por cualquiera con acceso a esa red. La firma del JWT garantiza **integridad** (que no se ha modificado), no **confidencialidad del transporte** — son dos cosas distintas.
+
+Monta HTTPS mínimo en tu entorno de desarrollo, con un certificado autofirmado. `keytool` es la herramienta de gestión de claves y certificados que viene incluida con el propio JDK — no hace falta instalar nada aparte:
+
+```bash
+keytool -genkeypair -alias gamevault -keyalg RSA -keysize 2048 \
+  -storetype PKCS12 -keystore keystore.p12 -validity 365
+```
+
+Y en `application-dev.yaml` (o un perfil `https` aparte, para no obligar al resto del curso a complicarse con certificados):
+
+```yaml
+server:
+  ssl:
+    key-store: classpath:keystore.p12
+    key-store-password: tu-contraseña
+    key-store-type: PKCS12
+  port: 8443
+```
+
+Arranca y prueba:
+
+```bash
+curl -k -X POST https://localhost:8443/api/v1/auth/login \
+  -H "Content-Type: application/json" -d '{"username":"admin","password":"admin123"}'
+```
+
+(`-k` le dice a `curl` que acepte el certificado autofirmado, que no está validado por ninguna autoridad reconocida — exactamente lo que pasaría si un usuario real visitara esta URL en un navegador, con su aviso de "conexión no segura").
+
+En producción real, se usaría un certificado emitido por una autoridad certificadora (CA) reconocida, o se delegaría el TLS a un proxy/gateway (Nginx, un balanceador) que termina la conexión cifrada antes de reenviar al servidor de aplicación. El resto de este curso sigue trabajando en HTTP simple, sin HTTPS — es una simplificación deliberada para no complicar cada actividad con certificados, no la recomendación para un proyecto real.
+
+---
+
+## 🧭 Conexión con Acceso a Datos
+
+Este mismo `Principal`/JWT es el que usará el `PUT` de reseñas con control de autoría que construirás en Acceso a Datos — el servidor sabrá quién eres a partir de este mismo token, sin que tengas que volver a autenticarte para esa operación.
+
+---
+
+## ✅ Ideas clave
+
+??? tip "Abrir resumen"
+
+    - HTTP es sin estado; la **sesión en servidor** (cookie + almacén) y el **token autocontenido** (JWT) son las dos soluciones clásicas para "recordar quién eres".
+    - **Firmar ≠ cifrar**: un JWT es legible por cualquiera, pero su firma impide modificarlo sin que se detecte.
+    - Un JWT tiene tres partes (`header.payload.signature`); los **claims** del payload llevan quién eres, tus roles y la expiración.
+    - `SessionCreationPolicy.STATELESS` + `oauth2ResourceServer(...).jwt(...)` activan la validación automática de JWT; `httpBasic(disable)` retira el mecanismo provisional.
+    - JWT resuelve el reenvío de contraseña en cada petición, pero **no** sustituye a HTTPS — la firma da integridad, no confidencialidad del canal.

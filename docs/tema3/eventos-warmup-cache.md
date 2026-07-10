@@ -2,82 +2,117 @@
 
 # 🧩 2. Eventos internos de Spring: el warm-up de caché (1/2)
 
-!!! warning "🚧 Contenido pendiente de desarrollo"
-    Esta página todavía no tiene la teoría redactada. Usa el prompt de más abajo con
-    `/improve-notes`, apoyándote en el proyecto **GameVault** adjunto, para generar el
-    contenido definitivo.
+Tras exámenes y las vacaciones de Navidad, retomas el tema donde lo dejaste: sabes que tu GameVault ya es multihilo (pool de Tomcat, listeners de RabbitMQ), y que hay un `@EnableAsync` sin estrenar esperando su momento. Ese momento llega ahora, en dos piezas repartidas en dos semanas: hoy el evento y su publicación; la semana que viene, el listener que reacciona.
 
 ---
 
-## Prompt para `/improve-notes`
+## 📢 Qué es un evento (patrón observador/publicador-suscriptor)
 
-```text
-Redacta el apartado de teoría "Eventos internos de Spring: el warm-up de caché (1/2)"
-del Tema 3 (RA2 - Programación multihilo) del módulo Programación de Servicios y
-Procesos (0490), semana real 14 del calendario (primera semana tras exámenes y
-Navidad — arranca recordando en 2-3 frases dónde se quedó el tema). Sigue las
-convenciones de estilo del README.md del repo.
+Un **evento** es, conceptualmente, "algo ha pasado" — empaquetado como un objeto que describe ese suceso. El patrón que lo rodea tiene dos papeles: quien **publica** el evento (lo anuncia, sin saber quién lo va a escuchar) y quien **escucha** (reacciona cuando ocurre, sin que el publicador tenga que conocerlo).
 
-Criterios de evaluación de RA2 que cubre este apartado (curriculum.md):
-- c) Aplicaciones que implementan varios hilos (primera mitad de la construcción).
-- e) Mecanismos para compartir información entre hilos.
+!!! example "Una notificación con varios suscriptores"
+    Piensa en publicar una foto en una red social: tú (el publicador) no sabes, ni te importa, cuántas apps o servicios reaccionarán a ese evento (notificar a tus seguidores, generar una miniatura, actualizar un contador) — cada uno se suscribe por su cuenta, y podrían añadirse reacciones nuevas sin que tú cambies nada de cómo publicas la foto.
 
-ESTRUCTURA — teoría primero: antes de Spring, explica desde cero el concepto de evento
-y el patrón observador/publicador-suscriptor en general: qué es un evento ("algo ha
-pasado", empaquetado como objeto), quién publica y quién escucha, y qué gana el diseño —
-el que publica no conoce a los que reaccionan (desacoplamiento), y pueden añadirse
-reacciones nuevas sin tocar al emisor. Ilustra con un ejemplo cotidiano (una
-notificación a la que se suscriben varias apps) y conecta con lo que el alumnado ya usa
-sin saberlo: los eventos de interfaz (un clic de botón) y el RabbitMQ analizado la
-semana 12 son el mismo patrón a distintas escalas.
+Ese desacoplamiento es la ganancia central del patrón: el que publica no conoce a los que reaccionan, y se pueden añadir reacciones nuevas sin tocar al emisor. De hecho, ya has usado dos versiones de este mismo patrón sin ponerles ese nombre: los eventos de una interfaz gráfica (un clic de botón dispara un *listener*, sin que el botón sepa qué hace ese listener) y RabbitMQ, que analizaste la semana 12 — un broker externo con productores y consumidores que no se conocen entre sí. Es el mismo patrón, a distintas escalas.
 
-Contenido central: los eventos internos de Spring (ApplicationEventPublisher +
-listeners) como la implementación de ese patrón DENTRO de la aplicación, y como vehículo
-para pasar información entre hilos — la pieza 1 de 2 del warm-up de caché. Esta semana
-el evento y su publicación; la que viene (apartado 3), el listener @Async. Explica
-también aquí, desde cero, qué es una caché y qué es "invalidar" y "recalentar" una caché
-(el alumnado ha usado @Cacheable en getTopNovedades sin que nadie le haya explicado el
-concepto): guardar un resultado caro para reutilizarlo, borrarlo cuando deja de ser
-válido, y volver a calcularlo antes de que alguien lo pida.
+---
 
-IMPRESCINDIBLE explicar aquí también, y no antes ni después: qué es Redis y por qué
-aparece en este proyecto. El alumnado ya ha visto el contenedor `redis` en el
-`docker-compose.yaml` (Tema 0 de AD) y en el `/actuator/health` (Tema 1 de PSP), pero
-nadie le ha dicho qué es — y es precisamente aquí, con la caché, donde encaja. Explica
-en 3-4 frases: Redis es una base de datos en memoria clave-valor, muy rápida, que se usa
-típicamente como caché compartida (a diferencia de una caché solo en la memoria de la
-propia aplicación, una caché en Redis sobrevive a un reinicio de la aplicación y puede
-compartirse si algún día hay varias instancias de GameVault corriendo a la vez). Con las
-dependencias `spring-boot-starter-cache` y `spring-boot-starter-data-redis` presentes en
-el pom.xml, Spring Boot autoconfigura Redis como el almacén real detrás de
-`@CacheManager`/`@Cacheable` — es decir, cuando `getTopNovedades()` guarda su resultado
-en la caché "topNovedades", ese resultado se guarda físicamente en el contenedor Redis
-del docker-compose, no en un mapa en memoria de la propia aplicación. Verifícalo con el
-alumnado conectando a Redis con `redis-cli` (comando dado) y viendo la clave
-`topNovedades` aparecer tras la primera petición.
+## 💾 Qué es una caché
 
-IMPORTANTE — esto es una MEJORA que NO existe en la referencia adjunta: no hay ningún
-evento interno de Spring en GameVault (los VideojuegoEvent de
-catalogo/api/eventos/ son eventos de RabbitMQ entre módulos, no eventos internos de
-Spring). Distingue explícitamente ambos desde el principio, porque el alumnado los va a
-confundir: RabbitMQ = mensajería entre procesos/módulos a través de un broker externo
-(lo analizado en la semana 12); ApplicationEventPublisher = eventos DENTRO de la misma
-JVM, entre beans, sin broker.
+Una **caché** guarda el resultado de una operación cara (lenta, costosa) para reutilizarlo sin repetir el trabajo. Cuando ese resultado deja de ser válido (los datos subyacentes han cambiado), hay que **invalidarla** — borrar el resultado guardado, para que la próxima vez se recalcule. **Recalentar** una caché es volver a calcular ese resultado por adelantado, antes de que alguien lo pida, para que quien lo pida a continuación no pague el coste de calcularlo de cero.
 
-Explica con código de ejemplo (que luego la Actividad 3.2 construye guiado):
-- El diseño del warm-up: cuando VideojuegoService hace @CacheEvict de "topNovedades"
-  (create/update/delete), publicar un evento interno TopNovedadesInvalidadoEvent; un
-  listener (la semana que viene) lo recibirá y llamará a getTopNovedades() en un hilo
-  aparte para recalentar la caché antes de que llegue el siguiente usuario.
-- La clase de evento como record simple (qué información transporta y por qué conviene
-  que sea inmutable — criterio e: la inmutabilidad como forma segura de compartir
-  información entre hilos, sin locks).
-- La publicación: inyectar ApplicationEventPublisher en VideojuegoService (igual que se
-  inyecta cualquier otra dependencia, con @RequiredArgsConstructor como en todo el
-  proyecto) y publicar tras cada operación de escritura.
-- Aclara que, sin listener todavía, publicar el evento no hace nada visible — el sistema
-  queda "emitiendo" a la espera de la pieza 2.
+Ya has usado `@Cacheable` en `getTopNovedades()` sin que nadie te explicara el concepto — ahora ya sabes qué hace exactamente por debajo.
 
-Cierra con el mapa de las dos piezas (semana 14: evento + publicación; semana 15:
-listener @Async + sincronización con la transacción) para que se vea el plan completo.
+---
+
+## 🔴 Qué es Redis, y por qué aparece en este proyecto
+
+Ya has visto el contenedor `redis` en el `docker-compose.yaml` (Tema 0 de AD) y en `/actuator/health` (Tema 1), pero nadie te ha dicho qué es — y es aquí, con la caché, donde encaja de verdad.
+
+**Redis** es una base de datos en memoria, de tipo clave-valor, muy rápida, que se usa típicamente como **caché compartida**. La diferencia frente a una caché que viviera solo en la memoria de tu propia aplicación: una caché en Redis sobrevive a un reinicio de la aplicación, y podría compartirse entre varias instancias de GameVault corriendo a la vez (si algún día hubiera más de una).
+
+Con `spring-boot-starter-cache` y `spring-boot-starter-data-redis` presentes en el `pom.xml`, Spring Boot autoconfigura Redis como el almacén real detrás de `@Cacheable`. Es decir: cuando `getTopNovedades()` guarda su resultado en la caché `"topNovedades"`, ese resultado se guarda **físicamente en el contenedor Redis** del `docker-compose`, no en un mapa en memoria de tu propia aplicación Java.
+
+Compruébalo tú mismo:
+
+```bash
+docker exec -it <tu-contenedor-redis> redis-cli
+> KEYS *
+> GET "topNovedades::SimpleKey []"
 ```
+
+Tras la primera petición a `/api/v1/videojuegos/top`, deberías ver aparecer una clave relacionada con `topNovedades` en Redis.
+
+---
+
+## ⚙️ Los eventos internos de Spring: `ApplicationEventPublisher`
+
+Spring implementa el patrón observador/publicador-suscriptor **dentro de la propia aplicación**, sin ningún broker externo de por medio, con `ApplicationEventPublisher` y los *listeners* que reaccionan a lo que publica.
+
+!!! danger "No lo confundas con RabbitMQ"
+    Es fácil mezclar ambos, así que distínguelos desde ya: **RabbitMQ** es mensajería entre procesos/módulos, a través de un broker externo (lo que analizaste la semana 12, con `VideojuegoEvent` en `catalogo/api/eventos/`). **`ApplicationEventPublisher`** son eventos **dentro de la misma JVM**, entre beans de la misma aplicación, sin ningún broker — mucho más ligero, pero solo sirve dentro del propio proceso.
+
+---
+
+## 🎯 El diseño del warm-up (pieza 1 de 2)
+
+Esta semana construyes el evento y su publicación; la semana que viene, el listener que reacciona. El plan completo:
+
+```mermaid
+flowchart LR
+    A["VideojuegoService<br/>@CacheEvict tras escritura"] -->|"publica"| B["TopNovedadesInvalidadoEvent"]
+    B -.->|"semana que viene"| C["Listener @Async<br/>recalienta la caché"]
+```
+
+Cuando `VideojuegoService` invalida la caché `"topNovedades"` (en `create`/`update`/`delete`, cada uno anotado `@CacheEvict`), va a publicar además un evento interno `TopNovedadesInvalidadoEvent`. Ahora mismo, sin listener todavía, publicar ese evento **no hace nada visible** — el sistema queda "emitiendo" a la espera de la pieza 2.
+
+### La clase de evento: un record inmutable
+
+```java
+public record TopNovedadesInvalidadoEvent(Instant momento) {}
+```
+
+Un `record` (ya lo conoces de Acceso a Datos) encaja perfectamente aquí: es **inmutable** por diseño, y eso importa especialmente cuando el objeto va a viajar entre hilos distintos. Un objeto inmutable no puede cambiar después de crearse — así que no hay riesgo de que un hilo lo modifique mientras otro lo está leyendo, sin necesitar ningún `synchronized` ni ningún lock: la inmutabilidad es, en sí misma, una forma segura de compartir información entre hilos.
+
+### La publicación
+
+```java
+@Service
+@RequiredArgsConstructor
+public class VideojuegoService {
+    private final VideojuegoRepository videojuegoRepository;
+    private final ApplicationEventPublisher eventPublisher;
+
+    @CacheEvict(value = "topNovedades", allEntries = true)
+    @Transactional
+    public VideojuegoResponseDTO create(VideojuegoCreateDTO dto) {
+        // ... lógica de creación ya existente ...
+        eventPublisher.publishEvent(new TopNovedadesInvalidadoEvent(Instant.now()));
+        return mapToDTO(saved);
+    }
+}
+```
+
+`ApplicationEventPublisher` se inyecta exactamente igual que cualquier otra dependencia — con `@RequiredArgsConstructor`, como todo en este proyecto. `publishEvent(...)` es la llamada que dispara el evento hacia quien esté escuchando — que, de momento, es nadie.
+
+!!! tip "Esta pieza es nueva, no la tienes todavía"
+    Es una mejora que tú vas a construir desde cero: no confundas este evento interno de Spring con los `VideojuegoEvent` que ya conoces, que son de RabbitMQ, entre módulos — son dos mecanismos distintos.
+
+---
+
+## 🗺️ El mapa completo
+
+Semana 14 (hoy): evento + publicación. Semana 15: listener `@Async` que recalienta la caché, sincronizado con el momento exacto en que la transacción hace commit. Con las dos piezas montadas, el "primer usuario tras una escritura" dejará de pagar los 2 segundos de `getTopNovedades()`.
+
+---
+
+## ✅ Ideas clave
+
+??? tip "Abrir resumen"
+
+    - Un **evento** es "algo ha pasado", empaquetado como objeto; publicador y suscriptor no se conocen entre sí (desacoplamiento).
+    - **Invalidar** una caché borra un resultado que ya no es válido; **recalentar** la vuelve a calcular por adelantado.
+    - **Redis** es una base de datos en memoria clave-valor, usada aquí como caché compartida real detrás de `@Cacheable` — el resultado de `getTopNovedades()` se guarda físicamente en el contenedor Redis, no en memoria de la aplicación.
+    - `ApplicationEventPublisher` implementa eventos **dentro** de la JVM, entre beans — distinto de RabbitMQ (broker externo, entre procesos).
+    - Un evento como `record` es inmutable, lo que lo hace seguro de compartir entre hilos sin locks.
+    - Esta semana: evento + publicación (sin efecto visible todavía). Semana que viene: el listener `@Async` que cierra el ciclo.

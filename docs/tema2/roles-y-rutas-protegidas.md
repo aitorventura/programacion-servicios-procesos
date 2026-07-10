@@ -2,51 +2,115 @@
 
 # 🧩 5. Roles, rutas protegidas y tests de seguridad
 
-!!! warning "🚧 Contenido pendiente de desarrollo"
-    Esta página todavía no tiene la teoría redactada. Usa el prompt de más abajo con
-    `/improve-notes`, apoyándote en el proyecto **GameVault** adjunto, para generar el
-    contenido definitivo. Este apartado cierra el RA5.
+Completas la política de acceso ruta a ruta, y aprendes a probar automáticamente que esa política hace exactamente lo que dice.
 
 ---
 
-## Prompt para `/improve-notes`
+## 🗺️ La política de autorización, leída como tabla
 
-```text
-Redacta el apartado de teoría "Roles, rutas protegidas y tests de seguridad" del Tema 2
-(RA5 - Programación segura) del módulo Programación de Servicios y Procesos (0490),
-semana real 11 del calendario — apartado que CIERRA el RA5. Sigue las convenciones de
-estilo del README.md del repo.
+El bloque `authorizeHttpRequests` de tu `SecurityConfig.java` define **toda** la política de acceso de la aplicación. Léelo como una tabla, no como código:
 
-Criterios de evaluación de RA5 que cubre este apartado (curriculum.md):
-- d) Esquemas de seguridad basados en roles (versión completa).
-- h) Depuración y documentación de las aplicaciones.
+| Ruta | Verbo | Quién puede |
+|---|---|---|
+| `/api/v1/auth/login` | POST | Cualquiera |
+| `/api/v1/videojuegos`, `/api/v1/estudios` | GET | Cualquiera |
+| `/api/v1/videojuegos/*/reviews` | POST | `USER` o `ADMIN` |
+| `/api/v1/videojuegos`, `/api/v1/estudios` | POST/PUT/DELETE | Solo `ADMIN` |
+| `/api/v1/actividad` | GET | Solo `ADMIN` |
+| `/swagger-ui/**`, `/v3/api-docs/**`, `/error` | — | Cualquiera |
+| Cualquier otra ruta no listada | — | **Nadie** |
 
-Contenido central: la política de autorización completa del proyecto, ruta a ruta, y
-cómo se prueba automáticamente que la seguridad hace lo que debe.
-
-Apóyate en el proyecto GameVault (com.aleroig.gamevault) como ejemplo real:
-- El bloque authorizeHttpRequests completo de SecurityConfig.java, leído línea a línea
-  como una TABLA de política de seguridad (preséntalo también como tabla en el
-  apartado): login público; GET del catálogo (videojuegos y estudios) público; POST de
-  reviews para USER o ADMIN; POST/PUT/DELETE de videojuegos y POST de estudios solo
-  ADMIN; GET /api/v1/actividad solo ADMIN; Swagger y /error abiertos; y la línea más
-  importante de todas: `anyRequest().denyAll()` — todo lo no listado queda cerrado
-  (retoma el principio de mínima exposición de la semana 7). Comenta también por qué
-  las rutas nuevas que el alumnado ha ido añadiendo (PUT/DELETE de Estudio del Tema 1,
-  el ranking de AD...) necesitan su regla explícita o quedarán bloqueadas — un error
-  típico que conviene saber depurar (criterio h).
-- La diferencia entre 401 (no autenticado) y 403 (autenticado sin permiso), con ejemplos
-  de qué petición produce cada uno según la tabla.
-- Tests de seguridad: cómo probar con MockMvc que un endpoint responde 401 sin token,
-  403 con rol insuficiente y 200/201 con el rol correcto — apóyate en los tests del
-  proyecto (src/test/java/com/aleroig/gamevault/, revisa cómo gestionan la seguridad:
-  anotaciones tipo @WithMockUser o construcción del token en el test de integración
-  GamevaultApiTest.java) y en lo aprendido en el Tema 1 con MockMvc.
-- Documentación (criterio h): la propia tabla de rutas/roles como documentación de la
-  política de seguridad, al estilo de docs/seguridad/autenticacion-y-autorizacion.md del
-  proyecto.
-
-Cierra recapitulando todo RA5 en 4-5 frases (validación y errores → Basic en memoria →
-usuarios BCrypt en PostgreSQL → JWT → roles y política completa con tests) y recordando
-que AD reutilizará este JWT en la semana real 16 (PUT de reseñas con autoría).
+```java
+.authorizeHttpRequests(auth -> auth
+        .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+        .requestMatchers(HttpMethod.GET, "/api/v1/videojuegos", "/api/v1/videojuegos/**").permitAll()
+        .requestMatchers(HttpMethod.GET, "/api/v1/estudios", "/api/v1/estudios/**").permitAll()
+        .requestMatchers(HttpMethod.GET, "/api/v1/actividad").hasRole("ADMIN")
+        .requestMatchers(HttpMethod.POST, "/api/v1/videojuegos/*/reviews").hasAnyRole("USER", "ADMIN")
+        .requestMatchers(HttpMethod.POST, "/api/v1/videojuegos").hasRole("ADMIN")
+        .requestMatchers(HttpMethod.PUT, "/api/v1/videojuegos/*").hasRole("ADMIN")
+        .requestMatchers(HttpMethod.DELETE, "/api/v1/videojuegos/*").hasRole("ADMIN")
+        .requestMatchers(HttpMethod.POST, "/api/v1/estudios").hasRole("ADMIN")
+        .requestMatchers("/error").permitAll()
+        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+        .anyRequest().denyAll()
+)
 ```
+
+La línea más importante de todo el bloque es la última: **`anyRequest().denyAll()`**. Cualquier ruta que no aparezca explícitamente en las reglas anteriores queda **cerrada por defecto** — es el principio de mínima exposición del apartado 1, llevado hasta el final: nada se abre "por accidente" simplemente por existir.
+
+!!! warning "Cada ruta nueva necesita su propia regla, o queda bloqueada"
+    Si has ido añadiendo rutas propias durante el curso (el `PUT`/`DELETE` de `Estudio` del Tema 1, el ranking de Acceso a Datos...) y no tienen una regla explícita en este bloque, `denyAll()` las bloqueará — aunque el endpoint en sí funcione perfectamente. Este es un error típico y real: "he probado mi endpoint nuevo y me da 403/401 sin motivo aparente" casi siempre significa "se me ha olvidado añadir su regla aquí".
+
+---
+
+## 🚦 401 vs. 403, con criterio
+
+Dos códigos que se confunden con frecuencia, pero responden a preguntas distintas:
+
+| Código | Significa | Cuándo aparece |
+|---|---|---|
+| `401 Unauthorized` | No sabes quién eres (no autenticado) | Falta el token, o es inválido/caducado. |
+| `403 Forbidden` | Sabemos quién eres, pero no puedes hacer esto (no autorizado) | Token válido, pero rol insuficiente para esa regla concreta. |
+
+Con la tabla de arriba: un `POST /api/v1/videojuegos` sin token da `401`; el mismo `POST` con el token de un usuario `USER` (no `ADMIN`) da `403`.
+
+---
+
+## 🧪 Tests de seguridad con MockMvc
+
+Ya sabes construir tests MockMvc desde el Tema 1. Probar seguridad añade un matiz: necesitas un token real para las peticiones autenticadas. El patrón habitual es hacer un **login real** dentro del propio test, y reutilizar el token obtenido:
+
+```java
+private String login(String username, String password) throws Exception {
+    String response = mockMvc.perform(post("/api/v1/auth/login")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("""
+                            {"username": "%s", "password": "%s"}
+                            """.formatted(username, password)))
+            .andReturn().getResponse().getContentAsString();
+
+    return JsonPath.read(response, "$.accessToken");
+}
+
+@Test
+void crearReview_DebeDevolver403_CuandoElRolNoEsSuficiente() throws Exception {
+    String userToken = login("user", "user123");
+
+    mockMvc.perform(get("/api/v1/actividad")
+                    .header("Authorization", "Bearer " + userToken))
+            .andExpect(status().isForbidden());
+}
+
+@Test
+void authMe_DebeDevolver401_CuandoNoHayToken() throws Exception {
+    mockMvc.perform(get("/api/v1/auth/me"))
+            .andExpect(status().isUnauthorized());
+}
+```
+
+El método `login(...)` hace una petición real de login dentro del test, extrae el `accessToken` de la respuesta, y ese token se reutiliza en las peticiones siguientes con `.header("Authorization", "Bearer " + token)` — es exactamente el mismo flujo manual que ya practicaste con `curl`, pero automatizado y repetible.
+
+---
+
+## 📝 Documentación como buena práctica
+
+Depurar **y documentar** van de la mano. La propia tabla de política de rutas que has visto al principio de este apartado ya es esa documentación — un documento vivo que cualquiera (tú dentro de seis meses, un compañero de equipo) puede consultar para saber exactamente qué puede hacer cada rol, sin tener que leer el código Java línea a línea. Mantener esa tabla al día, en un fichero aparte de tu propio proyecto (por ejemplo `docs/seguridad.md`), es exactamente el tipo de documentación que se espera de ti.
+
+---
+
+## 🧭 Recapitulación del tema
+
+Con esto se completa el recorrido: validación de entrada y gestión centralizada de errores (no confiar nunca en lo que llega de fuera) → HTTP Basic con usuarios en memoria (primer mecanismo, deliberadamente provisional) → usuarios reales en PostgreSQL con BCrypt (contraseñas que ni tú puedes leer) → JWT (token autocontenido, sin reenviar credenciales) → roles y política completa, cerrada por defecto y verificada con tests. Este mismo JWT lo reutilizarás en Acceso a Datos para el `PUT` de reseñas con control de autoría.
+
+---
+
+## ✅ Ideas clave
+
+??? tip "Abrir resumen"
+
+    - La política de autorización se lee mejor como **tabla** (ruta × verbo × quién puede) que como código suelto.
+    - `anyRequest().denyAll()` cierra por defecto cualquier ruta sin regla explícita — cada ruta nueva necesita su propia regla o queda bloqueada.
+    - **401** = no sabemos quién eres; **403** = sabemos quién eres, pero no tienes permiso.
+    - Los tests de seguridad hacen un login real dentro del test y reutilizan el token obtenido en las peticiones siguientes.
+    - La tabla de política de rutas es, en sí misma, esa documentación.

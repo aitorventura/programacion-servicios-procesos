@@ -29,12 +29,9 @@
 - [Actividad 1.1 — Explorando la API de GameVault con un cliente HTTP](actividad_1_1.md)
 - [Actividad 1.2 — Swagger/OpenAPI: documenta y prueba tu API](actividad_1_2.md)
 - [Actividad 1.3 — Tests MockMvc y el PUT de Estudio](actividad_1_3.md)
-- [Actividad 1.4 — El DELETE de Estudio y Actuator `/health` — cierre de RA4](actividad_1_4.md)
+- [Actividad 1.4 — El DELETE de Estudio y Actuator `/health`](actividad_1_4.md)
 
 ---
 
 !!! info "¿Cómo avanzar por el contenido?"
     Utiliza el índice o las flechas de navegación al final de cada página para desplazarte por los distintos apartados de este tema.
-
-!!! note "Nota para el profesorado"
-    Este tema corresponde a las semanas reales 3-6 del calendario (RA4, bloque cerrado). El alumnado trabaja sobre su propia copia de GameVault, el mismo proyecto compartido con Acceso a Datos (0486): en la semana 4 AD construye el CRUD de Videojuego y aquí se explica su vertiente HTTP/REST; en las semanas 5-6 PSP añade el PUT y el DELETE de Estudio que faltan en la referencia. Los apartados y actividades están pendientes de redactar: cada `.md` contiene el prompt que debe usarse con `/improve-notes` para generarlo, apoyándose en el proyecto GameVault adjunto.

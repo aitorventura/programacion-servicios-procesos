@@ -32,12 +32,9 @@
 - [Actividad 3.1 — Cazando hilos en GameVault (análisis, sin código)](actividad_3_1.md)
 - [Actividad 3.2 — El evento del warm-up de caché (1/2)](actividad_3_2.md)
 - [Actividad 3.3 — El listener `@Async` del warm-up (2/2)](actividad_3_3.md)
-- [Actividad 3.4 — `TaskExecutor` propio — cierre de RA2](actividad_3_4.md)
+- [Actividad 3.4 — `TaskExecutor` propio](actividad_3_4.md)
 
 ---
 
 !!! info "¿Cómo avanzar por el contenido?"
     Utiliza el índice o las flechas de navegación al final de cada página para desplazarte por los distintos apartados de este tema.
-
-!!! note "Nota para el profesorado"
-    Este tema corresponde a las semanas reales 12, 14, 15 y 16 del calendario (RA2; la semana 13 natural es de exámenes y entre la 12 y la 14 median las vacaciones de Navidad). El hilo conductor es el **warm-up de la caché de `topNovedades`**: en la referencia adjunta, `GamevaultApplication.java` declara `@EnableAsync` pero ningún método lo usa todavía, y `VideojuegoService.getTopNovedades()` (`@Cacheable`, con un retardo simulado de 2 s) paga la lentitud en la primera petición tras cada invalidación — la mejora que construye el alumnado (evento interno + listener `@Async` + `TaskExecutor` propio) resuelve exactamente eso. Cada `.md` contiene el prompt para generarlo con `/improve-notes`.

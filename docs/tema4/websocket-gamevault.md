@@ -2,81 +2,111 @@
 
 # 🧩 2. WebSocket en GameVault: el canal de actividad en vivo
 
-!!! warning "🚧 Contenido pendiente de desarrollo"
-    Esta página todavía no tiene la teoría redactada. Usa el prompt de más abajo con
-    `/improve-notes`, apoyándote en el proyecto **GameVault** adjunto, para generar el
-    contenido definitivo.
+!!! warning "Una pieza construida enteramente aquí, paso a paso"
+    Lo que ves en este apartado no es un patrón estándar de un manual de Spring — es una funcionalidad concreta pensada para GameVault, que vas a construir completamente guiado, sin nada previo sobre lo que apoyarte. Lo que ya viste la semana pasada con sockets Java reales (Actividad 4.1) queda cubierto de forma completa — este apartado lo **amplía** sobre un protocolo de nivel más alto, pero no es un punto de partida obligatorio para lo anterior.
 
 ---
 
-## Prompt para `/improve-notes`
+## 🔔 El problema: ¿cómo se entera un cliente de algo que acaba de pasar?
 
-```text
-Redacta el apartado de teoría "WebSocket en GameVault: el canal de actividad en vivo"
-del Tema 4 (RA3 - Programación de comunicaciones en red) del módulo Programación de
-Servicios y Procesos (0490), semana real 18 del calendario. Sigue las convenciones de
-estilo del README.md del repo.
+Con todo lo que has construido hasta ahora (REST puro), el cliente siempre pregunta primero. Pero ¿cómo se entera de algo que el servidor sabe y el cliente no ha preguntado todavía? Las soluciones históricas, en orden:
 
-Este apartado NO cubre criterios de RA3 que estén pendientes: los criterios c) Librerías
-y mecanismos del lenguaje para programar aplicaciones en red, e) Sockets para programar
-un cliente que se comunica con un servidor, y f) Aplicación servidor en red verificada
-ya quedaron cubiertos de forma LITERAL en la semana 17 con sockets Java reales
-(sockets-cliente-servidor.md + Actividad 4.1) — no dependas de este apartado para
-justificarlos en la rúbrica. Este apartado es una AMPLIACIÓN de profundidad sobre el
-mismo RA3 (mismo concepto de "canal bidireccional persistente" presentado la semana
-pasada, ahora sobre un caso de aplicación real) y un puente hacia RA4 (servicios en
-red): profundiza c, e, f sobre un protocolo de nivel más alto, pero no es necesario para
-tenerlos cubiertos.
+1. **Recargar la página** — a mano, o con un `setTimeout` que recarga entera. Brutal y lento.
+2. **Polling**: el cliente pregunta cada X segundos, "¿ha cambiado algo?" — funciona, pero tiene un coste real: peticiones constantes, la mayoría con respuesta "no, nada nuevo", y un retraso de hasta X segundos en enterarse.
+3. **Long polling**: una variante donde el servidor retiene la respuesta hasta que hay algo que contar (o hasta un timeout) — mejora el retraso, pero sigue siendo, en el fondo, peticiones repetidas.
 
-AVISO para quien redacte: GameVault (la referencia adjunta) no tiene NINGUNA
-configuración WebSocket (no hay `spring-boot-starter-websocket` en el pom ni
-`@EnableWebSocketMessageBroker`). A diferencia de todos los demás apartados del curso,
-que enseñan algo comparando con un estado final ya construido en la referencia, aquí no
-hay ningún `WebSocketConfig.java` de referencia contra el que contrastar lo que el
-alumnado construye. Dilo explícitamente en el texto («en este apartado no vas a
-encontrar en el proyecto adjunto un ejemplo ya hecho como en los temas anteriores: lo
-construimos completamente guiado, paso a paso, sin red de seguridad de comparación»)
-para que el alumnado no lo busque y crea que se ha perdido algo.
+WebSocket no es tecnología caída del cielo — es la respuesta a este problema concreto.
 
-ESTRUCTURA — teoría primero: arranca con el problema general, sin WebSocket todavía:
-¿cómo puede una página web enterarse de algo que acaba de pasar en el servidor? Explica
-las soluciones históricas en orden (recargar la página; polling — preguntar cada X
-segundos, con su coste; long polling en una frase) para que WebSocket aparezca como
-respuesta a un problema real y no como tecnología caída del cielo.
+---
 
-Contenido central: WebSocket como el canal bidireccional persistente presentado en el
-apartado 1 — un socket de verdad entre navegador y servidor, que empieza como una
-petición HTTP (el handshake con la cabecera Upgrade) y se convierte en una conexión
-permanente donde el SERVIDOR puede enviar sin que el cliente pregunte. Explica también
-qué es STOMP desde cero: WebSocket solo da un tubo de bytes/mensajes sin formato — STOMP
-es un protocolo simple por encima que añade la semántica de mensajería (destinos
-/topic/..., suscribirse, enviar), reutilizando el modelo pub-sub que el alumnado ya
-conoce de RabbitMQ y de los eventos del Tema 3.
+## 🔗 WebSocket: el canal bidireccional persistente
 
-IMPORTANTE — esto es una MEJORA que NO existe en la referencia adjunta: GameVault no
-tiene ninguna configuración WebSocket (no hay spring-boot-starter-websocket en el pom ni
-configuración @EnableWebSocketMessageBroker). El caso de uso elegido: emitir en vivo el
-registro de actividad del módulo `actividad` (com/aleroig/gamevault/actividad/ —
-ActividadService.registrar() ya guarda cada evento del catálogo; hoy solo puede
-consultarse con GET /api/v1/actividad, en frío y solo para ADMIN).
+Recuerda el tercer modelo de comunicación del apartado anterior: el canal bidireccional persistente. **WebSocket** es exactamente eso — un socket de verdad entre navegador y servidor, que empieza como una petición HTTP normal (el *handshake*, con una cabecera especial `Upgrade`) y se convierte en una conexión **permanente**, donde el servidor puede enviar datos sin que el cliente pregunte antes.
 
-Explica, con el código de ejemplo que la Actividad 4.2 construirá guiado:
-- La dependencia spring-boot-starter-websocket y la clase de configuración
-  (@Configuration + @EnableWebSocketMessageBroker, siguiendo el estilo del paquete
-  config/): registerStompEndpoints con el endpoint /ws-actividad, y
-  configureMessageBroker con el broker simple y el prefijo /topic.
-- El flujo completo con un diagrama: cliente se conecta a /ws-actividad (handshake
-  HTTP→WebSocket) → se suscribe a /topic/actividad → cuando alguien crea/borra un
-  videojuego, el servidor publica en ese topic → TODOS los suscritos lo reciben al
-  instante.
-- El contraste con REST en una tabla (quién inicia, cuántas respuestas por petición,
-  duración de la conexión, caso de uso típico) — y el paralelismo con RabbitMQ: mismo
-  modelo pub-sub, distinto alcance (RabbitMQ entre módulos del backend; WebSocket entre
-  backend y navegadores).
-- Cómo probar un WebSocket sin escribir un frontend entero (criterio e): una página
-  HTML mínima con un cliente STOMP en JavaScript, o Postman (soporta WebSocket/STOMP) —
-  la Actividad 4.2 guiará una de las dos vías.
-
-No entres todavía en la emisión desde ActividadService ni en la seguridad del handshake:
-eso es el siguiente apartado, actividad-en-vivo-cierre.md.
+```mermaid
+sequenceDiagram
+    participant C as Cliente
+    participant S as Servidor
+    C->>S: HTTP GET /ws-actividad (cabecera Upgrade: websocket)
+    S-->>C: 101 Switching Protocols
+    Note over C,S: Conexión permanente establecida
+    S->>C: mensaje (sin que el cliente pregunte)
+    S->>C: otro mensaje, más tarde
 ```
+
+---
+
+## 📨 Qué es STOMP
+
+WebSocket, por sí solo, solo da un tubo de bytes/mensajes sin formato — no sabe nada de "canales" o "suscripciones". **STOMP** (*Simple Text Oriented Messaging Protocol*) es un protocolo sencillo que se monta por encima, añadiendo la semántica de mensajería que ya conoces: destinos con nombre (`/topic/algo`), suscribirse a un destino, enviar a un destino — reutilizando el mismo modelo publicación-suscripción que ya conoces de RabbitMQ y de los eventos internos del Tema 3.
+
+---
+
+## 🎯 El caso de uso: actividad en vivo
+
+El punto de partida: `ActividadService.registrar()` ya guarda cada evento del catálogo (crear, actualizar, borrar un videojuego) en la base de datos — hoy solo puede consultarse con `GET /api/v1/actividad`, en frío, y solo por `ADMIN`. Vas a construir un canal que emita esos mismos registros **en vivo**, según ocurren.
+
+### La configuración
+
+```java
+@Configuration
+@EnableWebSocketMessageBroker
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/ws-actividad").setAllowedOriginPatterns("*");
+    }
+
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry registry) {
+        registry.enableSimpleBroker("/topic");
+        registry.setApplicationDestinationPrefixes("/app");
+    }
+}
+```
+
+`@EnableWebSocketMessageBroker` activa el soporte de mensajería WebSocket con STOMP. `registerStompEndpoints` declara la URL del *handshake* (`/ws-actividad` — es la dirección a la que el cliente se conecta inicialmente). `configureMessageBroker` activa un broker simple en memoria (`enableSimpleBroker("/topic")`, suficiente para este caso — un broker externo como RabbitMQ también podría hacer de intermediario STOMP, pero no es necesario aquí) y fija el prefijo `/app` para los mensajes que el cliente envíe hacia el servidor (no lo vas a necesitar en este caso de uso, que es solo de servidor hacia cliente, pero forma parte de la configuración estándar).
+
+### El flujo completo
+
+```mermaid
+sequenceDiagram
+    participant N as Navegador
+    participant S as Servidor
+    N->>S: Conecta a /ws-actividad (handshake)
+    N->>S: Se suscribe a /topic/actividad
+    Note over S: Alguien crea/borra un videojuego
+    S->>N: Publica en /topic/actividad
+    Note over N: TODOS los suscritos lo reciben al instante
+```
+
+### Comparado con REST
+
+| | REST | WebSocket |
+|---|---|---|
+| Quién inicia | El cliente, cada vez | El cliente, una vez (el handshake) |
+| Respuestas por petición | Una | Ninguna fija — el servidor envía cuando quiere |
+| Duración de la conexión | Corta, se cierra tras la respuesta | Persistente |
+| Caso de uso típico | Consultas y operaciones bajo demanda | Notificaciones en tiempo real |
+
+Y el paralelismo con RabbitMQ que ya conoces: el mismo modelo publicación-suscripción, pero con distinto alcance — RabbitMQ conecta módulos **dentro** del backend; WebSocket conecta el backend con **navegadores**, fuera del propio servidor.
+
+---
+
+## 🧪 Cómo probar un WebSocket sin escribir un frontend entero
+
+No hace falta una aplicación cliente completa para probar esto — basta con una página HTML mínima con un cliente STOMP en JavaScript (la librería `@stomp/stompjs`, servida desde un CDN o un fichero estático), o con Postman, que también soporta WebSocket/STOMP. La Actividad 4.2 te guía por una de las dos vías.
+
+---
+
+## ✅ Ideas clave
+
+??? tip "Abrir resumen"
+
+    - Antes de WebSocket: recargar, polling (coste de peticiones repetidas), long polling — soluciones parciales al mismo problema.
+    - **WebSocket** es un canal bidireccional persistente: handshake HTTP con `Upgrade`, después conexión permanente donde el servidor envía sin que el cliente pregunte.
+    - **STOMP** añade semántica de mensajería (destinos, suscripción) sobre el tubo de bytes desnudo de WebSocket.
+    - `@EnableWebSocketMessageBroker` + `registerStompEndpoints` + `configureMessageBroker` son las tres piezas de configuración base.
+    - Mismo modelo pub-sub que RabbitMQ, distinto alcance: RabbitMQ entre módulos del backend, WebSocket entre backend y navegadores.
+    - Se puede probar sin frontend completo: una página HTML mínima con STOMP.js, o Postman.

@@ -2,60 +2,122 @@
 
 # 🧩 2. Escritura en la API y documentación con OpenAPI
 
-!!! warning "🚧 Contenido pendiente de desarrollo"
-    Esta página todavía no tiene la teoría redactada. Usa el prompt de más abajo con
-    `/improve-notes`, apoyándote en el proyecto **GameVault** adjunto, para generar el
-    contenido definitivo.
+Esta misma semana, en Acceso a Datos, está naciendo el CRUD completo de `Videojuego` en tu propio proyecto — controller, service y DTOs de escritura incluidos. Aquí no repites esa construcción: ves la **vertiente HTTP** de esos mismos endpoints (qué código de estado espera cada verbo, qué significa que una operación sea idempotente) y añades algo que la semana pasada no tenías — documentación automática de tu API con OpenAPI.
 
 ---
 
-## Prompt para `/improve-notes`
+## ✍️ La semántica completa de los verbos de escritura
 
-```text
-Redacta el apartado de teoría "Escritura en la API y documentación con OpenAPI" del
-Tema 1 (RA4 - Generación de servicios en red) del módulo Programación de Servicios y
-Procesos (0490), semana real 4 del calendario. Sigue las convenciones de estilo del
-README.md del repo.
+La semana pasada viste `GET`. Los otros tres verbos, con el código de estado que "les corresponde" quinientos por defecto:
 
-Criterios de evaluación de RA4 que cubre este apartado (curriculum.md):
-- b) Ventajas de la utilización de protocolos estándar.
-- h) Depuración y documentación de las aplicaciones.
+| Verbo | Qué hace | Código habitual de éxito |
+|---|---|---|
+| `POST` | Crea un recurso nuevo | `201 Created` |
+| `PUT` | Reemplaza un recurso existente | `200 OK` |
+| `DELETE` | Elimina un recurso | `204 No Content` |
 
-Contexto de coordinación: esta MISMA semana, en Acceso a Datos, el alumnado está
-construyendo el CRUD completo de Videojuego (controller + service + DTOs) en su
-GameVault. Aquí NO se repite esa construcción: se explica la vertiente HTTP de esos
-mismos endpoints de escritura, y se añade la documentación OpenAPI. Deja esa división
-clara al principio del apartado.
+`204 No Content` significa "todo ha ido bien, y no hay nada que devolverte en el cuerpo" — tiene sentido en un `DELETE`: una vez borrado el recurso, no hay nada que enseñar.
 
-ESTRUCTURA — teoría primero: antes del proyecto, cubre los conceptos generales con
-ejemplos genéricos (la API de biblioteca del apartado anterior sirve): la semántica
-completa de cada verbo de escritura y su código de respuesta natural (POST→201,
-PUT→200, DELETE→204), qué es la idempotencia con una definición clara y ejemplos (¿qué
-pasa si repito esta petición dos veces?), y qué es el CONTRATO de una API — la
-descripción formal de qué rutas existen, qué reciben y qué devuelven — y por qué hace
-falta cuando el consumidor es otro programa u otra persona; presenta OpenAPI como el
-formato estándar de ese contrato y Swagger UI como su visor interactivo, ANTES de tocar
-la configuración concreta.
+---
 
-Apóyate en el proyecto GameVault (com.aleroig.gamevault) como ejemplo real:
-- com/aleroig/gamevault/catalogo/VideojuegoController.java, métodos POST/PUT/DELETE,
-  leídos desde la óptica HTTP: la semántica de cada verbo (POST crea → 201 Created con
-  `ResponseEntity.status(HttpStatus.CREATED)`, PUT reemplaza → 200, DELETE elimina → 204
-  No Content con `ResponseEntity.noContent()`), `@RequestBody` (el cuerpo JSON de la
-  petición mapeado a un DTO), `@Valid` (validación de entrada — se profundizará en el
-  Tema 2/RA5), e idempotencia: por qué repetir un PUT o un DELETE no cambia el resultado
-  pero repetir un POST sí crea duplicados.
-- Ventajas del protocolo estándar (criterio b) con ejemplos concretos: los códigos de
-  estado son universales (cualquier cliente sabe qué significa un 201 o un 404 sin leer
-  tu documentación), la caché y las herramientas (Postman, Swagger) funcionan sin
-  configuración específica.
-- Documentación con OpenAPI/Swagger (criterio h):
-  com/aleroig/gamevault/config/OpenApiConfig.java y la dependencia springdoc del
-  pom.xml — explica qué genera automáticamente (la especificación en /v3/api-docs y la
-  interfaz Swagger UI en /swagger-ui.html), cómo Swagger UI sirve a la vez de
-  documentación y de cliente de pruebas interactivo, y por qué documentar el contrato de
-  la API importa cuando el consumidor es otra aplicación (o un compañero de equipo).
+## 🔁 Qué es la idempotencia
 
-No entres todavía en tests automatizados con MockMvc: eso es el siguiente apartado,
-tests-mockmvc.md.
+Una operación es **idempotente** si repetirla varias veces produce el mismo resultado que hacerla una sola vez. Es una propiedad HTTP importante porque, en una red real, las peticiones pueden perderse o duplicarse (un reintento automático, una doble pulsación) — y conviene saber qué pasa si eso ocurre.
+
+- **`PUT` es idempotente**: si mandas diez veces el mismo `PUT` con el mismo cuerpo, el recurso queda igual que si lo hubieras mandado una sola vez — cada vez "reemplaza" con los mismos datos.
+- **`DELETE` es idempotente**: borrar algo que ya está borrado no cambia nada más (aunque el código de estado de la segunda vez pueda ser un `404` en vez de un `204`, el *estado del sistema* es el mismo).
+- **`POST` NO es idempotente**: si mandas diez veces el mismo `POST` de "crear un videojuego", obtienes diez videojuegos distintos — cada llamada crea uno nuevo.
+
+!!! example "Por qué importa en la práctica"
+    Si el formulario de "crear videojuego" de una aplicación web falla al enviar y el usuario pulsa "Reintentar", con un `POST` corres el riesgo de crear el recurso duplicado. Con un `PUT` (por ejemplo, "guardar cambios de este videojuego concreto"), reintentar no tiene ese riesgo: el resultado final es el mismo se mande una vez o cinco.
+
+---
+
+## 📜 El contrato de una API: qué es OpenAPI
+
+Cuando el consumidor de tu API es otro programa (o un compañero de equipo que no ha leído tu código), necesita saber, sin adivinar: qué rutas existen, qué verbo usa cada una, qué reciben y qué devuelven. A esa descripción formal se la llama el **contrato** de la API.
+
+**OpenAPI** es el formato estándar más usado para escribir ese contrato (un documento, normalmente en YAML o JSON, que describe rutas, verbos, parámetros y esquemas de datos). **Swagger UI** es un visor interactivo que lee ese documento y genera, automáticamente, una página web donde se puede explorar y **probar** la API sin escribir una sola línea de código — ni siquiera un `curl`.
+
+```mermaid
+flowchart LR
+    A["📝 Anotaciones en tu código<br/>(@RestController, @GetMapping...)"] -- "genera" --> B["📄 Contrato OpenAPI<br/>(/v3/api-docs)"]
+    B -- "se visualiza en" --> C["🖥️ Swagger UI<br/>(/swagger-ui.html)"]
 ```
+
+Lo importante: tú no escribes el documento OpenAPI a mano. Una librería lo genera automáticamente, leyendo las mismas anotaciones (`@RestController`, `@GetMapping`, los DTOs...) que ya usas para construir la API — el contrato y el código nunca se desincronizan porque son la misma fuente.
+
+---
+
+## 🎮 Aterrizaje en GameVault: los endpoints de escritura
+
+Con esa base, lee ahora los métodos de escritura de `VideojuegoController` desde la óptica HTTP:
+
+```java
+@PostMapping
+public ResponseEntity<VideojuegoResponseDTO> create(@Valid @RequestBody VideojuegoCreateDTO dto) {
+    return ResponseEntity.status(HttpStatus.CREATED).body(videojuegoService.create(dto));
+}
+
+@PutMapping("/{id}")
+public ResponseEntity<VideojuegoResponseDTO> update(@PathVariable Long id, @Valid @RequestBody VideojuegoCreateDTO dto) {
+    return ResponseEntity.ok(videojuegoService.update(id, dto));
+}
+
+@DeleteMapping("/{id}")
+public ResponseEntity<Void> delete(@PathVariable Long id) {
+    videojuegoService.delete(id);
+    return ResponseEntity.noContent().build();
+}
+```
+
+| Elemento | Qué representa |
+|---|---|
+| `ResponseEntity.status(HttpStatus.CREATED).body(...)` | `201`, con el recurso creado en el cuerpo — la respuesta natural de un `POST`. |
+| `ResponseEntity.ok(...)` en el `PUT` | `200`, con el recurso ya actualizado en el cuerpo. |
+| `ResponseEntity.noContent().build()` | `204`, sin cuerpo — la respuesta natural de un `DELETE`. |
+| `@RequestBody VideojuegoCreateDTO dto` | El cuerpo JSON de la petición, convertido automáticamente en un objeto Java. |
+| `@Valid` | Activa la validación del DTO antes de que el método se ejecute — se profundiza en el Tema 2. |
+
+### Documentando con OpenAPI
+
+GameVault genera su documentación con la dependencia `springdoc-openapi-starter-webmvc-ui` y una clase de configuración mínima:
+
+```java
+@Configuration
+public class OpenApiConfig {
+
+    @Bean
+    public OpenAPI gamevaultOpenAPI() {
+        return new OpenAPI()
+                .info(new Info()
+                        .title("GameVault API")
+                        .version("v1")
+                        .description("API didáctica para gestionar videojuegos, estudios, reviews..."));
+    }
+}
+```
+
+Con solo esa dependencia y esa clase, springdoc escanea todos los `@RestController` del proyecto y genera, sin más trabajo por tu parte, la especificación OpenAPI en `/v3/api-docs` y la interfaz visual en `/swagger-ui.html` — los mismos endpoints que `VideojuegoController` ya tenía quedan documentados y son "probables" desde el navegador.
+
+---
+
+## 🆚 Ventajas del protocolo estándar, con ejemplos concretos
+
+Ya viste la semana pasada que un protocolo estándar permite que cualquier cliente hable con tu API sin acordar nada a medida. Aquí tienes dos consecuencias prácticas de esa idea:
+
+- Los **códigos de estado son universales**: cualquier cliente (el tuyo, el de un compañero, una app de otro lenguaje) sabe qué significa un `201` o un `404` sin necesidad de leer tu documentación particular — es parte del estándar HTTP, no una convención tuya.
+- Las **herramientas funcionan sin configuración específica**: Postman, Swagger UI, `curl`... todas saben "hablar HTTP" de fábrica. No has tenido que instalar ni configurar nada especial en Swagger UI para que entienda las respuestas de GameVault — el protocolo ya es compartido.
+
+---
+
+## ✅ Ideas clave
+
+??? tip "Abrir resumen"
+
+    - `POST` → `201 Created`; `PUT` → `200 OK`; `DELETE` → `204 No Content` son las combinaciones habituales verbo/código para operaciones de escritura.
+    - Una operación es **idempotente** si repetirla no cambia el resultado respecto a hacerla una vez: `PUT` y `DELETE` lo son, `POST` no.
+    - El **contrato** de una API describe formalmente sus rutas, verbos y datos; **OpenAPI** es el formato estándar de ese contrato, generado automáticamente a partir de las anotaciones del código (no se escribe a mano).
+    - **Swagger UI** visualiza ese contrato y permite probar la API desde el navegador, sin escribir código.
+    - `@RequestBody` mapea el cuerpo JSON a un objeto Java; `@Valid` activa su validación.
+    - Que Swagger UI, `curl` y Postman puedan hablar todos con la misma API sin adaptar nada en el servidor es la demostración práctica de qué aporta un protocolo estándar.

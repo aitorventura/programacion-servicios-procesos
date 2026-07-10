@@ -1,48 +1,118 @@
-# 🧪 Actividad 1.4: El DELETE de Estudio y Actuator `/health` — cierre de RA4
+# 🧪 Actividad 1.4: El DELETE de Estudio y Actuator `/health`
 
-!!! warning "🚧 Contenido pendiente de desarrollo"
-    Esta actividad todavía no está redactada. Usa el prompt de más abajo con
-    `/improve-notes`, apoyándote en el proyecto **GameVault** adjunto, para generar el
-    enunciado definitivo.
+!!! info "Reto de repetición + práctica guiada"
+    El `DELETE` de Estudio lo escribes tú solo — es la tercera vez que construyes este patrón (`DELETE` de Videojuego en AD, `PUT` de Estudio en la Actividad 1.3), así que no llevas la mano guiada esta vez. Actuator sí va paso a paso, es contenido nuevo.
+
+## Qué vas a practicar
+
+- Completar un CRUD reutilizando un patrón ya practicado dos veces, sin guía paso a paso.
+- Añadir Actuator y activar el detalle de salud de las dependencias.
+- Observar en vivo cómo cae la disponibilidad de un componente concreto.
 
 ---
 
-## Prompt para `/improve-notes`
+## Requisitos previos
 
-```text
-Redacta la Actividad 1.4 del Tema 1 (RA4 - Generación de servicios en red) del módulo
-Programación de Servicios y Procesos (0490), semana real 6 del calendario — actividad
-que CIERRA el RA4. Si necesita plantilla/solución en .docx, crea antes la skill de
-plantilla de PSP clonando /actividad-plantilla-acceso-a-datos con la paleta
-marrón/ámbar.
+Tu `PUT` de `Estudio` de la Actividad 1.3 funcionando, y el `DELETE` de `Videojuego` de Acceso a Datos como segundo patrón ya construido para guiarte.
 
-IMPORTANTE — enfoque: es una PRÁCTICA GUIADA, no un reto — con una excepción deliberada:
-el DELETE de Estudio es el reto de repetición de este tema, porque el alumnado ya ha
-construido el mismo patrón DOS veces (el DELETE de Videojuego en AD y el PUT de Estudio
-en la Actividad 1.3). El resto de la actividad (Actuator) sí va guiado paso a paso.
+---
 
-Objetivo (RA4, criterios d, g — cierre del RA): completar el CRUD de Estudio con el
-DELETE (MEJORA: no existe en EstudioController.java de la referencia adjunta) y añadir
-la verificación de disponibilidad con Actuator.
+## Reto — el DELETE de Estudio
 
-Estructura sugerida:
-1. Reto de repetición — el DELETE de Estudio: el enunciado solo da la especificación
-   (ruta DELETE /api/v1/estudios/{id}, 204 si borra, 404 si no existe, @Transactional en
-   el service) y recuerda dónde están los dos ejemplos ya construidos del mismo patrón
-   (el DELETE de VideojuegoController y el PUT de Estudio de la Actividad 1.3). El
-   alumnado lo escribe solo. Añadir la pregunta de comprensión: al borrar un Estudio,
-   ¿qué pasa con sus Videojuego? (conectar con el cascade visto en AD).
-2. Verificación del DELETE: manual desde Swagger UI y con un test MockMvc — también como
-   reto de repetición (el patrón de test es el de la Actividad 1.3), solo se indica qué
-   casos cubrir (204 y 404).
-3. Actuator, guiado paso a paso: añadir la dependencia spring-boot-starter-actuator al
-   pom (fragmento dado), exponer /actuator/health con detalles en application.yaml
-   (configuración dada y explicada), y consultar el endpoint con curl.
-4. Experimento guiado de disponibilidad: parar el contenedor de MongoDB
-   (`docker compose stop mongo`, comando dado), volver a consultar /actuator/health y
-   observar el cambio a DOWN con el detalle del componente mongo; volver a levantarlo y
-   comprobar la recuperación — cada paso con su comando y su salida esperada.
-5. Cierre de RA4: pedir al alumnado un repaso propio (3-4 frases) del recorrido del
-   tema: leer la API → documentarla → probarla → completarla (PUT/DELETE de Estudio) →
-   monitorizarla.
+Sin más guía que esta especificación, completa el CRUD de `Estudio` con:
+
+- Ruta: `DELETE /api/v1/estudios/{id}`
+- `204 No Content` si borra correctamente.
+- `404 Not Found` si el `id` no existe.
+- `@Transactional` en el método del service.
+
+Tienes **dos** ejemplos ya construidos del mismo patrón exacto (cargar → comprobar existencia → actuar): el `DELETE` de `VideojuegoController`/`VideojuegoService` (Acceso a Datos) y el `PUT` de `EstudioController`/`EstudioService` que tú mismo escribiste en la Actividad 1.3. Combina ambos y escribe el `DELETE` de `Estudio` sin que se te dé el código.
+
+**Pregunta de comprensión**: al borrar un `Estudio` que tiene videojuegos asociados, ¿qué pasa con esos videojuegos? Relaciona tu respuesta con `cascade = CascadeType.ALL` y `orphanRemoval = true`, que viste al crear la entidad `Estudio` en Acceso a Datos (Actividad 1.1).
+
+---
+
+## Verificación del DELETE — también como reto
+
+Comprueba tu `DELETE` de dos formas, sin que se te dé el código de ninguna de las dos:
+
+1. **Manual**, desde Swagger UI (Actividad 1.2): crea un estudio de prueba, bórralo, comprueba el `204`, y comprueba después que un `GET` sobre ese mismo `id` da `404`.
+2. **Automatizada**, con un test MockMvc que siga el mismo patrón que ya usaste en la Actividad 1.3 (mockear el service, `mockMvc.perform(delete(...))`, afirmar el código de estado) — cubre los dos casos: `204` cuando existe, `404` cuando no.
+
+---
+
+## Actuator, guiado paso a paso
+
+### Paso 1 — Añadir la dependencia
+
+En tu `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
 ```
+
+### Paso 2 — Exponer el detalle de salud
+
+En `application.yaml` (la configuración común, no la de un perfil concreto):
+
+```yaml
+management:
+  endpoint:
+    health:
+      show-details: always
+```
+
+Reinicia tu aplicación y consulta:
+
+```bash
+curl -s http://localhost:8080/actuator/health | jq
+```
+
+**Comprueba**: que la respuesta incluye un bloque `components` con, al menos, tu base de datos PostgreSQL (`db`) en estado `UP`.
+
+---
+
+## Experimento guiado de disponibilidad
+
+Este experimento necesita que tengas más de un servicio en tu `docker-compose.yml` — si en este punto del curso solo tienes PostgreSQL, hazlo con ese mismo servicio (parándolo tendrás el mismo efecto sobre el componente `db`).
+
+### Paso 3 — Parar una dependencia
+
+```bash
+docker compose stop postgres
+```
+
+Vuelve a consultar:
+
+```bash
+curl -s http://localhost:8080/actuator/health | jq
+```
+
+**Predicción**: antes de ejecutar el comando, escribe qué esperas ver en el campo `status` general y en el componente correspondiente a PostgreSQL.
+
+### Paso 4 — Recuperar el servicio
+
+```bash
+docker compose start postgres
+```
+
+Espera unos segundos y vuelve a consultar `/actuator/health`.
+
+**Comprueba**: que el estado ha vuelto a `UP` sin que hayas tenido que reiniciar tu aplicación Spring Boot — solo el contenedor de la base de datos.
+
+**Pregunta**: si tu aplicación estuviera respondiendo peticiones GET normales mientras PostgreSQL estaba caído (por ejemplo, un endpoint que no toca la base de datos), ¿el servicio estaría "disponible" o no? Justifica tu respuesta con los tres niveles de disponibilidad vistos en la teoría.
+
+---
+
+## Repaso del tema
+
+Escribe un repaso propio (3-4 frases) del recorrido completo de este tema: leer la API y su protocolo → documentarla y entender su semántica de escritura → probarla con tests y varios clientes simultáneos → completarla (`PUT`/`DELETE` de Estudio) → verificar su disponibilidad. ¿Qué pieza te ha costado más entender, y por qué?
+
+---
+
+## ✅ Cierre
+
+La semana que viene entras en Programación Segura: hoy tu API está completamente abierta — nada te impide borrar cualquier recurso sin identificarte. Eso empieza a cambiar en el Tema 2.

@@ -1,52 +1,163 @@
 # 🧪 Actividad 3.1: Cazando hilos en GameVault (análisis, sin código)
 
-!!! warning "🚧 Contenido pendiente de desarrollo"
-    Esta actividad todavía no está redactada. Usa el prompt de más abajo con
-    `/improve-notes`, apoyándote en el proyecto **GameVault** adjunto, para generar el
-    enunciado definitivo.
+!!! info "Práctica guiada de observación — sin código de producción"
+    Hoy no escribes ninguna funcionalidad nueva. Vas a ver, con tus propios ojos, hilos reales ejecutándose en tu aplicación — con trazas temporales que retiras al terminar.
+
+## Qué vas a practicar
+
+- Ver una condición de carrera de verdad, no solo leer sobre ella.
+- Localizar en logs los distintos hilos que atienden peticiones y eventos.
+- Observar el conjunto de hilos de tu JVM con una herramienta de monitorización.
 
 ---
 
-## Prompt para `/improve-notes`
+## Requisitos previos
 
-```text
-Redacta la Actividad 3.1 del Tema 3 (RA2 - Programación multihilo) del módulo
-Programación de Servicios y Procesos (0490), semana real 12 del calendario. Si necesita
-plantilla/solución en .docx, crea antes la skill de plantilla de PSP clonando
-/actividad-plantilla-acceso-a-datos con la paleta marrón/ámbar.
+Tu GameVault funcionando con RabbitMQ levantado (el consumer de actividad ya debe estar registrando eventos).
 
-IMPORTANTE — enfoque: es una PRÁCTICA GUIADA de OBSERVACIÓN, no un reto y sin escribir
-código de producción (solo trazas temporales de log). El alumnado trabaja sobre su
-propia copia de GameVault. Cada paso da los comandos/cambios exactos y la salida
-esperada.
+---
 
-Objetivo (RA2, criterios a, b, i): que el alumnado observe y documente los hilos reales
-de su GameVault en ejecución.
+## Paso 0 — Calentamiento: ver el entrelazado y la condición de carrera
 
-Estructura sugerida de pasos guiados:
-0. Calentamiento con los ejemplos de la teoría (código DADO para copiar y ejecutar, no
-   para escribir): el ejemplo del entrelazado de dos hilos (ejecutarlo dos veces y
-   comparar salidas) y el del contador compartido con condición de carrera (ejecutarlo
-   sin y con synchronized, anotar los resultados de ambos). Objetivo: haber VISTO una
-   carrera de verdad antes de buscar hilos en GameVault.
-1. Añadir guiadamente una traza temporal con Thread.currentThread().getName() en dos
-   puntos dados: VideojuegoService.create() y el método recibir() de
-   ActividadVideojuegoEventConsumer (código exacto de la línea de log dado).
-2. Ejecutar guiadamente: crear un videojuego vía API y leer en el log los DOS nombres de
-   hilo distintos (el del pool HTTP y el del listener de RabbitMQ) — anotarlos y
-   explicar con sus palabras por qué no coinciden, apoyándose en el diagrama de la
-   teoría.
-3. Observación guiada del conjunto de hilos de la JVM con una herramienta (elegir una y
-   guiarla paso a paso: jconsole, VisualVM o un thread dump con jstack — comandos
-   dados): localizar los hilos de Tomcat (http-nio-*), los del listener de RabbitMQ y el
-   hilo main; contar cuántos hilos hay en total y comentar la cifra.
-4. Mini-reto (repite el patrón del paso 1): añadir la misma traza en
-   ReviewsVideojuegoEventConsumer.recibir(), borrar un videojuego, y explicar por qué
-   ese listener también se dispara (la routing key videojuego.eliminado de
-   RabbitMQConfig.java) y en qué hilo.
-5. Localizar guiadamente el @EnableAsync de GamevaultApplication.java y comprobar (con
-   una búsqueda en el proyecto, comando dado) que ningún método usa @Async todavía —
-   dejar por escrito la hipótesis de para qué servirá, que se confirmará en la Actividad
-   3.2.
-6. Retirar las trazas temporales al terminar (recordatorio explícito).
+Copia y ejecuta este ejemplo de consola (no forma parte de tu GameVault, es solo para observar):
+
+```java
+public class EntrelazadoDemo {
+    public static void main(String[] args) {
+        Runnable tarea = () -> {
+            for (int i = 0; i < 5; i++) {
+                System.out.println(Thread.currentThread().getName() + ": " + i);
+            }
+        };
+        new Thread(tarea, "Hilo-A").start();
+        new Thread(tarea, "Hilo-B").start();
+    }
+}
 ```
+
+Ejecútalo dos veces seguidas. **Anota**: ¿la salida es idéntica en ambas ejecuciones?
+
+Ahora el contador con condición de carrera:
+
+```java
+public class ContadorDemo {
+    private static int valor = 0;
+
+    public static void main(String[] args) throws InterruptedException {
+        Runnable incrementar = () -> {
+            for (int i = 0; i < 10000; i++) valor++;
+        };
+
+        Thread t1 = new Thread(incrementar);
+        Thread t2 = new Thread(incrementar);
+        t1.start(); t2.start();
+        t1.join(); t2.join();
+
+        System.out.println("Valor final: " + valor);
+    }
+}
+```
+
+Ejecútalo varias veces. **Anota** los valores finales obtenidos — ¿alguna vez da exactamente 20000?
+
+Ahora cambia `valor++` dentro del `Runnable` por una llamada a un método `synchronized`:
+
+```java
+private static synchronized void incrementar() { valor++; }
+```
+
+(ajusta el `Runnable` para llamar a `incrementar()` en vez de `valor++` directamente). Ejecuta varias veces más. **Anota**: ¿da siempre 20000 ahora?
+
+---
+
+## Paso 1 — Trazas temporales en dos puntos de tu GameVault
+
+Añade, **temporalmente**, esta línea al principio de `VideojuegoService.create()`:
+
+```java
+System.out.println("[TRAZA] create() en hilo: " + Thread.currentThread().getName());
+```
+
+Y esta otra al principio del método `recibir(...)` de `ActividadVideojuegoEventConsumer`:
+
+```java
+System.out.println("[TRAZA] recibir() en hilo: " + Thread.currentThread().getName());
+```
+
+---
+
+## Paso 2 — Crear un videojuego y leer los dos hilos
+
+```bash
+curl -X POST http://localhost:8080/api/v1/videojuegos \
+  -H "Content-Type: application/json" \
+  -d '{"titulo":"Test","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'
+```
+
+Mira la consola de tu aplicación. **Anota** los dos nombres de hilo que aparecen (deberían ser distintos — algo como `http-nio-8080-exec-N` para uno, y un nombre relacionado con el contenedor de listeners de AMQP para el otro).
+
+**Explica con tus propias palabras**, apoyándote en el diagrama de la teoría, por qué esos dos nombres no coinciden.
+
+---
+
+## Paso 3 — Observar el conjunto de hilos de la JVM
+
+`jconsole`, `VisualVM` y `jstack` son herramientas de inspección de la JVM que vienen incluidas con el propio JDK (o, en el caso de VisualVM, se instalan aparte como complemento) — no hace falta instalar nada especial para usarlas: muestran en tiempo real, o en una foto puntual, qué hilos existen dentro de un proceso Java en ejecución.
+
+Elige **una** de estas herramientas y síguela hasta el final:
+
+<div class="tabs-colored" markdown>
+
+=== "🟢 jconsole"
+    Con tu aplicación arrancada, ejecuta `jconsole` desde la terminal, conéctate al proceso de tu aplicación Java, y ve a la pestaña **Threads**. Localiza y anota: cuántos hilos `http-nio-8080-exec-*` ves, si hay algún hilo relacionado con el contenedor de listeners de RabbitMQ, y el hilo `main`.
+
+=== "🔵 VisualVM"
+    Arranca VisualVM, selecciona el proceso de tu aplicación en el panel izquierdo, y abre la pestaña **Threads**. Mismo objetivo: localizar y anotar los grupos de hilos mencionados arriba.
+
+=== "🟠 jstack (thread dump)"
+    Averigua el PID de tu proceso Java (`jps`, o el gestor de tareas) y ejecuta:
+    ```bash
+    jstack <PID> > dump.txt
+    ```
+    Abre `dump.txt` y busca (Ctrl+F) las cadenas `http-nio` y `AMQP` o `SimpleAsyncTaskExecutor`.
+
+</div>
+
+**Anota**: el número total aproximado de hilos que ves en tu JVM en este momento. **Comenta** en una frase por qué ese número es mucho mayor que "1" (que sería lo esperable si pensaras en tu aplicación como un único programa secuencial).
+
+---
+
+## Mini-reto — repite el patrón con el consumer de reviews
+
+Añade la misma traza del Paso 1 (adaptada) al principio de `recibir(...)` en `ReviewsVideojuegoEventConsumer`. Borra un videojuego que tenga alguna reseña asociada:
+
+```bash
+curl -X DELETE http://localhost:8080/api/v1/videojuegos/{id}
+```
+
+**Comprueba** que la traza de `ReviewsVideojuegoEventConsumer` también se dispara. **Explica**, revisando `RabbitMQConfig.java`, por qué ese listener concreto se activa al borrar (pista: busca la *routing key* `videojuego.eliminado` y a qué cola está enlazada) — y en qué hilo se ejecuta.
+
+---
+
+## Paso 5 — El `@EnableAsync` que no hace nada todavía
+
+Localiza `@EnableAsync` en `GamevaultApplication.java`. Busca en todo el proyecto (con tu IDE, "Find in Files") cualquier uso de la anotación `@Async`:
+
+```bash
+grep -r "@Async" src/main/java
+```
+
+**Comprueba**: ¿aparece algún resultado? Escribe, como hipótesis (no hace falta que sea la respuesta exacta), para qué crees que servirá esta capacidad sin estrenar — la confirmarás en la Actividad 3.2.
+
+---
+
+## Paso 6 — Retirar las trazas
+
+!!! warning "No dejes las trazas temporales en tu código"
+    Elimina las tres líneas `System.out.println("[TRAZA] ...")` que has añadido en los Pasos 1 y 4 — eran solo para esta observación, no forman parte del código final.
+
+---
+
+## ✅ Cierre
+
+Has visto una condición de carrera de verdad y has identificado, con nombres de hilo reales, que tu GameVault ya reparte trabajo entre varios hilos sin que tú lo hayas programado explícitamente. En la próxima actividad empiezas a construir tu propia pieza multihilo: el evento interno del warm-up de caché.

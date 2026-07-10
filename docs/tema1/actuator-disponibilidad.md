@@ -2,59 +2,82 @@
 
 # 🧩 4. Disponibilidad del servicio: Actuator
 
-!!! warning "🚧 Contenido pendiente de desarrollo"
-    Esta página todavía no tiene la teoría redactada. Usa el prompt de más abajo con
-    `/improve-notes`, apoyándote en el proyecto **GameVault** adjunto, para generar el
-    contenido definitivo. Este apartado cierra el RA4.
+Un servicio en red, una vez desplegado, corre sin que nadie lo esté mirando en pantalla constantemente. Este apartado responde a una pregunta distinta de todo lo visto hasta ahora: no "¿funciona esta petición concreta?", sino "¿está el servicio, en general, sano y disponible ahora mismo?".
 
 ---
 
-## Prompt para `/improve-notes`
+## 🩺 Qué es la disponibilidad de un servicio
 
-```text
-Redacta el apartado de teoría "Disponibilidad del servicio: Actuator" del Tema 1 (RA4 -
-Generación de servicios en red) del módulo Programación de Servicios y Procesos (0490),
-semana real 6 del calendario — apartado que CIERRA el RA4. Sigue las convenciones de
-estilo del README.md del repo.
+Que un servicio esté **disponible** no es una única cosa binaria — hay distintos niveles de "estar bien":
 
-Criterios de evaluación de RA4 que cubre este apartado (curriculum.md):
-- d) Desarrollo y prueba de servicios de comunicación en red (segunda parte: el DELETE
-  de Estudio, en la actividad).
-- g) Verificación de la disponibilidad del servicio.
+1. **El proceso está arrancado**: la aplicación no se ha caído, sigue viva.
+2. **Responde peticiones**: acepta conexiones y contesta algo, lo que sea.
+3. **Sus dependencias funcionan**: la base de datos, la cola de mensajería, cualquier servicio del que dependa, están accesibles — un proceso vivo que no puede hablar con su base de datos no está realmente "disponible" para hacer su trabajo.
 
-ESTRUCTURA — teoría primero: explica desde cero qué es la disponibilidad de un servicio
-y por qué se monitoriza: un servicio en red corre sin nadie mirándolo, así que hace
-falta una forma automática de saber si está vivo y sano; qué es un health check como
-concepto general (una comprobación periódica que una máquina puede hacer sola), la
-diferencia entre "el proceso está arrancado", "responde peticiones" y "sus dependencias
-funcionan" (tres niveles distintos de "estar bien"), y quién consume esa información en
-el mundo real (monitores de alertas, orquestadores que reinician contenedores caídos, el
-CI). Después, Spring Boot Actuator como la implementación de todo eso.
+Un **health check** (comprobación de salud) es una forma automática — pensada para que la ejecute una máquina, sin intervención humana — de responder a estas preguntas. Quien consume esa información no eres tú mirando una pantalla: son **monitores de alertas** (que avisan si algo cae), **orquestadores** (que reinician automáticamente un contenedor que no responde) o el propio **CI** (que puede comprobar que el servicio arranca correctamente antes de darlo por bueno).
 
-Contenido central: monitorización de un servicio en red con Spring Boot Actuator — qué
-significa que un servicio esté "disponible" (responde, y además sus dependencias
-funcionan), y cómo se comprueba de forma automatizable.
+---
 
-Apóyate en el proyecto GameVault (com.aleroig.gamevault) como ejemplo real:
-- Comprueba primero si el pom.xml de la referencia incluye spring-boot-starter-actuator;
-  si no lo incluye, preséntalo como MEJORA que se añade esta semana (dependencia +
-  configuración mínima en application.yaml para exponer /actuator/health).
-- El endpoint /actuator/health: qué devuelve (UP/DOWN) y, con detalles activados
-  (management.endpoint.health.show-details), cómo agrega el estado de las dependencias
-  reales de GameVault — PostgreSQL, MongoDB, RabbitMQ y Redis, los cuatro servicios del
-  docker-compose.yaml — de modo que si se para el contenedor de Mongo, el health pasa a
-  DOWN aunque la aplicación siga respondiendo. Para Redis basta con nombrarlo aquí como
-  "una base de datos en memoria más, cuya salud también se agrega" — su explicación de
-  fondo (qué es y para qué lo usa el proyecto) llega en el Tema 3 (RA2, semana 14, el
-  warm-up de caché), no la dupliques aquí.
-- Conecta con lo ya visto: el health check es "un GET más" (protocolo estándar otra
-  vez), pensado para que lo consulte una máquina (un orquestador, un monitor, el CI) y
-  no una persona — cierra así el criterio g).
-- Menciona brevemente otros endpoints útiles de Actuator (info, metrics) sin
-  profundizar.
+## 🛠️ Spring Boot Actuator
 
-Cierra el apartado recapitulando todo RA4 en 3-4 frases (leer la API y su protocolo →
-escribir y documentar con OpenAPI → probar con MockMvc y varios clientes → verificar
-disponibilidad) y presentando la Actividad 1.4, que completa la pareja de mejoras sobre
-Estudio con el DELETE (el PUT se hizo en la Actividad 1.3).
+**Spring Boot Actuator** es la implementación de todo esto para una aplicación Spring Boot: un conjunto de endpoints HTTP listos para usar que exponen información operativa sobre tu aplicación — entre ellos, su salud.
+
+Tu propio GameVault no incluye Actuator todavía (revisa tu `pom.xml`: no está la dependencia) — es la mejora que añades esta semana:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
 ```
+
+Con solo esa dependencia, Spring Boot expone automáticamente `/actuator/health`. Para ver el detalle de cada dependencia (y no solo un `UP`/`DOWN` genérico), hace falta una línea de configuración:
+
+```yaml
+management:
+  endpoint:
+    health:
+      show-details: always
+```
+
+---
+
+## 🟢 El endpoint `/actuator/health`
+
+Con los detalles activados, `/actuator/health` no solo dice si tu aplicación responde — agrega el estado de **cada dependencia real** que Spring Boot detecta en el classpath. En GameVault, eso significa PostgreSQL, MongoDB, RabbitMQ y Redis (los cuatro servicios de `docker-compose.yaml` — de Redis basta con que sepas, por ahora, que es "una base de datos en memoria más" cuya salud también se agrega aquí; verás para qué la usa realmente el proyecto en el Tema 3, con la caché de novedades):
+
+```json
+{
+  "status": "UP",
+  "components": {
+    "db": { "status": "UP" },
+    "mongo": { "status": "UP" },
+    "rabbit": { "status": "UP" },
+    "redis": { "status": "UP" }
+  }
+}
+```
+
+Fíjate en la implicación: si el contenedor de MongoDB se cae, `/actuator/health` pasa a `DOWN` con el detalle del componente `mongo` marcado como el culpable — **aunque la aplicación siga respondiendo peticiones sobre PostgreSQL sin ningún problema**. Es exactamente el matiz del punto 3 de más arriba: "responder" y "estar realmente sano" no son lo mismo.
+
+!!! tip "Es un GET más, pensado para máquinas"
+    `/actuator/health` no deja de ser una petición HTTP estándar — el mismo protocolo de siempre. La diferencia es quién lo consulta: normalmente no una persona con un navegador, sino un orquestador o un monitor, cada pocos segundos, de forma automática. Eso es exactamente para lo que sirve: verificar la disponibilidad del servicio.
+
+Actuator trae también otros endpoints útiles, como `/actuator/info` (metadatos de la aplicación) o `/actuator/metrics` (métricas de rendimiento) — no vas a profundizar en ellos ahora, pero conviene que sepas que existen.
+
+---
+
+## 🧭 Recapitulación del tema
+
+Con esto se completa el recorrido: leíste la API y su protocolo (apartado 1), la documentaste y entendiste su semántica de escritura con OpenAPI (apartado 2), la probaste con MockMvc y con varios clientes simultáneos (apartado 3), y hoy verificas su disponibilidad de forma automatizable. En la Actividad 1.4 completas el CRUD de `Estudio` con el `DELETE` que falta y pones en marcha Actuator sobre tu propio proyecto.
+
+---
+
+## ✅ Ideas clave
+
+??? tip "Abrir resumen"
+
+    - La **disponibilidad** de un servicio tiene varios niveles: proceso vivo, responde peticiones, dependencias funcionando — no son lo mismo.
+    - Un **health check** es una comprobación automática, pensada para que la consulte una máquina (monitor, orquestador, CI), no una persona.
+    - **Spring Boot Actuator** expone `/actuator/health` con la dependencia `spring-boot-starter-actuator`; `management.endpoint.health.show-details: always` muestra el detalle de cada dependencia.
+    - GameVault agrega en `/actuator/health` el estado de PostgreSQL, MongoDB, RabbitMQ y Redis — si uno cae, el estado general pasa a `DOWN` aunque el resto siga funcionando.
