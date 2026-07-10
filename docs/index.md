@@ -20,9 +20,10 @@ En este módulo aprendes a que tus programas dejen de ser aplicaciones sueltas: 
 | Tema | Qué cubre | RA |
 |------|-----------|-----|
 | 🔁 [Tema 0 — Repaso](tema0/index.md) | Relaciones entre clases, colecciones y programación funcional | — |
-| 🧩 [Tema 1 — Título](tema1/index.md) | Resumen de una línea | RA1 |
-
-<!-- Añade una fila por cada tema nuevo que crees -->
+| 🌐 [Tema 1 — Servicios en red](tema1/index.md) | HTTP y REST, OpenAPI, tests MockMvc y monitorización con Actuator | RA4 |
+| 🔒 [Tema 2 — Programación segura](tema2/index.md) | Validación, HTTP Basic, BCrypt, JWT y roles | RA5 |
+| 🧵 [Tema 3 — Programación multihilo](tema3/index.md) | Hilos, eventos internos, listeners `@Async` y `TaskExecutor` | RA2 |
+| 🔌 [Tema 4 — Comunicaciones en red](tema4/index.md) | Sockets clásicos y WebSocket/STOMP con actividad en vivo | RA3 |
 
 ---
 

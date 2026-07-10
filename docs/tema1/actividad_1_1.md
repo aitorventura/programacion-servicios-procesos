@@ -1,40 +1,47 @@
-# 🧪 Actividad 1.1: Título descriptivo
+# 🧪 Actividad 1.1: Explorando la API de GameVault con un cliente HTTP
 
-!!! info "Objetivo"
-    Qué competencia concreta del currículo debe demostrar el alumno con esta actividad.
-
-<!--
-!!! warning "Descarga la plantilla"
-    📄 [Plantilla 1.1 — Título](plantillas/Actividad_1_1_Plantilla.docx){target="_blank" rel="noopener"}
-
-Descomenta el bloque de arriba (y crea el .docx en plantillas/) si la actividad se entrega
-en una plantilla Word. Si se responde directamente en el Aula Virtual o es una actividad
-práctica sin plantilla, no hace falta.
--->
+!!! warning "🚧 Contenido pendiente de desarrollo"
+    Esta actividad todavía no está redactada. Usa el prompt de más abajo con
+    `/improve-notes`, apoyándote en el proyecto **GameVault** adjunto, para generar el
+    enunciado definitivo.
 
 ---
 
-## 🔹 Parte A. Título de la parte
+## Prompt para `/improve-notes`
 
-Enunciado claro, con contexto específico si es posible (que el alumno no pueda resolverlo
-solo con IA genérica sin entender la materia: pide que lo aplique a algo suyo, que prediga
-un resultado antes de comprobarlo, o que justifique una decisión frente a una alternativa).
+```text
+Redacta la Actividad 1.1 del Tema 1 (RA4 - Generación de servicios en red) del módulo
+Programación de Servicios y Procesos (0490), semana real 3 del calendario. Si la
+actividad necesita plantilla/solución en .docx, no existe todavía skill específica de
+PSP: créala primero clonando /actividad-plantilla-acceso-a-datos con la paleta
+marrón/ámbar de este módulo (igual que pptx-psp es el clon marrón/ámbar de
+pptx-acceso-a-datos).
 
-1. Primer paso.
-2. Segundo paso.
+IMPORTANTE — enfoque: es una PRÁCTICA GUIADA, no un reto. El alumnado trabaja sobre su
+propia copia de GameVault (el mismo proyecto compartido con Acceso a Datos, construido
+individualmente durante el curso). El enunciado debe guiar paso a paso; solo se deja sin
+guiar, como mini-reto, lo que repita un patrón idéntico ya mostrado en la misma
+actividad. En esta actividad NO se escribe código: es exploración guiada de la API en
+marcha.
 
-**Pregunta de profundización.** Pregunta que exige razonar, no solo ejecutar.
+Objetivo (RA4, criterios a, c, e): que el alumnado arranque su GameVault y explore sus
+endpoints GET con un cliente HTTP (curl y/o Postman), aprendiendo a leer peticiones y
+respuestas HTTP reales.
 
----
-
-## 📤 Entregable
-
-Rellena la plantilla (o responde en el Aula Virtual) y entrega:
-
-1. Entregable concreto 1.
-2. Explicación razonada de las decisiones tomadas.
-3. Respuestas a las preguntas de profundización.
-
-## ✅ Criterios de corrección
-
-- Qué se valora y cómo.
+Estructura sugerida de pasos guiados:
+1. Arrancar GameVault (Docker Compose + aplicación, ya saben hacerlo del Tema 0 de AD) y
+   comprobar que escucha en el puerto 8080.
+2. Peticiones GET guiadas con los comandos exactos dados: `GET /api/v1/videojuegos`
+   (lista), `GET /api/v1/videojuegos/1` (detalle) — observar con `curl -v` (o la pestaña
+   de Postman) el verbo, la ruta, el código de estado 200, la cabecera Content-Type y el
+   cuerpo JSON, con cada parte señalada y explicada en el enunciado.
+3. Petición guiada a un recurso inexistente (`GET /api/v1/videojuegos/9999`) y análisis
+   de la respuesta 404 — conectar con VideojuegoService.findById() y su
+   ResponseStatusException, que el alumnado puede abrir y leer.
+4. Mini-reto (repite el patrón de los pasos 2-3): explorar por su cuenta
+   `GET /api/v1/estudios` y un GET de detalle de estudio, anotando verbo, código y
+   cuerpo — mismo procedimiento, distinto recurso.
+5. Pregunta de comprensión: ¿por qué un mismo cliente (curl) puede hablar con GameVault
+   y con cualquier otra API REST del mundo sin instalar nada específico? Conectar con la
+   idea de protocolo estándar del apartado de teoría.
+```
