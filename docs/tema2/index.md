@@ -7,12 +7,19 @@
 ## 🎯 Criterios de evaluación
 
 ✅ Se han identificado y aplicado principios y prácticas de programación segura.
+
 ✅ Se han analizado las principales técnicas y prácticas criptográficas.
+
 ✅ Se han definido e implantado políticas de seguridad para limitar y controlar el acceso de los usuarios a las aplicaciones desarrolladas.
+
 ✅ Se han utilizado esquemas de seguridad basados en roles.
+
 ✅ Se han empleado algoritmos criptográficos para proteger el acceso a la información almacenada.
+
 ✅ Se han identificado métodos para asegurar la información transmitida.
+
 ✅ Se han desarrollado aplicaciones que utilicen comunicaciones seguras para la transmisión de información.
+
 ✅ Se han depurado y documentado las aplicaciones desarrolladas.
 
 ---

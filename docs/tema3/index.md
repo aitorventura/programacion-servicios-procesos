@@ -7,15 +7,25 @@
 ## 🎯 Criterios de evaluación
 
 ✅ Se han identificado situaciones en las que resulte útil la utilización de varios hilos en un programa.
+
 ✅ Se han reconocido los mecanismos para crear, iniciar y finalizar hilos.
+
 ✅ Se han programado aplicaciones que implementen varios hilos.
+
 ✅ Se han identificado los posibles estados de ejecución de un hilo y programado aplicaciones que los gestionen.
+
 ✅ Se han utilizado mecanismos para compartir información entre varios hilos de un mismo proceso.
+
 ✅ Se han desarrollado programas formados por varios hilos sincronizados mediante técnicas específicas.
+
 ✅ Se ha establecido y controlado la prioridad de cada uno de los hilos de ejecución.
+
 ✅ Se han depurado y documentado los programas desarrollados.
+
 ✅ Se ha analizado el contexto de ejecución de los hilos.
+
 ✅ Se han analizado librerías específicas del lenguaje de programación que permiten la programación multihilo.
+
 ✅ Se han reconocido los problemas derivados de la compartición de información entre los hilos de un mismo proceso.
 
 ---

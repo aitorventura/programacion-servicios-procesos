@@ -7,12 +7,19 @@
 ## 🎯 Criterios de evaluación
 
 ✅ Se han identificado diferentes protocolos estándar de comunicación para la implementación de servicios en red.
+
 ✅ Se han reconocido las ventajas de la utilización de protocolos estándar para la comunicación entre aplicaciones y procesos.
+
 ✅ Se han analizado librerías que permitan implementar servicios en red utilizando protocolos estándar de comunicación.
+
 ✅ Se han desarrollado y probado servicios de comunicación en red.
+
 ✅ Se han utilizado clientes de comunicaciones para verificar el funcionamiento de los servicios.
+
 ✅ Se han incorporado mecanismos para posibilitar la comunicación simultánea de varios clientes con el servicio.
+
 ✅ Se ha verificado la disponibilidad del servicio.
+
 ✅ Se han depurado y documentado las aplicaciones desarrolladas.
 
 ---
