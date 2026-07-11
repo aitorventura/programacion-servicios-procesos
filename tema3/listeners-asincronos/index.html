@@ -1096,7 +1096,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../hilos-en-gamevault/" class="md-nav__link">
+      <a href="../hilos-en-una-app-real/" class="md-nav__link">
         
   
   
@@ -1490,12 +1490,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema4/websocket-gamevault/" class="md-nav__link">
+      <a href="../../tema4/websocket-stomp/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    WebSocket en GameVault
+    WebSocket con STOMP
     
   </span>
   
@@ -1687,7 +1687,7 @@
 <p>Ya tienes el contraste medido en la Actividad 3.2: sin <code>@Async</code>, tu listener trivial de prueba corría en el <strong>mismo hilo</strong> de la petición HTTP que publicó el evento. Con <code>@Async</code>, va a correr en un hilo <strong>distinto</strong> — lo vas a verificar de nuevo hoy, comparando los nombres de hilo en el log.</p>
 <hr>
 <h2 id="transactionaleventlistenerphase-after_commit">⏱️ <code>@TransactionalEventListener(phase = AFTER_COMMIT)</code><a class="headerlink" href="#transactionaleventlistenerphase-after_commit" title="Permanent link">¶</a></h2>
-<p>Aquí aparece un problema real, sutil, que un <code>@EventListener</code> a secas no resuelve: si el listener se dispara <strong>antes</strong> de que la transacción de <code>VideojuegoService.create()</code> haga <em>commit</em>, el hilo del warm-up podría leer la base de datos en un estado que <strong>todavía no incluye</strong> el videojuego recién creado — y recalentaría la caché con datos viejos, justo lo contrario de lo que quieres.</p>
+<p>Aquí aparece un problema real, sutil, que un <code>@EventListener</code> a secas no resuelve: si el listener se dispara <strong>antes</strong> de que la transacción de <code>LibroService.create()</code> haga <em>commit</em>, el hilo del warm-up podría leer la base de datos en un estado que <strong>todavía no incluye</strong> el libro recién creado — y recalentaría la caché con datos viejos, justo lo contrario de lo que quieres.</p>
 <p><code>@TransactionalEventListener(phase = AFTER_COMMIT)</code> resuelve esto: en vez de dispararse en el momento de <code>publishEvent(...)</code>, espera a que la transacción que publicó el evento haga <em>commit</em> con éxito, y solo entonces ejecuta el listener. Es la <strong>técnica específica de sincronización</strong> que necesitas para este caso concreto: sincronizar el arranque del hilo del listener con el momento exacto en que los datos ya son consistentes y visibles. Ya conoces <code>@Transactional</code> de Acceso a Datos — esto es la contrapartida del lado "quien reacciona a que una transacción ha terminado", no del lado "quien abre la transacción".</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
 <span class="normal"><a href="#__codelineno-0-2">2</a></span>

@@ -1192,7 +1192,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema3/hilos-en-gamevault/" class="md-nav__link">
+      <a href="../../tema3/hilos-en-una-app-real/" class="md-nav__link">
         
   
   
@@ -1490,12 +1490,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema4/websocket-gamevault/" class="md-nav__link">
+      <a href="../../tema4/websocket-stomp/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    WebSocket en GameVault
+    WebSocket con STOMP
     
   </span>
   
@@ -1695,7 +1695,7 @@
 <tr>
 <th></th>
 <th>Pregunta que responde</th>
-<th>Ejemplo en GameVault</th>
+<th>Ejemplo</th>
 </tr>
 </thead>
 <tbody>
@@ -1707,7 +1707,7 @@
 <tr>
 <td><strong>Autorización</strong></td>
 <td>¿Puedes hacer esto?</td>
-<td>Comprobar que, siendo tú, tienes permiso para borrar un videojuego.</td>
+<td>Comprobar que, siendo tú, tienes permiso para borrar un libro del catálogo.</td>
 </tr>
 </tbody>
 </table>
@@ -1767,7 +1767,7 @@
 <a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">SecurityFilterChain</span><span class="w"> </span><span class="nf">securityFilterChain</span><span class="p">(</span><span class="n">HttpSecurity</span><span class="w"> </span><span class="n">http</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">http</span>
 <a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">            </span><span class="p">.</span><span class="na">authorizeHttpRequests</span><span class="p">(</span><span class="n">auth</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">auth</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">                    </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">                    </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/libros/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
 <a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">                    </span><span class="p">.</span><span class="na">anyRequest</span><span class="p">().</span><span class="na">authenticated</span><span class="p">()</span>
 <a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">            </span><span class="p">)</span>
 <a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="w">            </span><span class="p">.</span><span class="na">httpBasic</span><span class="p">(</span><span class="n">Customizer</span><span class="p">.</span><span class="na">withDefaults</span><span class="p">())</span>

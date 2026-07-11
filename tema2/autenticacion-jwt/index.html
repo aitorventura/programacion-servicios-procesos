@@ -1037,13 +1037,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#aterrizaje-en-gamevault-el-flujo-completo" class="md-nav__link">
+  <a href="#el-flujo-completo-pieza-a-pieza" class="md-nav__link">
     <span class="md-ellipsis">
-      🎮 Aterrizaje en GameVault: el flujo completo
+      🔑 El flujo completo, pieza a pieza
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="🎮 Aterrizaje en GameVault: el flujo completo">
+    <nav class="md-nav" aria-label="🔑 El flujo completo, pieza a pieza">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1267,7 +1267,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema3/hilos-en-gamevault/" class="md-nav__link">
+      <a href="../../tema3/hilos-en-una-app-real/" class="md-nav__link">
         
   
   
@@ -1565,12 +1565,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema4/websocket-gamevault/" class="md-nav__link">
+      <a href="../../tema4/websocket-stomp/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    WebSocket en GameVault
+    WebSocket con STOMP
     
   </span>
   
@@ -1735,13 +1735,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#aterrizaje-en-gamevault-el-flujo-completo" class="md-nav__link">
+  <a href="#el-flujo-completo-pieza-a-pieza" class="md-nav__link">
     <span class="md-ellipsis">
-      🎮 Aterrizaje en GameVault: el flujo completo
+      🔑 El flujo completo, pieza a pieza
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="🎮 Aterrizaje en GameVault: el flujo completo">
+    <nav class="md-nav" aria-label="🔑 El flujo completo, pieza a pieza">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1859,10 +1859,11 @@
 </code></pre></div></td></tr></table></div>
 <div class="admonition danger">
 <p class="admonition-title">El contenido NO va cifrado</p>
-<p>Cualquiera que capture un JWT puede leer su payload completo, sin necesitar ninguna clave — igual que decodificaste HTTP Basic la semana pasada. Lo que impide falsificarlo es la <strong>firma</strong> (la tercera parte), calculada con un algoritmo criptográfico (HMAC, en el caso de GameVault) y un secreto que solo conoce el servidor. Si alguien modificara el payload a mano, la firma dejaría de coincidir, y el servidor lo rechazaría.</p>
+<p>Cualquiera que capture un JWT puede leer su payload completo, sin necesitar ninguna clave — igual que decodificaste HTTP Basic la semana pasada. Lo que impide falsificarlo es la <strong>firma</strong> (la tercera parte), calculada con un algoritmo criptográfico (HMAC, en el ejemplo que vas a ver) y un secreto que solo conoce el servidor. Si alguien modificara el payload a mano, la firma dejaría de coincidir, y el servidor lo rechazaría.</p>
 </div>
 <hr>
-<h2 id="aterrizaje-en-gamevault-el-flujo-completo">🎮 Aterrizaje en GameVault: el flujo completo<a class="headerlink" href="#aterrizaje-en-gamevault-el-flujo-completo" title="Permanent link">¶</a></h2>
+<h2 id="el-flujo-completo-pieza-a-pieza">🔑 El flujo completo, pieza a pieza<a class="headerlink" href="#el-flujo-completo-pieza-a-pieza" title="Permanent link">¶</a></h2>
+<p>Siguiendo con la API de la librería: vas a ver las tres piezas que convierten el login en un token y ese token en identidad para el resto de peticiones.</p>
 <h3 id="generar-el-token-jwtservice">Generar el token: <code>JwtService</code><a class="headerlink" href="#generar-el-token-jwtservice" title="Permanent link">¶</a></h3>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-2-2"> 2</a></span>
@@ -1898,7 +1899,7 @@
 <a id="__codelineno-2-4" name="__codelineno-2-4"></a>
 <a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">JwtEncoder</span><span class="w"> </span><span class="n">jwtEncoder</span><span class="p">;</span>
 <a id="__codelineno-2-6" name="__codelineno-2-6"></a>
-<a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">    </span><span class="nd">@Value</span><span class="p">(</span><span class="s">"${gamevault.jwt.expiration-minutes}"</span><span class="p">)</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">    </span><span class="nd">@Value</span><span class="p">(</span><span class="s">"${libreria.jwt.expiration-minutes}"</span><span class="p">)</span>
 <a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">expirationMinutes</span><span class="p">;</span>
 <a id="__codelineno-2-9" name="__codelineno-2-9"></a>
 <a id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">generarToken</span><span class="p">(</span><span class="n">Authentication</span><span class="w"> </span><span class="n">authentication</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -1910,7 +1911,7 @@
 <a id="__codelineno-2-16" name="__codelineno-2-16"></a><span class="w">                </span><span class="p">.</span><span class="na">toList</span><span class="p">();</span>
 <a id="__codelineno-2-17" name="__codelineno-2-17"></a>
 <a id="__codelineno-2-18" name="__codelineno-2-18"></a><span class="w">        </span><span class="n">JwtClaimsSet</span><span class="w"> </span><span class="n">claims</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JwtClaimsSet</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<a id="__codelineno-2-19" name="__codelineno-2-19"></a><span class="w">                </span><span class="p">.</span><span class="na">issuer</span><span class="p">(</span><span class="s">"gamevault"</span><span class="p">)</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19"></a><span class="w">                </span><span class="p">.</span><span class="na">issuer</span><span class="p">(</span><span class="s">"libreria"</span><span class="p">)</span>
 <a id="__codelineno-2-20" name="__codelineno-2-20"></a><span class="w">                </span><span class="p">.</span><span class="na">issuedAt</span><span class="p">(</span><span class="n">ahora</span><span class="p">)</span>
 <a id="__codelineno-2-21" name="__codelineno-2-21"></a><span class="w">                </span><span class="p">.</span><span class="na">expiresAt</span><span class="p">(</span><span class="n">ahora</span><span class="p">.</span><span class="na">plusSeconds</span><span class="p">(</span><span class="n">expirationMinutes</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">60</span><span class="p">))</span>
 <a id="__codelineno-2-22" name="__codelineno-2-22"></a><span class="w">                </span><span class="p">.</span><span class="na">subject</span><span class="p">(</span><span class="n">authentication</span><span class="p">.</span><span class="na">getName</span><span class="p">())</span>
@@ -1958,7 +1959,7 @@
 <a id="__codelineno-3-16" name="__codelineno-3-16"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-3-17" name="__codelineno-3-17"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p><code>AuthenticationManager.authenticate(...)</code> es quien verifica de verdad las credenciales — por debajo, usa el <code>GamevaultUserDetailsService</code> y el <code>PasswordEncoder</code> que ya construiste la semana pasada. Si las credenciales son correctas, genera el token; si no, lanza una excepción (que <code>GlobalExceptionHandler</code>, del apartado 1, convierte en una respuesta coherente).</p>
+<p><code>AuthenticationManager.authenticate(...)</code> es quien verifica de verdad las credenciales — por debajo, usa el <code>UserDetailsService</code> y el <code>PasswordEncoder</code> que ya construiste la semana pasada. Si las credenciales son correctas, genera el token; si no, lanza una excepción (que <code>GlobalExceptionHandler</code>, del apartado 1, convierte en una respuesta coherente).</p>
 <h3 id="el-cambio-de-modo-en-securityconfig">El cambio de modo en <code>SecurityConfig</code><a class="headerlink" href="#el-cambio-de-modo-en-securityconfig" title="Permanent link">¶</a></h3>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span>
 <span class="normal"><a href="#__codelineno-4-2">2</a></span>
@@ -1975,7 +1976,7 @@
 <a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="p">.</span><span class="na">httpBasic</span><span class="p">(</span><span class="n">AbstractHttpConfigurer</span><span class="p">::</span><span class="n">disable</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 <p><code>SessionCreationPolicy.STATELESS</code> es la consecuencia directa de usar tokens autocontenidos: con JWT no hace falta que el servidor guarde ninguna sesión, así que se lo dices explícitamente a Spring Security. <code>oauth2ResourceServer(oauth2 -&gt; oauth2.jwt(...))</code> activa la validación de JWT en cada petición protegida — Spring verifica la firma automáticamente, usando el <code>JwtDecoder</code> configurado con el mismo secreto. <code>httpBasic(AbstractHttpConfigurer::disable)</code> retira oficialmente el mecanismo provisional de las semanas 8-9: JWT es ahora el único mecanismo de autenticación.</p>
-<p>Sobre el secreto (<code>@Value("${gamevault.jwt.secret}")</code>): sigue el mismo principio que viste en el apartado 1 — nunca en el código, siempre en configuración externa (<code>application-dev.yaml</code>), para que en un entorno real ese valor pueda ser distinto y no viaje en el propio código fuente.</p>
+<p>Sobre el secreto (<code>@Value("${libreria.jwt.secret}")</code>): sigue el mismo principio que viste en el apartado 1 — nunca en el código, siempre en configuración externa (<code>application-dev.yaml</code>), para que en un entorno real ese valor pueda ser distinto y no viaje en el propio código fuente.</p>
 <h3 id="get-apiv1authme"><code>GET /api/v1/auth/me</code><a class="headerlink" href="#get-apiv1authme" title="Permanent link">¶</a></h3>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span>
 <span class="normal"><a href="#__codelineno-5-2">2</a></span>
@@ -1993,7 +1994,7 @@
 <p>JWT evita reenviar la contraseña en cada petición — un avance real. Pero el <strong>canal</strong> en sí sigue siendo el mismo: si no hay HTTPS, tanto el login como el propio token viajan en claro por la red, interceptables por cualquiera con acceso a esa red. La firma del JWT garantiza <strong>integridad</strong> (que no se ha modificado), no <strong>confidencialidad del transporte</strong> — son dos cosas distintas.</p>
 <p>Monta HTTPS mínimo en tu entorno de desarrollo, con un certificado autofirmado. <code>keytool</code> es la herramienta de gestión de claves y certificados que viene incluida con el propio JDK — no hace falta instalar nada aparte:</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1">1</a></span>
-<span class="normal"><a href="#__codelineno-6-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1"></a>keytool<span class="w"> </span>-genkeypair<span class="w"> </span>-alias<span class="w"> </span>gamevault<span class="w"> </span>-keyalg<span class="w"> </span>RSA<span class="w"> </span>-keysize<span class="w"> </span><span class="m">2048</span><span class="w"> </span><span class="se">\</span>
+<span class="normal"><a href="#__codelineno-6-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1"></a>keytool<span class="w"> </span>-genkeypair<span class="w"> </span>-alias<span class="w"> </span>miapp<span class="w"> </span>-keyalg<span class="w"> </span>RSA<span class="w"> </span>-keysize<span class="w"> </span><span class="m">2048</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-6-2" name="__codelineno-6-2"></a><span class="w">  </span>-storetype<span class="w"> </span>PKCS12<span class="w"> </span>-keystore<span class="w"> </span>keystore.p12<span class="w"> </span>-validity<span class="w"> </span><span class="m">365</span>
 </code></pre></div></td></tr></table></div>
 <p>Y en <code>application-dev.yaml</code> (o un perfil <code>https</code> aparte, para no obligar al resto del curso a complicarse con certificados):</p>

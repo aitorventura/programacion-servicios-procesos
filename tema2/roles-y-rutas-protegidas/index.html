@@ -1192,7 +1192,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema3/hilos-en-gamevault/" class="md-nav__link">
+      <a href="../../tema3/hilos-en-una-app-real/" class="md-nav__link">
         
   
   
@@ -1490,12 +1490,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema4/websocket-gamevault/" class="md-nav__link">
+      <a href="../../tema4/websocket-stomp/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    WebSocket en GameVault
+    WebSocket con STOMP
     
   </span>
   
@@ -1699,23 +1699,18 @@
 <td>Cualquiera</td>
 </tr>
 <tr>
-<td><code>/api/v1/videojuegos</code>, <code>/api/v1/estudios</code></td>
+<td><code>/api/v1/libros</code>, <code>/api/v1/editoriales</code></td>
 <td>GET</td>
 <td>Cualquiera</td>
 </tr>
 <tr>
-<td><code>/api/v1/videojuegos/*/reviews</code></td>
+<td><code>/api/v1/libros/*/resenas</code></td>
 <td>POST</td>
 <td><code>USER</code> o <code>ADMIN</code></td>
 </tr>
 <tr>
-<td><code>/api/v1/videojuegos</code>, <code>/api/v1/estudios</code></td>
+<td><code>/api/v1/libros</code>, <code>/api/v1/editoriales</code></td>
 <td>POST/PUT/DELETE</td>
-<td>Solo <code>ADMIN</code></td>
-</tr>
-<tr>
-<td><code>/api/v1/actividad</code></td>
-<td>GET</td>
 <td>Solo <code>ADMIN</code></td>
 </tr>
 <tr>
@@ -1742,26 +1737,24 @@
 <span class="normal"><a href="#__codelineno-0-10">10</a></span>
 <span class="normal"><a href="#__codelineno-0-11">11</a></span>
 <span class="normal"><a href="#__codelineno-0-12">12</a></span>
-<span class="normal"><a href="#__codelineno-0-13">13</a></span>
-<span class="normal"><a href="#__codelineno-0-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="p">.</span><span class="na">authorizeHttpRequests</span><span class="p">(</span><span class="n">auth</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">auth</span>
+<span class="normal"><a href="#__codelineno-0-13">13</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="p">.</span><span class="na">authorizeHttpRequests</span><span class="p">(</span><span class="n">auth</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">auth</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/auth/login"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos"</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/estudios"</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/estudios/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/actividad"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/*/reviews"</span><span class="p">).</span><span class="na">hasAnyRole</span><span class="p">(</span><span class="s">"USER"</span><span class="p">,</span><span class="w"> </span><span class="s">"ADMIN"</span><span class="p">)</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">PUT</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/*"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">DELETE</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/*"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/estudios"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="s">"/error"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="s">"/v3/api-docs/**"</span><span class="p">,</span><span class="w"> </span><span class="s">"/swagger-ui/**"</span><span class="p">,</span><span class="w"> </span><span class="s">"/swagger-ui.html"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="w">        </span><span class="p">.</span><span class="na">anyRequest</span><span class="p">().</span><span class="na">denyAll</span><span class="p">()</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/libros"</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/libros/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/editoriales"</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/editoriales/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/libros/*/resenas"</span><span class="p">).</span><span class="na">hasAnyRole</span><span class="p">(</span><span class="s">"USER"</span><span class="p">,</span><span class="w"> </span><span class="s">"ADMIN"</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/libros"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">PUT</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/libros/*"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">DELETE</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/libros/*"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/editoriales"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="s">"/error"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="s">"/v3/api-docs/**"</span><span class="p">,</span><span class="w"> </span><span class="s">"/swagger-ui/**"</span><span class="p">,</span><span class="w"> </span><span class="s">"/swagger-ui.html"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="w">        </span><span class="p">.</span><span class="na">anyRequest</span><span class="p">().</span><span class="na">denyAll</span><span class="p">()</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 <p>La línea más importante de todo el bloque es la última: <strong><code>anyRequest().denyAll()</code></strong>. Cualquier ruta que no aparezca explícitamente en las reglas anteriores queda <strong>cerrada por defecto</strong> — es el principio de mínima exposición del apartado 1, llevado hasta el final: nada se abre "por accidente" simplemente por existir.</p>
 <div class="admonition warning">
 <p class="admonition-title">Cada ruta nueva necesita su propia regla, o queda bloqueada</p>
-<p>Si has ido añadiendo rutas propias durante el curso (el <code>PUT</code>/<code>DELETE</code> de <code>Estudio</code> del Tema 1, el ranking de Acceso a Datos...) y no tienen una regla explícita en este bloque, <code>denyAll()</code> las bloqueará — aunque el endpoint en sí funcione perfectamente. Este es un error típico y real: "he probado mi endpoint nuevo y me da 403/401 sin motivo aparente" casi siempre significa "se me ha olvidado añadir su regla aquí".</p>
+<p>Si has ido añadiendo rutas propias durante el curso (el <code>PUT</code>/<code>DELETE</code> del Tema 1, el ranking de Acceso a Datos...) y no tienen una regla explícita en este bloque, <code>denyAll()</code> las bloqueará — aunque el endpoint en sí funcione perfectamente. Este es un error típico y real: "he probado mi endpoint nuevo y me da 403/401 sin motivo aparente" casi siempre significa "se me ha olvidado añadir su regla aquí".</p>
 </div>
 <hr>
 <h2 id="401-vs-403-con-criterio">🚦 401 vs. 403, con criterio<a class="headerlink" href="#401-vs-403-con-criterio" title="Permanent link">¶</a></h2>
@@ -1787,7 +1780,7 @@
 </tr>
 </tbody>
 </table>
-<p>Con la tabla de arriba: un <code>POST /api/v1/videojuegos</code> sin token da <code>401</code>; el mismo <code>POST</code> con el token de un usuario <code>USER</code> (no <code>ADMIN</code>) da <code>403</code>.</p>
+<p>Con la tabla de arriba: un <code>POST /api/v1/libros</code> sin token da <code>401</code>; el mismo <code>POST</code> con el token de un usuario <code>USER</code> (no <code>ADMIN</code>) da <code>403</code>.</p>
 <hr>
 <h2 id="tests-de-seguridad-con-mockmvc">🧪 Tests de seguridad con MockMvc<a class="headerlink" href="#tests-de-seguridad-con-mockmvc" title="Permanent link">¶</a></h2>
 <p>Ya sabes construir tests MockMvc desde el Tema 1. Probar seguridad añade un matiz: necesitas un token real para las peticiones autenticadas. El patrón habitual es hacer un <strong>login real</strong> dentro del propio test, y reutilizar el token obtenido:</p>
@@ -1815,7 +1808,9 @@
 <span class="normal"><a href="#__codelineno-1-22">22</a></span>
 <span class="normal"><a href="#__codelineno-1-23">23</a></span>
 <span class="normal"><a href="#__codelineno-1-24">24</a></span>
-<span class="normal"><a href="#__codelineno-1-25">25</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">username</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">password</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<span class="normal"><a href="#__codelineno-1-25">25</a></span>
+<span class="normal"><a href="#__codelineno-1-26">26</a></span>
+<span class="normal"><a href="#__codelineno-1-27">27</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">username</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">password</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/auth/login"</span><span class="p">)</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">                    </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
 <a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">                    </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="s">"""</span>
@@ -1827,19 +1822,21 @@
 <a id="__codelineno-1-10" name="__codelineno-1-10"></a><span class="p">}</span>
 <a id="__codelineno-1-11" name="__codelineno-1-11"></a>
 <a id="__codelineno-1-12" name="__codelineno-1-12"></a><span class="nd">@Test</span>
-<a id="__codelineno-1-13" name="__codelineno-1-13"></a><span class="kt">void</span><span class="w"> </span><span class="nf">crearReview_DebeDevolver403_CuandoElRolNoEsSuficiente</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13"></a><span class="kt">void</span><span class="w"> </span><span class="nf">crearLibro_DebeDevolver403_CuandoElRolNoEsSuficiente</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-1-14" name="__codelineno-1-14"></a><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">userToken</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">login</span><span class="p">(</span><span class="s">"user"</span><span class="p">,</span><span class="w"> </span><span class="s">"user123"</span><span class="p">);</span>
 <a id="__codelineno-1-15" name="__codelineno-1-15"></a>
-<a id="__codelineno-1-16" name="__codelineno-1-16"></a><span class="w">    </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">"/api/v1/actividad"</span><span class="p">)</span>
-<a id="__codelineno-1-17" name="__codelineno-1-17"></a><span class="w">                    </span><span class="p">.</span><span class="na">header</span><span class="p">(</span><span class="s">"Authorization"</span><span class="p">,</span><span class="w"> </span><span class="s">"Bearer "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">userToken</span><span class="p">))</span>
-<a id="__codelineno-1-18" name="__codelineno-1-18"></a><span class="w">            </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isForbidden</span><span class="p">());</span>
-<a id="__codelineno-1-19" name="__codelineno-1-19"></a><span class="p">}</span>
-<a id="__codelineno-1-20" name="__codelineno-1-20"></a>
-<a id="__codelineno-1-21" name="__codelineno-1-21"></a><span class="nd">@Test</span>
-<a id="__codelineno-1-22" name="__codelineno-1-22"></a><span class="kt">void</span><span class="w"> </span><span class="nf">authMe_DebeDevolver401_CuandoNoHayToken</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-1-23" name="__codelineno-1-23"></a><span class="w">    </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">"/api/v1/auth/me"</span><span class="p">))</span>
-<a id="__codelineno-1-24" name="__codelineno-1-24"></a><span class="w">            </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isUnauthorized</span><span class="p">());</span>
-<a id="__codelineno-1-25" name="__codelineno-1-25"></a><span class="p">}</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16"></a><span class="w">    </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/libros"</span><span class="p">)</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17"></a><span class="w">                    </span><span class="p">.</span><span class="na">header</span><span class="p">(</span><span class="s">"Authorization"</span><span class="p">,</span><span class="w"> </span><span class="s">"Bearer "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">userToken</span><span class="p">)</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18"></a><span class="w">                    </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19"></a><span class="w">                    </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="s">"{}"</span><span class="p">))</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20"></a><span class="w">            </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isForbidden</span><span class="p">());</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21"></a><span class="p">}</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22"></a>
+<a id="__codelineno-1-23" name="__codelineno-1-23"></a><span class="nd">@Test</span>
+<a id="__codelineno-1-24" name="__codelineno-1-24"></a><span class="kt">void</span><span class="w"> </span><span class="nf">authMe_DebeDevolver401_CuandoNoHayToken</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-25" name="__codelineno-1-25"></a><span class="w">    </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">"/api/v1/auth/me"</span><span class="p">))</span>
+<a id="__codelineno-1-26" name="__codelineno-1-26"></a><span class="w">            </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isUnauthorized</span><span class="p">());</span>
+<a id="__codelineno-1-27" name="__codelineno-1-27"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>El método <code>login(...)</code> hace una petición real de login dentro del test, extrae el <code>accessToken</code> de la respuesta, y ese token se reutiliza en las peticiones siguientes con <code>.header("Authorization", "Bearer " + token)</code> — es exactamente el mismo flujo manual que ya practicaste con <code>curl</code>, pero automatizado y repetible.</p>
 <hr>

@@ -967,13 +967,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#aterrizaje-en-gamevault-usuarios-reales" class="md-nav__link">
+  <a href="#usuarios-reales-en-la-base-de-datos" class="md-nav__link">
     <span class="md-ellipsis">
-      🎮 Aterrizaje en GameVault: usuarios reales
+      🗄️ Usuarios reales en la base de datos
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="🎮 Aterrizaje en GameVault: usuarios reales">
+    <nav class="md-nav" aria-label="🗄️ Usuarios reales en la base de datos">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -995,9 +995,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#gamevaultuserdetailsservice-el-sustituto-del-inmemoryuserdetailsmanager" class="md-nav__link">
+  <a href="#un-userdetailsservice-propio-el-sustituto-del-inmemoryuserdetailsmanager" class="md-nav__link">
     <span class="md-ellipsis">
-      GamevaultUserDetailsService: el sustituto del InMemoryUserDetailsManager
+      Un UserDetailsService propio: el sustituto del InMemoryUserDetailsManager
     </span>
   </a>
   
@@ -1225,7 +1225,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema3/hilos-en-gamevault/" class="md-nav__link">
+      <a href="../../tema3/hilos-en-una-app-real/" class="md-nav__link">
         
   
   
@@ -1523,12 +1523,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema4/websocket-gamevault/" class="md-nav__link">
+      <a href="../../tema4/websocket-stomp/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    WebSocket en GameVault
+    WebSocket con STOMP
     
   </span>
   
@@ -1669,13 +1669,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#aterrizaje-en-gamevault-usuarios-reales" class="md-nav__link">
+  <a href="#usuarios-reales-en-la-base-de-datos" class="md-nav__link">
     <span class="md-ellipsis">
-      🎮 Aterrizaje en GameVault: usuarios reales
+      🗄️ Usuarios reales en la base de datos
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="🎮 Aterrizaje en GameVault: usuarios reales">
+    <nav class="md-nav" aria-label="🗄️ Usuarios reales en la base de datos">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1697,9 +1697,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#gamevaultuserdetailsservice-el-sustituto-del-inmemoryuserdetailsmanager" class="md-nav__link">
+  <a href="#un-userdetailsservice-propio-el-sustituto-del-inmemoryuserdetailsmanager" class="md-nav__link">
     <span class="md-ellipsis">
-      GamevaultUserDetailsService: el sustituto del InMemoryUserDetailsManager
+      Un UserDetailsService propio: el sustituto del InMemoryUserDetailsManager
     </span>
   </a>
   
@@ -1788,7 +1788,7 @@
 <p>Existe otra familia de criptografía, la de <strong>clave pública/privada</strong>: un par de claves matemáticamente relacionadas donde lo que cifra una (o firma) solo lo puede verificar la otra. No la necesitas todavía — la retomarás la semana que viene, cuando veas cómo se firma un JWT.</p>
 </div>
 <hr>
-<h2 id="aterrizaje-en-gamevault-usuarios-reales">🎮 Aterrizaje en GameVault: usuarios reales<a class="headerlink" href="#aterrizaje-en-gamevault-usuarios-reales" title="Permanent link">¶</a></h2>
+<h2 id="usuarios-reales-en-la-base-de-datos">🗄️ Usuarios reales en la base de datos<a class="headerlink" href="#usuarios-reales-en-la-base-de-datos" title="Permanent link">¶</a></h2>
 <h3 id="la-entidad-usuario">La entidad <code>Usuario</code><a class="headerlink" href="#la-entidad-usuario" title="Permanent link">¶</a></h3>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
@@ -1843,7 +1843,7 @@
 <div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a>{bcrypt}$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy
 </code></pre></div></td></tr></table></div>
 <p>Diseccionado: <code>{bcrypt}</code> (el prefijo del <code>DelegatingPasswordEncoder</code>), <code>$2a$</code> (la versión del algoritmo), <code>10$</code> (el factor de coste — aquí, 2¹⁰ iteraciones), y el resto combina la sal y el hash resultante, ambos codificados en la misma cadena — no hace falta guardar la sal en una columna aparte, viaja incluida.</p>
-<h3 id="gamevaultuserdetailsservice-el-sustituto-del-inmemoryuserdetailsmanager"><code>GamevaultUserDetailsService</code>: el sustituto del <code>InMemoryUserDetailsManager</code><a class="headerlink" href="#gamevaultuserdetailsservice-el-sustituto-del-inmemoryuserdetailsmanager" title="Permanent link">¶</a></h3>
+<h3 id="un-userdetailsservice-propio-el-sustituto-del-inmemoryuserdetailsmanager">Un <code>UserDetailsService</code> propio: el sustituto del <code>InMemoryUserDetailsManager</code><a class="headerlink" href="#un-userdetailsservice-propio-el-sustituto-del-inmemoryuserdetailsmanager" title="Permanent link">¶</a></h3>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-3-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-3-3"> 3</a></span>
@@ -1863,7 +1863,7 @@
 <span class="normal"><a href="#__codelineno-3-17">17</a></span>
 <span class="normal"><a href="#__codelineno-3-18">18</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nd">@Service</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="nd">@RequiredArgsConstructor</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">GamevaultUserDetailsService</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">UserDetailsService</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">BdUserDetailsService</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">UserDetailsService</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-3-4" name="__codelineno-3-4"></a>
 <a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">UsuarioRepository</span><span class="w"> </span><span class="n">usuarioRepository</span><span class="p">;</span>
 <a id="__codelineno-3-6" name="__codelineno-3-6"></a>
@@ -1893,7 +1893,7 @@
 <li>La <strong>sal</strong> hace que contraseñas iguales produzcan hashes distintos, evitando comparación directa y tablas arcoíris.</li>
 <li><strong>BCrypt</strong> es deliberadamente lento (factor de coste configurable), lo que lo hace resistente a fuerza bruta frente a un hash rápido como SHA-256 a secas.</li>
 <li><code>DelegatingPasswordEncoder</code> antepone un prefijo (<code>{bcrypt}</code>) al hash, indicando el algoritmo usado — el mismo bean codifica y verifica.</li>
-<li><code>GamevaultUserDetailsService</code> sustituye al <code>InMemoryUserDetailsManager</code>: implementa <code>UserDetailsService</code> buscando en la base de datos real.</li>
+<li>Un <code>UserDetailsService</code> propio sustituye al <code>InMemoryUserDetailsManager</code>: busca los usuarios en la base de datos real.</li>
 </ul>
 </details></div>
 

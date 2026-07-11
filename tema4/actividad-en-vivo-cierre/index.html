@@ -1094,7 +1094,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema3/hilos-en-gamevault/" class="md-nav__link">
+      <a href="../../tema3/hilos-en-una-app-real/" class="md-nav__link">
         
   
   
@@ -1394,12 +1394,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../websocket-gamevault/" class="md-nav__link">
+      <a href="../websocket-stomp/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    WebSocket en GameVault
+    WebSocket con STOMP
     
   </span>
   
@@ -1716,7 +1716,7 @@
 <p><code>ActividadService.registrar()</code> ya recibe cada evento del catálogo (a través del consumer de RabbitMQ, analizado en el Tema 3) y lo guarda en PostgreSQL. El plan de hoy: inyectar ahí <code>SimpMessagingTemplate</code> y, además de guardar, publicar el mismo registro en <code>/topic/actividad</code>.</p>
 <p>El viaje completo de un dato, de principio a fin — el broche de todo el módulo, porque atraviesa <strong>todo</strong> lo construido en el curso:</p>
 <pre class="mermaid"><code>flowchart LR
-    A["🌐 Petición HTTP&lt;br/&gt;(hilo de Tomcat)"] --&gt; B["VideojuegoService"]
+    A["🌐 Petición HTTP&lt;br/&gt;(hilo de Tomcat)"] --&gt; B["LibroService"]
     B --&gt;|"publica evento"| C["RabbitMQ"]
     C -.-&gt;|"consume&lt;br/&gt;(hilo del listener)"| D["ActividadService.registrar()"]
     D --&gt; E["💾 PostgreSQL"]
@@ -1843,7 +1843,7 @@
 <p>Con trazas de nombre de hilo en todo el camino (herencia del Tema 3: HTTP → listener de RabbitMQ → push WebSocket), puedes seguir el recorrido completo de un dato en el log. Y documentar el canal — endpoint, topic, formato del mensaje, política de acceso — de la misma forma en que documentaste la API REST con OpenAPI. Con una salvedad: WebSocket no aparece en Swagger (que solo describe HTTP tradicional), así que este canal se documenta <strong>a mano</strong>, en un fichero aparte.</p>
 <hr>
 <h2 id="recapitulacion-de-todo-el-modulo">🧭 Recapitulación de todo el módulo<a class="headerlink" href="#recapitulacion-de-todo-el-modulo" title="Permanent link">¶</a></h2>
-<p>Comunicaciones en red: sockets a mano (Actividad 4.1) → WebSocket/STOMP como ampliación (Actividad 4.2) → emisión real conectada al proyecto, con su seguridad corregida (Actividad 4.3). Y con esto se completa también todo el módulo 0490: servicios en red probados y monitorizados → programación segura con JWT y roles → tareas en segundo plano con hilos propios → comunicaciones en red, de sockets a mano a WebSocket en tiempo real — todo sobre el mismo GameVault que también has construido en Acceso a Datos.</p>
+<p>Comunicaciones en red: sockets a mano (Actividad 4.1) → WebSocket/STOMP como ampliación (Actividad 4.2) → emisión real conectada al proyecto, con su seguridad corregida (Actividad 4.3). Y con esto se completa también todo el módulo 0490: servicios en red probados y monitorizados → programación segura con JWT y roles → tareas en segundo plano con hilos propios → comunicaciones en red, de sockets a mano a WebSocket en tiempo real — todo sobre el mismo proyecto que también has construido en Acceso a Datos.</p>
 <hr>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
 <details class="tip">

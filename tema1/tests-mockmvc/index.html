@@ -715,13 +715,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#aterrizaje-en-gamevault-leyendo-videojuegocontrollertest" class="md-nav__link">
+  <a href="#un-ejemplo-completo-el-test-del-librocontroller" class="md-nav__link">
     <span class="md-ellipsis">
-      🎮 Aterrizaje en GameVault: leyendo VideojuegoControllerTest
+      📖 Un ejemplo completo: el test del LibroController
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="🎮 Aterrizaje en GameVault: leyendo VideojuegoControllerTest">
+    <nav class="md-nav" aria-label="📖 Un ejemplo completo: el test del LibroController">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -748,9 +748,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#lo-que-viene-el-put-de-estudio" class="md-nav__link">
+  <a href="#lo-que-viene" class="md-nav__link">
     <span class="md-ellipsis">
-      🎯 Lo que viene: el PUT de Estudio
+      🎯 Lo que viene
     </span>
   </a>
   
@@ -1216,7 +1216,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema3/hilos-en-gamevault/" class="md-nav__link">
+      <a href="../../tema3/hilos-en-una-app-real/" class="md-nav__link">
         
   
   
@@ -1514,12 +1514,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema4/websocket-gamevault/" class="md-nav__link">
+      <a href="../../tema4/websocket-stomp/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    WebSocket en GameVault
+    WebSocket con STOMP
     
   </span>
   
@@ -1660,13 +1660,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#aterrizaje-en-gamevault-leyendo-videojuegocontrollertest" class="md-nav__link">
+  <a href="#un-ejemplo-completo-el-test-del-librocontroller" class="md-nav__link">
     <span class="md-ellipsis">
-      🎮 Aterrizaje en GameVault: leyendo VideojuegoControllerTest
+      📖 Un ejemplo completo: el test del LibroController
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="🎮 Aterrizaje en GameVault: leyendo VideojuegoControllerTest">
+    <nav class="md-nav" aria-label="📖 Un ejemplo completo: el test del LibroController">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1693,9 +1693,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#lo-que-viene-el-put-de-estudio" class="md-nav__link">
+  <a href="#lo-que-viene" class="md-nav__link">
     <span class="md-ellipsis">
-      🎯 Lo que viene: el PUT de Estudio
+      🎯 Lo que viene
     </span>
   </a>
   
@@ -1785,7 +1785,7 @@
 <p><strong>MockMvc</strong> es la herramienta de Spring para probar controllers REST sin necesitar un servidor HTTP real arrancado: simula peticiones HTTP contra tus controladores, dentro del propio test, y te permite comprobar el código de estado y el cuerpo de la respuesta con código Java.</p>
 <p>Es, en esencia, un tercer cliente — como <code>curl</code> o Swagger UI — pero con una diferencia clave: es <strong>repetible</strong> y se puede ejecutar automáticamente (en tu máquina o en un pipeline de CI) cada vez que cambias algo, sin que nadie tenga que abrir el navegador.</p>
 <hr>
-<h2 id="aterrizaje-en-gamevault-leyendo-videojuegocontrollertest">🎮 Aterrizaje en GameVault: leyendo <code>VideojuegoControllerTest</code><a class="headerlink" href="#aterrizaje-en-gamevault-leyendo-videojuegocontrollertest" title="Permanent link">¶</a></h2>
+<h2 id="un-ejemplo-completo-el-test-del-librocontroller">📖 Un ejemplo completo: el test del <code>LibroController</code><a class="headerlink" href="#un-ejemplo-completo-el-test-del-librocontroller" title="Permanent link">¶</a></h2>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-1-3"> 3</a></span>
@@ -1808,23 +1808,23 @@
 <span class="normal"><a href="#__codelineno-1-20">20</a></span>
 <span class="normal"><a href="#__codelineno-1-21">21</a></span>
 <span class="normal"><a href="#__codelineno-1-22">22</a></span>
-<span class="normal"><a href="#__codelineno-1-23">23</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nd">@WebMvcTest</span><span class="p">(</span><span class="n">VideojuegoController</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<span class="normal"><a href="#__codelineno-1-23">23</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nd">@WebMvcTest</span><span class="p">(</span><span class="n">LibroController</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="nd">@AutoConfigureMockMvc</span><span class="p">(</span><span class="n">addFilters</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="kd">class</span> <span class="nc">VideojuegoControllerTest</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="kd">class</span> <span class="nc">LibroControllerTest</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-1-4" name="__codelineno-1-4"></a>
 <a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="w">    </span><span class="nd">@Autowired</span>
 <a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">MockMvc</span><span class="w"> </span><span class="n">mockMvc</span><span class="p">;</span>
 <a id="__codelineno-1-7" name="__codelineno-1-7"></a>
 <a id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="w">    </span><span class="nd">@MockitoBean</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">VideojuegoService</span><span class="w"> </span><span class="n">videojuegoService</span><span class="p">;</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">LibroService</span><span class="w"> </span><span class="n">libroService</span><span class="p">;</span>
 <a id="__codelineno-1-10" name="__codelineno-1-10"></a>
 <a id="__codelineno-1-11" name="__codelineno-1-11"></a><span class="w">    </span><span class="nd">@Test</span>
 <a id="__codelineno-1-12" name="__codelineno-1-12"></a><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">create_DebeDevolver400_CuandoElDtoNoEsValido</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-1-13" name="__codelineno-1-13"></a><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"""</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14"></a><span class="s">                {"titulo": "", "precio": -5, "fechaLanzamiento": null, "estudioId": -1}</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14"></a><span class="s">                {"titulo": "", "precio": -5, "fechaPublicacion": null, "editorialId": -1}</span>
 <a id="__codelineno-1-15" name="__codelineno-1-15"></a><span class="s">                """</span><span class="p">;</span>
 <a id="__codelineno-1-16" name="__codelineno-1-16"></a>
-<a id="__codelineno-1-17" name="__codelineno-1-17"></a><span class="w">        </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/videojuegos"</span><span class="p">)</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17"></a><span class="w">        </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/libros"</span><span class="p">)</span>
 <a id="__codelineno-1-18" name="__codelineno-1-18"></a><span class="w">                        </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
 <a id="__codelineno-1-19" name="__codelineno-1-19"></a><span class="w">                        </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="n">body</span><span class="p">))</span>
 <a id="__codelineno-1-20" name="__codelineno-1-20"></a><span class="w">                </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isBadRequest</span><span class="p">())</span>
@@ -1834,29 +1834,29 @@
 </code></pre></div></td></tr></table></div>
 <p>Pieza a pieza:</p>
 <ul>
-<li><code>@WebMvcTest(VideojuegoController.class)</code>: arranca solo la capa web de Spring (el controller y lo relacionado con MVC), sin levantar toda la aplicación ni conectar con una base de datos real — mucho más rápido que un arranque completo.</li>
-<li><code>@MockitoBean private VideojuegoService videojuegoService</code>: sustituye el service real por un mock — el test prueba el controller de forma aislada, sin que la lógica del service (ni la base de datos que hay detrás) entre en juego.</li>
+<li><code>@WebMvcTest(LibroController.class)</code>: arranca solo la capa web de Spring (el controller y lo relacionado con MVC), sin levantar toda la aplicación ni conectar con una base de datos real — mucho más rápido que un arranque completo.</li>
+<li><code>@MockitoBean private LibroService libroService</code>: sustituye el service real por un mock — el test prueba el controller de forma aislada, sin que la lógica del service (ni la base de datos que hay detrás) entre en juego.</li>
 <li><code>mockMvc.perform(post(...).contentType(...).content(...))</code>: construye y envía una petición simulada — el equivalente, en código, al <code>curl -X POST</code> que ya conoces.</li>
 <li><code>.andExpect(status().isBadRequest())</code>: afirma el código de estado esperado (aquí, <code>400</code>).</li>
 <li><code>.andExpect(jsonPath("$.status").value(400))</code>: <code>jsonPath</code> navega el cuerpo JSON de la respuesta como si fuera un mini-selector, para afirmar valores concretos dentro de él.</li>
 </ul>
 <p>Este test concreto es de <strong>capa web</strong>: prueba que el controller valida correctamente el DTO de entrada (gracias a <code>@Valid</code>, que ya viste el apartado anterior) sin necesitar el service real ni una base de datos.</p>
 <h3 id="y-el-test-de-integracion-completo">¿Y el test de integración completo?<a class="headerlink" href="#y-el-test-de-integracion-completo" title="Permanent link">¶</a></h3>
-<p>En <code>src/test/java/com/aleroig/gamevault/integration/GamevaultApiTest.java</code> hay otro tipo de test, con <code>@Testcontainers</code>, que levanta bases de datos <strong>reales</strong> en contenedores Docker solo para la duración del test — no mockea nada. Lo trabajarás a fondo en Acceso a Datos; aquí basta con que sitúes los dos niveles: <code>@WebMvcTest</code> prueba una capa aislada y rápida, un test de integración prueba varias piezas reales trabajando juntas y es más lento pero da más confianza sobre el sistema completo.</p>
+<p>Existe otro tipo de test, con <code>@Testcontainers</code>, que levanta bases de datos <strong>reales</strong> en contenedores Docker solo para la duración del test — no mockea nada. Lo trabajarás a fondo en Acceso a Datos; aquí basta con que sitúes los dos niveles: <code>@WebMvcTest</code> prueba una capa aislada y rápida, un test de integración prueba varias piezas reales trabajando juntas y es más lento pero da más confianza sobre el sistema completo.</p>
 <hr>
 <h2 id="comunicacion-simultanea-de-varios-clientes">🧵 Comunicación simultánea de varios clientes<a class="headerlink" href="#comunicacion-simultanea-de-varios-clientes" title="Permanent link">¶</a></h2>
 <p>Un servidor real no atiende a un solo cliente a la vez. Spring Web, sobre Tomcat, atiende cada petición HTTP entrante en un <strong>hilo distinto</strong>, tomado de un <em>pool</em> — así que varias peticiones pueden procesarse en paralelo sin que unas esperen a que terminen las otras. Esta idea se retomará a fondo en el Tema 3, sobre programación multihilo; de momento, compruébala con un experimento sencillo.</p>
-<p><code>VideojuegoService.getTopNovedades()</code> tiene, a propósito, un <code>Thread.sleep(2000)</code> que simula una consulta lenta. Lanza dos peticiones <strong>simultáneas</strong>:</p>
+<p>Imagina un método del service con un <code>Thread.sleep(2000)</code> puesto a propósito, que simula una consulta lenta (lo montarás así en la actividad). Lanza dos peticiones <strong>simultáneas</strong> contra su endpoint:</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
 <span class="normal"><a href="#__codelineno-2-2">2</a></span>
-<span class="normal"><a href="#__codelineno-2-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nb">time</span><span class="w"> </span><span class="o">(</span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/videojuegos/top<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">      </span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/videojuegos/top<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="se">\</span>
+<span class="normal"><a href="#__codelineno-2-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nb">time</span><span class="w"> </span><span class="o">(</span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/libros/top<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">      </span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/libros/top<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">      </span><span class="nb">wait</span><span class="o">)</span>
 </code></pre></div></td></tr></table></div>
 <p>Si las dos peticiones se atendieran una detrás de otra, el conjunto tardaría unos 4 segundos. Si se atienden en paralelo, tardan aproximadamente 2 — porque cada una la procesa un hilo distinto del pool. Puedes confirmarlo añadiendo temporalmente una traza con <code>Thread.currentThread().getName()</code> en el método y mirando el log: verás dos nombres de hilo distintos (<code>http-nio-8080-exec-1</code>, <code>http-nio-8080-exec-2</code>...) para las dos peticiones.</p>
 <hr>
-<h2 id="lo-que-viene-el-put-de-estudio">🎯 Lo que viene: el PUT de Estudio<a class="headerlink" href="#lo-que-viene-el-put-de-estudio" title="Permanent link">¶</a></h2>
-<p>En tu propio <code>EstudioController</code> (Acceso a Datos, Actividad 1.2) solo tienes <code>GET</code> y <code>POST</code> — todavía no existe <code>PUT</code> ni <code>DELETE</code>. Esa es la práctica de esta semana y la siguiente: en la Actividad 1.3 construyes el <code>PUT</code> de <code>Estudio</code>, replicando el mismo patrón que ya construiste para <code>Videojuego</code> en Acceso a Datos la semana pasada; el <code>DELETE</code> llega en la Actividad 1.4.</p>
+<h2 id="lo-que-viene">🎯 Lo que viene<a class="headerlink" href="#lo-que-viene" title="Permanent link">¶</a></h2>
+<p>En tu propio proyecto todavía te falta completar algunas operaciones de escritura. Esa es la práctica de esta semana y la siguiente: en la Actividad 1.3 construyes un <code>PUT</code> completo con su test MockMvc, replicando el patrón que ya conoces; el <code>DELETE</code> llega en la Actividad 1.4.</p>
 <hr>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
 <details class="tip">
@@ -1867,7 +1867,7 @@
 <li><strong>MockMvc</strong> simula peticiones HTTP contra tus controladores sin arrancar un servidor real — un cliente HTTP programable y repetible.</li>
 <li><code>@WebMvcTest</code> arranca solo la capa web; <code>@MockitoBean</code> sustituye una dependencia por un mock; <code>mockMvc.perform(...).andExpect(...)</code> construye la petición y afirma el resultado; <code>jsonPath</code> navega el cuerpo JSON.</li>
 <li>Cada petición HTTP la atiende un hilo distinto del pool de Tomcat — por eso dos peticiones lentas simultáneas no tardan el doble, sino aproximadamente lo mismo que una sola.</li>
-<li>Esta semana toca construir el <code>PUT</code> de <code>Estudio</code> (Actividad 1.3), replicando el patrón del <code>PUT</code> de <code>Videojuego</code> ya construido en AD.</li>
+<li>Esta semana toca construir un <code>PUT</code> con su test MockMvc (Actividad 1.3), replicando el patrón ya visto.</li>
 </ul>
 </details></div>
 

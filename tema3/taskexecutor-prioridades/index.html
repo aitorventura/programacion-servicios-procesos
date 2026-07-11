@@ -1096,7 +1096,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../hilos-en-gamevault/" class="md-nav__link">
+      <a href="../hilos-en-una-app-real/" class="md-nav__link">
         
   
   
@@ -1302,13 +1302,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#aterrizaje-un-taskexecutor-propio-para-el-warm-up" class="md-nav__link">
+  <a href="#un-taskexecutor-propio-para-el-warm-up" class="md-nav__link">
     <span class="md-ellipsis">
-      🎮 Aterrizaje: un TaskExecutor propio para el warm-up
+      🛠️ Un TaskExecutor propio para el warm-up
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="🎮 Aterrizaje: un TaskExecutor propio para el warm-up">
+    <nav class="md-nav" aria-label="🛠️ Un TaskExecutor propio para el warm-up">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1505,12 +1505,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema4/websocket-gamevault/" class="md-nav__link">
+      <a href="../../tema4/websocket-stomp/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    WebSocket en GameVault
+    WebSocket con STOMP
     
   </span>
   
@@ -1642,13 +1642,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#aterrizaje-un-taskexecutor-propio-para-el-warm-up" class="md-nav__link">
+  <a href="#un-taskexecutor-propio-para-el-warm-up" class="md-nav__link">
     <span class="md-ellipsis">
-      🎮 Aterrizaje: un TaskExecutor propio para el warm-up
+      🛠️ Un TaskExecutor propio para el warm-up
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="🎮 Aterrizaje: un TaskExecutor propio para el warm-up">
+    <nav class="md-nav" aria-label="🛠️ Un TaskExecutor propio para el warm-up">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1729,8 +1729,8 @@
 <p>La <strong>prioridad</strong> de un hilo es una pista que le das al planificador del sistema operativo sobre a quién dar turno de ejecución antes cuando varios hilos compiten por CPU. Es importante ser honesto sobre sus límites: es una <strong>sugerencia</strong>, no una garantía — el planificador puede (y a menudo lo hace) ignorarla parcialmente, según el sistema operativo y su carga real.</p>
 <p>Por eso, la práctica moderna prefiere <strong>pools separados y tamaños acotados</strong> antes que jugar con prioridades para controlar el comportamiento del sistema: es un mecanismo más fiable y predecible que confiar en que el sistema operativo respete una sugerencia de prioridad.</p>
 <hr>
-<h2 id="aterrizaje-un-taskexecutor-propio-para-el-warm-up">🎮 Aterrizaje: un <code>TaskExecutor</code> propio para el warm-up<a class="headerlink" href="#aterrizaje-un-taskexecutor-propio-para-el-warm-up" title="Permanent link">¶</a></h2>
-<p>Hasta ahora, el <code>@Async</code> del warm-up usa el executor <strong>por defecto</strong> de Spring — genérico, compartido con cualquier otra tarea asíncrona que pudiera existir en la aplicación. Es una mejora que GameVault no tiene todavía (no hay ningún bean <code>TaskExecutor</code> en <code>config/</code>): definir un pool propio, pequeño y con nombre reconocible, específico para el warm-up.</p>
+<h2 id="un-taskexecutor-propio-para-el-warm-up">🛠️ Un <code>TaskExecutor</code> propio para el warm-up<a class="headerlink" href="#un-taskexecutor-propio-para-el-warm-up" title="Permanent link">¶</a></h2>
+<p>Hasta ahora, el <code>@Async</code> del warm-up usa el executor <strong>por defecto</strong> de Spring — genérico, compartido con cualquier otra tarea asíncrona que pudiera existir en la aplicación. La mejora que vas a construir: definir un pool propio, pequeño y con nombre reconocible, específico para el warm-up.</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-0-3"> 3</a></span>

@@ -875,13 +875,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#aterrizaje-en-gamevault-dos-practicas-concretas" class="md-nav__link">
+  <a href="#dos-practicas-concretas" class="md-nav__link">
     <span class="md-ellipsis">
-      🎮 Aterrizaje en GameVault: dos prácticas concretas
+      🛠️ Dos prácticas concretas
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="🎮 Aterrizaje en GameVault: dos prácticas concretas">
+    <nav class="md-nav" aria-label="🛠️ Dos prácticas concretas">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1216,7 +1216,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema3/hilos-en-gamevault/" class="md-nav__link">
+      <a href="../../tema3/hilos-en-una-app-real/" class="md-nav__link">
         
   
   
@@ -1514,12 +1514,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema4/websocket-gamevault/" class="md-nav__link">
+      <a href="../../tema4/websocket-stomp/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    WebSocket en GameVault
+    WebSocket con STOMP
     
   </span>
   
@@ -1660,13 +1660,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#aterrizaje-en-gamevault-dos-practicas-concretas" class="md-nav__link">
+  <a href="#dos-practicas-concretas" class="md-nav__link">
     <span class="md-ellipsis">
-      🎮 Aterrizaje en GameVault: dos prácticas concretas
+      🛠️ Dos prácticas concretas
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="🎮 Aterrizaje en GameVault: dos prácticas concretas">
+    <nav class="md-nav" aria-label="🛠️ Dos prácticas concretas">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1728,7 +1728,7 @@
 
 <div><p><a id="principios-programacion-segura"></a></p>
 <h1 id="1-principios-de-programacion-segura-validacion-y-gestion-de-errores">🧩 1. Principios de programación segura: validación y gestión de errores<a class="headerlink" href="#1-principios-de-programacion-segura-validacion-y-gestion-de-errores" title="Permanent link">¶</a></h1>
-<p>Tu GameVault, tal y como está ahora, no comprueba quién hace las peticiones ni les pone ningún límite. Antes de tocar autenticación (eso empieza el apartado que viene), este apartado sienta las bases: qué significa que una aplicación sea "segura" y cómo se traduce eso en decisiones concretas de código, sin necesitar todavía ni un login.</p>
+<p>Tu proyecto, tal y como está ahora, no comprueba quién hace las peticiones ni les pone ningún límite. Antes de tocar autenticación (eso empieza el apartado que viene), este apartado sienta las bases: qué significa que una aplicación sea "segura" y cómo se traduce eso en decisiones concretas de código, sin necesitar todavía ni un login.</p>
 <hr>
 <h2 id="que-significa-que-una-aplicacion-sea-segura">🔒 Qué significa que una aplicación sea "segura"<a class="headerlink" href="#que-significa-que-una-aplicacion-sea-segura" title="Permanent link">¶</a></h2>
 <p>La seguridad de una aplicación se apoya, clásicamente, en tres pilares:</p>
@@ -1778,10 +1778,10 @@
 <li><strong>Robo de credenciales en tránsito</strong>: interceptar datos sensibles mientras viajan por la red.</li>
 </ul>
 <hr>
-<h2 id="aterrizaje-en-gamevault-dos-practicas-concretas">🎮 Aterrizaje en GameVault: dos prácticas concretas<a class="headerlink" href="#aterrizaje-en-gamevault-dos-practicas-concretas" title="Permanent link">¶</a></h2>
-<p>La seguridad no empieza en el login — empieza mucho antes: en no fiarte nunca de la entrada del usuario y en no filtrar información en los errores. GameVault ya tiene ambas cosas resueltas.</p>
+<h2 id="dos-practicas-concretas">🛠️ Dos prácticas concretas<a class="headerlink" href="#dos-practicas-concretas" title="Permanent link">¶</a></h2>
+<p>La seguridad no empieza en el login — empieza mucho antes: en no fiarte nunca de la entrada del usuario y en no filtrar información en los errores. Siguiendo con la API de la librería que ya conoces:</p>
 <h3 id="validacion-de-entrada-con-bean-validation">Validación de entrada con Bean Validation<a class="headerlink" href="#validacion-de-entrada-con-bean-validation" title="Permanent link">¶</a></h3>
-<p><code>VideojuegoController.create(...)</code> ya usa <code>@Valid</code> sobre su DTO de entrada, y <code>VideojuegoCreateDTO</code> lleva las anotaciones de <code>jakarta.validation</code>:</p>
+<p>El <code>create(...)</code> del controller usa <code>@Valid</code> sobre su DTO de entrada, y <code>LibroCreateDTO</code> lleva las anotaciones de <code>jakarta.validation</code>:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
@@ -1791,7 +1791,7 @@
 <span class="normal"><a href="#__codelineno-0-7"> 7</a></span>
 <span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
 <span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-0-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">record</span> <span class="nc">VideojuegoCreateDTO</span><span class="p">(</span>
+<span class="normal"><a href="#__codelineno-0-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">record</span> <span class="nc">LibroCreateDTO</span><span class="p">(</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="w">        </span><span class="nd">@NotBlank</span><span class="p">(</span><span class="n">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"El título no puede estar vacío"</span><span class="p">)</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="w">        </span><span class="nd">@Size</span><span class="p">(</span><span class="n">max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">150</span><span class="p">)</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">titulo</span><span class="p">,</span>
@@ -1804,7 +1804,7 @@
 </code></pre></div></td></tr></table></div>
 <p><code>@Valid</code>, en la firma del método del controller, activa la comprobación de estas anotaciones <strong>antes</strong> de que el cuerpo del método se ejecute — si algo no cumple, ni siquiera llega a tu lógica de negocio. Esto es "validar en la frontera" hecho código: el dato hostil se rechaza en la puerta, no dentro de la casa.</p>
 <h3 id="gestion-centralizada-de-errores">Gestión centralizada de errores<a class="headerlink" href="#gestion-centralizada-de-errores" title="Permanent link">¶</a></h3>
-<p>Sin nada más, cuando una validación falla, Spring devuelve una respuesta por defecto — funcional, pero poco cuidada y potencialmente reveladora. GameVault centraliza esto en un único punto:</p>
+<p>Sin nada más, cuando una validación falla, Spring devuelve una respuesta por defecto — funcional, pero poco cuidada y potencialmente reveladora. La solución es centralizar la gestión de errores en un único punto:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-1-3"> 3</a></span>

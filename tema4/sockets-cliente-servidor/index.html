@@ -1094,7 +1094,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema3/hilos-en-gamevault/" class="md-nav__link">
+      <a href="../../tema3/hilos-en-una-app-real/" class="md-nav__link">
         
   
   
@@ -1499,12 +1499,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../websocket-gamevault/" class="md-nav__link">
+      <a href="../websocket-stomp/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    WebSocket en GameVault
+    WebSocket con STOMP
     
   </span>
   
@@ -1701,7 +1701,7 @@
 <p>Todo lo que has hecho hasta ahora en este módulo —peticiones REST, JWT, RabbitMQ— viaja, por debajo, sobre una pieza que nunca has tocado directamente: el <strong>socket</strong>. Esta semana la sacas a la superficie.</p>
 <hr>
 <h2 id="que-es-un-socket">🔌 Qué es un socket<a class="headerlink" href="#que-es-un-socket" title="Permanent link">¶</a></h2>
-<p>Un <strong>socket</strong> es el extremo programable de una conexión de red: una combinación de IP y puerto por la que un programa envía y recibe datos. Es la pieza que hay <strong>debajo</strong> de todo lo que ya has usado sin saberlo: cuando <code>curl</code> habla con GameVault en el puerto 8080, cuando tu aplicación se conecta a PostgreSQL (5432), MongoDB (27017) o RabbitMQ (5672), hay sockets TCP funcionando por debajo, en cada uno de esos casos.</p>
+<p>Un <strong>socket</strong> es el extremo programable de una conexión de red: una combinación de IP y puerto por la que un programa envía y recibe datos. Es la pieza que hay <strong>debajo</strong> de todo lo que ya has usado sin saberlo: cuando <code>curl</code> habla con tu aplicación en el puerto 8080, cuando tu aplicación se conecta a PostgreSQL (5432), MongoDB (27017) o RabbitMQ (5672), hay sockets TCP funcionando por debajo, en cada uno de esos casos.</p>
 <p>Compruébalo en vivo, con tu aplicación arrancada:</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
 <span class="normal"><a href="#__codelineno-0-2">2</a></span>
@@ -1714,7 +1714,7 @@
 <h2 id="roles-cliente-y-servidor">🎭 Roles cliente y servidor<a class="headerlink" href="#roles-cliente-y-servidor" title="Permanent link">¶</a></h2>
 <p>Dos papeles bien diferenciados:</p>
 <ul>
-<li><strong>Servidor</strong>: <strong>escucha</strong> en un puerto concreto, esperando conexiones — como Tomcat, escuchando en el 8080 de tu GameVault. En Java clásico, esto es un <code>ServerSocket</code>.</li>
+<li><strong>Servidor</strong>: <strong>escucha</strong> en un puerto concreto, esperando conexiones — como Tomcat, escuchando en el 8080 de tu aplicación. En Java clásico, esto es un <code>ServerSocket</code>.</li>
 <li><strong>Cliente</strong>: <strong>inicia</strong> la conexión hacia el servidor — como <code>curl</code>, o como tu propia aplicación cuando se conecta a PostgreSQL. En Java clásico, esto es un <code>Socket</code>.</li>
 </ul>
 <p>El servidor sigue la secuencia <em>bind</em> (asociarse a un puerto) → <em>listen</em> (empezar a escuchar) → <em>accept</em> (aceptar una conexión entrante); el cliente hace <em>connect</em> (iniciar la conexión). Una vez establecida la conexión, ambos lados intercambian datos a través de <strong>streams</strong> de entrada y salida sobre el socket — exactamente como los flujos que ya conoces de Java para leer y escribir.</p>
@@ -1741,7 +1741,7 @@
 </tr>
 <tr>
 <td><strong>Dónde se usa</strong></td>
-<td>Todo lo que usa GameVault (HTTP, conexiones a BD, RabbitMQ)</td>
+<td>Todo lo que has construido en el curso (HTTP, conexiones a BD, RabbitMQ)</td>
 <td>Streaming en tiempo real, juegos en tiempo real, donde perder algún paquete es aceptable a cambio de velocidad</td>
 </tr>
 </tbody>
@@ -1762,7 +1762,7 @@
 <hr>
 <h2 id="escenarios-que-necesitan-algo-mas-que-peticion-respuesta">🚨 Escenarios que necesitan algo más que petición-respuesta<a class="headerlink" href="#escenarios-que-necesitan-algo-mas-que-peticion-respuesta" title="Permanent link">¶</a></h2>
 <p>¿Cuándo no basta con petición-respuesta? Cuando el <strong>servidor</strong> necesita avisar al cliente de algo que acaba de pasar, <strong>sin que el cliente pregunte primero</strong>. Con REST puro, el cliente tendría que estar preguntando constantemente ("¿ha pasado algo? ¿y ahora? ¿y ahora?") para enterarse a tiempo — ineficiente y con retraso.</p>
-<p>El caso concreto que vas a construir en las próximas dos semanas: un panel de actividad en vivo de GameVault, donde el servidor empuja cada evento del catálogo (crear, actualizar, borrar un videojuego) hacia los clientes conectados, en el instante en que ocurre — sin que ellos tengan que preguntar.</p>
+<p>El caso concreto que vas a construir en las próximas dos semanas: un panel de actividad en vivo de tu aplicación, donde el servidor empuja cada evento del catálogo (crear, actualizar, borrar un libro) hacia los clientes conectados, en el instante en que ocurre — sin que ellos tengan que preguntar.</p>
 <hr>
 <h2 id="lo-que-viene-la-actividad-41">🧭 Lo que viene: la Actividad 4.1<a class="headerlink" href="#lo-que-viene-la-actividad-41" title="Permanent link">¶</a></h2>
 <p>La práctica de esta semana (Actividad 4.1) construye un mini cliente/servidor de consola con <code>ServerSocket</code>/<code>Socket</code> e hilos — para tocar con las manos exactamente lo que Spring normalmente esconde.</p>
@@ -1777,7 +1777,7 @@
 <ul>
 <li>Un <strong>socket</strong> es el extremo programable de una conexión de red (IP + puerto) — está debajo de toda comunicación que ya has usado en el curso.</li>
 <li><strong>Servidor</strong> (<code>ServerSocket</code>: bind/listen/accept) escucha; <strong>cliente</strong> (<code>Socket</code>: connect) inicia la conexión.</li>
-<li><strong>TCP</strong> (orientado a conexión, fiable) es lo que usa todo GameVault; <strong>UDP</strong> (sin conexión, sin garantías) se usa donde la velocidad importa más que la fiabilidad total.</li>
+<li><strong>TCP</strong> (orientado a conexión, fiable) es lo que usa todo lo construido en el curso; <strong>UDP</strong> (sin conexión, sin garantías) se usa donde la velocidad importa más que la fiabilidad total.</li>
 <li>Tres modelos de comunicación: petición-respuesta síncrono (REST), publicación-suscripción asíncrono (RabbitMQ), canal bidireccional persistente (WebSocket).</li>
 <li>Un servidor necesita avisar proactivamente al cliente cuando petición-respuesta no basta — el escenario que resuelve el panel de actividad en vivo de las próximas semanas.</li>
 <li>La Actividad 4.1, con sockets reales, cubre el contenido de forma completa — WebSocket es ampliación, no requisito.</li>
