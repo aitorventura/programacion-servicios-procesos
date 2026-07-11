@@ -2,7 +2,7 @@
 
 # 🧩 2. Escritura en la API y documentación con OpenAPI
 
-Esta misma semana, en Acceso a Datos, está naciendo el CRUD completo de `Videojuego` en tu propio proyecto — controller, service y DTOs de escritura incluidos. Aquí no repites esa construcción: ves la **vertiente HTTP** de esos mismos endpoints (qué código de estado espera cada verbo, qué significa que una operación sea idempotente) y añades algo que la semana pasada no tenías — documentación automática de tu API con OpenAPI.
+Esta misma semana, en Acceso a Datos, estás construyendo un CRUD completo — controller, service y DTOs de escritura incluidos. Aquí no repites esa construcción: ves la **vertiente HTTP** de ese tipo de endpoints (qué código de estado espera cada verbo, qué significa que una operación sea idempotente) y añades algo que la semana pasada no tenías — documentación automática de tu API con OpenAPI.
 
 ---
 
@@ -26,10 +26,10 @@ Una operación es **idempotente** si repetirla varias veces produce el mismo res
 
 - **`PUT` es idempotente**: si mandas diez veces el mismo `PUT` con el mismo cuerpo, el recurso queda igual que si lo hubieras mandado una sola vez — cada vez "reemplaza" con los mismos datos.
 - **`DELETE` es idempotente**: borrar algo que ya está borrado no cambia nada más (aunque el código de estado de la segunda vez pueda ser un `404` en vez de un `204`, el *estado del sistema* es el mismo).
-- **`POST` NO es idempotente**: si mandas diez veces el mismo `POST` de "crear un videojuego", obtienes diez videojuegos distintos — cada llamada crea uno nuevo.
+- **`POST` NO es idempotente**: si mandas diez veces el mismo `POST` de "crear un libro", obtienes diez libros distintos — cada llamada crea uno nuevo.
 
 !!! example "Por qué importa en la práctica"
-    Si el formulario de "crear videojuego" de una aplicación web falla al enviar y el usuario pulsa "Reintentar", con un `POST` corres el riesgo de crear el recurso duplicado. Con un `PUT` (por ejemplo, "guardar cambios de este videojuego concreto"), reintentar no tiene ese riesgo: el resultado final es el mismo se mande una vez o cinco.
+    Si el formulario de "añadir libro" de una aplicación web falla al enviar y el usuario pulsa "Reintentar", con un `POST` corres el riesgo de crear el recurso duplicado. Con un `PUT` (por ejemplo, "guardar cambios de este libro concreto"), reintentar no tiene ese riesgo: el resultado final es el mismo se mande una vez o cinco.
 
 ---
 
@@ -49,24 +49,24 @@ Lo importante: tú no escribes el documento OpenAPI a mano. Una librería lo gen
 
 ---
 
-## 🎮 Aterrizaje en GameVault: los endpoints de escritura
+## 📖 Los endpoints de escritura, leídos desde HTTP
 
-Con esa base, lee ahora los métodos de escritura de `VideojuegoController` desde la óptica HTTP:
+Con esa base, lee ahora los métodos de escritura del `LibroController` del apartado anterior desde la óptica HTTP:
 
 ```java
 @PostMapping
-public ResponseEntity<VideojuegoResponseDTO> create(@Valid @RequestBody VideojuegoCreateDTO dto) {
-    return ResponseEntity.status(HttpStatus.CREATED).body(videojuegoService.create(dto));
+public ResponseEntity<LibroResponseDTO> create(@Valid @RequestBody LibroCreateDTO dto) {
+    return ResponseEntity.status(HttpStatus.CREATED).body(libroService.create(dto));
 }
 
 @PutMapping("/{id}")
-public ResponseEntity<VideojuegoResponseDTO> update(@PathVariable Long id, @Valid @RequestBody VideojuegoCreateDTO dto) {
-    return ResponseEntity.ok(videojuegoService.update(id, dto));
+public ResponseEntity<LibroResponseDTO> update(@PathVariable Long id, @Valid @RequestBody LibroCreateDTO dto) {
+    return ResponseEntity.ok(libroService.update(id, dto));
 }
 
 @DeleteMapping("/{id}")
 public ResponseEntity<Void> delete(@PathVariable Long id) {
-    videojuegoService.delete(id);
+    libroService.delete(id);
     return ResponseEntity.noContent().build();
 }
 ```
@@ -76,29 +76,29 @@ public ResponseEntity<Void> delete(@PathVariable Long id) {
 | `ResponseEntity.status(HttpStatus.CREATED).body(...)` | `201`, con el recurso creado en el cuerpo — la respuesta natural de un `POST`. |
 | `ResponseEntity.ok(...)` en el `PUT` | `200`, con el recurso ya actualizado en el cuerpo. |
 | `ResponseEntity.noContent().build()` | `204`, sin cuerpo — la respuesta natural de un `DELETE`. |
-| `@RequestBody VideojuegoCreateDTO dto` | El cuerpo JSON de la petición, convertido automáticamente en un objeto Java. |
+| `@RequestBody LibroCreateDTO dto` | El cuerpo JSON de la petición, convertido automáticamente en un objeto Java. |
 | `@Valid` | Activa la validación del DTO antes de que el método se ejecute — se profundiza en el Tema 2. |
 
 ### Documentando con OpenAPI
 
-GameVault genera su documentación con la dependencia `springdoc-openapi-starter-webmvc-ui` y una clase de configuración mínima:
+La documentación se genera con la dependencia `springdoc-openapi-starter-webmvc-ui` y una clase de configuración mínima:
 
 ```java
 @Configuration
 public class OpenApiConfig {
 
     @Bean
-    public OpenAPI gamevaultOpenAPI() {
+    public OpenAPI libreriaOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("GameVault API")
+                        .title("Librería API")
                         .version("v1")
-                        .description("API didáctica para gestionar videojuegos, estudios, reviews..."));
+                        .description("API para gestionar el catálogo de libros, editoriales, reseñas..."));
     }
 }
 ```
 
-Con solo esa dependencia y esa clase, springdoc escanea todos los `@RestController` del proyecto y genera, sin más trabajo por tu parte, la especificación OpenAPI en `/v3/api-docs` y la interfaz visual en `/swagger-ui.html` — los mismos endpoints que `VideojuegoController` ya tenía quedan documentados y son "probables" desde el navegador.
+Con solo esa dependencia y esa clase, springdoc escanea todos los `@RestController` del proyecto y genera, sin más trabajo por tu parte, la especificación OpenAPI en `/v3/api-docs` y la interfaz visual en `/swagger-ui.html` — los mismos endpoints que el controller ya tenía quedan documentados y son "probables" desde el navegador.
 
 ---
 
@@ -107,7 +107,7 @@ Con solo esa dependencia y esa clase, springdoc escanea todos los `@RestControll
 Ya viste la semana pasada que un protocolo estándar permite que cualquier cliente hable con tu API sin acordar nada a medida. Aquí tienes dos consecuencias prácticas de esa idea:
 
 - Los **códigos de estado son universales**: cualquier cliente (el tuyo, el de un compañero, una app de otro lenguaje) sabe qué significa un `201` o un `404` sin necesidad de leer tu documentación particular — es parte del estándar HTTP, no una convención tuya.
-- Las **herramientas funcionan sin configuración específica**: Postman, Swagger UI, `curl`... todas saben "hablar HTTP" de fábrica. No has tenido que instalar ni configurar nada especial en Swagger UI para que entienda las respuestas de GameVault — el protocolo ya es compartido.
+- Las **herramientas funcionan sin configuración específica**: Postman, Swagger UI, `curl`... todas saben "hablar HTTP" de fábrica. No has tenido que instalar ni configurar nada especial en Swagger UI para que entienda las respuestas de tu API — el protocolo ya es compartido.
 
 ---
 

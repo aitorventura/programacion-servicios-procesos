@@ -13,24 +13,22 @@ El bloque `authorizeHttpRequests` de tu `SecurityConfig.java` define **toda** la
 | Ruta | Verbo | Quién puede |
 |---|---|---|
 | `/api/v1/auth/login` | POST | Cualquiera |
-| `/api/v1/videojuegos`, `/api/v1/estudios` | GET | Cualquiera |
-| `/api/v1/videojuegos/*/reviews` | POST | `USER` o `ADMIN` |
-| `/api/v1/videojuegos`, `/api/v1/estudios` | POST/PUT/DELETE | Solo `ADMIN` |
-| `/api/v1/actividad` | GET | Solo `ADMIN` |
+| `/api/v1/libros`, `/api/v1/editoriales` | GET | Cualquiera |
+| `/api/v1/libros/*/resenas` | POST | `USER` o `ADMIN` |
+| `/api/v1/libros`, `/api/v1/editoriales` | POST/PUT/DELETE | Solo `ADMIN` |
 | `/swagger-ui/**`, `/v3/api-docs/**`, `/error` | — | Cualquiera |
 | Cualquier otra ruta no listada | — | **Nadie** |
 
 ```java
 .authorizeHttpRequests(auth -> auth
         .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
-        .requestMatchers(HttpMethod.GET, "/api/v1/videojuegos", "/api/v1/videojuegos/**").permitAll()
-        .requestMatchers(HttpMethod.GET, "/api/v1/estudios", "/api/v1/estudios/**").permitAll()
-        .requestMatchers(HttpMethod.GET, "/api/v1/actividad").hasRole("ADMIN")
-        .requestMatchers(HttpMethod.POST, "/api/v1/videojuegos/*/reviews").hasAnyRole("USER", "ADMIN")
-        .requestMatchers(HttpMethod.POST, "/api/v1/videojuegos").hasRole("ADMIN")
-        .requestMatchers(HttpMethod.PUT, "/api/v1/videojuegos/*").hasRole("ADMIN")
-        .requestMatchers(HttpMethod.DELETE, "/api/v1/videojuegos/*").hasRole("ADMIN")
-        .requestMatchers(HttpMethod.POST, "/api/v1/estudios").hasRole("ADMIN")
+        .requestMatchers(HttpMethod.GET, "/api/v1/libros", "/api/v1/libros/**").permitAll()
+        .requestMatchers(HttpMethod.GET, "/api/v1/editoriales", "/api/v1/editoriales/**").permitAll()
+        .requestMatchers(HttpMethod.POST, "/api/v1/libros/*/resenas").hasAnyRole("USER", "ADMIN")
+        .requestMatchers(HttpMethod.POST, "/api/v1/libros").hasRole("ADMIN")
+        .requestMatchers(HttpMethod.PUT, "/api/v1/libros/*").hasRole("ADMIN")
+        .requestMatchers(HttpMethod.DELETE, "/api/v1/libros/*").hasRole("ADMIN")
+        .requestMatchers(HttpMethod.POST, "/api/v1/editoriales").hasRole("ADMIN")
         .requestMatchers("/error").permitAll()
         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
         .anyRequest().denyAll()
@@ -40,7 +38,7 @@ El bloque `authorizeHttpRequests` de tu `SecurityConfig.java` define **toda** la
 La línea más importante de todo el bloque es la última: **`anyRequest().denyAll()`**. Cualquier ruta que no aparezca explícitamente en las reglas anteriores queda **cerrada por defecto** — es el principio de mínima exposición del apartado 1, llevado hasta el final: nada se abre "por accidente" simplemente por existir.
 
 !!! warning "Cada ruta nueva necesita su propia regla, o queda bloqueada"
-    Si has ido añadiendo rutas propias durante el curso (el `PUT`/`DELETE` de `Estudio` del Tema 1, el ranking de Acceso a Datos...) y no tienen una regla explícita en este bloque, `denyAll()` las bloqueará — aunque el endpoint en sí funcione perfectamente. Este es un error típico y real: "he probado mi endpoint nuevo y me da 403/401 sin motivo aparente" casi siempre significa "se me ha olvidado añadir su regla aquí".
+    Si has ido añadiendo rutas propias durante el curso (el `PUT`/`DELETE` del Tema 1, el ranking de Acceso a Datos...) y no tienen una regla explícita en este bloque, `denyAll()` las bloqueará — aunque el endpoint en sí funcione perfectamente. Este es un error típico y real: "he probado mi endpoint nuevo y me da 403/401 sin motivo aparente" casi siempre significa "se me ha olvidado añadir su regla aquí".
 
 ---
 
@@ -53,7 +51,7 @@ Dos códigos que se confunden con frecuencia, pero responden a preguntas distint
 | `401 Unauthorized` | No sabes quién eres (no autenticado) | Falta el token, o es inválido/caducado. |
 | `403 Forbidden` | Sabemos quién eres, pero no puedes hacer esto (no autorizado) | Token válido, pero rol insuficiente para esa regla concreta. |
 
-Con la tabla de arriba: un `POST /api/v1/videojuegos` sin token da `401`; el mismo `POST` con el token de un usuario `USER` (no `ADMIN`) da `403`.
+Con la tabla de arriba: un `POST /api/v1/libros` sin token da `401`; el mismo `POST` con el token de un usuario `USER` (no `ADMIN`) da `403`.
 
 ---
 
@@ -74,11 +72,13 @@ private String login(String username, String password) throws Exception {
 }
 
 @Test
-void crearReview_DebeDevolver403_CuandoElRolNoEsSuficiente() throws Exception {
+void crearLibro_DebeDevolver403_CuandoElRolNoEsSuficiente() throws Exception {
     String userToken = login("user", "user123");
 
-    mockMvc.perform(get("/api/v1/actividad")
-                    .header("Authorization", "Bearer " + userToken))
+    mockMvc.perform(post("/api/v1/libros")
+                    .header("Authorization", "Bearer " + userToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{}"))
             .andExpect(status().isForbidden());
 }
 

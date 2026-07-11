@@ -34,9 +34,9 @@ Por eso, la práctica moderna prefiere **pools separados y tamaños acotados** a
 
 ---
 
-## 🎮 Aterrizaje: un `TaskExecutor` propio para el warm-up
+## 🛠️ Un `TaskExecutor` propio para el warm-up
 
-Hasta ahora, el `@Async` del warm-up usa el executor **por defecto** de Spring — genérico, compartido con cualquier otra tarea asíncrona que pudiera existir en la aplicación. Es una mejora que GameVault no tiene todavía (no hay ningún bean `TaskExecutor` en `config/`): definir un pool propio, pequeño y con nombre reconocible, específico para el warm-up.
+Hasta ahora, el `@Async` del warm-up usa el executor **por defecto** de Spring — genérico, compartido con cualquier otra tarea asíncrona que pudiera existir en la aplicación. La mejora que vas a construir: definir un pool propio, pequeño y con nombre reconocible, específico para el warm-up.
 
 ```java
 @Configuration

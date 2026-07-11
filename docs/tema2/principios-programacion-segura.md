@@ -2,7 +2,7 @@
 
 # 🧩 1. Principios de programación segura: validación y gestión de errores
 
-Tu GameVault, tal y como está ahora, no comprueba quién hace las peticiones ni les pone ningún límite. Antes de tocar autenticación (eso empieza el apartado que viene), este apartado sienta las bases: qué significa que una aplicación sea "segura" y cómo se traduce eso en decisiones concretas de código, sin necesitar todavía ni un login.
+Tu proyecto, tal y como está ahora, no comprueba quién hace las peticiones ni les pone ningún límite. Antes de tocar autenticación (eso empieza el apartado que viene), este apartado sienta las bases: qué significa que una aplicación sea "segura" y cómo se traduce eso en decisiones concretas de código, sin necesitar todavía ni un login.
 
 ---
 
@@ -44,16 +44,16 @@ Estos principios no son abstractos: detrás de cada uno hay un ataque real que p
 
 ---
 
-## 🎮 Aterrizaje en GameVault: dos prácticas concretas
+## 🛠️ Dos prácticas concretas
 
-La seguridad no empieza en el login — empieza mucho antes: en no fiarte nunca de la entrada del usuario y en no filtrar información en los errores. GameVault ya tiene ambas cosas resueltas.
+La seguridad no empieza en el login — empieza mucho antes: en no fiarte nunca de la entrada del usuario y en no filtrar información en los errores. Siguiendo con la API de la librería que ya conoces:
 
 ### Validación de entrada con Bean Validation
 
-`VideojuegoController.create(...)` ya usa `@Valid` sobre su DTO de entrada, y `VideojuegoCreateDTO` lleva las anotaciones de `jakarta.validation`:
+El `create(...)` del controller usa `@Valid` sobre su DTO de entrada, y `LibroCreateDTO` lleva las anotaciones de `jakarta.validation`:
 
 ```java
-public record VideojuegoCreateDTO(
+public record LibroCreateDTO(
         @NotBlank(message = "El título no puede estar vacío")
         @Size(max = 150)
         String titulo,
@@ -69,7 +69,7 @@ public record VideojuegoCreateDTO(
 
 ### Gestión centralizada de errores
 
-Sin nada más, cuando una validación falla, Spring devuelve una respuesta por defecto — funcional, pero poco cuidada y potencialmente reveladora. GameVault centraliza esto en un único punto:
+Sin nada más, cuando una validación falla, Spring devuelve una respuesta por defecto — funcional, pero poco cuidada y potencialmente reveladora. La solución es centralizar la gestión de errores en un único punto:
 
 ```java
 @RestControllerAdvice

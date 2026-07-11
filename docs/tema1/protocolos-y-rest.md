@@ -2,7 +2,7 @@
 
 # 🧩 1. Protocolos estándar y servicios REST: leyendo el controlador
 
-Llegas a este módulo sabiendo Java, Git/Docker y bases de datos — pero nada de cómo dos programas hablan entre sí por red. Esta semana, en Acceso a Datos (AD), estás creando las entidades `Videojuego`/`Estudio` de tu propio GameVault; aquí vas a mirar el mismo proyecto desde el otro extremo: cómo llega una petición desde fuera hasta que ese código se ejecuta. Esta semana no vas a escribir código nuevo — vas a aprender a **leer** un controlador REST, con el ejemplo real de `VideojuegoController` que construirás tú mismo la semana que viene.
+Llegas a este módulo sabiendo Java, Git/Docker y bases de datos — pero nada de cómo dos programas hablan entre sí por red. En Acceso a Datos (AD) trabajas la persistencia — del service hacia abajo; aquí miras la aplicación desde el otro extremo: cómo llega una petición desde fuera hasta que tu código se ejecuta. Esta semana no vas a escribir código nuevo — vas a aprender a **leer** un controlador REST, con un ejemplo del mismo tipo que construirás tú mismo la semana que viene.
 
 ---
 
@@ -13,14 +13,14 @@ Cuando escribes una URL en el navegador o llamas a una API desde tu código, pas
 Toda esa conversación viaja hacia una dirección concreta: una **URL**. Diseccionada pieza a pieza:
 
 ```
-http://localhost:8080/api/v1/videojuegos/3
-└─┬──┘ └────┬───────┘└──────────┬──────────┘
-protocolo  host:puerto          ruta
+http://localhost:8080/api/v1/libros/3
+└─┬──┘ └────┬───────┘└──────┬──────────┘
+protocolo  host:puerto      ruta
 ```
 
 - **Protocolo** (`http`): las reglas de comunicación que van a usar los dos.
 - **Host y puerto** (`localhost:8080`): dónde está el servidor y por qué puerta escucha.
-- **Ruta** (`/api/v1/videojuegos/3`): qué recurso concreto se pide dentro de ese servidor.
+- **Ruta** (`/api/v1/libros/3`): qué recurso concreto se pide dentro de ese servidor.
 
 ---
 
@@ -29,7 +29,7 @@ protocolo  host:puerto          ruta
 **HTTP** (*HyperText Transfer Protocol*) es el protocolo de petición-respuesta que usa la web: el cliente manda una petición con un formato fijo, el servidor responde con una respuesta con otro formato fijo, y ahí termina esa conversación (la siguiente petición empieza de cero). Por debajo del navegador o de Postman, una petición HTTP real es texto plano con esta forma:
 
 ```http
-GET /api/v1/videojuegos/3 HTTP/1.1
+GET /api/v1/libros/3 HTTP/1.1
 Host: localhost:8080
 Accept: application/json
 ```
@@ -40,7 +40,7 @@ Y la respuesta, también texto plano:
 HTTP/1.1 200 OK
 Content-Type: application/json
 
-{"id": 3, "titulo": "Hollow Knight", "precio": 14.99}
+{"id": 3, "titulo": "El nombre del viento", "precio": 19.95}
 ```
 
 | Parte | En la petición | En la respuesta |
@@ -81,10 +81,10 @@ Ya has visto JSON antes, aunque sea de pasada — es el formato en el que casi t
 
 ```json
 {
-  "titulo": "Hollow Knight",
-  "precio": 14.99,
-  "estudio": {
-    "nombre": "Team Cherry"
+  "titulo": "El nombre del viento",
+  "precio": 19.95,
+  "editorial": {
+    "nombre": "Plaza & Janés"
   }
 }
 ```
@@ -97,7 +97,7 @@ Volverás a JSON con más detalle cuando lo necesites de verdad (al construir cu
 
 Una **API** (*Application Programming Interface*) es el conjunto de operaciones que una aplicación expone para que otros programas la usen, sin que necesiten conocer cómo está construida por dentro. **REST** es un estilo concreto de diseñar APIs sobre HTTP: los datos se modelan como **recursos**, cada recurso tiene una **URL** propia, y las operaciones sobre ese recurso se expresan con los verbos HTTP que ya has visto.
 
-!!! example "Una API de biblioteca, antes de ver la de videojuegos"
+!!! example "Una API de librería, como ejemplo de patrón"
     | Operación | Verbo + ruta |
     |---|---|
     | Listar todos los libros | `GET /libros` |
@@ -110,28 +110,28 @@ Una **API** (*Application Programming Interface*) es el conjunto de operaciones 
 
 ---
 
-## 🎮 Aterrizaje en GameVault: leyendo `VideojuegoController`
+## 📖 Leyendo un controlador REST completo
 
-Con esa base, ya puedes leer el controlador REST real del proyecto — de momento, solo los métodos `GET` (los de escritura llegan la semana que viene):
+Con esa base, ya puedes leer un controlador REST real — el de la API de libros del ejemplo, de momento solo con los métodos `GET` (los de escritura llegan la semana que viene):
 
 ```java
 @RestController
-@RequestMapping("/api/v1/videojuegos")
+@RequestMapping("/api/v1/libros")
 @RequiredArgsConstructor
-public class VideojuegoController {
-    private final VideojuegoService videojuegoService;
+public class LibroController {
+    private final LibroService libroService;
 
     @GetMapping
-    public ResponseEntity<Page<VideojuegoResponseDTO>> getAll(
-            @ModelAttribute VideojuegoFiltroDTO filtro,
+    public ResponseEntity<Page<LibroResponseDTO>> getAll(
+            @ModelAttribute LibroFiltroDTO filtro,
             @PageableDefault(size = 5) Pageable pageable
     ) {
-        return ResponseEntity.ok(videojuegoService.findAllPaginated(filtro, pageable));
+        return ResponseEntity.ok(libroService.findAllPaginated(filtro, pageable));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<VideojuegoResponseDTO> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(videojuegoService.findById(id));
+    public ResponseEntity<LibroResponseDTO> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(libroService.findById(id));
     }
 }
 ```
@@ -140,24 +140,24 @@ Anotación a anotación, desde la óptica HTTP (la óptica de "qué hace cada co
 
 | Anotación / elemento | Qué representa en HTTP |
 |---|---|
-| `@RestController` | Marca la clase como controlador cuyas respuestas se serializan directamente al cuerpo HTTP (a JSON, en este proyecto). |
-| `@RequestMapping("/api/v1/videojuegos")` | La ruta base del recurso — todo lo que hay dentro de esta clase cuelga de `/api/v1/videojuegos`. El `/v1` es el **versionado** de la API: si el día de mañana cambia el contrato, se puede publicar un `/v2` sin romper a los clientes que siguen usando la v1. |
+| `@RestController` | Marca la clase como controlador cuyas respuestas se serializan directamente al cuerpo HTTP (a JSON, normalmente). |
+| `@RequestMapping("/api/v1/libros")` | La ruta base del recurso — todo lo que hay dentro de esta clase cuelga de `/api/v1/libros`. El `/v1` es el **versionado** de la API: si el día de mañana cambia el contrato, se puede publicar un `/v2` sin romper a los clientes que siguen usando la v1. |
 | `@GetMapping` / `@GetMapping("/{id}")` | Verbo (`GET`) + ruta = una operación concreta. `{id}` es una parte variable de la ruta. |
 | `@PathVariable Long id` | Extrae ese trozo variable de la URL y lo entrega como parámetro Java. |
 | `ResponseEntity.ok(...)` | Construye la respuesta con el código de estado `200` explícito y el cuerpo indicado. |
 
-El viaje completo de una petición `GET /api/v1/videojuegos/3`:
+El viaje completo de una petición `GET /api/v1/libros/3`:
 
 ```mermaid
 flowchart LR
-    A["🌐 Cliente<br/>curl/Postman"] -- "GET :8080/api/v1/videojuegos/3" --> B["🐱 Tomcat<br/>(embebido)"]
-    B --> C["VideojuegoController"]
-    C --> D["VideojuegoService"]
+    A["🌐 Cliente<br/>curl/Postman"] -- "GET :8080/api/v1/libros/3" --> B["🐱 Tomcat<br/>(embebido)"]
+    B --> C["LibroController"]
+    C --> D["LibroService"]
     D --> E["Respuesta JSON"]
     E -.-> A
 ```
 
-El puerto `8080` y el servidor **Tomcat** que escucha en él no son magia: los trae la dependencia `spring-boot-starter-webmvc` del `pom.xml` que viste el apartado anterior — es la "librería que implementa el servicio en red" de la que habla el currículo. Tú no arrancas ningún servidor a mano: Spring Boot lo hace por ti al ejecutar `GamevaultApplication`.
+El puerto `8080` y el servidor **Tomcat** que escucha en él no son magia: los trae la dependencia `spring-boot-starter-webmvc` del `pom.xml`, que ya conoces de Acceso a Datos — es la "librería que implementa el servicio en red" de la que habla el currículo. Tú no arrancas ningún servidor a mano: Spring Boot lo hace por ti al ejecutar la clase anotada con `@SpringBootApplication`.
 
 ---
 

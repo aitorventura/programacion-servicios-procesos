@@ -1,9 +1,9 @@
-<a id="websocket-gamevault"></a>
+<a id="websocket-stomp"></a>
 
-# 🧩 2. WebSocket en GameVault: el canal de actividad en vivo
+# 🧩 2. WebSocket con STOMP: el canal de actividad en vivo
 
 !!! warning "Una pieza construida enteramente aquí, paso a paso"
-    Lo que ves en este apartado no es un patrón estándar de un manual de Spring — es una funcionalidad concreta pensada para GameVault, que vas a construir completamente guiado, sin nada previo sobre lo que apoyarte. Lo que ya viste la semana pasada con sockets Java reales (Actividad 4.1) queda cubierto de forma completa — este apartado lo **amplía** sobre un protocolo de nivel más alto, pero no es un punto de partida obligatorio para lo anterior.
+    Lo que ves en este apartado no es un patrón estándar de un manual de Spring — es una funcionalidad concreta que vas a construir completamente guiado, sin nada previo sobre lo que apoyarte. Lo que ya viste la semana pasada con sockets Java reales (Actividad 4.1) queda cubierto de forma completa — este apartado lo **amplía** sobre un protocolo de nivel más alto, pero no es un punto de partida obligatorio para lo anterior.
 
 ---
 
@@ -44,7 +44,7 @@ WebSocket, por sí solo, solo da un tubo de bytes/mensajes sin formato — no sa
 
 ## 🎯 El caso de uso: actividad en vivo
 
-El punto de partida: `ActividadService.registrar()` ya guarda cada evento del catálogo (crear, actualizar, borrar un videojuego) en la base de datos — hoy solo puede consultarse con `GET /api/v1/actividad`, en frío, y solo por `ADMIN`. Vas a construir un canal que emita esos mismos registros **en vivo**, según ocurren.
+El punto de partida: imagina que `ActividadService.registrar()` ya guarda cada evento del catálogo (crear, actualizar, borrar un libro) en la base de datos — hoy solo puede consultarse con `GET /api/v1/actividad`, en frío, y solo por `ADMIN`. Vas a construir un canal que emita esos mismos registros **en vivo**, según ocurren.
 
 ### La configuración
 
@@ -76,7 +76,7 @@ sequenceDiagram
     participant S as Servidor
     N->>S: Conecta a /ws-actividad (handshake)
     N->>S: Se suscribe a /topic/actividad
-    Note over S: Alguien crea/borra un videojuego
+    Note over S: Alguien crea/borra un libro
     S->>N: Publica en /topic/actividad
     Note over N: TODOS los suscritos lo reciben al instante
 ```

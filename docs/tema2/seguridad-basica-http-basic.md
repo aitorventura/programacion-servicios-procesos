@@ -17,10 +17,10 @@ En cuanto añades `spring-boot-starter-security` a un proyecto, sin configurar n
 
 Dos preguntas distintas, que conviene no confundir:
 
-| | Pregunta que responde | Ejemplo en GameVault |
+| | Pregunta que responde | Ejemplo |
 |---|---|---|
 | **Autenticación** | ¿Quién eres? | Comprobar que el usuario y la contraseña son correctos. |
-| **Autorización** | ¿Puedes hacer esto? | Comprobar que, siendo tú, tienes permiso para borrar un videojuego. |
+| **Autorización** | ¿Puedes hacer esto? | Comprobar que, siendo tú, tienes permiso para borrar un libro del catálogo. |
 
 Puedes estar autenticado (Spring Security sabe quién eres) y aun así no autorizado para una acción concreta (no tienes el rol necesario). Son dos capas distintas, y las vas a ver aplicadas por separado.
 
@@ -69,7 +69,7 @@ Y una primera política de acceso, con `authorizeHttpRequests`:
 public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     return http
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(HttpMethod.GET, "/api/v1/videojuegos/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/libros/**").permitAll()
                     .anyRequest().authenticated()
             )
             .httpBasic(Customizer.withDefaults())

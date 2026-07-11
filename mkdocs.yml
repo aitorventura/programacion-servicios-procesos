@@ -59,7 +59,7 @@ nav:
       - Actividad 2.5 - Roles y rutas protegidas: tema2/actividad_2_5.md
   - Tema 3 - Programación multihilo:
       - Tema 3 - Introducción: tema3/index.md
-      - Hilos en una aplicación real: tema3/hilos-en-gamevault.md
+      - Hilos en una aplicación real: tema3/hilos-en-una-app-real.md
       - Actividad 3.1 - Cazando hilos en GameVault: tema3/actividad_3_1.md
       - Eventos internos (warm-up 1/2): tema3/eventos-warmup-cache.md
       - Actividad 3.2 - El evento del warm-up: tema3/actividad_3_2.md
@@ -71,7 +71,7 @@ nav:
       - Tema 4 - Introducción: tema4/index.md
       - Sockets, cliente y servidor: tema4/sockets-cliente-servidor.md
       - Actividad 4.1 - Cliente y servidor con sockets: tema4/actividad_4_1.md
-      - WebSocket en GameVault: tema4/websocket-gamevault.md
+      - WebSocket con STOMP: tema4/websocket-stomp.md
       - Actividad 4.2 - El endpoint /ws-actividad con STOMP: tema4/actividad_4_2.md
       - Actividad en vivo y seguridad del canal: tema4/actividad-en-vivo-cierre.md
       - Actividad 4.3 - Actividad en vivo, cierre de RA3: tema4/actividad_4_3.md

@@ -14,7 +14,7 @@ El viaje completo de un dato, de principio a fin — el broche de todo el módul
 
 ```mermaid
 flowchart LR
-    A["🌐 Petición HTTP<br/>(hilo de Tomcat)"] --> B["VideojuegoService"]
+    A["🌐 Petición HTTP<br/>(hilo de Tomcat)"] --> B["LibroService"]
     B -->|"publica evento"| C["RabbitMQ"]
     C -.->|"consume<br/>(hilo del listener)"| D["ActividadService.registrar()"]
     D --> E["💾 PostgreSQL"]
@@ -115,7 +115,7 @@ Con trazas de nombre de hilo en todo el camino (herencia del Tema 3: HTTP → li
 
 ## 🧭 Recapitulación de todo el módulo
 
-Comunicaciones en red: sockets a mano (Actividad 4.1) → WebSocket/STOMP como ampliación (Actividad 4.2) → emisión real conectada al proyecto, con su seguridad corregida (Actividad 4.3). Y con esto se completa también todo el módulo 0490: servicios en red probados y monitorizados → programación segura con JWT y roles → tareas en segundo plano con hilos propios → comunicaciones en red, de sockets a mano a WebSocket en tiempo real — todo sobre el mismo GameVault que también has construido en Acceso a Datos.
+Comunicaciones en red: sockets a mano (Actividad 4.1) → WebSocket/STOMP como ampliación (Actividad 4.2) → emisión real conectada al proyecto, con su seguridad corregida (Actividad 4.3). Y con esto se completa también todo el módulo 0490: servicios en red probados y monitorizados → programación segura con JWT y roles → tareas en segundo plano con hilos propios → comunicaciones en red, de sockets a mano a WebSocket en tiempo real — todo sobre el mismo proyecto que también has construido en Acceso a Datos.
 
 ---
 

@@ -31,7 +31,7 @@
 ## 📘 Índice de contenidos
 
 1. [Sockets: la base de toda comunicación en red](sockets-cliente-servidor.md)
-2. [WebSocket en GameVault: el canal de actividad en vivo](websocket-gamevault.md)
+2. [WebSocket con STOMP: el canal de actividad en vivo](websocket-stomp.md)
 3. [Actividad en vivo y seguridad del canal](actividad-en-vivo-cierre.md)
 
 **Actividades:**

@@ -39,7 +39,7 @@ Podrías pensar en usar SHA-256 directamente. El problema es justo su virtud en 
 
 ---
 
-## 🎮 Aterrizaje en GameVault: usuarios reales
+## 🗄️ Usuarios reales en la base de datos
 
 ### La entidad `Usuario`
 
@@ -86,12 +86,12 @@ Un hash BCrypt real tiene esta forma:
 
 Diseccionado: `{bcrypt}` (el prefijo del `DelegatingPasswordEncoder`), `$2a$` (la versión del algoritmo), `10$` (el factor de coste — aquí, 2¹⁰ iteraciones), y el resto combina la sal y el hash resultante, ambos codificados en la misma cadena — no hace falta guardar la sal en una columna aparte, viaja incluida.
 
-### `GamevaultUserDetailsService`: el sustituto del `InMemoryUserDetailsManager`
+### Un `UserDetailsService` propio: el sustituto del `InMemoryUserDetailsManager`
 
 ```java
 @Service
 @RequiredArgsConstructor
-public class GamevaultUserDetailsService implements UserDetailsService {
+public class BdUserDetailsService implements UserDetailsService {
 
     private final UsuarioRepository usuarioRepository;
 
@@ -127,4 +127,4 @@ Ya no hay usuarios hardcodeados que desaparezcan al reiniciar — están en Post
     - La **sal** hace que contraseñas iguales produzcan hashes distintos, evitando comparación directa y tablas arcoíris.
     - **BCrypt** es deliberadamente lento (factor de coste configurable), lo que lo hace resistente a fuerza bruta frente a un hash rápido como SHA-256 a secas.
     - `DelegatingPasswordEncoder` antepone un prefijo (`{bcrypt}`) al hash, indicando el algoritmo usado — el mismo bean codifica y verifica.
-    - `GamevaultUserDetailsService` sustituye al `InMemoryUserDetailsManager`: implementa `UserDetailsService` buscando en la base de datos real.
+    - Un `UserDetailsService` propio sustituye al `InMemoryUserDetailsManager`: busca los usuarios en la base de datos real.

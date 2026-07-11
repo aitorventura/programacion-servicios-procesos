@@ -32,7 +32,7 @@
 
 ## 📘 Índice de contenidos
 
-1. [Hilos en una aplicación real: dónde ya los estás usando](hilos-en-gamevault.md)
+1. [Hilos en una aplicación real: dónde ya los estás usando](hilos-en-una-app-real.md)
 2. [Eventos internos de Spring: el warm-up de caché (1/2)](eventos-warmup-cache.md)
 3. [Listeners asíncronos: el warm-up de caché (2/2)](listeners-asincronos.md)
 4. [`TaskExecutor` propio y prioridades](taskexecutor-prioridades.md)

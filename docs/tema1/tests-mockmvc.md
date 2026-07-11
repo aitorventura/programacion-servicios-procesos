@@ -49,26 +49,26 @@ Es, en esencia, un tercer cliente — como `curl` o Swagger UI — pero con una 
 
 ---
 
-## 🎮 Aterrizaje en GameVault: leyendo `VideojuegoControllerTest`
+## 📖 Un ejemplo completo: el test del `LibroController`
 
 ```java
-@WebMvcTest(VideojuegoController.class)
+@WebMvcTest(LibroController.class)
 @AutoConfigureMockMvc(addFilters = false)
-class VideojuegoControllerTest {
+class LibroControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockitoBean
-    private VideojuegoService videojuegoService;
+    private LibroService libroService;
 
     @Test
     void create_DebeDevolver400_CuandoElDtoNoEsValido() throws Exception {
         String body = """
-                {"titulo": "", "precio": -5, "fechaLanzamiento": null, "estudioId": -1}
+                {"titulo": "", "precio": -5, "fechaPublicacion": null, "editorialId": -1}
                 """;
 
-        mockMvc.perform(post("/api/v1/videojuegos")
+        mockMvc.perform(post("/api/v1/libros")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isBadRequest())
@@ -79,8 +79,8 @@ class VideojuegoControllerTest {
 
 Pieza a pieza:
 
-- `@WebMvcTest(VideojuegoController.class)`: arranca solo la capa web de Spring (el controller y lo relacionado con MVC), sin levantar toda la aplicación ni conectar con una base de datos real — mucho más rápido que un arranque completo.
-- `@MockitoBean private VideojuegoService videojuegoService`: sustituye el service real por un mock — el test prueba el controller de forma aislada, sin que la lógica del service (ni la base de datos que hay detrás) entre en juego.
+- `@WebMvcTest(LibroController.class)`: arranca solo la capa web de Spring (el controller y lo relacionado con MVC), sin levantar toda la aplicación ni conectar con una base de datos real — mucho más rápido que un arranque completo.
+- `@MockitoBean private LibroService libroService`: sustituye el service real por un mock — el test prueba el controller de forma aislada, sin que la lógica del service (ni la base de datos que hay detrás) entre en juego.
 - `mockMvc.perform(post(...).contentType(...).content(...))`: construye y envía una petición simulada — el equivalente, en código, al `curl -X POST` que ya conoces.
 - `.andExpect(status().isBadRequest())`: afirma el código de estado esperado (aquí, `400`).
 - `.andExpect(jsonPath("$.status").value(400))`: `jsonPath` navega el cuerpo JSON de la respuesta como si fuera un mini-selector, para afirmar valores concretos dentro de él.
@@ -89,7 +89,7 @@ Este test concreto es de **capa web**: prueba que el controller valida correctam
 
 ### ¿Y el test de integración completo?
 
-En `src/test/java/com/aleroig/gamevault/integration/GamevaultApiTest.java` hay otro tipo de test, con `@Testcontainers`, que levanta bases de datos **reales** en contenedores Docker solo para la duración del test — no mockea nada. Lo trabajarás a fondo en Acceso a Datos; aquí basta con que sitúes los dos niveles: `@WebMvcTest` prueba una capa aislada y rápida, un test de integración prueba varias piezas reales trabajando juntas y es más lento pero da más confianza sobre el sistema completo.
+Existe otro tipo de test, con `@Testcontainers`, que levanta bases de datos **reales** en contenedores Docker solo para la duración del test — no mockea nada. Lo trabajarás a fondo en Acceso a Datos; aquí basta con que sitúes los dos niveles: `@WebMvcTest` prueba una capa aislada y rápida, un test de integración prueba varias piezas reales trabajando juntas y es más lento pero da más confianza sobre el sistema completo.
 
 ---
 
@@ -97,11 +97,11 @@ En `src/test/java/com/aleroig/gamevault/integration/GamevaultApiTest.java` hay o
 
 Un servidor real no atiende a un solo cliente a la vez. Spring Web, sobre Tomcat, atiende cada petición HTTP entrante en un **hilo distinto**, tomado de un *pool* — así que varias peticiones pueden procesarse en paralelo sin que unas esperen a que terminen las otras. Esta idea se retomará a fondo en el Tema 3, sobre programación multihilo; de momento, compruébala con un experimento sencillo.
 
-`VideojuegoService.getTopNovedades()` tiene, a propósito, un `Thread.sleep(2000)` que simula una consulta lenta. Lanza dos peticiones **simultáneas**:
+Imagina un método del service con un `Thread.sleep(2000)` puesto a propósito, que simula una consulta lenta (lo montarás así en la actividad). Lanza dos peticiones **simultáneas** contra su endpoint:
 
 ```bash
-time (curl -s http://localhost:8080/api/v1/videojuegos/top & \
-      curl -s http://localhost:8080/api/v1/videojuegos/top & \
+time (curl -s http://localhost:8080/api/v1/libros/top & \
+      curl -s http://localhost:8080/api/v1/libros/top & \
       wait)
 ```
 
@@ -109,9 +109,9 @@ Si las dos peticiones se atendieran una detrás de otra, el conjunto tardaría u
 
 ---
 
-## 🎯 Lo que viene: el PUT de Estudio
+## 🎯 Lo que viene
 
-En tu propio `EstudioController` (Acceso a Datos, Actividad 1.2) solo tienes `GET` y `POST` — todavía no existe `PUT` ni `DELETE`. Esa es la práctica de esta semana y la siguiente: en la Actividad 1.3 construyes el `PUT` de `Estudio`, replicando el mismo patrón que ya construiste para `Videojuego` en Acceso a Datos la semana pasada; el `DELETE` llega en la Actividad 1.4.
+En tu propio proyecto todavía te falta completar algunas operaciones de escritura. Esa es la práctica de esta semana y la siguiente: en la Actividad 1.3 construyes un `PUT` completo con su test MockMvc, replicando el patrón que ya conoces; el `DELETE` llega en la Actividad 1.4.
 
 ---
 
@@ -124,4 +124,4 @@ En tu propio `EstudioController` (Acceso a Datos, Actividad 1.2) solo tienes `GE
     - **MockMvc** simula peticiones HTTP contra tus controladores sin arrancar un servidor real — un cliente HTTP programable y repetible.
     - `@WebMvcTest` arranca solo la capa web; `@MockitoBean` sustituye una dependencia por un mock; `mockMvc.perform(...).andExpect(...)` construye la petición y afirma el resultado; `jsonPath` navega el cuerpo JSON.
     - Cada petición HTTP la atiende un hilo distinto del pool de Tomcat — por eso dos peticiones lentas simultáneas no tardan el doble, sino aproximadamente lo mismo que una sola.
-    - Esta semana toca construir el `PUT` de `Estudio` (Actividad 1.3), replicando el patrón del `PUT` de `Videojuego` ya construido en AD.
+    - Esta semana toca construir un `PUT` con su test MockMvc (Actividad 1.3), replicando el patrón ya visto.

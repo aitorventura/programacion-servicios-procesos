@@ -52,11 +52,13 @@ Decodifica el `payload` de cualquier JWT (por ejemplo, en [jwt.io](https://jwt.i
 ```
 
 !!! danger "El contenido NO va cifrado"
-    Cualquiera que capture un JWT puede leer su payload completo, sin necesitar ninguna clave — igual que decodificaste HTTP Basic la semana pasada. Lo que impide falsificarlo es la **firma** (la tercera parte), calculada con un algoritmo criptográfico (HMAC, en el caso de GameVault) y un secreto que solo conoce el servidor. Si alguien modificara el payload a mano, la firma dejaría de coincidir, y el servidor lo rechazaría.
+    Cualquiera que capture un JWT puede leer su payload completo, sin necesitar ninguna clave — igual que decodificaste HTTP Basic la semana pasada. Lo que impide falsificarlo es la **firma** (la tercera parte), calculada con un algoritmo criptográfico (HMAC, en el ejemplo que vas a ver) y un secreto que solo conoce el servidor. Si alguien modificara el payload a mano, la firma dejaría de coincidir, y el servidor lo rechazaría.
 
 ---
 
-## 🎮 Aterrizaje en GameVault: el flujo completo
+## 🔑 El flujo completo, pieza a pieza
+
+Siguiendo con la API de la librería: vas a ver las tres piezas que convierten el login en un token y ese token en identidad para el resto de peticiones.
 
 ### Generar el token: `JwtService`
 
@@ -67,7 +69,7 @@ public class JwtService {
 
     private final JwtEncoder jwtEncoder;
 
-    @Value("${gamevault.jwt.expiration-minutes}")
+    @Value("${libreria.jwt.expiration-minutes}")
     private long expirationMinutes;
 
     public String generarToken(Authentication authentication) {
@@ -79,7 +81,7 @@ public class JwtService {
                 .toList();
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
-                .issuer("gamevault")
+                .issuer("libreria")
                 .issuedAt(ahora)
                 .expiresAt(ahora.plusSeconds(expirationMinutes * 60))
                 .subject(authentication.getName())
@@ -116,7 +118,7 @@ public class AuthController {
 }
 ```
 
-`AuthenticationManager.authenticate(...)` es quien verifica de verdad las credenciales — por debajo, usa el `GamevaultUserDetailsService` y el `PasswordEncoder` que ya construiste la semana pasada. Si las credenciales son correctas, genera el token; si no, lanza una excepción (que `GlobalExceptionHandler`, del apartado 1, convierte en una respuesta coherente).
+`AuthenticationManager.authenticate(...)` es quien verifica de verdad las credenciales — por debajo, usa el `UserDetailsService` y el `PasswordEncoder` que ya construiste la semana pasada. Si las credenciales son correctas, genera el token; si no, lanza una excepción (que `GlobalExceptionHandler`, del apartado 1, convierte en una respuesta coherente).
 
 ### El cambio de modo en `SecurityConfig`
 
@@ -132,7 +134,7 @@ public class AuthController {
 
 `SessionCreationPolicy.STATELESS` es la consecuencia directa de usar tokens autocontenidos: con JWT no hace falta que el servidor guarde ninguna sesión, así que se lo dices explícitamente a Spring Security. `oauth2ResourceServer(oauth2 -> oauth2.jwt(...))` activa la validación de JWT en cada petición protegida — Spring verifica la firma automáticamente, usando el `JwtDecoder` configurado con el mismo secreto. `httpBasic(AbstractHttpConfigurer::disable)` retira oficialmente el mecanismo provisional de las semanas 8-9: JWT es ahora el único mecanismo de autenticación.
 
-Sobre el secreto (`@Value("${gamevault.jwt.secret}")`): sigue el mismo principio que viste en el apartado 1 — nunca en el código, siempre en configuración externa (`application-dev.yaml`), para que en un entorno real ese valor pueda ser distinto y no viaje en el propio código fuente.
+Sobre el secreto (`@Value("${libreria.jwt.secret}")`): sigue el mismo principio que viste en el apartado 1 — nunca en el código, siempre en configuración externa (`application-dev.yaml`), para que en un entorno real ese valor pueda ser distinto y no viaje en el propio código fuente.
 
 ### `GET /api/v1/auth/me`
 
@@ -155,7 +157,7 @@ JWT evita reenviar la contraseña en cada petición — un avance real. Pero el 
 Monta HTTPS mínimo en tu entorno de desarrollo, con un certificado autofirmado. `keytool` es la herramienta de gestión de claves y certificados que viene incluida con el propio JDK — no hace falta instalar nada aparte:
 
 ```bash
-keytool -genkeypair -alias gamevault -keyalg RSA -keysize 2048 \
+keytool -genkeypair -alias miapp -keyalg RSA -keysize 2048 \
   -storetype PKCS12 -keystore keystore.p12 -validity 365
 ```
 

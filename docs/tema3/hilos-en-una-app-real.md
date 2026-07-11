@@ -1,8 +1,8 @@
-<a id="hilos-en-gamevault"></a>
+<a id="hilos-en-una-app-real"></a>
 
 # 🧩 1. Hilos en una aplicación real: dónde ya los estás usando
 
-Esta semana es distinta a todas las anteriores: no vas a escribir código de producción — vas a aprender a **ver** algo que ya está pasando delante de ti sin que lo hayas notado. Tu GameVault ya es una aplicación multihilo, aunque nunca hayas escrito `new Thread()`.
+Esta semana es distinta a todas las anteriores: no vas a escribir código de producción — vas a aprender a **ver** algo que ya está pasando delante de ti sin que lo hayas notado. Tu aplicación Spring Boot ya es multihilo, aunque nunca hayas escrito `new Thread()`.
 
 ---
 
@@ -104,34 +104,36 @@ Y por encima de eso están las abstracciones de Spring que usarás en las próxi
 
 ---
 
-## 🎮 Aterrizaje: tu GameVault ya es multihilo
+## 🔍 Tu aplicación ya es multihilo
+
+Siguiendo con la API de la librería que conoces de los temas anteriores, hay al menos dos sitios donde ya hay varios hilos trabajando sin que tú lo hayas pedido.
 
 ### Avistamiento 1 — el pool de Tomcat
 
-Ya lo comprobaste experimentalmente en el Tema 1: dos peticiones simultáneas a `/api/v1/videojuegos/top` (con su `Thread.sleep(2000)` simulado) no tardaban el doble, sino aproximadamente lo mismo que una sola. Ahora tienes el nombre técnico: Tomcat mantiene un **pool de hilos**, y cada petición HTTP se atiende en un hilo distinto de ese pool — es tu primer avistamiento real.
+Ya lo comprobaste experimentalmente en el Tema 1: dos peticiones simultáneas al endpoint lento (con su `Thread.sleep(2000)` simulado) no tardaban el doble, sino aproximadamente lo mismo que una sola. Ahora tienes el nombre técnico: Tomcat mantiene un **pool de hilos**, y cada petición HTTP se atiende en un hilo distinto de ese pool — es tu primer avistamiento real.
 
 ### Avistamiento 2 — los listeners de RabbitMQ
 
-Antes de ver dónde aparece esto en tu código, necesitas saber qué es **RabbitMQ**, porque es la primera vez que aparece en el curso (y va a reaparecer sin volver a explicarse, así que esta es la referencia para el resto del curso, tanto en PSP como en Acceso a Datos):
+Antes de ver el ejemplo, necesitas saber qué es **RabbitMQ**, porque es la primera vez que aparece en el curso (y va a reaparecer sin volver a explicarse, así que esta es la referencia para el resto del curso, tanto en PSP como en Acceso a Datos):
 
 - Un **broker de mensajería** es un servidor intermediario que recibe mensajes de quien los produce y los entrega a quien los consume — sin que productor y consumidor se conozcan entre sí, ni tengan que estar activos al mismo tiempo.
 - Una **cola** es una lista de mensajes pendientes de procesar.
 - Un **exchange** decide a qué cola (o colas) llega cada mensaje publicado, según reglas de enrutado.
 - `@RabbitListener` marca un método como consumidor de una cola: Spring AMQP lo invoca automáticamente cuando llega un mensaje — en un hilo **propio del contenedor de listeners**, no en el hilo de quien publicó el mensaje.
 
-Con esa base, mira `ActividadVideojuegoEventConsumer`:
+Con esa base, imagina que la librería registra la actividad del catálogo (altas, cambios de precio...) a partir de eventos:
 
 ```java
 @Service
 @RequiredArgsConstructor
-public class ActividadVideojuegoEventConsumer {
+public class ActividadLibroEventConsumer {
 
     private final ActividadService actividadService;
 
-    @RabbitListener(queues = RabbitMQConfig.ACTIVIDAD_VIDEOJUEGO_QUEUE)
+    @RabbitListener(queues = RabbitMQConfig.ACTIVIDAD_LIBRO_QUEUE)
     public void recibir(String payload) {
-        VideojuegoEvent event = /* deserializar */;
-        actividadService.registrar(event.tipo(), "Videojuego", event.videojuegoId().toString(), /* ... */);
+        LibroEvent event = /* deserializar */;
+        actividadService.registrar(event.tipo(), "Libro", event.libroId().toString(), /* ... */);
     }
 }
 ```
@@ -140,20 +142,16 @@ El flujo completo, con dos hilos distintos involucrados:
 
 ```mermaid
 flowchart LR
-    A["🌐 Petición HTTP<br/>(hilo A, pool Tomcat)"] --> B["VideojuegoService.create()"]
-    B --> C["VideojuegoEventPublisher<br/>publica en RabbitMQ"]
-    C -.-> D["ActividadVideojuegoEventConsumer<br/>@RabbitListener (hilo B, contenedor AMQP)"]
+    A["🌐 Petición HTTP<br/>(hilo A, pool Tomcat)"] --> B["LibroService.create()"]
+    B --> C["LibroEventPublisher<br/>publica en RabbitMQ"]
+    C -.-> D["ActividadLibroEventConsumer<br/>@RabbitListener (hilo B, contenedor AMQP)"]
 ```
 
-`VideojuegoService.create()` (hilo A, el de la petición HTTP) publica el evento y **no espera** a que se procese — sigue su camino y responde al cliente. El consumer lo recoge y lo procesa en su propio hilo (hilo B), en su propio momento. Eso es justo lo que gana la aplicación: la petición HTTP no se queda esperando a que se registre la actividad.
+`LibroService.create()` (hilo A, el de la petición HTTP) publica el evento y **no espera** a que se procese — sigue su camino y responde al cliente. El consumer lo recoge y lo procesa en su propio hilo (hilo B), en su propio momento. Eso es justo lo que gana la aplicación: la petición HTTP no se queda esperando a que se registre la actividad.
 
-### Avistamiento 3 — el `@EnableAsync` que nadie usa todavía
+### El problema motivador: el warm-up de una caché
 
-`GamevaultApplication.java` declara `@EnableAsync` — pero, si buscas en todo el proyecto, **ningún método usa `@Async` todavía**. Es un hueco deliberado: las próximas semanas (14-16) lo van a rellenar, construyendo el warm-up de la caché de `topNovedades`.
-
-### El problema motivador del warm-up
-
-`getTopNovedades()` en `VideojuegoService` está anotado `@Cacheable("topNovedades")` y simula 2 segundos de lentitud con `Thread.sleep(2000)`; cada `create`/`update`/`delete` invalida esa caché con `@CacheEvict`. El resultado: tras cada escritura, el **siguiente** usuario que pida el top paga esos 2 segundos de golpe. Un hilo en segundo plano que recaliente la caché justo después de invalidarla — sin que ningún usuario tenga que esperar — es la situación "útil" de libro para usar varios hilos. Es exactamente lo que vas a construir en las próximas dos semanas.
+Imagina ahora un método `getTopNovedades()` (los libros más recientes del catálogo) anotado con `@Cacheable("topNovedades")`, que simula 2 segundos de lentitud con `Thread.sleep(2000)`; cada `create`/`update`/`delete` invalida esa caché con `@CacheEvict`. El resultado: tras cada escritura, el **siguiente** usuario que pida el top paga esos 2 segundos de golpe. Un hilo en segundo plano que recaliente la caché justo después de invalidarla — sin que ningún usuario tenga que esperar — es la situación "útil" de libro para usar varios hilos. Es exactamente lo que vas a construir en las próximas dos semanas, con `@EnableAsync` y `@Async`.
 
 ---
 
@@ -167,5 +165,5 @@ flowchart LR
     - Ciclo de vida: NEW → RUNNABLE → BLOCKED/WAITING → TERMINATED.
     - La **condición de carrera** ocurre cuando varios hilos modifican el mismo dato sin coordinación; `synchronized` la resuelve creando una sección crítica — pero en exceso puede provocar **deadlock**.
     - **RabbitMQ**: un broker de mensajería con colas y exchanges; `@RabbitListener` procesa mensajes en un hilo propio del contenedor, distinto del hilo que publicó.
-    - Tu GameVault ya es multihilo: el pool de Tomcat (una petición, un hilo) y los listeners de RabbitMQ (hilo del contenedor AMQP) son avistamientos reales, sin que hayas escrito `new Thread()` nunca.
-    - `@EnableAsync` está declarado pero sin usar — las próximas semanas lo estrenan con el warm-up de la caché.
+    - Tu aplicación ya es multihilo: el pool de Tomcat (una petición, un hilo) y los listeners de RabbitMQ (hilo del contenedor AMQP) son avistamientos reales, sin que hayas escrito `new Thread()` nunca.
+    - El warm-up de una caché tras invalidarla es el caso motivador que construirás con `@EnableAsync`/`@Async` en las próximas semanas.
