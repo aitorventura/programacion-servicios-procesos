@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../actividad_3_2/">
+        <link rel="prev" href="../actividad_3_3/">
       
       
-        <link rel="next" href="../actividad_3_3/">
+        <link rel="next" href="../actividad_3_4/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -1124,7 +1124,30 @@
   
   
   <span class="md-ellipsis">
-    Actividad 3.1 - Cazando hilos en GameVault
+    Actividad 3.1 - RabbitMQ y el registro de actividad
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../actividad_3_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Actividad 3.2 - Cazando hilos en GameVault
     
   </span>
   
@@ -1165,12 +1188,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../actividad_3_2/" class="md-nav__link">
+      <a href="../actividad_3_3/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.2 - El evento del warm-up
+    Actividad 3.3 - El evento del warm-up
     
   </span>
   
@@ -1307,12 +1330,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../actividad_3_3/" class="md-nav__link">
+      <a href="../actividad_3_4/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.3 - El listener @Async del warm-up
+    Actividad 3.4 - El listener @Async del warm-up
     
   </span>
   
@@ -1353,12 +1376,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../actividad_3_4/" class="md-nav__link">
+      <a href="../actividad_3_5/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.4 - TaskExecutor propio
+    Actividad 3.5 - TaskExecutor propio
     
   </span>
   
@@ -1680,11 +1703,11 @@
 
 <div><p><a id="listeners-asincronos"></a></p>
 <h1 id="3-listeners-asincronos-el-warm-up-de-cache-22">🧩 3. Listeners asíncronos: el warm-up de caché (2/2)<a class="headerlink" href="#3-listeners-asincronos-el-warm-up-de-cache-22" title="Permanent link">¶</a></h1>
-<p>La semana pasada construiste el evento y su publicación — sin ningún efecto visible todavía. Hoy construyes la pieza que le da sentido a todo: el listener que reacciona, recalentando la caché en un hilo aparte. Aquí es donde el <code>@EnableAsync</code> "durmiente" que localizaste en la Actividad 3.1 entra por fin en juego.</p>
+<p>La semana pasada construiste el evento y su publicación — sin ningún efecto visible todavía. Hoy construyes la pieza que le da sentido a todo: el listener que reacciona, recalentando la caché en un hilo aparte. Aquí es donde entra en juego <code>@EnableAsync</code> — la capacidad que en la Actividad 3.2 comprobaste que tu proyecto todavía no usaba en ningún sitio, y que hoy activas tú mismo junto a la anotación <code>@Async</code>.</p>
 <hr>
 <h2 id="async-que-hace-exactamente">⚡ <code>@Async</code>: qué hace exactamente<a class="headerlink" href="#async-que-hace-exactamente" title="Permanent link">¶</a></h2>
-<p><code>@Async</code> sobre un método le dice a Spring: "no ejecutes este método en el hilo de quien lo llama — despáchalo a un pool de hilos aparte, y devuelve el control inmediatamente a quien llamó". Por debajo, Spring construye un <strong>proxy</strong> alrededor de tu bean: cuando alguien invoca un método <code>@Async</code>, en realidad no lo ejecuta directamente — el proxy intercepta la llamada, la envía a un <code>ExecutorService</code> (recuerda la escala de abstracción de la Actividad 3.1), y el método original se ejecuta en uno de esos hilos del pool.</p>
-<p>Ya tienes el contraste medido en la Actividad 3.2: sin <code>@Async</code>, tu listener trivial de prueba corría en el <strong>mismo hilo</strong> de la petición HTTP que publicó el evento. Con <code>@Async</code>, va a correr en un hilo <strong>distinto</strong> — lo vas a verificar de nuevo hoy, comparando los nombres de hilo en el log.</p>
+<p><code>@Async</code> sobre un método le dice a Spring: "no ejecutes este método en el hilo de quien lo llama — despáchalo a un pool de hilos aparte, y devuelve el control inmediatamente a quien llamó". Por debajo, Spring construye un <strong>proxy</strong> alrededor de tu bean: cuando alguien invoca un método <code>@Async</code>, en realidad no lo ejecuta directamente — el proxy intercepta la llamada, la envía a un <code>ExecutorService</code> (recuerda la escala de abstracción de la Actividad 3.2), y el método original se ejecuta en uno de esos hilos del pool.</p>
+<p>Ya tienes el contraste medido en la Actividad 3.3: sin <code>@Async</code>, tu listener trivial de prueba corría en el <strong>mismo hilo</strong> de la petición HTTP que publicó el evento. Con <code>@Async</code>, va a correr en un hilo <strong>distinto</strong> — lo vas a verificar de nuevo hoy, comparando los nombres de hilo en el log.</p>
 <hr>
 <h2 id="transactionaleventlistenerphase-after_commit">⏱️ <code>@TransactionalEventListener(phase = AFTER_COMMIT)</code><a class="headerlink" href="#transactionaleventlistenerphase-after_commit" title="Permanent link">¶</a></h2>
 <p>Aquí aparece un problema real, sutil, que un <code>@EventListener</code> a secas no resuelve: si el listener se dispara <strong>antes</strong> de que la transacción de <code>LibroService.create()</code> haga <em>commit</em>, el hilo del warm-up podría leer la base de datos en un estado que <strong>todavía no incluye</strong> el libro recién creado — y recalentaría la caché con datos viejos, justo lo contrario de lo que quieres.</p>
@@ -1701,18 +1724,18 @@
 </code></pre></div></td></tr></table></div>
 <hr>
 <h2 id="estados-de-un-hilo-ahora-observables-de-verdad">🔄 Estados de un hilo, ahora observables de verdad<a class="headerlink" href="#estados-de-un-hilo-ahora-observables-de-verdad" title="Permanent link">¶</a></h2>
-<p>Retoma el ciclo de estados de la Actividad 3.1 (NEW → RUNNABLE → BLOCKED/WAITING → TERMINATED), esta vez con un caso perfectamente observable: el <code>Thread.sleep(2000)</code> dentro de <code>getTopNovedades()</code>. Mientras ese <code>sleep</code> está activo, el hilo que ejecuta el warm-up está en estado <strong>TIMED_WAITING</strong> — puedes verlo tú mismo con jconsole o VisualVM (las mismas herramientas de la Actividad 3.1), capturando el estado del hilo justo durante esos 2 segundos.</p>
+<p>Retoma el ciclo de estados de la Actividad 3.2 (NEW → RUNNABLE → BLOCKED/WAITING → TERMINATED), esta vez con un caso perfectamente observable: el <code>Thread.sleep(2000)</code> dentro de <code>getTopNovedades()</code>. Mientras ese <code>sleep</code> está activo, el hilo que ejecuta el warm-up está en estado <strong>TIMED_WAITING</strong> — puedes verlo tú mismo con jconsole o VisualVM (las mismas herramientas de la Actividad 3.2), capturando el estado del hilo justo durante esos 2 segundos.</p>
 <hr>
 <h2 id="problemas-de-comparticion-en-este-caso-concreto">⚠️ Problemas de compartición, en este caso concreto<a class="headerlink" href="#problemas-de-comparticion-en-este-caso-concreto" title="Permanent link">¶</a></h2>
 <p>Dos preguntas que conviene hacerse antes de dar el warm-up por terminado:</p>
 <ul>
 <li><strong>¿Qué pasa si dos escrituras casi simultáneas publican dos eventos?</strong> Dos hilos distintos intentarían recalentar la misma caché casi a la vez — trabajo duplicado (ambos recalculan lo mismo) y, en el peor caso, una carrera sobre qué resultado queda finalmente guardado en la caché. No es un error grave (el resultado final sigue siendo correcto), pero sí ineficiente.</li>
-<li><strong>¿Y si el listener leyera una entidad JPA compartida en vez de un evento inmutable?</strong> Si <code>TopNovedadesInvalidadoEvent</code> no fuera un <code>record</code> inmutable, sino que el listener leyera directamente un objeto mutable compartido con el hilo que publicó, existiría el riesgo de que ese objeto cambiara mientras el listener aún lo está usando — exactamente el tipo de condición de carrera que viste en la Actividad 3.1. La inmutabilidad del evento elimina ese riesgo por diseño.</li>
+<li><strong>¿Y si el listener leyera una entidad JPA compartida en vez de un evento inmutable?</strong> Si <code>TopNovedadesInvalidadoEvent</code> no fuera un <code>record</code> inmutable, sino que el listener leyera directamente un objeto mutable compartido con el hilo que publicó, existiría el riesgo de que ese objeto cambiara mientras el listener aún lo está usando — exactamente el tipo de condición de carrera que viste en la Actividad 3.2. La inmutabilidad del evento elimina ese riesgo por diseño.</li>
 </ul>
 <p>Como panorámica breve: por debajo de <code>@Async</code>, Spring usa piezas de <code>java.util.concurrent</code> — típicamente un <code>ExecutorService</code>/pool de hilos configurable. La configuración fina de ese pool (cuántos hilos, con qué nombre, con qué prioridad) es exactamente lo que vas a construir en el apartado siguiente.</p>
 <hr>
 <h2 id="el-resultado-que-vas-a-medir">📈 El resultado que vas a medir<a class="headerlink" href="#el-resultado-que-vas-a-medir" title="Permanent link">¶</a></h2>
-<p>Con las dos piezas montadas (evento + listener asíncrono sincronizado con el commit), el "primer usuario tras una escritura" ya no paga los 2 segundos de <code>getTopNovedades()</code> — el warm-up los paga por él, en segundo plano, mientras nadie espera. La Actividad 3.3 lo va a demostrar con mediciones reales, comparando el "antes" (Actividad 3.2) con el "después" (hoy).</p>
+<p>Con las dos piezas montadas (evento + listener asíncrono sincronizado con el commit), el "primer usuario tras una escritura" ya no paga los 2 segundos de <code>getTopNovedades()</code> — el warm-up los paga por él, en segundo plano, mientras nadie espera. La Actividad 3.4 lo va a demostrar con mediciones reales, comparando el "antes" (Actividad 3.3) con el "después" (hoy).</p>
 <hr>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
 <details class="tip">
@@ -1760,7 +1783,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Pie" >
         
           
-          <a href="../actividad_3_2/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Actividad 3.2 - El evento del warm-up">
+          <a href="../actividad_3_3/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Actividad 3.3 - El evento del warm-up">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1770,20 +1793,20 @@
                 Anterior
               </span>
               <div class="md-ellipsis">
-                Actividad 3.2 - El evento del warm-up
+                Actividad 3.3 - El evento del warm-up
               </div>
             </div>
           </a>
         
         
           
-          <a href="../actividad_3_3/" class="md-footer__link md-footer__link--next" aria-label="Siguiente: Actividad 3.3 - El listener @Async del warm-up">
+          <a href="../actividad_3_4/" class="md-footer__link md-footer__link--next" aria-label="Siguiente: Actividad 3.4 - El listener @Async del warm-up">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Siguiente
               </span>
               <div class="md-ellipsis">
-                Actividad 3.3 - El listener @Async del warm-up
+                Actividad 3.4 - El listener @Async del warm-up
               </div>
             </div>
             <div class="md-footer__button md-icon">

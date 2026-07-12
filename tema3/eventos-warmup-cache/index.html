@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../actividad_3_1/">
+        <link rel="prev" href="../actividad_3_2/">
       
       
-        <link rel="next" href="../actividad_3_2/">
+        <link rel="next" href="../actividad_3_3/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -1124,7 +1124,30 @@
   
   
   <span class="md-ellipsis">
-    Actividad 3.1 - Cazando hilos en GameVault
+    Actividad 3.1 - RabbitMQ y el registro de actividad
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../actividad_3_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Actividad 3.2 - Cazando hilos en GameVault
     
   </span>
   
@@ -1294,12 +1317,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../actividad_3_2/" class="md-nav__link">
+      <a href="../actividad_3_3/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.2 - El evento del warm-up
+    Actividad 3.3 - El evento del warm-up
     
   </span>
   
@@ -1340,12 +1363,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../actividad_3_3/" class="md-nav__link">
+      <a href="../actividad_3_4/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.3 - El listener @Async del warm-up
+    Actividad 3.4 - El listener @Async del warm-up
     
   </span>
   
@@ -1386,12 +1409,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../actividad_3_4/" class="md-nav__link">
+      <a href="../actividad_3_5/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.4 - TaskExecutor propio
+    Actividad 3.5 - TaskExecutor propio
     
   </span>
   
@@ -1758,20 +1781,19 @@
 <hr>
 <h2 id="que-es-una-cache">💾 Qué es una caché<a class="headerlink" href="#que-es-una-cache" title="Permanent link">¶</a></h2>
 <p>Una <strong>caché</strong> guarda el resultado de una operación cara (lenta, costosa) para reutilizarlo sin repetir el trabajo. Cuando ese resultado deja de ser válido (los datos subyacentes han cambiado), hay que <strong>invalidarla</strong> — borrar el resultado guardado, para que la próxima vez se recalcule. <strong>Recalentar</strong> una caché es volver a calcular ese resultado por adelantado, antes de que alguien lo pida, para que quien lo pida a continuación no pague el coste de calcularlo de cero.</p>
-<p>Es exactamente lo que hace <code>@Cacheable</code> en el <code>getTopNovedades()</code> del apartado anterior — ahora ya sabes qué hace exactamente por debajo.</p>
+<p>Es exactamente lo que vas a conseguir hoy con <code>@Cacheable</code> sobre el <code>getTopNovedades()</code> que ya tienes (Actividad 1.3) — pero antes de anotarlo, falta decidir <strong>dónde</strong> se guarda físicamente ese resultado.</p>
 <hr>
 <h2 id="que-es-redis-y-por-que-aparece-en-este-proyecto">🔴 Qué es Redis, y por qué aparece en este proyecto<a class="headerlink" href="#que-es-redis-y-por-que-aparece-en-este-proyecto" title="Permanent link">¶</a></h2>
-<p>Ya has visto el contenedor <code>redis</code> en el <code>docker-compose.yaml</code> (Tema 0 de AD) y en <code>/actuator/health</code> (Tema 1), pero nadie te ha dicho qué es — y es aquí, con la caché, donde encaja de verdad.</p>
 <p><strong>Redis</strong> es una base de datos en memoria, de tipo clave-valor, muy rápida, que se usa típicamente como <strong>caché compartida</strong>. La diferencia frente a una caché que viviera solo en la memoria de tu propia aplicación: una caché en Redis sobrevive a un reinicio de la aplicación, y podría compartirse entre varias instancias de la misma aplicación corriendo a la vez (si algún día hubiera más de una).</p>
-<p>Con <code>spring-boot-starter-cache</code> y <code>spring-boot-starter-data-redis</code> presentes en el <code>pom.xml</code>, Spring Boot autoconfigura Redis como el almacén real detrás de <code>@Cacheable</code>. Es decir: cuando <code>getTopNovedades()</code> guarda su resultado en la caché <code>"topNovedades"</code>, ese resultado se guarda <strong>físicamente en el contenedor Redis</strong> del <code>docker-compose</code>, no en un mapa en memoria de tu propia aplicación Java.</p>
-<p>Compruébalo tú mismo:</p>
+<p>Con <code>spring-boot-starter-cache</code> y <code>spring-boot-starter-data-redis</code> presentes en el <code>pom.xml</code> (las vas a añadir en la actividad de hoy), Spring Boot autoconfigura Redis como el almacén real detrás de <code>@Cacheable</code>. Es decir: cuando <code>getTopNovedades()</code> guarde su resultado en la caché <code>"topNovedades"</code>, ese resultado se va a guardar <strong>físicamente en un contenedor Redis</strong>, no en un mapa en memoria de tu propia aplicación Java.</p>
+<p>Una vez lo tengas montado, vas a poder comprobarlo tú mismo:</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
 <span class="normal"><a href="#__codelineno-0-2">2</a></span>
 <span class="normal"><a href="#__codelineno-0-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>&lt;tu-contenedor-redis&gt;<span class="w"> </span>redis-cli
 <a id="__codelineno-0-2" name="__codelineno-0-2"></a>&gt;<span class="w"> </span>KEYS<span class="w"> </span>*
 <a id="__codelineno-0-3" name="__codelineno-0-3"></a>&gt;<span class="w"> </span>GET<span class="w"> </span><span class="s2">"topNovedades::SimpleKey []"</span>
 </code></pre></div></td></tr></table></div>
-<p>Tras la primera petición a <code>/api/v1/libros/top</code>, deberías ver aparecer una clave relacionada con <code>topNovedades</code> en Redis.</p>
+<p>Tras la primera petición a <code>/api/v1/videojuegos/top</code>, deberías ver aparecer una clave relacionada con <code>topNovedades</code> en Redis.</p>
 <hr>
 <h2 id="los-eventos-internos-de-spring-applicationeventpublisher">⚙️ Los eventos internos de Spring: <code>ApplicationEventPublisher</code><a class="headerlink" href="#los-eventos-internos-de-spring-applicationeventpublisher" title="Permanent link">¶</a></h2>
 <p>Spring implementa el patrón observador/publicador-suscriptor <strong>dentro de la propia aplicación</strong>, sin ningún broker externo de por medio, con <code>ApplicationEventPublisher</code> y los <em>listeners</em> que reaccionan a lo que publica.</p>
@@ -1875,7 +1897,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Pie" >
         
           
-          <a href="../actividad_3_1/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Actividad 3.1 - Cazando hilos en GameVault">
+          <a href="../actividad_3_2/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Actividad 3.2 - Cazando hilos en GameVault">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1885,20 +1907,20 @@
                 Anterior
               </span>
               <div class="md-ellipsis">
-                Actividad 3.1 - Cazando hilos en GameVault
+                Actividad 3.2 - Cazando hilos en GameVault
               </div>
             </div>
           </a>
         
         
           
-          <a href="../actividad_3_2/" class="md-footer__link md-footer__link--next" aria-label="Siguiente: Actividad 3.2 - El evento del warm-up">
+          <a href="../actividad_3_3/" class="md-footer__link md-footer__link--next" aria-label="Siguiente: Actividad 3.3 - El evento del warm-up">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Siguiente
               </span>
               <div class="md-ellipsis">
-                Actividad 3.2 - El evento del warm-up
+                Actividad 3.3 - El evento del warm-up
               </div>
             </div>
             <div class="md-footer__button md-icon">

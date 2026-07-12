@@ -1247,7 +1247,30 @@
   
   
   <span class="md-ellipsis">
-    Actividad 3.1 - Cazando hilos en GameVault
+    Actividad 3.1 - RabbitMQ y el registro de actividad
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tema3/actividad_3_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Actividad 3.2 - Cazando hilos en GameVault
     
   </span>
   
@@ -1288,12 +1311,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema3/actividad_3_2/" class="md-nav__link">
+      <a href="../../tema3/actividad_3_3/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.2 - El evento del warm-up
+    Actividad 3.3 - El evento del warm-up
     
   </span>
   
@@ -1334,12 +1357,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema3/actividad_3_3/" class="md-nav__link">
+      <a href="../../tema3/actividad_3_4/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.3 - El listener @Async del warm-up
+    Actividad 3.4 - El listener @Async del warm-up
     
   </span>
   
@@ -1380,12 +1403,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema3/actividad_3_4/" class="md-nav__link">
+      <a href="../../tema3/actividad_3_5/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.4 - TaskExecutor propio
+    Actividad 3.5 - TaskExecutor propio
     
   </span>
   
@@ -1769,11 +1792,6 @@
 <td>Cualquiera</td>
 </tr>
 <tr>
-<td><code>/api/v1/videojuegos/*/reviews</code></td>
-<td>POST</td>
-<td><code>USER</code> o <code>ADMIN</code></td>
-</tr>
-<tr>
 <td><code>/api/v1/videojuegos</code></td>
 <td>POST/PUT/DELETE</td>
 <td>Solo <code>ADMIN</code></td>
@@ -1794,6 +1812,11 @@
 <td>¿? <em>(decide tú, si ya la tienes)</em></td>
 </tr>
 <tr>
+<td><code>/actuator/health</code></td>
+<td>GET</td>
+<td>¿? <em>(decide tú — piensa en quién necesita comprobar que el servicio está vivo)</em></td>
+</tr>
+<tr>
 <td><code>/swagger-ui/**</code>, <code>/v3/api-docs/**</code>, <code>/error</code></td>
 <td>—</td>
 <td>Cualquiera</td>
@@ -1805,6 +1828,10 @@
 </tr>
 </tbody>
 </table>
+<div class="admonition tip">
+<p class="admonition-title">Las reseñas todavía no existen en tu proyecto</p>
+<p>Si más adelante añades el módulo de reseñas (Acceso a Datos, Tema 4), vas a tener que volver a esta tabla y a <code>SecurityConfig</code> para añadir <code>/api/v1/videojuegos/*/reviews</code> (<code>POST</code>, <code>USER</code> o <code>ADMIN</code>) — hoy no existe todavía, así que no lo incluyas.</p>
+</div>
 <p><strong>Antes de escribir código</strong>, decide y anota: el <code>PUT</code>/<code>DELETE</code> de <code>Estudio</code> que construiste en el Tema 1, ¿debería tener el mismo nivel de protección que el resto de escrituras del catálogo (<code>ADMIN</code>)? Justifica tu respuesta en una frase.</p>
 <p>Ahora completa tu <code>SecurityConfig</code> regla a regla, siguiendo la tabla ya decidida:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
@@ -1819,21 +1846,19 @@
 <span class="normal"><a href="#__codelineno-0-10">10</a></span>
 <span class="normal"><a href="#__codelineno-0-11">11</a></span>
 <span class="normal"><a href="#__codelineno-0-12">12</a></span>
-<span class="normal"><a href="#__codelineno-0-13">13</a></span>
-<span class="normal"><a href="#__codelineno-0-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="p">.</span><span class="na">authorizeHttpRequests</span><span class="p">(</span><span class="n">auth</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">auth</span>
+<span class="normal"><a href="#__codelineno-0-13">13</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="p">.</span><span class="na">authorizeHttpRequests</span><span class="p">(</span><span class="n">auth</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">auth</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/auth/login"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/estudios/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/*/reviews"</span><span class="p">).</span><span class="na">hasAnyRole</span><span class="p">(</span><span class="s">"USER"</span><span class="p">,</span><span class="w"> </span><span class="s">"ADMIN"</span><span class="p">)</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">PUT</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/*"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">DELETE</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/*"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/estudios"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="w">        </span><span class="c1">// añade aquí, siguiendo el mismo patrón, la regla que decidiste para Estudio PUT/DELETE</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="s">"/error"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="s">"/v3/api-docs/**"</span><span class="p">,</span><span class="w"> </span><span class="s">"/swagger-ui/**"</span><span class="p">,</span><span class="w"> </span><span class="s">"/swagger-ui.html"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="w">        </span><span class="p">.</span><span class="na">anyRequest</span><span class="p">().</span><span class="na">denyAll</span><span class="p">()</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="p">)</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">PUT</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/*"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">DELETE</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/*"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/estudios"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="w">        </span><span class="c1">// añade aquí, siguiendo el mismo patrón, la regla que decidiste para Estudio PUT/DELETE</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="s">"/error"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="s">"/v3/api-docs/**"</span><span class="p">,</span><span class="w"> </span><span class="s">"/swagger-ui/**"</span><span class="p">,</span><span class="w"> </span><span class="s">"/swagger-ui.html"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="w">        </span><span class="p">.</span><span class="na">anyRequest</span><span class="p">().</span><span class="na">denyAll</span><span class="p">()</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 <hr>
 <h2 id="paso-2-verificar-denyall">Paso 2 — Verificar <code>denyAll()</code><a class="headerlink" href="#paso-2-verificar-denyall" title="Permanent link">¶</a></h2>
@@ -1845,7 +1870,7 @@
 <h2 id="paso-3-depurar-un-caso-real">Paso 3 — Depurar un caso real<a class="headerlink" href="#paso-3-depurar-un-caso-real" title="Permanent link">¶</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Este fallo es intencionado — vas a diagnosticarlo tú</p>
-<p>Con <code>denyAll()</code> activo, prueba ahora mismo: <code>GET /api/v1/videojuegos/1/reviews/resumen</code> (el resumen de reseñas de un videojuego). Es muy probable que, si no la has incluido explícitamente arriba, te dé un rechazo — aunque el endpoint en sí funcione perfectamente si lo pruebas de otra forma.</p>
+<p>Con <code>denyAll()</code> activo, prueba ahora mismo: <code>GET /actuator/health</code> (el mismo endpoint que activaste en el Tema 1). Es muy probable que, si no lo has incluido explícitamente arriba, te dé un rechazo — aunque el endpoint en sí funcione perfectamente si lo pruebas de otra forma.</p>
 </div>
 <p>Activa el log de Spring Security si quieres ver más detalle de la decisión:</p>
 <div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>

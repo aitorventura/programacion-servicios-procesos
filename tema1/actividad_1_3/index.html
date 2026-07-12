@@ -781,9 +781,9 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#paso-3-por-comparacion-con-el-put-de-videojuego" class="md-nav__link">
+  <a href="#paso-3-conectar-el-endpoint-a-un-service-que-ya-existe" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 3 — Por comparación con el PUT de Videojuego
+      Paso 3 — Conectar el endpoint a un service que ya existe
     </span>
   </a>
   
@@ -809,6 +809,30 @@
       Bloque 3 — Comunicación simultánea
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Bloque 3 — Comunicación simultánea">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#paso-5-un-metodo-lento-para-tener-algo-que-medir" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 5 — Un método lento, para tener algo que medir
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-6-medir-la-concurrencia" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 6 — Medir la concurrencia
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1286,7 +1310,30 @@
   
   
   <span class="md-ellipsis">
-    Actividad 3.1 - Cazando hilos en GameVault
+    Actividad 3.1 - RabbitMQ y el registro de actividad
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tema3/actividad_3_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Actividad 3.2 - Cazando hilos en GameVault
     
   </span>
   
@@ -1327,12 +1374,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema3/actividad_3_2/" class="md-nav__link">
+      <a href="../../tema3/actividad_3_3/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.2 - El evento del warm-up
+    Actividad 3.3 - El evento del warm-up
     
   </span>
   
@@ -1373,12 +1420,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema3/actividad_3_3/" class="md-nav__link">
+      <a href="../../tema3/actividad_3_4/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.3 - El listener @Async del warm-up
+    Actividad 3.4 - El listener @Async del warm-up
     
   </span>
   
@@ -1419,12 +1466,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema3/actividad_3_4/" class="md-nav__link">
+      <a href="../../tema3/actividad_3_5/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.4 - TaskExecutor propio
+    Actividad 3.5 - TaskExecutor propio
     
   </span>
   
@@ -1745,9 +1792,9 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#paso-3-por-comparacion-con-el-put-de-videojuego" class="md-nav__link">
+  <a href="#paso-3-conectar-el-endpoint-a-un-service-que-ya-existe" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 3 — Por comparación con el PUT de Videojuego
+      Paso 3 — Conectar el endpoint a un service que ya existe
     </span>
   </a>
   
@@ -1773,6 +1820,30 @@
       Bloque 3 — Comunicación simultánea
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Bloque 3 — Comunicación simultánea">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#paso-5-un-metodo-lento-para-tener-algo-que-medir" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 5 — Un método lento, para tener algo que medir
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-6-medir-la-concurrencia" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 6 — Medir la concurrencia
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1824,7 +1895,7 @@
 </ul>
 <hr>
 <h2 id="requisitos-previos">Requisitos previos<a class="headerlink" href="#requisitos-previos" title="Permanent link">¶</a></h2>
-<p>Tu CRUD de <code>Videojuego</code> (Actividad 1.2 de AD) y el <code>GET</code>/<code>POST</code> de <code>Estudio</code> ya funcionando en tu proyecto.</p>
+<p>Tu CRUD de <code>Videojuego</code> (Actividad 1.2 de AD) y el <code>GET</code>/<code>POST</code> de <code>Estudio</code> ya funcionando en tu proyecto — y, aunque todavía no tenga endpoint, <code>EstudioService</code> ya trae los métodos <code>update</code>/<code>delete</code> completos (Actividad 1.2 de AD), listos para que hoy les conectes el <code>PUT</code>.</p>
 <hr>
 <h2 id="bloque-1-tests-mockmvc-sobre-videojuego">Bloque 1 — Tests MockMvc sobre <code>Videojuego</code><a class="headerlink" href="#bloque-1-tests-mockmvc-sobre-videojuego" title="Permanent link">¶</a></h2>
 <h3 id="paso-1-primer-test-guiado-al-completo">Paso 1 — Primer test, guiado al completo<a class="headerlink" href="#paso-1-primer-test-guiado-al-completo" title="Permanent link">¶</a></h3>
@@ -1932,8 +2003,8 @@
 <p>Repite el mismo patrón (preparar el mock con <code>when(...).thenReturn(...)</code>, actuar con <code>mockMvc.perform(post(...).contentType(...).content(...))</code>, afirmar con <code>.andExpect(status().isCreated())</code>) para probar que un <code>POST /api/v1/videojuegos</code> válido devuelve <code>201</code>. Guíate por el test de <code>create</code> que ya viste en la teoría para el cuerpo JSON de la petición.</p>
 <hr>
 <h2 id="bloque-2-el-put-de-estudio">Bloque 2 — El PUT de Estudio<a class="headerlink" href="#bloque-2-el-put-de-estudio" title="Permanent link">¶</a></h2>
-<h3 id="paso-3-por-comparacion-con-el-put-de-videojuego">Paso 3 — Por comparación con el PUT de Videojuego<a class="headerlink" href="#paso-3-por-comparacion-con-el-put-de-videojuego" title="Permanent link">¶</a></h3>
-<p>Ya construiste el <code>PUT</code> de <code>Videojuego</code> en Acceso a Datos (Actividad 1.2). Tenlo a la vista mientras haces esto — el de <code>Estudio</code> es el mismo patrón, adaptado:</p>
+<h3 id="paso-3-conectar-el-endpoint-a-un-service-que-ya-existe">Paso 3 — Conectar el endpoint a un service que ya existe<a class="headerlink" href="#paso-3-conectar-el-endpoint-a-un-service-que-ya-existe" title="Permanent link">¶</a></h3>
+<p>A diferencia del resto de operaciones que has ido construyendo, aquí no partes de cero: en Acceso a Datos (Actividad 1.2) ya se construyó <code>EstudioService.update(...)</code> completo — solo que, hasta hoy, ningún endpoint lo invoca. Ábrelo y compruébalo tú mismo:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
 <span class="normal"><a href="#__codelineno-2-2">2</a></span>
 <span class="normal"><a href="#__codelineno-2-3">3</a></span>
@@ -1942,35 +2013,71 @@
 <span class="normal"><a href="#__codelineno-2-6">6</a></span>
 <span class="normal"><a href="#__codelineno-2-7">7</a></span>
 <span class="normal"><a href="#__codelineno-2-8">8</a></span>
-<span class="normal"><a href="#__codelineno-2-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="c1">// Lo que ya tienes en VideojuegoService (tenlo delante como patrón)</span>
+<span class="normal"><a href="#__codelineno-2-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="c1">// Ya existe en EstudioService (Acceso a Datos, Actividad 1.2) — no lo reescribas</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="nd">@Transactional</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="kd">public</span><span class="w"> </span><span class="n">VideojuegoResponseDTO</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">VideojuegoCreateDTO</span><span class="w"> </span><span class="n">dto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">    </span><span class="n">Videojuego</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">videojuegoRepository</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">            </span><span class="p">.</span><span class="na">orElseThrow</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ResponseStatusException</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">NOT_FOUND</span><span class="p">,</span><span class="w"> </span><span class="s">"Videojuego no encontrado"</span><span class="p">));</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">    </span><span class="n">v</span><span class="p">.</span><span class="na">setTitulo</span><span class="p">(</span><span class="n">dto</span><span class="p">.</span><span class="na">titulo</span><span class="p">());</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">    </span><span class="c1">// ...</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">mapToDTO</span><span class="p">(</span><span class="n">videojuegoRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">v</span><span class="p">));</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="kd">public</span><span class="w"> </span><span class="n">EstudioDTO</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">EstudioDTO</span><span class="w"> </span><span class="n">dto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">    </span><span class="n">Estudio</span><span class="w"> </span><span class="n">estudio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">estudioRepository</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">            </span><span class="p">.</span><span class="na">orElseThrow</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ResponseStatusException</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">NOT_FOUND</span><span class="p">,</span><span class="w"> </span><span class="s">"Estudio no encontrado"</span><span class="p">));</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">    </span><span class="n">estudio</span><span class="p">.</span><span class="na">setNombre</span><span class="p">(</span><span class="n">dto</span><span class="p">.</span><span class="na">nombre</span><span class="p">());</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">    </span><span class="n">estudio</span><span class="p">.</span><span class="na">setPais</span><span class="p">(</span><span class="n">dto</span><span class="p">.</span><span class="na">pais</span><span class="p">());</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">mapToDTO</span><span class="p">(</span><span class="n">estudioRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">estudio</span><span class="p">));</span>
 <a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p>Adáptalo a <code>EstudioService</code>, teniendo en cuenta lo que cambia:</p>
-<ul>
-<li>El DTO es <code>EstudioDTO</code> (no hace falta un <code>EstudioCreateDTO</code> separado — reutiliza el mismo para crear y actualizar).</li>
-<li>El "no encontrado" se comprueba igual, con <code>ResponseStatusException(HttpStatus.NOT_FOUND, ...)</code>.</li>
-<li><code>@Transactional</code> en el método de escritura, igual que en <code>Videojuego</code>.</li>
-</ul>
-<p>Escribe tú el método <code>update</code> en <code>EstudioService</code> y el endpoint <code>@PutMapping("/{id}")</code> correspondiente en <code>EstudioController</code>, usando el fragmento de arriba como plantilla de qué cambiar y qué no.</p>
+<p>Tu trabajo de hoy es solo la capa que falta: el endpoint <code>@PutMapping("/{id}")</code> en <code>EstudioController</code> que reciba la petición HTTP y delegue en ese método ya construido — exactamente el mismo papel que cumple el <code>PUT</code> de <code>Videojuego</code> que ya conoces, pero esta vez el "cargar y comprobar existencia" ya lo hace el service, no lo repites tú en el controller.</p>
 <p><strong>Pregunta antes de continuar</strong>: ¿qué parte del patrón de <code>Videojuego</code> NO tiene equivalente en <code>Estudio</code> (pista: <code>Videojuego.update</code> también busca y valida un <code>Estudio</code> relacionado — <code>Estudio</code> no tiene ninguna relación de ese tipo que validar)?</p>
 <h3 id="paso-4-verificar-el-put-nuevo">Paso 4 — Verificar el PUT nuevo<a class="headerlink" href="#paso-4-verificar-el-put-nuevo" title="Permanent link">¶</a></h3>
 <p>Primero a mano, desde Swagger UI (Actividad 1.2): despliega el nuevo <code>PUT /api/v1/estudios/{id}</code>, pruébalo con un cambio de <code>nombre</code> o <code>pais</code>, y comprueba el <code>200</code>.</p>
 <p>Después, con un test MockMvc — repite el mismo patrón del Bloque 1 (mockear el service, <code>mockMvc.perform(put(...))</code>, afirmar el <code>200</code> y el cuerpo actualizado). Solo se indica el objetivo: escríbelo tú.</p>
 <hr>
 <h2 id="bloque-3-comunicacion-simultanea">Bloque 3 — Comunicación simultánea<a class="headerlink" href="#bloque-3-comunicacion-simultanea" title="Permanent link">¶</a></h2>
+<h3 id="paso-5-un-metodo-lento-para-tener-algo-que-medir">Paso 5 — Un método lento, para tener algo que medir<a class="headerlink" href="#paso-5-un-metodo-lento-para-tener-algo-que-medir" title="Permanent link">¶</a></h3>
+<p>Antes del experimento necesitas un endpoint que tarde de verdad — la teoría lo daba por hecho, así que lo construyes ahora. Añade a <code>VideojuegoRepository</code>:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="n">List</span><span class="o">&lt;</span><span class="n">Videojuego</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">findTop5ByOrderByFechaLanzamientoDesc</span><span class="p">();</span>
+</code></pre></div></td></tr></table></div>
+<p>Y a <code>VideojuegoService</code>:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-4-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-4-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-4-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-4-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-4-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-4-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-4-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-4-10">10</a></span>
+<span class="normal"><a href="#__codelineno-4-11">11</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">VideojuegoResponseDTO</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">getTopNovedades</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="w">        </span><span class="n">Thread</span><span class="p">.</span><span class="na">sleep</span><span class="p">(</span><span class="mi">2000</span><span class="p">);</span><span class="w"> </span><span class="c1">// simula una consulta costosa</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">InterruptedException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="w">        </span><span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">().</span><span class="na">interrupt</span><span class="p">();</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">videojuegoRepository</span><span class="p">.</span><span class="na">findTop5ByOrderByFechaLanzamientoDesc</span><span class="p">()</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="w">            </span><span class="p">.</span><span class="na">stream</span><span class="p">()</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="w">            </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="k">this</span><span class="p">::</span><span class="n">mapToDTO</span><span class="p">)</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="w">            </span><span class="p">.</span><span class="na">toList</span><span class="p">();</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Y en <code>VideojuegoController</code>:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span>
+<span class="normal"><a href="#__codelineno-5-2">2</a></span>
+<span class="normal"><a href="#__codelineno-5-3">3</a></span>
+<span class="normal"><a href="#__codelineno-5-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/top"</span><span class="p">)</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">VideojuegoResponseDTO</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="nf">getTopNovedades</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="n">videojuegoService</span><span class="p">.</span><span class="na">getTopNovedades</span><span class="p">());</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<div class="admonition warning">
+<p class="admonition-title">El orden de las rutas importa</p>
+<p>Declara <code>@GetMapping("/top")</code> <strong>antes</strong> que <code>@GetMapping("/{id}")</code> en la clase — si no, Spring intenta interpretar <code>top</code> como un <code>id</code> y falla al convertirlo a <code>Long</code>.</p>
+</div>
+<p>Arranca tu aplicación y comprueba con una sola llamada que <code>GET /api/v1/videojuegos/top</code> tarda efectivamente unos 2 segundos.</p>
+<h3 id="paso-6-medir-la-concurrencia">Paso 6 — Medir la concurrencia<a class="headerlink" href="#paso-6-medir-la-concurrencia" title="Permanent link">¶</a></h3>
 <p>Repite el experimento de la teoría con tu propio proyecto:</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
-<span class="normal"><a href="#__codelineno-3-2">2</a></span>
-<span class="normal"><a href="#__codelineno-3-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nb">time</span><span class="w"> </span><span class="o">(</span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/videojuegos/top<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">      </span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/videojuegos/top<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">      </span><span class="nb">wait</span><span class="o">)</span>
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1">1</a></span>
+<span class="normal"><a href="#__codelineno-6-2">2</a></span>
+<span class="normal"><a href="#__codelineno-6-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="nb">time</span><span class="w"> </span><span class="o">(</span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/videojuegos/top<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2"></a><span class="w">      </span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/videojuegos/top<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3"></a><span class="w">      </span><span class="nb">wait</span><span class="o">)</span>
 </code></pre></div></td></tr></table></div>
 <p><strong>Anota</strong> el tiempo total mostrado por <code>time</code>. Añade temporalmente una línea <code>System.out.println(Thread.currentThread().getName())</code> al principio de <code>getTopNovedades()</code> en tu service, repite la prueba, y anota los dos nombres de hilo que aparecen en la consola. Cuando termines, retira esa línea — era solo para observar, no para quedarse en el código.</p>
 <hr>
