@@ -19,6 +19,16 @@ Tu endpoint `/ws-actividad` (Actividad 4.2) y tu `ActividadService`/consumer de 
 
 ## Paso 1 — La emisión real, guiada al completo
 
+Hasta ahora, `ActividadController.getAll()` devolvía la entidad `Actividad` directamente — cómodo, pero expone tu entidad JPA tal cual por la API, algo que ya sabes que conviene evitar. Aprovecha este paso para introducir un DTO de salida, y reutilízalo también para lo nuevo de hoy: publicar cada registro por WebSocket, además de guardarlo.
+
+```java
+package com.tunombre.gamevault.actividad;
+
+import java.time.Instant;
+
+public record ActividadResponseDTO(Long id, String tipo, String entidad, String entidadId, Instant fecha) {}
+```
+
 Modifica `ActividadService`:
 
 ```java
@@ -29,25 +39,29 @@ public class ActividadService {
     private final ActividadRepository actividadRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
-    public void registrar(String tipo, String entidad, String entidadId, String descripcion) {
-        Actividad actividad = new Actividad();
-        actividad.setTipo(tipo);
-        actividad.setEntidad(entidad);
-        actividad.setEntidadId(entidadId);
-        actividad.setDescripcion(descripcion);
-        actividad.setFecha(LocalDateTime.now());
-
-        actividadRepository.save(actividad);
-
-        ActividadResponseDTO dto = mapToDTO(actividad);
-        messagingTemplate.convertAndSend("/topic/actividad", dto);
+    public void registrar(String tipo, String entidad, String entidadId) {
+        Actividad actividad = actividadRepository.save(new Actividad(tipo, entidad, entidadId));
+        messagingTemplate.convertAndSend("/topic/actividad", mapToDTO(actividad));
     }
 
-    // ... resto de métodos ya existentes ...
+    public List<ActividadResponseDTO> listar() {
+        return actividadRepository.findAllByOrderByFechaDesc()
+                .stream()
+                .map(this::mapToDTO)
+                .toList();
+    }
+
+    private ActividadResponseDTO mapToDTO(Actividad a) {
+        return new ActividadResponseDTO(a.getId(), a.getTipo(), a.getEntidad(), a.getEntidadId(), a.getFecha());
+    }
 }
 ```
 
-Cada registro que ya se guardaba en PostgreSQL ahora **también** se publica en `/topic/actividad`, reutilizando el mismo `ActividadResponseDTO` que ya usa el endpoint REST. **Retira** el `WebSocketTestController` de emisión manual de la Actividad 4.2 — ya no lo necesitas, la emisión real ha ocupado su lugar.
+Fíjate en que `registrar(...)` sigue recibiendo los mismos tres parámetros de siempre (`tipo`, `entidad`, `entidadId`) — no le añades ninguno nuevo, así que `ActividadVideojuegoEventConsumer` (Actividad 3.1) sigue llamándolo exactamente igual, sin que tengas que tocarlo. Lo único que cambia es que, tras guardar, el mismo método también publica el registro en `/topic/actividad`, ya convertido a `ActividadResponseDTO`.
+
+Como `listar()` ahora devuelve `List<ActividadResponseDTO>` en vez de `List<Actividad>`, actualiza también el tipo genérico en `ActividadController.getAll()` (`ResponseEntity<List<ActividadResponseDTO>>`) — el cuerpo del método no cambia, sigue delegando en `listar()`.
+
+**Retira** el `WebSocketTestController` de emisión manual de la Actividad 4.2 — ya no lo necesitas, la emisión real ha ocupado su lugar.
 
 ---
 

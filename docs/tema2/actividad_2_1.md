@@ -160,9 +160,9 @@ curl -i -X POST http://localhost:8080/api/v1/videojuegos \
 
 ---
 
-## Mini-reto — validación en `ReviewRequestDTO`
+## Mini-reto — validación en `EstudioDTO`
 
-Repite el patrón del Paso 1 sobre `ReviewRequestDTO` (paquete `reviews.dto`): añade validación a `puntuacion` (debe estar entre 0 y 10) y a `comentario` (no puede estar vacío). Provoca el error con una petición POST inválida a `/api/v1/videojuegos/{id}/reviews` y comprueba que `GlobalExceptionHandler` también lo captura, sin tener que tocar ni una línea de la clase que acabas de construir.
+Repite el patrón del Paso 1, esta vez sobre `EstudioDTO` (paquete `catalogo.dto`) — que hoy no tiene ninguna validación: añade `@NotBlank` a `nombre` y a `pais`. Comprueba también que `EstudioController.create(...)` lleva `@Valid` delante del parámetro (si no lo tenía, añádelo ahora, igual que hiciste en el Paso 1 con `Videojuego`). Provoca el error con una petición POST inválida a `/api/v1/estudios` y comprueba que `GlobalExceptionHandler` también lo captura, sin tener que tocar ni una línea de la clase que acabas de construir.
 
 ---
 

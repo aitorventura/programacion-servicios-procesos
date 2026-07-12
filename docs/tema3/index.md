@@ -39,10 +39,11 @@
 
 **Actividades:**
 
-- [Actividad 3.1 — Cazando hilos en GameVault (análisis, sin código)](actividad_3_1.md)
-- [Actividad 3.2 — El evento del warm-up de caché (1/2)](actividad_3_2.md)
-- [Actividad 3.3 — El listener `@Async` del warm-up (2/2)](actividad_3_3.md)
-- [Actividad 3.4 — `TaskExecutor` propio](actividad_3_4.md)
+- [Actividad 3.1 — RabbitMQ y el registro de actividad del catálogo](actividad_3_1.md) *(misma sesión que la 3.2)*
+- [Actividad 3.2 — Cazando hilos en GameVault (análisis, sin código)](actividad_3_2.md) *(misma sesión que la 3.1)*
+- [Actividad 3.3 — El evento del warm-up de caché (1/2)](actividad_3_3.md)
+- [Actividad 3.4 — El listener `@Async` del warm-up (2/2)](actividad_3_4.md)
+- [Actividad 3.5 — `TaskExecutor` propio](actividad_3_5.md)
 
 ---
 

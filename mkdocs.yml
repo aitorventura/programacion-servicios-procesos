@@ -60,13 +60,14 @@ nav:
   - Tema 3 - Programación multihilo:
       - Tema 3 - Introducción: tema3/index.md
       - Hilos en una aplicación real: tema3/hilos-en-una-app-real.md
-      - Actividad 3.1 - Cazando hilos en GameVault: tema3/actividad_3_1.md
+      - Actividad 3.1 - RabbitMQ y el registro de actividad: tema3/actividad_3_1.md
+      - Actividad 3.2 - Cazando hilos en GameVault: tema3/actividad_3_2.md
       - Eventos internos (warm-up 1/2): tema3/eventos-warmup-cache.md
-      - Actividad 3.2 - El evento del warm-up: tema3/actividad_3_2.md
+      - Actividad 3.3 - El evento del warm-up: tema3/actividad_3_3.md
       - Listeners asíncronos (warm-up 2/2): tema3/listeners-asincronos.md
-      - Actividad 3.3 - El listener @Async del warm-up: tema3/actividad_3_3.md
+      - Actividad 3.4 - El listener @Async del warm-up: tema3/actividad_3_4.md
       - TaskExecutor propio y prioridades: tema3/taskexecutor-prioridades.md
-      - Actividad 3.4 - TaskExecutor propio: tema3/actividad_3_4.md
+      - Actividad 3.5 - TaskExecutor propio: tema3/actividad_3_5.md
   - Tema 4 - Comunicaciones en red:
       - Tema 4 - Introducción: tema4/index.md
       - Sockets, cliente y servidor: tema4/sockets-cliente-servidor.md

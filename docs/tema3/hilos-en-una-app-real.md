@@ -133,7 +133,7 @@ public class ActividadLibroEventConsumer {
     @RabbitListener(queues = RabbitMQConfig.ACTIVIDAD_LIBRO_QUEUE)
     public void recibir(String payload) {
         LibroEvent event = /* deserializar */;
-        actividadService.registrar(event.tipo(), "Libro", event.libroId().toString(), /* ... */);
+        actividadService.registrar(event.tipo(), "Libro", event.libroId().toString());
     }
 }
 ```

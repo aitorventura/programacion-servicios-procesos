@@ -25,13 +25,16 @@ Esta es la tabla objetivo — incluye tanto las rutas del catálogo base como la
 |---|---|---|
 | `/api/v1/auth/login` | POST | Cualquiera |
 | `/api/v1/videojuegos`, `/api/v1/estudios` (y sus `/{id}`) | GET | Cualquiera |
-| `/api/v1/videojuegos/*/reviews` | POST | `USER` o `ADMIN` |
 | `/api/v1/videojuegos` | POST/PUT/DELETE | Solo `ADMIN` |
 | `/api/v1/estudios` | POST | Solo `ADMIN` |
 | `/api/v1/estudios/{id}` | PUT, DELETE | ¿? *(decide tú)* |
 | `/api/v1/estudios/ranking` | GET | ¿? *(decide tú, si ya la tienes)* |
+| `/actuator/health` | GET | ¿? *(decide tú — piensa en quién necesita comprobar que el servicio está vivo)* |
 | `/swagger-ui/**`, `/v3/api-docs/**`, `/error` | — | Cualquiera |
 | Todo lo demás | — | Nadie |
+
+!!! tip "Las reseñas todavía no existen en tu proyecto"
+    Si más adelante añades el módulo de reseñas (Acceso a Datos, Tema 4), vas a tener que volver a esta tabla y a `SecurityConfig` para añadir `/api/v1/videojuegos/*/reviews` (`POST`, `USER` o `ADMIN`) — hoy no existe todavía, así que no lo incluyas.
 
 **Antes de escribir código**, decide y anota: el `PUT`/`DELETE` de `Estudio` que construiste en el Tema 1, ¿debería tener el mismo nivel de protección que el resto de escrituras del catálogo (`ADMIN`)? Justifica tu respuesta en una frase.
 
@@ -42,7 +45,6 @@ Ahora completa tu `SecurityConfig` regla a regla, siguiendo la tabla ya decidida
         .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
         .requestMatchers(HttpMethod.GET, "/api/v1/videojuegos/**").permitAll()
         .requestMatchers(HttpMethod.GET, "/api/v1/estudios/**").permitAll()
-        .requestMatchers(HttpMethod.POST, "/api/v1/videojuegos/*/reviews").hasAnyRole("USER", "ADMIN")
         .requestMatchers(HttpMethod.POST, "/api/v1/videojuegos").hasRole("ADMIN")
         .requestMatchers(HttpMethod.PUT, "/api/v1/videojuegos/*").hasRole("ADMIN")
         .requestMatchers(HttpMethod.DELETE, "/api/v1/videojuegos/*").hasRole("ADMIN")
@@ -71,7 +73,7 @@ curl -i http://localhost:8080/api/v1/algo-inventado
 ## Paso 3 — Depurar un caso real
 
 !!! warning "Este fallo es intencionado — vas a diagnosticarlo tú"
-    Con `denyAll()` activo, prueba ahora mismo: `GET /api/v1/videojuegos/1/reviews/resumen` (el resumen de reseñas de un videojuego). Es muy probable que, si no la has incluido explícitamente arriba, te dé un rechazo — aunque el endpoint en sí funcione perfectamente si lo pruebas de otra forma.
+    Con `denyAll()` activo, prueba ahora mismo: `GET /actuator/health` (el mismo endpoint que activaste en el Tema 1). Es muy probable que, si no lo has incluido explícitamente arriba, te dé un rechazo — aunque el endpoint en sí funcione perfectamente si lo pruebas de otra forma.
 
 Activa el log de Spring Security si quieres ver más detalle de la decisión:
 

@@ -1,118 +1,134 @@
-# 🧪 Actividad 3.4: `TaskExecutor` propio
+# 🧪 Actividad 3.4: El listener `@Async` del warm-up (2/2)
 
-!!! info "Práctica guiada"
-    Hoy le das a tu warm-up un pool de hilos propio, con nombre reconocible y prioridad baja, y documentas la decisión.
+!!! info "Práctica guiada — pieza 2 de 2"
+    Hoy completas el warm-up: el listener asíncrono que recalienta la caché, y la medición real de que ya no se paga el coste tras cada escritura.
 
 ## Qué vas a practicar
 
-- Configurar un `ThreadPoolTaskExecutor` con parámetros razonados.
-- Dirigir `@Async` a un executor concreto por nombre.
-- Observar el efecto real de `corePoolSize` con varias tareas seguidas.
+- Construir un listener `@Async` + `@TransactionalEventListener(AFTER_COMMIT)`.
+- Verificar en el log que el listener corre en un hilo distinto.
+- Medir la mejora real de rendimiento.
+- Entender por qué `AFTER_COMMIT` importa, provocando el problema que evita.
 
 ---
 
 ## Requisitos previos
 
-Tu listener `@Async` del warm-up funcionando (Actividad 3.3).
+Tu evento `TopNovedadesInvalidadoEvent` y su publicación (Actividad 3.3).
 
 ---
 
-## Paso 1 — El bean, guiado al completo
+## Paso 1 — El listener, guiado al completo
 
-Crea, en tu paquete `config`, siguiendo el estilo de tu configuración de RabbitMQ:
+Antes de nada, añade `@EnableAsync` a `GamevaultApplication.java`, junto a `@SpringBootApplication`:
 
 ```java
-package com.tunombre.gamevault.config;
+@SpringBootApplication
+@EnableCaching
+@EnableAsync
+public class GamevaultApplication {
+    // ...
+}
+```
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.task.TaskExecutor;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+Sin `@EnableAsync`, Spring ignora por completo la anotación `@Async` que vas a usar a continuación — el método se ejecutaría igualmente, pero en el mismo hilo de quien lo llama, sin ningún error que te avise de que la asincronía no se ha activado.
 
-@Configuration
-public class WarmupExecutorConfig {
+```java
+package com.tunombre.gamevault.catalogo.eventos;
 
-    @Bean(name = "warmupExecutor")
-    public TaskExecutor warmupExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(2);
-        executor.setMaxPoolSize(4);
-        executor.setQueueCapacity(20);
-        executor.setThreadNamePrefix("warmup-");
-        executor.setThreadPriority(Thread.MIN_PRIORITY);
-        executor.initialize();
-        return executor;
+import com.tunombre.gamevault.catalogo.VideojuegoService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
+
+@Service
+@RequiredArgsConstructor
+public class TopNovedadesWarmupListener {
+
+    private final VideojuegoService videojuegoService;
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @Async
+    public void onTopNovedadesInvalidado(TopNovedadesInvalidadoEvent event) {
+        System.out.println("[WARMUP] Empieza en hilo: " + Thread.currentThread().getName()
+                + " - evento de: " + event.momento());
+
+        videojuegoService.getTopNovedades(); // recalienta la caché
+
+        System.out.println("[WARMUP] Termina en hilo: " + Thread.currentThread().getName());
     }
 }
 ```
 
-Cada parámetro tiene un porqué: `corePoolSize(2)` y `maxPoolSize(4)` son deliberadamente pequeños, porque el warm-up es una tarea de fondo ocasional, no el núcleo de tu aplicación; `threadNamePrefix("warmup-")` hace que estos hilos se distingan a simple vista en el log; `setThreadPriority(Thread.MIN_PRIORITY)` los marca como candidatos a ceder el paso ante trabajo más urgente.
+`@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)` espera a que la transacción que publicó el evento termine con éxito antes de disparar este método; `@Async` hace que, cuando se dispare, corra en un hilo aparte. Llamar de nuevo a `getTopNovedades()` es lo que recalienta la caché — como sigue anotado `@Cacheable`, este propio hilo va a pagar los 2 segundos del `Thread.sleep`, pero **en segundo plano**, sin que ningún usuario esté esperando esa respuesta.
 
 ---
 
-## Paso 2 — Conectar tu listener a este pool
+## Paso 2 — Verificar el hilo, y retirar el listener de prueba
 
-En `TopNovedadesWarmupListener`, cambia:
-
-```java
-@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-@Async("warmupExecutor")
-public void onTopNovedadesInvalidado(TopNovedadesInvalidadoEvent event) {
-    // ... tu código ya existente ...
-}
-```
-
-Reinicia tu aplicación.
-
----
-
-## Paso 3 — Verificación por el nombre del hilo
+Si todavía tienes el `ListenerDePruebaTemporal` de la Actividad 3.3, **retíralo ahora** — ya no lo necesitas.
 
 Crea un videojuego y mira el log:
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/videojuegos \
   -H "Content-Type: application/json" \
-  -d '{"titulo":"Test4","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'
+  -d '{"titulo":"Test2","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'
 ```
 
-**Comprueba**: que la traza `[WARMUP] Empieza en hilo: ...` ahora muestra un nombre como `warmup-1`, en vez del nombre genérico `task-N` que tenía con el executor por defecto en la Actividad 3.3. **Anota** ambos nombres para comparar.
+**Anota** los dos nombres de hilo que ves en las trazas `[WARMUP] Empieza...`/`Termina...`. **Compara** con el nombre de hilo que anotaste en la Actividad 3.3 (sin `@Async`): ¿son el mismo tipo de hilo, o claramente distintos?
 
 ---
 
-## Paso 4 — Observar con jconsole/thread dump
+## Paso 3 — La medición estrella
 
-Repite el procedimiento de la Actividad 3.1 (jconsole, VisualVM, o `jstack`) para localizar los hilos `warmup-*`. **Anota**: cuántos hay activos en este momento, y (si tu herramienta lo muestra) su prioridad configurada.
-
----
-
-## Mini-reto — el efecto de `corePoolSize`
-
-Crea 3-4 videojuegos seguidos, muy rápido (uno detrás de otro, sin esperar entre peticiones):
+Repite el protocolo de medición de la Actividad 3.3, pero ahora con el warm-up completo:
 
 ```bash
-for i in 1 2 3 4; do
-  curl -s -X POST http://localhost:8080/api/v1/videojuegos \
-    -H "Content-Type: application/json" \
-    -d "{\"titulo\":\"Rapido$i\",\"precio\":1,\"fechaLanzamiento\":\"2020-01-01\",\"estudioId\":1}" > /dev/null
-done
+# Crea un videojuego (dispara el warm-up en segundo plano)
+curl -X POST http://localhost:8080/api/v1/videojuegos \
+  -H "Content-Type: application/json" \
+  -d '{"titulo":"Test3","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'
+
+# Espera unos segundos a que el warm-up termine en segundo plano
+sleep 3
+
+# Mide /top — ¿cuánto tarda ahora?
+time curl -s http://localhost:8080/api/v1/videojuegos/top > /dev/null
 ```
 
-**Observa** en el log cuántos hilos `warmup-*` distintos llegan a aparecer (con `corePoolSize(2)`, no deberías ver muchos más de 2-3 simultáneos, aunque hayas disparado 4 eventos).
-
-Ahora cambia `corePoolSize` a `1` y `maxPoolSize` a `1`, reinicia, y repite el mismo experimento de las 4 peticiones seguidas.
-
-**Describe** la diferencia observada: ¿cuántos hilos `warmup-*` ves esta vez? ¿Qué le pasa a las tareas que no caben de inmediato en ese único hilo (pista: relaciónalo con la `queueCapacity`)? Vuelve a dejar `corePoolSize(2)`/`maxPoolSize(4)` al terminar — es la configuración razonada que documentas a continuación.
+**Anota** el tiempo. **Compara** con las mediciones "antes" que hiciste en la Actividad 3.3 (donde el tercer usuario pagaba ~2 segundos). Documenta la diferencia con tus propios números.
 
 ---
 
-## Cierre del tema
+## Paso 4 — Experimento sobre `AFTER_COMMIT`
 
-1. **Documenta tu configuración**: 2-3 frases por parámetro (`corePoolSize`, `maxPoolSize`, `queueCapacity`, prioridad) explicando por qué elegiste esos valores concretos para el warm-up — no "porque sí", con el razonamiento real detrás.
-2. **Repaso propio** (4-5 frases) de todo el recorrido de este tema: observar los hilos que ya existían en tu aplicación → construir un evento interno inmutable → un listener asíncrono sincronizado con el commit → un executor propio con nombre y prioridad. ¿Qué pieza te ha costado más entender, y por qué?
+Cambia temporalmente tu listener a `@EventListener` a secas (sin `@TransactionalEventListener`, sin fase):
+
+```java
+@EventListener
+@Async
+public void onTopNovedadesInvalidado(TopNovedadesInvalidadoEvent event) {
+    // ...
+}
+```
+
+Añade, también temporalmente, un log que consulte cuántos videojuegos ve el listener justo al empezar (por ejemplo, contando el resultado de `videojuegoService.findAll().size()` antes de recalentar).
+
+**Razona**, sin necesidad de reproducirlo de forma determinista (es una condición de carrera, puede que no falle siempre): si este listener se disparara justo antes de que el `INSERT` del nuevo videojuego se confirmara en la base de datos, ¿qué vería exactamente al consultar? ¿Qué consecuencia tendría eso sobre el contenido de la caché recalentada?
+
+Vuelve a `@TransactionalEventListener(phase = AFTER_COMMIT)` y explica con tus palabras qué diferencia concreta soluciona respecto al `@EventListener` a secas que acabas de probar.
+
+---
+
+## Pregunta final
+
+Si dos profesores del centro crean dos videojuegos casi a la vez (segundos de diferencia), ¿cuántos eventos se publican y cuántos hilos intentan recalentar la caché? ¿Es esto un error grave del sistema, o solo trabajo duplicado sin consecuencias incorrectas? Propón, sin implementarla, alguna forma de evitar ese trabajo duplicado (piensa en si haría falta algún tipo de coordinación entre los hilos, o si bastaría con alguna comprobación previa).
 
 ---
 
 ## ✅ Cierre
 
-En el Tema 4 vuelves a trabajar con hilos, pero esta vez completamente a mano, sin que Spring medie: sockets clásicos primero, WebSocket después.
+El warm-up está completo y medido: tu GameVault ya no hace pagar al primer usuario los 2 segundos tras cada escritura. En el apartado siguiente configuras manualmente el `TaskExecutor` que hay detrás de este `@Async`, con nombre y prioridad propios.

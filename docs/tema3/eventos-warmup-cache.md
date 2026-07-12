@@ -21,19 +21,17 @@ Ese desacoplamiento es la ganancia central del patrón: el que publica no conoce
 
 Una **caché** guarda el resultado de una operación cara (lenta, costosa) para reutilizarlo sin repetir el trabajo. Cuando ese resultado deja de ser válido (los datos subyacentes han cambiado), hay que **invalidarla** — borrar el resultado guardado, para que la próxima vez se recalcule. **Recalentar** una caché es volver a calcular ese resultado por adelantado, antes de que alguien lo pida, para que quien lo pida a continuación no pague el coste de calcularlo de cero.
 
-Es exactamente lo que hace `@Cacheable` en el `getTopNovedades()` del apartado anterior — ahora ya sabes qué hace exactamente por debajo.
+Es exactamente lo que vas a conseguir hoy con `@Cacheable` sobre el `getTopNovedades()` que ya tienes (Actividad 1.3) — pero antes de anotarlo, falta decidir **dónde** se guarda físicamente ese resultado.
 
 ---
 
 ## 🔴 Qué es Redis, y por qué aparece en este proyecto
 
-Ya has visto el contenedor `redis` en el `docker-compose.yaml` (Tema 0 de AD) y en `/actuator/health` (Tema 1), pero nadie te ha dicho qué es — y es aquí, con la caché, donde encaja de verdad.
-
 **Redis** es una base de datos en memoria, de tipo clave-valor, muy rápida, que se usa típicamente como **caché compartida**. La diferencia frente a una caché que viviera solo en la memoria de tu propia aplicación: una caché en Redis sobrevive a un reinicio de la aplicación, y podría compartirse entre varias instancias de la misma aplicación corriendo a la vez (si algún día hubiera más de una).
 
-Con `spring-boot-starter-cache` y `spring-boot-starter-data-redis` presentes en el `pom.xml`, Spring Boot autoconfigura Redis como el almacén real detrás de `@Cacheable`. Es decir: cuando `getTopNovedades()` guarda su resultado en la caché `"topNovedades"`, ese resultado se guarda **físicamente en el contenedor Redis** del `docker-compose`, no en un mapa en memoria de tu propia aplicación Java.
+Con `spring-boot-starter-cache` y `spring-boot-starter-data-redis` presentes en el `pom.xml` (las vas a añadir en la actividad de hoy), Spring Boot autoconfigura Redis como el almacén real detrás de `@Cacheable`. Es decir: cuando `getTopNovedades()` guarde su resultado en la caché `"topNovedades"`, ese resultado se va a guardar **físicamente en un contenedor Redis**, no en un mapa en memoria de tu propia aplicación Java.
 
-Compruébalo tú mismo:
+Una vez lo tengas montado, vas a poder comprobarlo tú mismo:
 
 ```bash
 docker exec -it <tu-contenedor-redis> redis-cli
@@ -41,7 +39,7 @@ docker exec -it <tu-contenedor-redis> redis-cli
 > GET "topNovedades::SimpleKey []"
 ```
 
-Tras la primera petición a `/api/v1/libros/top`, deberías ver aparecer una clave relacionada con `topNovedades` en Redis.
+Tras la primera petición a `/api/v1/videojuegos/top`, deberías ver aparecer una clave relacionada con `topNovedades` en Redis.
 
 ---
 

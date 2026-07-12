@@ -14,7 +14,7 @@
 
 ## Requisitos previos
 
-Tu CRUD de `Videojuego` (Actividad 1.2 de AD) y el `GET`/`POST` de `Estudio` ya funcionando en tu proyecto.
+Tu CRUD de `Videojuego` (Actividad 1.2 de AD) y el `GET`/`POST` de `Estudio` ya funcionando en tu proyecto — y, aunque todavía no tenga endpoint, `EstudioService` ya trae los métodos `update`/`delete` completos (Actividad 1.2 de AD), listos para que hoy les conectes el `PUT`.
 
 ---
 
@@ -95,29 +95,23 @@ Repite el mismo patrón (preparar el mock con `when(...).thenReturn(...)`, actua
 
 ## Bloque 2 — El PUT de Estudio
 
-### Paso 3 — Por comparación con el PUT de Videojuego
+### Paso 3 — Conectar el endpoint a un service que ya existe
 
-Ya construiste el `PUT` de `Videojuego` en Acceso a Datos (Actividad 1.2). Tenlo a la vista mientras haces esto — el de `Estudio` es el mismo patrón, adaptado:
+A diferencia del resto de operaciones que has ido construyendo, aquí no partes de cero: en Acceso a Datos (Actividad 1.2) ya se construyó `EstudioService.update(...)` completo — solo que, hasta hoy, ningún endpoint lo invoca. Ábrelo y compruébalo tú mismo:
 
 ```java
-// Lo que ya tienes en VideojuegoService (tenlo delante como patrón)
+// Ya existe en EstudioService (Acceso a Datos, Actividad 1.2) — no lo reescribas
 @Transactional
-public VideojuegoResponseDTO update(Long id, VideojuegoCreateDTO dto) {
-    Videojuego v = videojuegoRepository.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Videojuego no encontrado"));
-    v.setTitulo(dto.titulo());
-    // ...
-    return mapToDTO(videojuegoRepository.save(v));
+public EstudioDTO update(Long id, EstudioDTO dto) {
+    Estudio estudio = estudioRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Estudio no encontrado"));
+    estudio.setNombre(dto.nombre());
+    estudio.setPais(dto.pais());
+    return mapToDTO(estudioRepository.save(estudio));
 }
 ```
 
-Adáptalo a `EstudioService`, teniendo en cuenta lo que cambia:
-
-- El DTO es `EstudioDTO` (no hace falta un `EstudioCreateDTO` separado — reutiliza el mismo para crear y actualizar).
-- El "no encontrado" se comprueba igual, con `ResponseStatusException(HttpStatus.NOT_FOUND, ...)`.
-- `@Transactional` en el método de escritura, igual que en `Videojuego`.
-
-Escribe tú el método `update` en `EstudioService` y el endpoint `@PutMapping("/{id}")` correspondiente en `EstudioController`, usando el fragmento de arriba como plantilla de qué cambiar y qué no.
+Tu trabajo de hoy es solo la capa que falta: el endpoint `@PutMapping("/{id}")` en `EstudioController` que reciba la petición HTTP y delegue en ese método ya construido — exactamente el mismo papel que cumple el `PUT` de `Videojuego` que ya conoces, pero esta vez el "cargar y comprobar existencia" ya lo hace el service, no lo repites tú en el controller.
 
 **Pregunta antes de continuar**: ¿qué parte del patrón de `Videojuego` NO tiene equivalente en `Estudio` (pista: `Videojuego.update` también busca y valida un `Estudio` relacionado — `Estudio` no tiene ninguna relación de ese tipo que validar)?
 
@@ -130,6 +124,46 @@ Después, con un test MockMvc — repite el mismo patrón del Bloque 1 (mockear 
 ---
 
 ## Bloque 3 — Comunicación simultánea
+
+### Paso 5 — Un método lento, para tener algo que medir
+
+Antes del experimento necesitas un endpoint que tarde de verdad — la teoría lo daba por hecho, así que lo construyes ahora. Añade a `VideojuegoRepository`:
+
+```java
+List<Videojuego> findTop5ByOrderByFechaLanzamientoDesc();
+```
+
+Y a `VideojuegoService`:
+
+```java
+public List<VideojuegoResponseDTO> getTopNovedades() {
+    try {
+        Thread.sleep(2000); // simula una consulta costosa
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+    }
+    return videojuegoRepository.findTop5ByOrderByFechaLanzamientoDesc()
+            .stream()
+            .map(this::mapToDTO)
+            .toList();
+}
+```
+
+Y en `VideojuegoController`:
+
+```java
+@GetMapping("/top")
+public ResponseEntity<List<VideojuegoResponseDTO>> getTopNovedades() {
+    return ResponseEntity.ok(videojuegoService.getTopNovedades());
+}
+```
+
+!!! warning "El orden de las rutas importa"
+    Declara `@GetMapping("/top")` **antes** que `@GetMapping("/{id}")` en la clase — si no, Spring intenta interpretar `top` como un `id` y falla al convertirlo a `Long`.
+
+Arranca tu aplicación y comprueba con una sola llamada que `GET /api/v1/videojuegos/top` tarda efectivamente unos 2 segundos.
+
+### Paso 6 — Medir la concurrencia
 
 Repite el experimento de la teoría con tu propio proyecto:
 

@@ -1,7 +1,7 @@
 # 🧪 Actividad 1.4: El DELETE de Estudio y Actuator `/health`
 
 !!! info "Reto de repetición + práctica guiada"
-    El `DELETE` de Estudio lo escribes tú solo — es la tercera vez que construyes este patrón (`DELETE` de Videojuego en AD, `PUT` de Estudio en la Actividad 1.3), así que no llevas la mano guiada esta vez. Actuator sí va paso a paso, es contenido nuevo.
+    El endpoint `DELETE` de Estudio lo escribes tú solo — es la tercera vez que conectas este patrón (`DELETE` de Videojuego en AD, `PUT` de Estudio en la Actividad 1.3), así que no llevas la mano guiada esta vez. Actuator sí va paso a paso, es contenido nuevo.
 
 ## Qué vas a practicar
 
@@ -19,14 +19,13 @@ Tu `PUT` de `Estudio` de la Actividad 1.3 funcionando, y el `DELETE` de `Videoju
 
 ## Reto — el DELETE de Estudio
 
-Sin más guía que esta especificación, completa el CRUD de `Estudio` con:
+Igual que con el `PUT` de la semana pasada, no partes de cero: `EstudioService.delete(Long id)` ya existe (Acceso a Datos, Actividad 1.2), completo y funcionando — solo que, hasta hoy, ningún endpoint lo invoca. Sin más guía que esta especificación, añade el endpoint que falta:
 
 - Ruta: `DELETE /api/v1/estudios/{id}`
 - `204 No Content` si borra correctamente.
 - `404 Not Found` si el `id` no existe.
-- `@Transactional` en el método del service.
 
-Tienes **dos** ejemplos ya construidos del mismo patrón exacto (cargar → comprobar existencia → actuar): el `DELETE` de `VideojuegoController`/`VideojuegoService` (Acceso a Datos) y el `PUT` de `EstudioController`/`EstudioService` que tú mismo escribiste en la Actividad 1.3. Combina ambos y escribe el `DELETE` de `Estudio` sin que se te dé el código.
+Tienes **dos** ejemplos ya construidos del mismo patrón (controller que delega en un service que ya gestiona el "no encontrado"): el `DELETE` de `VideojuegoController` (Acceso a Datos) y el `PUT` de `EstudioController` que tú mismo escribiste en la Actividad 1.3, conectando un método de `EstudioService` que ya existía. Escribe el `@DeleteMapping` de `Estudio` siguiendo ese mismo patrón, sin que se te dé el código.
 
 **Pregunta de comprensión**: al borrar un `Estudio` que tiene videojuegos asociados, ¿qué pasa con esos videojuegos? Relaciona tu respuesta con `cascade = CascadeType.ALL` y `orphanRemoval = true`, que viste al crear la entidad `Estudio` en Acceso a Datos (Actividad 1.1).
 
@@ -77,12 +76,15 @@ curl -s http://localhost:8080/actuator/health | jq
 
 ## Experimento guiado de disponibilidad
 
-Este experimento necesita que tengas más de un servicio en tu `docker-compose.yml` — si en este punto del curso solo tienes PostgreSQL, hazlo con ese mismo servicio (parándolo tendrás el mismo efecto sobre el componente `db`).
+Este experimento necesita que tengas más de un servicio en tu `.devcontainer/docker-compose.yml` — si en este punto del curso solo tienes PostgreSQL, hazlo con ese mismo servicio (parándolo tendrás el mismo efecto sobre el componente `db`).
+
+!!! tip "Dónde ejecutar estos comandos"
+    Puedes lanzarlos desde la propia terminal integrada de VS Code, dentro del Dev Container: el `docker-outside-of-docker` que configuraste en la Actividad 1.1 de Acceso a Datos hace que `docker compose` vea y controle los mismos contenedores que tu sistema operativo, aunque la terminal esté dentro de `app`. Como el fichero ya no está en la raíz del proyecto, apunta a él con `-f`.
 
 ### Paso 3 — Parar una dependencia
 
 ```bash
-docker compose stop postgres
+docker compose -f .devcontainer/docker-compose.yml stop postgres
 ```
 
 Vuelve a consultar:
@@ -96,7 +98,7 @@ curl -s http://localhost:8080/actuator/health | jq
 ### Paso 4 — Recuperar el servicio
 
 ```bash
-docker compose start postgres
+docker compose -f .devcontainer/docker-compose.yml start postgres
 ```
 
 Espera unos segundos y vuelve a consultar `/actuator/health`.
