@@ -1738,6 +1738,10 @@
 
 
 <div><h1 id="actividad-11-diseccionando-peticiones-y-respuestas-http">🧪 Actividad 1.1: Diseccionando peticiones y respuestas HTTP<a class="headerlink" href="#actividad-11-diseccionando-peticiones-y-respuestas-http" title="Permanent link">¶</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Descarga la plantilla</p>
+<p>📄 <a href="../plantillas/Actividad_1_1_PSP_Plantilla.docx" rel="noopener" target="_blank">Plantilla 1.1 — Diseccionando peticiones y respuestas HTTP</a></p>
+</div>
 <div class="admonition info">
 <p class="admonition-title">Práctica guiada — sin código, y sin servidor propio todavía</p>
 <p>Esta semana, en Acceso a Datos, tu propio GameVault solo tiene entidades JPA — todavía no existe ningún endpoint que puedas invocar. Así que hoy no vas a lanzar peticiones contra tu proyecto: vas a diseccionar, con papel y con <code>curl</code> contra un objetivo controlado, conversaciones HTTP reales, para que la semana que viene, en cuanto tu propio CRUD esté vivo, ya sepas leer lo que ves.</p>
@@ -1750,7 +1754,8 @@
 </ul>
 <hr>
 <h2 id="requisitos-previos">Requisitos previos<a class="headerlink" href="#requisitos-previos" title="Permanent link">¶</a></h2>
-<p>Los apuntes del apartado de teoría de esta semana (el código de <code>LibroController</code>/<code>LibroService</code> que has leído ahí). Si tienes <code>jq</code> instalado, lo usarás en el mini-reto (opcional).</p>
+<p>Los apuntes del apartado de teoría de esta semana. En el Paso 3 puedes instalar opcionalmente una herramienta llamada <code>jq</code>, si quieres — se explica ahí.</p>
+<p>Vas a necesitar citar el código de <code>LibroController</code>/<code>LibroService</code> de la teoría (secciones "📖 Leyendo un controlador REST completo" y "❌ ¿Y si el libro no existe?") — tenlo a mano mientras respondes.</p>
 <hr>
 <h2 id="paso-1-diseccionar-una-conversacion-http-dada">Paso 1 — Diseccionar una conversación HTTP dada<a class="headerlink" href="#paso-1-diseccionar-una-conversacion-http-dada" title="Permanent link">¶</a></h2>
 <p>Aquí tienes una captura real de una petición y su respuesta, tal como las vería <code>curl -v</code>:</p>
@@ -1837,33 +1842,46 @@
 <div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a>curl<span class="w"> </span>-v<span class="w"> </span>http://localhost:8000/datos.json
 </code></pre></div></td></tr></table></div>
 <p><strong>Comprueba</strong>: verbo, código de estado y <code>Content-Type</code> de la respuesta real que acabas de recibir. Compáralos con los que anotaste en el Paso 1 — ¿tienen la misma forma general, aunque el servidor sea completamente distinto?</p>
+<p><strong>Captura</strong>: la salida completa de <code>curl -v http://localhost:8000/datos.json</code> en tu terminal.</p>
 <p>Prueba también a pedir un fichero que no existe:</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a>curl<span class="w"> </span>-v<span class="w"> </span>http://localhost:8000/no-existe.json
 </code></pre></div></td></tr></table></div>
 <p><strong>Comprueba</strong>: el código de estado. ¿Coincide con el que esperarías después del Paso 2?</p>
+<p><strong>Captura</strong>: la salida completa de <code>curl -v http://localhost:8000/no-existe.json</code> en tu terminal.</p>
+<div class="admonition tip">
+<p class="admonition-title">Opcional: leer el JSON con más comodidad con <code>jq</code></p>
+<p>Fíjate en que <code>curl</code> te devuelve el JSON del cuerpo tal cual, en una sola línea comprimida — con una respuesta pequeña como <code>{"mensaje": "hola"}</code> se lee bien, pero con una respuesta real, más larga y anidada, se vuelve incómodo de leer a simple vista. <strong><code>jq</code></strong> es una herramienta de línea de comandos que lee JSON de la entrada y lo vuelve a imprimir indentado (y, si tu terminal lo soporta, coloreado) — no cambia el JSON, solo lo hace más legible.</p>
+<p>No viene instalada por defecto en tu Dev Container. Para probarla, instálala dentro del contenedor con:
+</p><div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>jq
+</code></pre></div></td></tr></table></div>
+Y compara la diferencia:
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8000/datos.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq
+</code></pre></div></td></tr></table></div>
+Es completamente opcional — para esta actividad te basta con leer el JSON tal como lo devuelve <code>curl -v</code>.
+</div>
 <p>Detén el servidor con <code>Ctrl+C</code> cuando termines.</p>
 <hr>
 <h2 id="mini-reto-repite-la-diseccion-con-un-tercer-caso">Mini-reto — repite la disección con un tercer caso<a class="headerlink" href="#mini-reto-repite-la-diseccion-con-un-tercer-caso" title="Permanent link">¶</a></h2>
 <p>Aquí tienes una tercera captura, esta vez de un <code>POST</code>:</p>
-<div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-6-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-6-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-6-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-6-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-6-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-6-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-6-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-6-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-6-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1"></a>&gt; POST /api/v1/videojuegos HTTP/1.1
-<a id="__codelineno-6-2" name="__codelineno-6-2"></a>&gt; Host: localhost:8080
-<a id="__codelineno-6-3" name="__codelineno-6-3"></a>&gt; Content-Type: application/json
-<a id="__codelineno-6-4" name="__codelineno-6-4"></a>&gt; Content-Length: 71
-<a id="__codelineno-6-5" name="__codelineno-6-5"></a>&gt;
-<a id="__codelineno-6-6" name="__codelineno-6-6"></a>{"titulo":"Celeste","precio":19.99,"fechaLanzamiento":"2018-01-25","estudioId":1}
-<a id="__codelineno-6-7" name="__codelineno-6-7"></a>&lt; HTTP/1.1 201 Created
-<a id="__codelineno-6-8" name="__codelineno-6-8"></a>&lt; Content-Type: application/json
-<a id="__codelineno-6-9" name="__codelineno-6-9"></a>&lt;
-<a id="__codelineno-6-10" name="__codelineno-6-10"></a>{"id":7,"titulo":"Celeste","precio":19.99,"fechaLanzamiento":"2018-01-25"}
+<div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-8-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-8-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-8-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-8-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-8-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-8-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-8-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-8-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-8-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1"></a>&gt; POST /api/v1/videojuegos HTTP/1.1
+<a id="__codelineno-8-2" name="__codelineno-8-2"></a>&gt; Host: localhost:8080
+<a id="__codelineno-8-3" name="__codelineno-8-3"></a>&gt; Content-Type: application/json
+<a id="__codelineno-8-4" name="__codelineno-8-4"></a>&gt; Content-Length: 71
+<a id="__codelineno-8-5" name="__codelineno-8-5"></a>&gt;
+<a id="__codelineno-8-6" name="__codelineno-8-6"></a>{"titulo":"Celeste","precio":19.99,"fechaLanzamiento":"2018-01-25","estudioId":1}
+<a id="__codelineno-8-7" name="__codelineno-8-7"></a>&lt; HTTP/1.1 201 Created
+<a id="__codelineno-8-8" name="__codelineno-8-8"></a>&lt; Content-Type: application/json
+<a id="__codelineno-8-9" name="__codelineno-8-9"></a>&lt;
+<a id="__codelineno-8-10" name="__codelineno-8-10"></a>{"id":7,"titulo":"Celeste","precio":19.99,"fechaLanzamiento":"2018-01-25"}
 </code></pre></div></td></tr></table></div>
 <p>Sin más indicaciones que las de los Pasos 1-2, diseccionalo tú mismo: verbo, ruta, cabeceras relevantes de la petición (¿por qué esta petición SÍ lleva <code>Content-Type</code> y la del Paso 1 no?), código de estado y qué significa exactamente ese código para un <code>POST</code> (repasa la tabla de verbos y códigos de la teoría si hace falta).</p>
 <hr>
