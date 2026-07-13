@@ -1750,7 +1750,7 @@
 </ul>
 <hr>
 <h2 id="requisitos-previos">Requisitos previos<a class="headerlink" href="#requisitos-previos" title="Permanent link">¶</a></h2>
-<p>Los apuntes del apartado de teoría de esta semana (el código de <code>VideojuegoController</code> que has leído ahí). Si tienes <code>jq</code> instalado, lo usarás en el mini-reto (opcional).</p>
+<p>Los apuntes del apartado de teoría de esta semana (el código de <code>LibroController</code>/<code>LibroService</code> que has leído ahí). Si tienes <code>jq</code> instalado, lo usarás en el mini-reto (opcional).</p>
 <hr>
 <h2 id="paso-1-diseccionar-una-conversacion-http-dada">Paso 1 — Diseccionar una conversación HTTP dada<a class="headerlink" href="#paso-1-diseccionar-una-conversacion-http-dada" title="Permanent link">¶</a></h2>
 <p>Aquí tienes una captura real de una petición y su respuesta, tal como las vería <code>curl -v</code>:</p>
@@ -1768,7 +1768,7 @@
 <a id="__codelineno-0-4" name="__codelineno-0-4"></a>&gt;
 <a id="__codelineno-0-5" name="__codelineno-0-5"></a>&lt; HTTP/1.1 200 OK
 <a id="__codelineno-0-6" name="__codelineno-0-6"></a>&lt; Content-Type: application/json
-<a id="__codelineno-0-7" name="__codelineno-0-7"></a>&lt; Content-Length: 58
+<a id="__codelineno-0-7" name="__codelineno-0-7"></a>&lt; Content-Length: 80
 <a id="__codelineno-0-8" name="__codelineno-0-8"></a>&lt;
 <a id="__codelineno-0-9" name="__codelineno-0-9"></a>{"id":3,"titulo":"Hollow Knight","precio":14.99,"fechaLanzamiento":"2017-02-24"}
 </code></pre></div></td></tr></table></div>
@@ -1778,7 +1778,7 @@
 <li>¿Qué <strong>verbo</strong> y qué <strong>ruta</strong> se han pedido?</li>
 <li>¿Qué <strong>código de estado</strong> ha devuelto el servidor? ¿A qué familia pertenece (2xx/4xx/5xx)?</li>
 <li>¿Qué dice la cabecera <code>Content-Type</code> de la respuesta sobre el formato del cuerpo?</li>
-<li>En el <code>VideojuegoController</code> que leíste en la teoría, ¿qué método exacto (con qué anotación) es responsable de generar esta respuesta concreta? Justifica tu respuesta relacionando la ruta pedida con la anotación del método.</li>
+<li>En la teoría leíste <code>LibroController</code>, que sigue este mismo patrón sobre libros en vez de videojuegos. ¿Qué método exacto (con qué anotación) sería el responsable de generar esta respuesta concreta si la ruta fuera <code>/api/v1/libros/3</code> en vez de <code>/api/v1/videojuegos/3</code>? Justifica tu respuesta relacionando la ruta pedida con la anotación del método.</li>
 </ol>
 <hr>
 <h2 id="paso-2-ahora-un-caso-de-error">Paso 2 — Ahora un caso de error<a class="headerlink" href="#paso-2-ahora-un-caso-de-error" title="Permanent link">¶</a></h2>
@@ -1803,49 +1803,67 @@
 <p><strong>Responde</strong>:</p>
 <ol>
 <li>¿Por qué crees que el servidor ha respondido <code>404</code> en vez de <code>200</code>?</li>
-<li>En el método <code>findById</code> de <code>VideojuegoService</code> que leíste en la teoría (<code>orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND, ...))</code>), ¿qué parte exacta del código es responsable de que este <code>404</code> tenga ese código y no otro (por ejemplo, <code>400</code> o <code>500</code>)?</li>
+<li>En el diagrama y el código de "¿Y si el libro no existe?" que viste en la teoría, ¿qué línea exacta es responsable de que la respuesta sea <code>404</code> en vez de <code>200</code>? Justifica tu respuesta señalando esa línea.</li>
 <li>¿Este <code>404</code> lo genera Tomcat automáticamente, o nace de una decisión explícita del código de la aplicación? Justifica tu respuesta con la línea de código concreta.</li>
 </ol>
 <hr>
 <h2 id="paso-3-practicar-curl-de-verdad-contra-un-servidor-minimo">Paso 3 — Practicar <code>curl</code> de verdad, contra un servidor mínimo<a class="headerlink" href="#paso-3-practicar-curl-de-verdad-contra-un-servidor-minimo" title="Permanent link">¶</a></h2>
-<p>No necesitas tu proyecto para practicar la herramienta en sí. Python trae un servidor HTTP mínimo integrado — suficiente para tener algo real contra lo que lanzar peticiones:</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
+<p>No necesitas tu proyecto para practicar la herramienta en sí, pero sí necesitas Python — y tu Dev Container, tal como lo dejaste en la Actividad 1.1 de Acceso a Datos, todavía no lo tiene (solo instalaste la <em>feature</em> de Java). Añádela en <code>devcontainer.json</code>, junto a las que ya tienes:</p>
+<div class="language-json highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">JSON</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
 <span class="normal"><a href="#__codelineno-2-2">2</a></span>
-<span class="normal"><a href="#__codelineno-2-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a>mkdir<span class="w"> </span>curl-practica<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>curl-practica
-<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">'{"mensaje": "hola"}'</span><span class="w"> </span>&gt;<span class="w"> </span>datos.json
-<a id="__codelineno-2-3" name="__codelineno-2-3"></a>python3<span class="w"> </span>-m<span class="w"> </span>http.server<span class="w"> </span><span class="m">8000</span>
+<span class="normal"><a href="#__codelineno-2-3">3</a></span>
+<span class="normal"><a href="#__codelineno-2-4">4</a></span>
+<span class="normal"><a href="#__codelineno-2-5">5</a></span>
+<span class="normal"><a href="#__codelineno-2-6">6</a></span>
+<span class="normal"><a href="#__codelineno-2-7">7</a></span>
+<span class="normal"><a href="#__codelineno-2-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nt">"features"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">  </span><span class="nt">"ghcr.io/devcontainers/features/java:1"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">    </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"21"</span><span class="p">,</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">    </span><span class="nt">"installMaven"</span><span class="p">:</span><span class="w"> </span><span class="s2">"true"</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">  </span><span class="p">},</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">  </span><span class="nt">"ghcr.io/devcontainers/features/docker-outside-of-docker:1"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">  </span><span class="nt">"ghcr.io/devcontainers/features/python:1"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Reconstruye el contenedor (paleta de comandos → <strong>"Dev Containers: Rebuild Container"</strong>) para que la nueva <em>feature</em> se instale — recuerda que editar <code>devcontainer.json</code> no tiene efecto hasta que reconstruyes.</p>
+<p>Con Python ya disponible, usa su servidor HTTP mínimo integrado — suficiente para tener algo real contra lo que lanzar peticiones:</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
+<span class="normal"><a href="#__codelineno-3-2">2</a></span>
+<span class="normal"><a href="#__codelineno-3-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a>mkdir<span class="w"> </span>curl-practica<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>curl-practica
+<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">'{"mensaje": "hola"}'</span><span class="w"> </span>&gt;<span class="w"> </span>datos.json
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a>python3<span class="w"> </span>-m<span class="w"> </span>http.server<span class="w"> </span><span class="m">8000</span>
 </code></pre></div></td></tr></table></div>
 <p>En otra terminal:</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a>curl<span class="w"> </span>-v<span class="w"> </span>http://localhost:8000/datos.json
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a>curl<span class="w"> </span>-v<span class="w"> </span>http://localhost:8000/datos.json
 </code></pre></div></td></tr></table></div>
 <p><strong>Comprueba</strong>: verbo, código de estado y <code>Content-Type</code> de la respuesta real que acabas de recibir. Compáralos con los que anotaste en el Paso 1 — ¿tienen la misma forma general, aunque el servidor sea completamente distinto?</p>
 <p>Prueba también a pedir un fichero que no existe:</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a>curl<span class="w"> </span>-v<span class="w"> </span>http://localhost:8000/no-existe.json
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a>curl<span class="w"> </span>-v<span class="w"> </span>http://localhost:8000/no-existe.json
 </code></pre></div></td></tr></table></div>
 <p><strong>Comprueba</strong>: el código de estado. ¿Coincide con el que esperarías después del Paso 2?</p>
 <p>Detén el servidor con <code>Ctrl+C</code> cuando termines.</p>
 <hr>
 <h2 id="mini-reto-repite-la-diseccion-con-un-tercer-caso">Mini-reto — repite la disección con un tercer caso<a class="headerlink" href="#mini-reto-repite-la-diseccion-con-un-tercer-caso" title="Permanent link">¶</a></h2>
 <p>Aquí tienes una tercera captura, esta vez de un <code>POST</code>:</p>
-<div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-5-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-5-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-5-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-5-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-5-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-5-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-5-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-5-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-5-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a>&gt; POST /api/v1/videojuegos HTTP/1.1
-<a id="__codelineno-5-2" name="__codelineno-5-2"></a>&gt; Host: localhost:8080
-<a id="__codelineno-5-3" name="__codelineno-5-3"></a>&gt; Content-Type: application/json
-<a id="__codelineno-5-4" name="__codelineno-5-4"></a>&gt; Content-Length: 71
-<a id="__codelineno-5-5" name="__codelineno-5-5"></a>&gt;
-<a id="__codelineno-5-6" name="__codelineno-5-6"></a>{"titulo":"Celeste","precio":19.99,"fechaLanzamiento":"2018-01-25","estudioId":1}
-<a id="__codelineno-5-7" name="__codelineno-5-7"></a>&lt; HTTP/1.1 201 Created
-<a id="__codelineno-5-8" name="__codelineno-5-8"></a>&lt; Content-Type: application/json
-<a id="__codelineno-5-9" name="__codelineno-5-9"></a>&lt;
-<a id="__codelineno-5-10" name="__codelineno-5-10"></a>{"id":7,"titulo":"Celeste","precio":19.99,"fechaLanzamiento":"2018-01-25"}
+<div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-6-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-6-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-6-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-6-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-6-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-6-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-6-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-6-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-6-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1"></a>&gt; POST /api/v1/videojuegos HTTP/1.1
+<a id="__codelineno-6-2" name="__codelineno-6-2"></a>&gt; Host: localhost:8080
+<a id="__codelineno-6-3" name="__codelineno-6-3"></a>&gt; Content-Type: application/json
+<a id="__codelineno-6-4" name="__codelineno-6-4"></a>&gt; Content-Length: 71
+<a id="__codelineno-6-5" name="__codelineno-6-5"></a>&gt;
+<a id="__codelineno-6-6" name="__codelineno-6-6"></a>{"titulo":"Celeste","precio":19.99,"fechaLanzamiento":"2018-01-25","estudioId":1}
+<a id="__codelineno-6-7" name="__codelineno-6-7"></a>&lt; HTTP/1.1 201 Created
+<a id="__codelineno-6-8" name="__codelineno-6-8"></a>&lt; Content-Type: application/json
+<a id="__codelineno-6-9" name="__codelineno-6-9"></a>&lt;
+<a id="__codelineno-6-10" name="__codelineno-6-10"></a>{"id":7,"titulo":"Celeste","precio":19.99,"fechaLanzamiento":"2018-01-25"}
 </code></pre></div></td></tr></table></div>
 <p>Sin más indicaciones que las de los Pasos 1-2, diseccionalo tú mismo: verbo, ruta, cabeceras relevantes de la petición (¿por qué esta petición SÍ lleva <code>Content-Type</code> y la del Paso 1 no?), código de estado y qué significa exactamente ese código para un <code>POST</code> (repasa la tabla de verbos y códigos de la teoría si hace falta).</p>
 <hr>

@@ -596,9 +596,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#como-funciona-la-web-en-una-peticion" class="md-nav__link">
+  <a href="#la-url-pieza-a-pieza" class="md-nav__link">
     <span class="md-ellipsis">
-      🌐 Cómo funciona la web en una petición
+      🌐 La URL, pieza a pieza
     </span>
   </a>
   
@@ -644,6 +644,15 @@
   <a href="#leyendo-un-controlador-rest-completo" class="md-nav__link">
     <span class="md-ellipsis">
       📖 Leyendo un controlador REST completo
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#y-si-el-libro-no-existe" class="md-nav__link">
+    <span class="md-ellipsis">
+      ❌ ¿Y si el libro no existe?
     </span>
   </a>
   
@@ -1650,9 +1659,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#como-funciona-la-web-en-una-peticion" class="md-nav__link">
+  <a href="#la-url-pieza-a-pieza" class="md-nav__link">
     <span class="md-ellipsis">
-      🌐 Cómo funciona la web en una petición
+      🌐 La URL, pieza a pieza
     </span>
   </a>
   
@@ -1704,6 +1713,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#y-si-el-libro-no-existe" class="md-nav__link">
+    <span class="md-ellipsis">
+      ❌ ¿Y si el libro no existe?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#por-que-un-protocolo-estandar" class="md-nav__link">
     <span class="md-ellipsis">
       🆚 Por qué un protocolo estándar
@@ -1739,11 +1757,10 @@
 
 <div><p><a id="protocolos-y-rest"></a></p>
 <h1 id="1-protocolos-estandar-y-servicios-rest-leyendo-el-controlador">🧩 1. Protocolos estándar y servicios REST: leyendo el controlador<a class="headerlink" href="#1-protocolos-estandar-y-servicios-rest-leyendo-el-controlador" title="Permanent link">¶</a></h1>
-<p>Llegas a este módulo sabiendo Java, Git/Docker y bases de datos — pero nada de cómo dos programas hablan entre sí por red. En Acceso a Datos (AD) trabajas la persistencia — del service hacia abajo; aquí miras la aplicación desde el otro extremo: cómo llega una petición desde fuera hasta que tu código se ejecuta. Esta semana no vas a escribir código nuevo — vas a aprender a <strong>leer</strong> un controlador REST, con un ejemplo del mismo tipo que construirás tú mismo la semana que viene.</p>
+<p>Ya sabes que dos programas pueden hablarse por red usando una IP y un puerto, y que para entenderse necesitan un protocolo: un conjunto de reglas fijas sobre cómo tiene que ser cada mensaje, que los dos lados conocen de antemano — como cuando rellenas un formulario con casillas fijas en vez de escribir una carta libre: quien lo lee sabe exactamente dónde va a encontrar cada dato, porque el formato ya está pactado. Hoy vas a ver ese protocolo en detalle en el caso concreto de una API web: qué forma exacta tiene cada mensaje, qué reglas sigue, y cómo termina convirtiéndose en código Java que se ejecuta de verdad. Esta semana no vas a escribir código nuevo — vas a aprender a <strong>leer</strong> un controlador REST ya hecho, del mismo tipo que vas a construir tú mismo la semana que viene.</p>
 <hr>
-<h2 id="como-funciona-la-web-en-una-peticion">🌐 Cómo funciona la web en una petición<a class="headerlink" href="#como-funciona-la-web-en-una-peticion" title="Permanent link">¶</a></h2>
-<p>Cuando escribes una URL en el navegador o llamas a una API desde tu código, pasan siempre los mismos dos papeles: un <strong>cliente</strong> (quien pide) y un <strong>servidor</strong> (quien responde). El cliente puede ser un navegador, una app móvil, otro servidor, o simplemente <code>curl</code> desde tu terminal — lo único que importa es que inicia la conversación.</p>
-<p>Toda esa conversación viaja hacia una dirección concreta: una <strong>URL</strong>. Diseccionada pieza a pieza:</p>
+<h2 id="la-url-pieza-a-pieza">🌐 La URL, pieza a pieza<a class="headerlink" href="#la-url-pieza-a-pieza" title="Permanent link">¶</a></h2>
+<p>Cuando escribes una URL en el navegador o llamas a una API desde tu código, hay siempre un <strong>cliente</strong> (quien pide) y un <strong>servidor</strong> (quien responde) — el cliente puede ser un navegador, una app móvil, otro servidor, o simplemente <code>curl</code> desde tu terminal. Esa petición viaja hacia una dirección concreta, la <strong>URL</strong>, que en el caso de una API web añade una pieza nueva sobre el host y el puerto que ya conoces: la ruta del recurso.</p>
 <div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
 <span class="normal"><a href="#__codelineno-0-2">2</a></span>
 <span class="normal"><a href="#__codelineno-0-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a>http://localhost:8080/api/v1/libros/3
@@ -1751,13 +1768,13 @@
 <a id="__codelineno-0-3" name="__codelineno-0-3"></a>protocolo  host:puerto      ruta
 </code></pre></div></td></tr></table></div>
 <ul>
-<li><strong>Protocolo</strong> (<code>http</code>): las reglas de comunicación que van a usar los dos.</li>
+<li><strong>Protocolo</strong> (<code>http</code>): las reglas de comunicación que van a usar los dos — la que vas a mirar por dentro en este apartado.</li>
 <li><strong>Host y puerto</strong> (<code>localhost:8080</code>): dónde está el servidor y por qué puerta escucha.</li>
-<li><strong>Ruta</strong> (<code>/api/v1/libros/3</code>): qué recurso concreto se pide dentro de ese servidor.</li>
+<li><strong>Ruta</strong> (<code>/api/v1/libros/3</code>): qué recurso concreto se pide dentro de ese servidor — esta pieza es la que no tenía equivalente hasta ahora, y es la que vas a usar para identificar cada libro, cada usuario o cada pedido de tu API: uno por URL, sin ambigüedad.</li>
 </ul>
 <hr>
 <h2 id="que-es-http">📨 Qué es HTTP<a class="headerlink" href="#que-es-http" title="Permanent link">¶</a></h2>
-<p><strong>HTTP</strong> (<em>HyperText Transfer Protocol</em>) es el protocolo de petición-respuesta que usa la web: el cliente manda una petición con un formato fijo, el servidor responde con una respuesta con otro formato fijo, y ahí termina esa conversación (la siguiente petición empieza de cero). Por debajo del navegador o de Postman, una petición HTTP real es texto plano con esta forma:</p>
+<p><strong>HTTP</strong> (<em>HyperText Transfer Protocol</em>) es el protocolo de petición-respuesta que usa la web: el cliente manda una petición con un formato fijo, el servidor responde con una respuesta con otro formato fijo, y ahí termina esa conversación (la siguiente petición empieza de cero). Por debajo del navegador, o de una herramienta como <strong>Postman</strong> —un programa que te deja construir y mandar peticiones HTTP a mano, sin escribir código, muy útil para probar una API mientras la desarrollas—, una petición HTTP real es texto plano con esta forma:</p>
 <div class="language-http highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">HTTP</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
 <span class="normal"><a href="#__codelineno-1-2">2</a></span>
 <span class="normal"><a href="#__codelineno-1-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nf">GET</span> <span class="nn">/api/v1/libros/3</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
@@ -1799,6 +1816,7 @@
 </tr>
 </tbody>
 </table>
+<p>Fíjate en las dos cabeceras del ejemplo, porque se confunden fácilmente al principio: <code>Accept</code> la manda el cliente, y significa "esto es lo que quiero que me devuelvas"; <code>Content-Type</code> la manda quien envía un cuerpo (aquí, el servidor en la respuesta), y significa "esto es lo que de verdad te estoy mandando". Es la diferencia entre pedir y confirmar: es como pedir un plato en un restaurante — le dices al camarero qué quieres (<code>Accept</code>), y cuando te lo trae, la etiqueta del plato confirma qué es realmente lo que tienes delante (<code>Content-Type</code>). Un mismo servidor podría saber responder en JSON o en otro formato según lo que le pida cada cliente en su <code>Accept</code>; y <code>Content-Type</code> es lo que le dice a quien recibe el mensaje cómo tiene que leer ese cuerpo antes de intentarlo.</p>
 <hr>
 <h2 id="verbos-y-codigos-de-estado">🔤 Verbos y códigos de estado<a class="headerlink" href="#verbos-y-codigos-de-estado" title="Permanent link">¶</a></h2>
 <p>Cada petición HTTP declara un <strong>verbo</strong> (o método) que expresa la intención de la operación:</p>
@@ -1807,27 +1825,33 @@
 <tr>
 <th>Verbo</th>
 <th>Qué expresa</th>
+<th>¿Repetirla cambia algo?</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>GET</code></td>
 <td>Leer un recurso, sin modificarlo.</td>
+<td>No — pedir el mismo libro 5 veces da 5 veces la misma respuesta.</td>
 </tr>
 <tr>
 <td><code>POST</code></td>
 <td>Crear un recurso nuevo.</td>
+<td>Sí — repetirla crea un recurso nuevo cada vez.</td>
 </tr>
 <tr>
 <td><code>PUT</code></td>
 <td>Reemplazar un recurso existente.</td>
+<td>No — reemplazar por el mismo valor 5 veces deja el recurso igual que la primera.</td>
 </tr>
 <tr>
 <td><code>DELETE</code></td>
 <td>Eliminar un recurso.</td>
+<td>No — borrarlo dos veces deja el mismo resultado que borrarlo una (la segunda ya no encuentra nada que borrar).</td>
 </tr>
 </tbody>
 </table>
+<p>Esa última columna importa más de lo que parece. Piensa en el botón de llamada de un ascensor: pulsarlo una vez o pulsarlo nerviosamente diez veces seguidas hace exactamente lo mismo — el ascensor viene una sola vez. <code>GET</code>, <code>PUT</code> y <code>DELETE</code> funcionan igual: si tu conexión falla justo después de mandarlos y no sabes si han llegado, puedes repetirlos sin miedo, el resultado final es el mismo. <code>POST</code> es distinto, más parecido a pulsar el botón de "pedir" en una máquina expendedora: cada pulsación te cobra y te da un producto nuevo — repetirlo a ciegas puede dejarte con el mismo libro duplicado dos veces.</p>
 <p>El servidor responde siempre con un <strong>código de estado</strong> de tres cifras que resume qué ha pasado, agrupado por familias:</p>
 <table>
 <thead>
@@ -1879,7 +1903,7 @@
 <p>Volverás a JSON con más detalle cuando lo necesites de verdad (al construir cuerpos de petición en la Actividad 1.1 y, en Acceso a Datos, al persistir estructuras JSON completas en el Tema 3) — de momento basta con reconocer la forma.</p>
 <hr>
 <h2 id="que-es-una-api-y-que-es-rest">🧩 Qué es una API y qué es REST<a class="headerlink" href="#que-es-una-api-y-que-es-rest" title="Permanent link">¶</a></h2>
-<p>Una <strong>API</strong> (<em>Application Programming Interface</em>) es el conjunto de operaciones que una aplicación expone para que otros programas la usen, sin que necesiten conocer cómo está construida por dentro. <strong>REST</strong> es un estilo concreto de diseñar APIs sobre HTTP: los datos se modelan como <strong>recursos</strong>, cada recurso tiene una <strong>URL</strong> propia, y las operaciones sobre ese recurso se expresan con los verbos HTTP que ya has visto.</p>
+<p>Piensa en el mando de una tele: tiene un botón para subir volumen, otro para cambiar de canal, otro para apagar. No necesitas saber nada de electrónica para usarlo — solo conoces los botones disponibles y qué hace cada uno. Una <strong>API</strong> (<em>Application Programming Interface</em>) es exactamente eso, pero para programas: el conjunto de operaciones que una aplicación expone para que otros programas la usen, sin que necesiten conocer cómo está construida por dentro. <strong>REST</strong> es un estilo concreto de diseñar esos "botones" sobre HTTP: los datos se modelan como <strong>recursos</strong> (un libro, un usuario, un pedido), cada recurso tiene su propia <strong>URL</strong> — su propio "botón" — y las operaciones sobre ese recurso se expresan con los verbos HTTP que ya has visto (<code>GET</code> para leerlo, <code>POST</code> para crearlo...).</p>
 <div class="admonition example">
 <p class="admonition-title">Una API de librería, como ejemplo de patrón</p>
 <table>
@@ -1916,7 +1940,7 @@
 </div>
 <hr>
 <h2 id="leyendo-un-controlador-rest-completo">📖 Leyendo un controlador REST completo<a class="headerlink" href="#leyendo-un-controlador-rest-completo" title="Permanent link">¶</a></h2>
-<p>Con esa base, ya puedes leer un controlador REST real — el de la API de libros del ejemplo, de momento solo con los métodos <code>GET</code> (los de escritura llegan la semana que viene):</p>
+<p>Con esa base, ya puedes leer un controlador REST real — el de la API de libros del ejemplo, de momento solo con los métodos <code>GET</code> (los de escritura llegan la semana que viene). No hace falta que entiendas cada símbolo a la primera: mira primero la forma general (una clase con dos métodos, cada uno con una anotación encima) y luego ve bajando a la tabla, anotación por anotación.</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-4-3"> 3</a></span>
@@ -1932,30 +1956,25 @@
 <span class="normal"><a href="#__codelineno-4-13">13</a></span>
 <span class="normal"><a href="#__codelineno-4-14">14</a></span>
 <span class="normal"><a href="#__codelineno-4-15">15</a></span>
-<span class="normal"><a href="#__codelineno-4-16">16</a></span>
-<span class="normal"><a href="#__codelineno-4-17">17</a></span>
-<span class="normal"><a href="#__codelineno-4-18">18</a></span>
-<span class="normal"><a href="#__codelineno-4-19">19</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="nd">@RestController</span>
+<span class="normal"><a href="#__codelineno-4-16">16</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="nd">@RestController</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="nd">@RequestMapping</span><span class="p">(</span><span class="s">"/api/v1/libros"</span><span class="p">)</span>
 <a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="nd">@RequiredArgsConstructor</span>
 <a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LibroController</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">LibroService</span><span class="w"> </span><span class="n">libroService</span><span class="p">;</span>
 <a id="__codelineno-4-6" name="__codelineno-4-6"></a>
 <a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="w">    </span><span class="nd">@GetMapping</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">Page</span><span class="o">&lt;</span><span class="n">LibroResponseDTO</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="nf">getAll</span><span class="p">(</span>
-<a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="w">            </span><span class="nd">@ModelAttribute</span><span class="w"> </span><span class="n">LibroFiltroDTO</span><span class="w"> </span><span class="n">filtro</span><span class="p">,</span>
-<a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="w">            </span><span class="nd">@PageableDefault</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="n">Pageable</span><span class="w"> </span><span class="n">pageable</span>
-<a id="__codelineno-4-11" name="__codelineno-4-11"></a><span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-4-12" name="__codelineno-4-12"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="n">libroService</span><span class="p">.</span><span class="na">findAllPaginated</span><span class="p">(</span><span class="n">filtro</span><span class="p">,</span><span class="w"> </span><span class="n">pageable</span><span class="p">));</span>
-<a id="__codelineno-4-13" name="__codelineno-4-13"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-4-14" name="__codelineno-4-14"></a>
-<a id="__codelineno-4-15" name="__codelineno-4-15"></a><span class="w">    </span><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
-<a id="__codelineno-4-16" name="__codelineno-4-16"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">LibroResponseDTO</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">getById</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-4-17" name="__codelineno-4-17"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="n">libroService</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">));</span>
-<a id="__codelineno-4-18" name="__codelineno-4-18"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-4-19" name="__codelineno-4-19"></a><span class="p">}</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">LibroResponseDTO</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="nf">getAll</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="n">libroService</span><span class="p">.</span><span class="na">findAll</span><span class="p">());</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11"></a>
+<a id="__codelineno-4-12" name="__codelineno-4-12"></a><span class="w">    </span><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">LibroResponseDTO</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">getById</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="n">libroService</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">));</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p>Anotación a anotación, desde la óptica HTTP (la óptica de "qué hace cada cosa con la persistencia" es de Acceso a Datos, no la repitas aquí):</p>
+<p>Fíjate en algo antes de entrar en las anotaciones: ninguno de los dos métodos consulta nada directamente. <code>getAll</code> y <code>getById</code> se limitan a llamar a <code>libroService.findAll()</code> y <code>libroService.findById(id)</code> y a envolver lo que les devuelve en una respuesta HTTP — es <code>LibroService</code> quien de verdad hace el trabajo (comprobar si el libro existe, consultar el repositorio, aplicar cualquier regla de negocio que haga falta) y le entrega al controller el resultado ya listo. El controller no sabe nada de bases de datos: solo traduce entre HTTP y esa llamada Java.</p>
+<p>Anotación a anotación, mirando solo la parte de HTTP (qué hace cada cosa con la persistencia por debajo no es el foco aquí):</p>
 <table>
 <thead>
 <tr>
@@ -1966,7 +1985,7 @@
 <tbody>
 <tr>
 <td><code>@RestController</code></td>
-<td>Marca la clase como controlador cuyas respuestas se serializan directamente al cuerpo HTTP (a JSON, normalmente).</td>
+<td>Marca la clase como controlador cuyas respuestas se <strong>serializan</strong> —se convierten del objeto Java a texto, aquí a JSON— directamente al cuerpo HTTP.</td>
 </tr>
 <tr>
 <td><code>@RequestMapping("/api/v1/libros")</code></td>
@@ -1974,39 +1993,113 @@
 </tr>
 <tr>
 <td><code>@GetMapping</code> / <code>@GetMapping("/{id}")</code></td>
-<td>Verbo (<code>GET</code>) + ruta = una operación concreta. <code>{id}</code> es una parte variable de la ruta.</td>
+<td>Verbo (<code>GET</code>) + ruta = una operación concreta. Los dos métodos cuelgan de la misma ruta base (<code>/api/v1/libros</code>), pero Spring solo ejecuta uno de los dos según cómo termine esa combinación: si la petición es exactamente <code>/api/v1/libros</code>, entra <code>getAll</code>; si trae algo más detrás (<code>/3</code>, <code>/57</code>...), entra <code>getById</code>. <code>{id}</code> es esa parte variable de la ruta.</td>
 </tr>
 <tr>
 <td><code>@PathVariable Long id</code></td>
-<td>Extrae ese trozo variable de la URL y lo entrega como parámetro Java.</td>
+<td>Extrae ese trozo variable de la URL y lo entrega como parámetro Java — el <code>3</code> de <code>/api/v1/libros/3</code> llega aquí convertido ya en un <code>Long</code>, listo para usar.</td>
 </tr>
 <tr>
 <td><code>ResponseEntity.ok(...)</code></td>
-<td>Construye la respuesta con el código de estado <code>200</code> explícito y el cuerpo indicado.</td>
+<td>Construye la respuesta con el código de estado <code>200</code> explícito y el cuerpo indicado — es tu código Java decidiendo, a propósito, la primera línea de la respuesta HTTP que viste en el apartado anterior.</td>
 </tr>
 </tbody>
 </table>
-<p>El viaje completo de una petición <code>GET /api/v1/libros/3</code>:</p>
-<pre class="mermaid"><code>flowchart LR
-    A["🌐 Cliente&lt;br/&gt;curl/Postman"] -- "GET :8080/api/v1/libros/3" --&gt; B["🐱 Tomcat&lt;br/&gt;(embebido)"]
-    B --&gt; C["LibroController"]
-    C --&gt; D["LibroService"]
-    D --&gt; E["Respuesta JSON"]
-    E -.-&gt; A</code></pre>
-<p>El puerto <code>8080</code> y el servidor <strong>Tomcat</strong> que escucha en él no son magia: los trae la dependencia <code>spring-boot-starter-webmvc</code> del <code>pom.xml</code>, que ya conoces de Acceso a Datos — es la "librería que implementa el servicio en red" de la que habla el currículo. Tú no arrancas ningún servidor a mano: Spring Boot lo hace por ti al ejecutar la clase anotada con <code>@SpringBootApplication</code>.</p>
+<p>Vuelve un momento a la petición en texto plano de antes: <code>GET /api/v1/libros/3 HTTP/1.1</code>. Ese <code>GET</code>, esa ruta y ese <code>3</code> son exactamente lo que decide Spring para escoger <code>getById</code> y rellenar su parámetro <code>id</code> — nada de lo que hace el controlador es magia añadida, es la traducción directa de esas tres piezas del texto plano a una llamada Java.</p>
+<p>El viaje completo de una petición <code>GET /api/v1/libros/3</code>, ida y vuelta — fíjate en que la respuesta recorre exactamente el mismo camino que la petición, pero al revés: pasa otra vez por el controller (que la envuelve en la respuesta HTTP) y por Tomcat (que la manda de verdad por la red) antes de llegar al cliente:</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant Cliente as 🌐 Cliente
+    participant Tomcat as 🐱 Tomcat
+    participant Controller as LibroController
+    participant Service as LibroService
+
+    Cliente-&gt;&gt;Tomcat: GET /api/v1/libros/3
+    Tomcat-&gt;&gt;Controller: getById(3)
+    Controller-&gt;&gt;Service: findById(3)
+    Service--&gt;&gt;Controller: LibroResponseDTO
+    Controller--&gt;&gt;Tomcat: ResponseEntity(200, JSON)
+    Tomcat--&gt;&gt;Cliente: HTTP/1.1 200 OK + JSON</code></pre>
+<p>El puerto <code>8080</code> y el servidor <strong>Tomcat</strong> que escucha en él no son magia: los trae la dependencia <code>spring-boot-starter-webmvc</code> del <code>pom.xml</code> — es la "librería que implementa el servicio en red" de la que habla el currículo. Tú no arrancas ningún servidor a mano: Spring Boot lo hace por ti al ejecutar la clase anotada con <code>@SpringBootApplication</code>.</p>
+<hr>
+<h2 id="y-si-el-libro-no-existe">❌ ¿Y si el libro no existe?<a class="headerlink" href="#y-si-el-libro-no-existe" title="Permanent link">¶</a></h2>
+<p>Todo lo de arriba asume que el libro con ese <code>id</code> existe. Cuando no es así, el viaje de la petición es el mismo hasta <code>LibroService</code> — solo cambia lo que pasa a partir de ahí:</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant Cliente as 🌐 Cliente
+    participant Tomcat as 🐱 Tomcat
+    participant Controller as LibroController
+    participant Service as LibroService
+
+    Cliente-&gt;&gt;Tomcat: GET /api/v1/libros/9999
+    Tomcat-&gt;&gt;Controller: getById(9999)
+    Controller-&gt;&gt;Service: findById(9999)
+    Service--xController: no existe → error 404
+    Controller--&gt;&gt;Tomcat: ResponseEntity(404, error)
+    Tomcat--&gt;&gt;Cliente: HTTP/1.1 404 Not Found</code></pre>
+<p><code>LibroService</code> es quien comprueba si el libro existe de verdad, y quien decide, en ese punto exacto, que la respuesta tiene que ser un error con código <code>404</code> en vez de un <code>200</code> con el libro dentro. El código de estado que acaba viendo el cliente nace ahí, no en Tomcat.</p>
+<p>En el controller, esa decisión se traduce en algo así — una versión sencilla de lo que verás en detalle más adelante:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span>
+<span class="normal"><a href="#__codelineno-5-2">2</a></span>
+<span class="normal"><a href="#__codelineno-5-3">3</a></span>
+<span class="normal"><a href="#__codelineno-5-4">4</a></span>
+<span class="normal"><a href="#__codelineno-5-5">5</a></span>
+<span class="normal"><a href="#__codelineno-5-6">6</a></span>
+<span class="normal"><a href="#__codelineno-5-7">7</a></span>
+<span class="normal"><a href="#__codelineno-5-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">LibroResponseDTO</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">getById</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="w">    </span><span class="n">LibroResponseDTO</span><span class="w"> </span><span class="n">libro</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">libroService</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">libro</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">notFound</span><span class="p">().</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="n">libro</span><span class="p">);</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><code>ResponseEntity.notFound().build()</code> es el mismo tipo de objeto que <code>ResponseEntity.ok(...)</code>, solo que con el código <code>404</code> en vez del <code>200</code> y sin cuerpo. Esta versión con <code>if</code> es la más fácil de leer con lo que sabes hoy; más adelante en el curso verás una forma más limpia de expresar lo mismo, sin tener que repetir ese <code>if</code> en cada método.</p>
 <hr>
 <h2 id="por-que-un-protocolo-estandar">🆚 Por qué un protocolo estándar<a class="headerlink" href="#por-que-un-protocolo-estandar" title="Permanent link">¶</a></h2>
 <p>Podrías diseñar tu propio protocolo casero sobre sockets (lo verás en el Tema 4) en vez de usar HTTP/REST. La diferencia es que HTTP es un protocolo <strong>estándar</strong>: cualquier cliente que exista — un navegador, <code>curl</code>, Postman, otra aplicación escrita en otro lenguaje — ya sabe hablarlo, sin que tengas que documentar ni acordar nada a medida. Con un protocolo propio, cada cliente nuevo tendría que aprender tus reglas particulares desde cero.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Protocolo estándar (HTTP)</th>
+<th>Protocolo propio a medida</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>¿Quién ya sabe hablarlo?</td>
+<td>Cualquier cliente existente: navegadores, <code>curl</code>, Postman, librerías de cualquier lenguaje.</td>
+<td>Solo el que tú mismo escribas para hablarlo.</td>
+</tr>
+<tr>
+<td>Documentación necesaria</td>
+<td>La del propio recurso (qué rutas, qué devuelve cada una) — el formato de mensaje ya está definido de antemano.</td>
+<td>Tienes que documentar y mantener también el propio formato de mensaje.</td>
+</tr>
+<tr>
+<td>Herramientas de por medio</td>
+<td>Servidores, proxies, balanceadores, cachés — todos entienden HTTP sin configuración especial.</td>
+<td>Ninguna herramienta genérica te sirve; hay que escribirlas o adaptarlas todas.</td>
+</tr>
+<tr>
+<td>Coste de un cliente nuevo</td>
+<td>Bajo: ya sabe HTTP, solo aprende tus rutas.</td>
+<td>Alto: tiene que aprender tu protocolo entero desde cero.</td>
+</tr>
+</tbody>
+</table>
 <hr>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
 <details class="tip">
 <summary>Abrir resumen</summary>
 <ul>
 <li>Toda comunicación HTTP es petición-respuesta entre un <strong>cliente</strong> y un <strong>servidor</strong>, con la URL como dirección (protocolo, host, puerto, ruta).</li>
-<li>HTTP es texto con una primera línea, cabeceras y cuerpo opcional; los <strong>verbos</strong> (<code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>DELETE</code>) expresan la intención, los <strong>códigos de estado</strong> (2xx/4xx/5xx) resumen el resultado.</li>
+<li>HTTP es texto con una primera línea, cabeceras y cuerpo opcional; <code>Accept</code> es lo que pide el cliente, <code>Content-Type</code> es lo que confirma el que envía el cuerpo.</li>
+<li>Los <strong>verbos</strong> (<code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>DELETE</code>) expresan la intención de la operación; repetir un <code>GET</code>, <code>PUT</code> o <code>DELETE</code> dado no cambia el resultado, repetir un <code>POST</code> sí. Los <strong>códigos de estado</strong> (2xx/4xx/5xx) resumen el resultado sin tener que leer el cuerpo.</li>
 <li><strong>JSON</strong> es el formato habitual del cuerpo de petición/respuesta en las APIs modernas.</li>
 <li><strong>REST</strong> modela los datos como recursos con URL propia, y usa los verbos HTTP para operar sobre ellos — la ruta identifica <em>qué</em>, el verbo identifica <em>qué operación</em>.</li>
 <li><code>@RestController</code> + <code>@RequestMapping</code> + <code>@GetMapping</code> son las anotaciones que traducen "verbo + ruta" en un método Java concreto; <code>ResponseEntity</code> construye la respuesta con su código de estado.</li>
+<li>Un código de error como <code>404</code> no lo decide Tomcat solo: nace de una comprobación en el service, que el controller traduce en <code>ResponseEntity.notFound().build()</code> en vez de <code>ResponseEntity.ok(...)</code>.</li>
 <li>El servidor embebido (Tomcat) que atiende las peticiones lo trae <code>spring-boot-starter-webmvc</code> — no lo arrancas tú a mano.</li>
 <li>Usar un protocolo estándar como HTTP significa que cualquier cliente existente ya sabe hablar con tu API, sin acordar nada a medida.</li>
 </ul>
