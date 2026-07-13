@@ -1,5 +1,8 @@
 # 🧪 Actividad 1.1: Diseccionando peticiones y respuestas HTTP
 
+!!! warning "Descarga la plantilla"
+    📄 [Plantilla 1.1 — Diseccionando peticiones y respuestas HTTP](plantillas/Actividad_1_1_PSP_Plantilla.docx){target="_blank" rel="noopener"}
+
 !!! info "Práctica guiada — sin código, y sin servidor propio todavía"
     Esta semana, en Acceso a Datos, tu propio GameVault solo tiene entidades JPA — todavía no existe ningún endpoint que puedas invocar. Así que hoy no vas a lanzar peticiones contra tu proyecto: vas a diseccionar, con papel y con `curl` contra un objetivo controlado, conversaciones HTTP reales, para que la semana que viene, en cuanto tu propio CRUD esté vivo, ya sepas leer lo que ves.
 
@@ -13,7 +16,9 @@
 
 ## Requisitos previos
 
-Los apuntes del apartado de teoría de esta semana (el código de `LibroController`/`LibroService` que has leído ahí). Si tienes `jq` instalado, lo usarás en el mini-reto (opcional).
+Los apuntes del apartado de teoría de esta semana. En el Paso 3 puedes instalar opcionalmente una herramienta llamada `jq`, si quieres — se explica ahí.
+
+Vas a necesitar citar el código de `LibroController`/`LibroService` de la teoría (secciones "📖 Leyendo un controlador REST completo" y "❌ ¿Y si el libro no existe?") — tenlo a mano mientras respondes.
 
 ---
 
@@ -102,6 +107,8 @@ curl -v http://localhost:8000/datos.json
 
 **Comprueba**: verbo, código de estado y `Content-Type` de la respuesta real que acabas de recibir. Compáralos con los que anotaste en el Paso 1 — ¿tienen la misma forma general, aunque el servidor sea completamente distinto?
 
+**Captura**: la salida completa de `curl -v http://localhost:8000/datos.json` en tu terminal.
+
 Prueba también a pedir un fichero que no existe:
 
 ```bash
@@ -109,6 +116,21 @@ curl -v http://localhost:8000/no-existe.json
 ```
 
 **Comprueba**: el código de estado. ¿Coincide con el que esperarías después del Paso 2?
+
+**Captura**: la salida completa de `curl -v http://localhost:8000/no-existe.json` en tu terminal.
+
+!!! tip "Opcional: leer el JSON con más comodidad con `jq`"
+    Fíjate en que `curl` te devuelve el JSON del cuerpo tal cual, en una sola línea comprimida — con una respuesta pequeña como `{"mensaje": "hola"}` se lee bien, pero con una respuesta real, más larga y anidada, se vuelve incómodo de leer a simple vista. **`jq`** es una herramienta de línea de comandos que lee JSON de la entrada y lo vuelve a imprimir indentado (y, si tu terminal lo soporta, coloreado) — no cambia el JSON, solo lo hace más legible.
+
+    No viene instalada por defecto en tu Dev Container. Para probarla, instálala dentro del contenedor con:
+    ```bash
+    sudo apt-get update && sudo apt-get install -y jq
+    ```
+    Y compara la diferencia:
+    ```bash
+    curl -s http://localhost:8000/datos.json | jq
+    ```
+    Es completamente opcional — para esta actividad te basta con leer el JSON tal como lo devuelve `curl -v`.
 
 Detén el servidor con `Ctrl+C` cuando termines.
 
