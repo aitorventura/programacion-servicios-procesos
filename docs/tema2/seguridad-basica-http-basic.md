@@ -3,7 +3,7 @@
 # 🧩 2. Seguridad básica: usuarios en memoria y HTTP Basic
 
 !!! tip "Vas a construir un estado intermedio, no el final"
-    El `SecurityConfig.java` que tendrás al final del módulo usará autenticación con JWT, con HTTP Basic desactivado. Este apartado construye el paso **intermedio** por el que se pasa para llegar ahí — usuarios en memoria y HTTP Basic — y las próximas dos semanas lo van sustituyendo. Recorrer el camino completo (Basic → BCrypt → JWT) es deliberado: cada paso resuelve un problema concreto del anterior, y entenderlo así vale más que llegar directo al resultado final.
+    El `SecurityConfig.java` que tendrás al final del módulo usará autenticación con JWT, con HTTP Basic desactivado. Este apartado construye el paso **intermedio** por el que se pasa para llegar ahí — usuarios en memoria y HTTP Basic — y los próximos dos apartados lo van sustituyendo. Recorrer el camino completo (Basic → BCrypt → JWT) es deliberado: cada paso resuelve un problema concreto del anterior, y entenderlo así vale más que llegar directo al resultado final.
 
 ---
 
@@ -60,7 +60,7 @@ public UserDetailsService userDetailsService() {
 }
 ```
 
-El prefijo `{noop}` le dice a Spring Security "esta contraseña no está cifrada, compárala tal cual" — una simplificación deliberada para este paso intermedio (la próxima semana la sustituyes por contraseñas de verdad protegidas con BCrypt).
+El prefijo `{noop}` le dice a Spring Security "esta contraseña no está cifrada, compárala tal cual" — una simplificación deliberada para este paso intermedio (en el próximo apartado la sustituyes por contraseñas de verdad protegidas con BCrypt).
 
 Y una primera política de acceso, con `authorizeHttpRequests`:
 
@@ -77,7 +77,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
 }
 ```
 
-Esta es una versión simplificada — lectura del catálogo pública, todo lo demás exige estar autenticado — de la matriz de rutas completa que construirás en la semana 11. Los roles `ADMIN` y `USER` que acabas de usar son los mismos que vas a formalizar más adelante como un enum `RolUsuario` — solo esos dos valores, sin más complicación.
+Esta es una versión simplificada — lectura del catálogo pública, todo lo demás exige estar autenticado — de la matriz de rutas completa que construirás en "Roles, rutas protegidas y tests de seguridad". Los roles `ADMIN` y `USER` que acabas de usar son los mismos que vas a formalizar más adelante como un enum `RolUsuario` — solo esos dos valores, sin más complicación.
 
 ---
 
@@ -85,8 +85,8 @@ Esta es una versión simplificada — lectura del catálogo pública, todo lo de
 
 Esta configuración tiene dos problemas serios, y son intencionados: sirven de motivación para lo que viene.
 
-1. **Usuarios hardcodeados**: viven en el propio código Java, se pierden cada vez que reinicias la aplicación, y cualquiera con acceso al código ve las contraseñas. La semana 9 los mueve a PostgreSQL, con contraseñas protegidas por BCrypt.
-2. **Credenciales que viajan en cada petición**: con HTTP Basic, cada única petición vuelve a mandar usuario y contraseña, apenas ofuscados en Base64. La semana 10 sustituye esto por JWT: te autenticas una vez, y presentas un token en las peticiones siguientes.
+1. **Usuarios hardcodeados**: viven en el propio código Java, se pierden cada vez que reinicias la aplicación, y cualquiera con acceso al código ve las contraseñas. El próximo apartado los mueve a PostgreSQL, con contraseñas protegidas por BCrypt.
+2. **Credenciales que viajan en cada petición**: con HTTP Basic, cada única petición vuelve a mandar usuario y contraseña, apenas ofuscados en Base64. Dos apartados más adelante ("Autenticación con JWT") sustituye esto por JWT: te autenticas una vez, y presentas un token en las peticiones siguientes.
 
 ---
 
@@ -98,4 +98,4 @@ Esta configuración tiene dos problemas serios, y son intencionados: sirven de m
     - **Autenticación** (¿quién eres?) y **autorización** (¿puedes hacer esto?) son capas distintas.
     - **HTTP Basic** manda usuario:contraseña en Base64 en la cabecera `Authorization` — Base64 no es cifrado, así que Basic solo es seguro sobre HTTPS.
     - `InMemoryUserDetailsManager` declara usuarios directamente en código — útil para empezar, pero se pierden al reiniciar.
-    - Esta configuración es un estado **intermedio** deliberado: la semana 9 resuelve los usuarios hardcodeados (BCrypt + PostgreSQL), la semana 10 resuelve las credenciales viajando en cada petición (JWT).
+    - Esta configuración es un estado **intermedio** deliberado: "Usuarios persistidos y BCrypt" resuelve los usuarios hardcodeados (BCrypt + PostgreSQL), "Autenticación con JWT" resuelve las credenciales viajando en cada petición (JWT).

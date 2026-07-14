@@ -192,4 +192,4 @@ Si un atacante consiguiera robar tu tabla `usuarios` completa, ¿qué obtendría
 
 ## ✅ Cierre
 
-Tus usuarios ya son reales y sus contraseñas están protegidas. Sigue quedando un problema: cada petición sigue mandando las credenciales completas (aunque protegidas al guardarse, viajan por HTTP Basic en cada llamada). La semana que viene lo resuelves con JWT.
+Tus usuarios ya son reales y sus contraseñas están protegidas. Sigue quedando un problema: cada petición sigue mandando las credenciales completas (aunque protegidas al guardarse, viajan por HTTP Basic en cada llamada). En la próxima actividad lo resuelves con JWT.

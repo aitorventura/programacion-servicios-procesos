@@ -1,11 +1,12 @@
-# 🧪 Actividad 1.4: El DELETE de Estudio y Actuator `/health`
+# 🧪 Actividad 1.4: Comunicación simultánea y disponibilidad del servicio
 
-!!! info "Reto de repetición + práctica guiada"
-    El endpoint `DELETE` de Estudio lo escribes tú solo — es la tercera vez que conectas este patrón (`DELETE` de Videojuego en AD, `PUT` de Estudio en la Actividad 1.3), así que no llevas la mano guiada esta vez. Actuator sí va paso a paso, es contenido nuevo.
+!!! info "Dos bloques, los dos guiados"
+    Cierras el tema con las dos últimas piezas de la teoría: comprobar que tu aplicación atiende varias peticiones a la vez sin que se pisen, y verificar de forma automatizable que sigue "sana" cuando una de sus dependencias falla.
 
 ## Qué vas a practicar
 
-- Completar un CRUD reutilizando un patrón ya practicado dos veces, sin guía paso a paso.
+- Construir un endpoint deliberadamente lento para poder medir concurrencia.
+- Comprobar experimentalmente que Spring atiende cada petición en un hilo distinto.
 - Añadir Actuator y activar el detalle de salud de las dependencias.
 - Observar en vivo cómo cae la disponibilidad de un componente concreto.
 
@@ -13,36 +14,69 @@
 
 ## Requisitos previos
 
-Tu `PUT` de `Estudio` de la Actividad 1.3 funcionando, y el `DELETE` de `Videojuego` de Acceso a Datos como segundo patrón ya construido para guiarte.
+Tu CRUD completo de `Videojuego` (con las cuatro operaciones) y los tests MockMvc de la Actividad 1.3.
 
 ---
 
-## Reto — el DELETE de Estudio
+## Bloque 1 — Comunicación simultánea
 
-Igual que con el `PUT` de la semana pasada, no partes de cero: `EstudioService.delete(Long id)` ya existe (Acceso a Datos, Actividad 1.2), completo y funcionando — solo que, hasta hoy, ningún endpoint lo invoca. Sin más guía que esta especificación, añade el endpoint que falta:
+### Paso 1 — Un método lento, para tener algo que medir
 
-- Ruta: `DELETE /api/v1/estudios/{id}`
-- `204 No Content` si borra correctamente.
-- `404 Not Found` si el `id` no existe.
+Antes del experimento necesitas un endpoint que tarde de verdad — la teoría lo daba por hecho, así que lo construyes ahora. Añade a `VideojuegoRepository`:
 
-Tienes **dos** ejemplos ya construidos del mismo patrón (controller que delega en un service que ya gestiona el "no encontrado"): el `DELETE` de `VideojuegoController` (Acceso a Datos) y el `PUT` de `EstudioController` que tú mismo escribiste en la Actividad 1.3, conectando un método de `EstudioService` que ya existía. Escribe el `@DeleteMapping` de `Estudio` siguiendo ese mismo patrón, sin que se te dé el código.
+```java
+List<Videojuego> findTop5ByOrderByFechaLanzamientoDesc();
+```
 
-**Pregunta de comprensión**: al borrar un `Estudio` que tiene videojuegos asociados, ¿qué pasa con esos videojuegos? Relaciona tu respuesta con `cascade = CascadeType.ALL` y `orphanRemoval = true`, que viste al crear la entidad `Estudio` en Acceso a Datos (Actividad 1.1).
+Y a `VideojuegoService`:
+
+```java
+public List<VideojuegoResponseDTO> getTopNovedades() {
+    try {
+        Thread.sleep(2000); // simula una consulta costosa
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+    }
+    return videojuegoRepository.findTop5ByOrderByFechaLanzamientoDesc()
+            .stream()
+            .map(this::mapToDTO)
+            .toList();
+}
+```
+
+Y en `VideojuegoController`:
+
+```java
+@GetMapping("/top")
+public ResponseEntity<List<VideojuegoResponseDTO>> getTopNovedades() {
+    return ResponseEntity.ok(videojuegoService.getTopNovedades());
+}
+```
+
+!!! warning "El orden de las rutas importa"
+    Declara `@GetMapping("/top")` **antes** que `@GetMapping("/{id}")` en la clase — si no, Spring intenta interpretar `top` como un `id` y falla al convertirlo a `Long`.
+
+Arranca tu aplicación y comprueba con una sola llamada que `GET /api/v1/videojuegos/top` tarda efectivamente unos 2 segundos.
+
+### Paso 2 — Medir la concurrencia
+
+Repite el experimento de la teoría con tu propio proyecto:
+
+```bash
+time (curl -s http://localhost:8080/api/v1/videojuegos/top & \
+      curl -s http://localhost:8080/api/v1/videojuegos/top & \
+      wait)
+```
+
+**Anota** el tiempo total mostrado por `time`. Añade temporalmente una línea `System.out.println(Thread.currentThread().getName())` al principio de `getTopNovedades()` en tu service, repite la prueba, y anota los dos nombres de hilo que aparecen en la consola. Cuando termines, retira esa línea — era solo para observar, no para quedarse en el código.
+
+**Pregunta**: ¿qué relación hay entre este "una petición, un hilo" que acabas de observar y el resultado de `time`? Si en vez de dos lanzaras cincuenta peticiones simultáneas, ¿crees que el comportamiento sería exactamente el mismo, o hay algún límite? (No hace falta que sepas la respuesta exacta todavía — se trabaja a fondo en el Tema 3).
 
 ---
 
-## Verificación del DELETE — también como reto
+## Bloque 2 — Actuator, guiado paso a paso
 
-Comprueba tu `DELETE` de dos formas, sin que se te dé el código de ninguna de las dos:
-
-1. **Manual**, desde Swagger UI (Actividad 1.2): crea un estudio de prueba, bórralo, comprueba el `204`, y comprueba después que un `GET` sobre ese mismo `id` da `404`.
-2. **Automatizada**, con un test MockMvc que siga el mismo patrón que ya usaste en la Actividad 1.3 (mockear el service, `mockMvc.perform(delete(...))`, afirmar el código de estado) — cubre los dos casos: `204` cuando existe, `404` cuando no.
-
----
-
-## Actuator, guiado paso a paso
-
-### Paso 1 — Añadir la dependencia
+### Paso 3 — Añadir la dependencia
 
 En tu `pom.xml`:
 
@@ -53,7 +87,7 @@ En tu `pom.xml`:
 </dependency>
 ```
 
-### Paso 2 — Exponer el detalle de salud
+### Paso 4 — Exponer el detalle de salud
 
 En `application.yaml` (la configuración común, no la de un perfil concreto):
 
@@ -81,7 +115,7 @@ Este experimento necesita que tengas más de un servicio en tu `.devcontainer/do
 !!! tip "Dónde ejecutar estos comandos"
     Puedes lanzarlos desde la propia terminal integrada de VS Code, dentro del Dev Container: el `docker-outside-of-docker` que configuraste en la Actividad 1.1 de Acceso a Datos hace que `docker compose` vea y controle los mismos contenedores que tu sistema operativo, aunque la terminal esté dentro de `app`. Como el fichero ya no está en la raíz del proyecto, apunta a él con `-f`; y como `docker compose` no adivina solo qué contenedores son "los tuyos", indícale también el proyecto con `-p gamevault_devcontainer` (el mismo nombre que ya usaste en la Actividad 1.1 de AD).
 
-### Paso 3 — Parar una dependencia
+### Paso 5 — Parar una dependencia
 
 ```bash
 docker compose -f .devcontainer/docker-compose.yml -p gamevault_devcontainer stop postgres
@@ -95,7 +129,7 @@ curl -s http://localhost:8080/actuator/health | jq
 
 **Predicción**: antes de ejecutar el comando, escribe qué esperas ver en el campo `status` general y en el componente correspondiente a PostgreSQL.
 
-### Paso 4 — Recuperar el servicio
+### Paso 6 — Recuperar el servicio
 
 ```bash
 docker compose -f .devcontainer/docker-compose.yml -p gamevault_devcontainer start postgres
@@ -111,10 +145,10 @@ Espera unos segundos y vuelve a consultar `/actuator/health`.
 
 ## Repaso del tema
 
-Escribe un repaso propio (3-4 frases) del recorrido completo de este tema: leer la API y su protocolo → documentarla y entender su semántica de escritura → probarla con tests y varios clientes simultáneos → completarla (`PUT`/`DELETE` de Estudio) → verificar su disponibilidad. ¿Qué pieza te ha costado más entender, y por qué?
+Escribe un repaso propio (3-4 frases) del recorrido completo de este tema: leer la API y su protocolo → documentarla y entender su semántica de escritura → probarla con tests MockMvc → medir cómo atiende varios clientes a la vez → verificar su disponibilidad. ¿Qué pieza te ha costado más entender, y por qué?
 
 ---
 
 ## ✅ Cierre
 
-La semana que viene entras en Programación Segura: hoy tu API está completamente abierta — nada te impide borrar cualquier recurso sin identificarte. Eso empieza a cambiar en el Tema 2.
+En el Tema 2 entras en Programación Segura: hoy tu API está completamente abierta — nada te impide borrar cualquier recurso sin identificarte. Eso empieza a cambiar ahí.

@@ -2,7 +2,7 @@
 
 # 🧩 2. Eventos internos de Spring: el warm-up de caché (1/2)
 
-Tras exámenes y las vacaciones de Navidad, retomas el tema donde lo dejaste: sabes que tu aplicación ya es multihilo (pool de Tomcat, listeners de RabbitMQ), y que el warm-up de la caché quedó como problema pendiente. Su solución llega ahora, en dos piezas repartidas en dos semanas: hoy el evento y su publicación; la semana que viene, el listener que reacciona.
+Sabes que tu aplicación ya es multihilo (pool de Tomcat, listeners de RabbitMQ), y que el warm-up de la caché quedó como problema pendiente. Su solución llega ahora, en dos piezas repartidas en dos apartados: hoy el evento y su publicación; en el próximo apartado, el listener que reacciona.
 
 ---
 
@@ -13,7 +13,7 @@ Un **evento** es, conceptualmente, "algo ha pasado" — empaquetado como un obje
 !!! example "Una notificación con varios suscriptores"
     Piensa en publicar una foto en una red social: tú (el publicador) no sabes, ni te importa, cuántas apps o servicios reaccionarán a ese evento (notificar a tus seguidores, generar una miniatura, actualizar un contador) — cada uno se suscribe por su cuenta, y podrían añadirse reacciones nuevas sin que tú cambies nada de cómo publicas la foto.
 
-Ese desacoplamiento es la ganancia central del patrón: el que publica no conoce a los que reaccionan, y se pueden añadir reacciones nuevas sin tocar al emisor. De hecho, ya has usado dos versiones de este mismo patrón sin ponerles ese nombre: los eventos de una interfaz gráfica (un clic de botón dispara un *listener*, sin que el botón sepa qué hace ese listener) y RabbitMQ, que analizaste la semana 12 — un broker externo con productores y consumidores que no se conocen entre sí. Es el mismo patrón, a distintas escalas.
+Ese desacoplamiento es la ganancia central del patrón: el que publica no conoce a los que reaccionan, y se pueden añadir reacciones nuevas sin tocar al emisor. De hecho, ya has usado dos versiones de este mismo patrón sin ponerles ese nombre: los eventos de una interfaz gráfica (un clic de botón dispara un *listener*, sin que el botón sepa qué hace ese listener) y RabbitMQ, que ya conoces (Actividad 3.1) — un broker externo con productores y consumidores que no se conocen entre sí. Es el mismo patrón, a distintas escalas.
 
 ---
 
@@ -21,7 +21,7 @@ Ese desacoplamiento es la ganancia central del patrón: el que publica no conoce
 
 Una **caché** guarda el resultado de una operación cara (lenta, costosa) para reutilizarlo sin repetir el trabajo. Cuando ese resultado deja de ser válido (los datos subyacentes han cambiado), hay que **invalidarla** — borrar el resultado guardado, para que la próxima vez se recalcule. **Recalentar** una caché es volver a calcular ese resultado por adelantado, antes de que alguien lo pida, para que quien lo pida a continuación no pague el coste de calcularlo de cero.
 
-Es exactamente lo que vas a conseguir hoy con `@Cacheable` sobre el `getTopNovedades()` que ya tienes (Actividad 1.3) — pero antes de anotarlo, falta decidir **dónde** se guarda físicamente ese resultado.
+Es exactamente lo que vas a conseguir en esta pareja de apartados con `@Cacheable` sobre el `getTopNovedades()` que ya tienes (Actividad 1.4) — pero antes de anotarlo, falta decidir **dónde** se guarda físicamente ese resultado.
 
 ---
 
@@ -48,21 +48,21 @@ Tras la primera petición a `/api/v1/videojuegos/top`, deberías ver aparecer un
 Spring implementa el patrón observador/publicador-suscriptor **dentro de la propia aplicación**, sin ningún broker externo de por medio, con `ApplicationEventPublisher` y los *listeners* que reaccionan a lo que publica.
 
 !!! danger "No lo confundas con RabbitMQ"
-    Es fácil mezclar ambos, así que distínguelos desde ya: **RabbitMQ** es mensajería entre procesos/módulos, a través de un broker externo (lo que analizaste la semana pasada, con `LibroEvent` en el paquete de eventos del catálogo). **`ApplicationEventPublisher`** son eventos **dentro de la misma JVM**, entre beans de la misma aplicación, sin ningún broker — mucho más ligero, pero solo sirve dentro del propio proceso.
+    Es fácil mezclar ambos, así que distínguelos desde ya: **RabbitMQ** es mensajería entre procesos/módulos, a través de un broker externo (lo que ya conoces, con `VideojuegoEvent` en el paquete de eventos del catálogo). **`ApplicationEventPublisher`** son eventos **dentro de la misma JVM**, entre beans de la misma aplicación, sin ningún broker — mucho más ligero, pero solo sirve dentro del propio proceso.
 
 ---
 
 ## 🎯 El diseño del warm-up (pieza 1 de 2)
 
-Esta semana construyes el evento y su publicación; la semana que viene, el listener que reacciona. El plan completo:
+En este apartado construyes el evento y su publicación; en el próximo, el listener que reacciona. El plan completo:
 
 ```mermaid
 flowchart LR
-    A["LibroService<br/>@CacheEvict tras escritura"] -->|"publica"| B["TopNovedadesInvalidadoEvent"]
-    B -.->|"semana que viene"| C["Listener @Async<br/>recalienta la caché"]
+    A["VideojuegoService<br/>@CacheEvict tras escritura"] -->|"publica"| B["TopNovedadesInvalidadoEvent"]
+    B -.->|"próximo apartado"| C["Listener @Async<br/>recalienta la caché"]
 ```
 
-Cuando `LibroService` invalida la caché `"topNovedades"` (en `create`/`update`/`delete`, cada uno anotado `@CacheEvict`), va a publicar además un evento interno `TopNovedadesInvalidadoEvent`. Ahora mismo, sin listener todavía, publicar ese evento **no hace nada visible** — el sistema queda "emitiendo" a la espera de la pieza 2.
+Cuando `VideojuegoService` invalida la caché `"topNovedades"` (en `create`/`update`/`delete`, cada uno anotado `@CacheEvict`), va a publicar además un evento interno `TopNovedadesInvalidadoEvent`. Ahora mismo, sin listener todavía, publicar ese evento **no hace nada visible** — el sistema queda "emitiendo" a la espera de la pieza 2.
 
 ### La clase de evento: un record inmutable
 
@@ -77,13 +77,13 @@ Un `record` (ya lo conoces de Acceso a Datos) encaja perfectamente aquí: es **i
 ```java
 @Service
 @RequiredArgsConstructor
-public class LibroService {
-    private final LibroRepository libroRepository;
+public class VideojuegoService {
+    private final VideojuegoRepository videojuegoRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     @CacheEvict(value = "topNovedades", allEntries = true)
     @Transactional
-    public LibroResponseDTO create(LibroCreateDTO dto) {
+    public VideojuegoResponseDTO create(VideojuegoCreateDTO dto) {
         // ... lógica de creación ya existente ...
         eventPublisher.publishEvent(new TopNovedadesInvalidadoEvent(Instant.now()));
         return mapToDTO(saved);
@@ -94,13 +94,13 @@ public class LibroService {
 `ApplicationEventPublisher` se inyecta exactamente igual que cualquier otra dependencia — con `@RequiredArgsConstructor`, como todo en este proyecto. `publishEvent(...)` es la llamada que dispara el evento hacia quien esté escuchando — que, de momento, es nadie.
 
 !!! tip "Esta pieza es nueva, no la tienes todavía"
-    Es una mejora que tú vas a construir desde cero: no confundas este evento interno de Spring con los `LibroEvent` que ya conoces, que son de RabbitMQ, entre módulos — son dos mecanismos distintos.
+    Es una mejora que tú vas a construir desde cero: no confundas este evento interno de Spring con los `VideojuegoEvent` que ya conoces, que son de RabbitMQ, entre módulos — son dos mecanismos distintos.
 
 ---
 
 ## 🗺️ El mapa completo
 
-Semana 14 (hoy): evento + publicación. Semana 15: listener `@Async` que recalienta la caché, sincronizado con el momento exacto en que la transacción hace commit. Con las dos piezas montadas, el "primer usuario tras una escritura" dejará de pagar los 2 segundos de `getTopNovedades()`.
+Este apartado: evento + publicación. El próximo: listener `@Async` que recalienta la caché, sincronizado con el momento exacto en que la transacción hace commit. Con las dos piezas montadas, el "primer usuario tras una escritura" dejará de pagar los 2 segundos de `getTopNovedades()`.
 
 ---
 
@@ -113,4 +113,4 @@ Semana 14 (hoy): evento + publicación. Semana 15: listener `@Async` que recalie
     - **Redis** es una base de datos en memoria clave-valor, usada aquí como caché compartida real detrás de `@Cacheable` — el resultado de `getTopNovedades()` se guarda físicamente en el contenedor Redis, no en memoria de la aplicación.
     - `ApplicationEventPublisher` implementa eventos **dentro** de la JVM, entre beans — distinto de RabbitMQ (broker externo, entre procesos).
     - Un evento como `record` es inmutable, lo que lo hace seguro de compartir entre hilos sin locks.
-    - Esta semana: evento + publicación (sin efecto visible todavía). Semana que viene: el listener `@Async` que cierra el ciclo.
+    - En este apartado: evento + publicación (sin efecto visible todavía). En el próximo: el listener `@Async` que cierra el ciclo.

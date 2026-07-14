@@ -1,6 +1,6 @@
 # 🧪 Actividad 4.1: Cliente y servidor con sockets clásicos
 
-!!! info "Práctica guiada — sin proyecto GameVault esta semana"
+!!! info "Práctica guiada — sin proyecto GameVault en esta actividad"
     Dos clases Java sueltas, fuera de tu GameVault. Al terminar esta actividad programas un servidor y un cliente TCP reales, con sockets Java clásicos (`java.net.Socket`/`ServerSocket`), sin ningún framework de por medio.
 
 ## Qué vas a practicar
@@ -154,4 +154,4 @@ Amplía el protocolo del eco: si el cliente envía la línea exacta `SALIR`, el 
 
 ## ✅ Cierre
 
-Has programado un servidor y un cliente TCP reales, y resuelto a mano el mismo problema que Tomcat resuelve por ti en cada petición HTTP. Las próximas dos semanas amplían este mismo tema con WebSocket, sobre un caso de aplicación real de tu GameVault.
+Has programado un servidor y un cliente TCP reales, y resuelto a mano el mismo problema que Tomcat resuelve por ti en cada petición HTTP. Las próximas actividades amplían este mismo tema con WebSocket, sobre un caso de aplicación real de tu GameVault.

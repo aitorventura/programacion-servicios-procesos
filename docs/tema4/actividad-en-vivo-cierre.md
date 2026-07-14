@@ -14,7 +14,7 @@ El viaje completo de un dato, de principio a fin — el broche de todo el módul
 
 ```mermaid
 flowchart LR
-    A["🌐 Petición HTTP<br/>(hilo de Tomcat)"] --> B["LibroService"]
+    A["🌐 Petición HTTP<br/>(hilo de Tomcat)"] --> B["VideojuegoService"]
     B -->|"publica evento"| C["RabbitMQ"]
     C -.->|"consume<br/>(hilo del listener)"| D["ActividadService.registrar()"]
     D --> E["💾 PostgreSQL"]

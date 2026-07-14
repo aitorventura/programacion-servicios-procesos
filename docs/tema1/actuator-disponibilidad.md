@@ -1,8 +1,24 @@
 <a id="actuator-disponibilidad"></a>
 
-# 🧩 4. Disponibilidad del servicio: Actuator
+# 🧩 4. Comunicación simultánea y disponibilidad del servicio
 
-Un servicio en red, una vez desplegado, corre sin que nadie lo esté mirando en pantalla constantemente. Este apartado responde a una pregunta distinta de todo lo visto hasta ahora: no "¿funciona esta petición concreta?", sino "¿está el servicio, en general, sano y disponible ahora mismo?".
+Dos preguntas distintas de las que has visto hasta ahora, sobre el mismo servicio ya funcionando: no "¿responde bien esta petición concreta?", sino "¿aguanta varias peticiones a la vez sin que unas esperen a otras?" y "¿está el servicio, en general, sano y disponible ahora mismo?".
+
+---
+
+## 🧵 Comunicación simultánea de varios clientes
+
+Un servidor real no atiende a un solo cliente a la vez. Spring Web, sobre Tomcat, atiende cada petición HTTP entrante en un **hilo distinto**, tomado de un *pool* — así que varias peticiones pueden procesarse en paralelo sin que unas esperen a que terminen las otras. Esta idea se retomará a fondo en el Tema 3, sobre programación multihilo; de momento, compruébala con un experimento sencillo.
+
+Imagina un método del service con un `Thread.sleep(2000)` puesto a propósito, que simula una consulta lenta (lo montarás así en la actividad). Lanza dos peticiones **simultáneas** contra su endpoint:
+
+```bash
+time (curl -s http://localhost:8080/api/v1/libros/top & \
+      curl -s http://localhost:8080/api/v1/libros/top & \
+      wait)
+```
+
+Si las dos peticiones se atendieran una detrás de otra, el conjunto tardaría unos 4 segundos. Si se atienden en paralelo, tardan aproximadamente 2 — porque cada una la procesa un hilo distinto del pool. Puedes confirmarlo añadiendo temporalmente una traza con `Thread.currentThread().getName()` en el método y mirando el log: verás dos nombres de hilo distintos (`http-nio-8080-exec-1`, `http-nio-8080-exec-2`...) para las dos peticiones.
 
 ---
 
@@ -44,7 +60,7 @@ management:
 
 ## 🟢 El endpoint `/actuator/health`
 
-Con los detalles activados, `/actuator/health` no solo dice si tu aplicación responde — agrega el estado de **cada dependencia real** que Spring Boot detecta en el classpath. En una aplicación que use PostgreSQL y MongoDB (como la librería que has visto de ejemplo), eso se ve así:
+Con los detalles activados, `/actuator/health` no solo dice si tu aplicación responde — agrega el estado de **cada dependencia real** que Spring Boot detecta en el classpath. En una aplicación con varias piezas de infraestructura (por ejemplo, tu propio GameVault más adelante, cuando tenga PostgreSQL y MongoDB a la vez), eso se ve así:
 
 ```json
 {
@@ -67,7 +83,7 @@ Actuator trae también otros endpoints útiles, como `/actuator/info` (metadatos
 
 ## 🧭 Recapitulación del tema
 
-Con esto se completa el recorrido: leíste la API y su protocolo (apartado 1), la documentaste y entendiste su semántica de escritura con OpenAPI (apartado 2), la probaste con MockMvc y con varios clientes simultáneos (apartado 3), y hoy verificas su disponibilidad de forma automatizable. En la Actividad 1.4 completas el `DELETE` que falta en tu proyecto y pones en marcha Actuator.
+Con esto se completa el recorrido: leíste la API y su protocolo, la documentaste y entendiste su semántica de escritura con OpenAPI, la probaste con tests MockMvc, y hoy compruebas cómo atiende varias peticiones a la vez y verificas su disponibilidad de forma automatizable. En la Actividad 1.4 mides ambas cosas sobre tu propio proyecto y pones en marcha Actuator.
 
 ---
 
@@ -75,6 +91,7 @@ Con esto se completa el recorrido: leíste la API y su protocolo (apartado 1), l
 
 ??? tip "Abrir resumen"
 
+    - Cada petición HTTP la atiende un hilo distinto del *pool* de Tomcat — por eso dos peticiones lentas simultáneas no tardan el doble, sino aproximadamente lo mismo que una sola.
     - La **disponibilidad** de un servicio tiene varios niveles: proceso vivo, responde peticiones, dependencias funcionando — no son lo mismo.
     - Un **health check** es una comprobación automática, pensada para que la consulte una máquina (monitor, orquestador, CI), no una persona.
     - **Spring Boot Actuator** expone `/actuator/health` con la dependencia `spring-boot-starter-actuator`; `management.endpoint.health.show-details: always` muestra el detalle de cada dependencia.

@@ -154,4 +154,4 @@ Esta configuración tiene dos problemas serios para un proyecto real. Nómbralos
 
 ## ✅ Cierre
 
-Tu API ya distingue quién puede hacer qué — pero con usuarios que se pierden al reiniciar y contraseñas casi en claro en cada petición. La semana que viene resuelves el primero: usuarios reales en PostgreSQL, con contraseñas protegidas por BCrypt.
+Tu API ya distingue quién puede hacer qué — pero con usuarios que se pierden al reiniciar y contraseñas casi en claro en cada petición. En la próxima actividad resuelves el primero: usuarios reales en PostgreSQL, con contraseñas protegidas por BCrypt.

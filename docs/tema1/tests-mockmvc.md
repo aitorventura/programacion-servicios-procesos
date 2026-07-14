@@ -8,7 +8,7 @@ Hasta ahora has probado la API a mano: con `curl` (Actividad 1.1) y con Swagger 
 
 ## 🧪 Qué es un test automatizado
 
-Un **test automatizado** es código que comprueba el comportamiento de otro código, sin intervención humana. En vez de abrir Postman y pulsar "Enviar" cada vez que cambias algo, escribes una vez el test y lo ejecutas las veces que haga falta — en segundos, sin volver a hacer los mismos clics, y de forma que cualquiera (incluido un pipeline de integración continua, como el que viste en el Tema 0 de AD con GitHub Actions) pueda ejecutarlo automáticamente en cada cambio.
+Un **test automatizado** es código que comprueba el comportamiento de otro código, sin intervención humana. En vez de abrir Swagger UI y pulsar "Execute" cada vez que cambias algo, escribes una vez el test y lo ejecutas las veces que haga falta — en segundos, sin volver a hacer los mismos clics, y de forma que cualquiera (incluido un pipeline de integración continua, como el que viste en el Tema 0 de AD con GitHub Actions) pueda ejecutarlo automáticamente en cada cambio.
 
 Un test JUnit sigue casi siempre la misma estructura, conocida como **preparar-actuar-afirmar** (*Arrange-Act-Assert*):
 
@@ -93,25 +93,9 @@ Existe otro tipo de test, con `@Testcontainers`, que levanta bases de datos **re
 
 ---
 
-## 🧵 Comunicación simultánea de varios clientes
-
-Un servidor real no atiende a un solo cliente a la vez. Spring Web, sobre Tomcat, atiende cada petición HTTP entrante en un **hilo distinto**, tomado de un *pool* — así que varias peticiones pueden procesarse en paralelo sin que unas esperen a que terminen las otras. Esta idea se retomará a fondo en el Tema 3, sobre programación multihilo; de momento, compruébala con un experimento sencillo.
-
-Imagina un método del service con un `Thread.sleep(2000)` puesto a propósito, que simula una consulta lenta (lo montarás así en la actividad). Lanza dos peticiones **simultáneas** contra su endpoint:
-
-```bash
-time (curl -s http://localhost:8080/api/v1/libros/top & \
-      curl -s http://localhost:8080/api/v1/libros/top & \
-      wait)
-```
-
-Si las dos peticiones se atendieran una detrás de otra, el conjunto tardaría unos 4 segundos. Si se atienden en paralelo, tardan aproximadamente 2 — porque cada una la procesa un hilo distinto del pool. Puedes confirmarlo añadiendo temporalmente una traza con `Thread.currentThread().getName()` en el método y mirando el log: verás dos nombres de hilo distintos (`http-nio-8080-exec-1`, `http-nio-8080-exec-2`...) para las dos peticiones.
-
----
-
 ## 🎯 Lo que viene
 
-En tu propio proyecto todavía te falta completar algunas operaciones de escritura. Esa es la práctica de esta semana y la siguiente: en la Actividad 1.3 construyes un `PUT` completo con su test MockMvc, replicando el patrón que ya conoces; el `DELETE` llega en la Actividad 1.4.
+Tu propio proyecto ya tiene el CRUD completo de `Videojuego` y de `Estudio` (Acceso a Datos, Actividad 1.2) — en la Actividad 1.3 no construyes ningún endpoint nuevo, escribes los tests MockMvc que los pongan a prueba, sobre los dos controllers. La Actividad 1.4 cierra el tema con dos piezas más: cuánto tarda tu API en atender varias peticiones a la vez, y Actuator.
 
 ---
 
@@ -123,5 +107,4 @@ En tu propio proyecto todavía te falta completar algunas operaciones de escritu
     - Un test **unitario** aísla una pieza con **mocks**; un test de **integración** prueba varias piezas reales juntas.
     - **MockMvc** simula peticiones HTTP contra tus controladores sin arrancar un servidor real — un cliente HTTP programable y repetible.
     - `@WebMvcTest` arranca solo la capa web; `@MockitoBean` sustituye una dependencia por un mock; `mockMvc.perform(...).andExpect(...)` construye la petición y afirma el resultado; `jsonPath` navega el cuerpo JSON.
-    - Cada petición HTTP la atiende un hilo distinto del pool de Tomcat — por eso dos peticiones lentas simultáneas no tardan el doble, sino aproximadamente lo mismo que una sola.
-    - Esta semana toca construir un `PUT` con su test MockMvc (Actividad 1.3), replicando el patrón ya visto.
+    - La Actividad 1.3 no construye endpoints nuevos: escribe los tests MockMvc de los dos controllers ya completos, `Videojuego` y `Estudio`.

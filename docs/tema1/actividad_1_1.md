@@ -4,7 +4,7 @@
     📄 [Plantilla 1.1 — Diseccionando peticiones y respuestas HTTP](plantillas/Actividad_1_1_PSP_Plantilla.docx){target="_blank" rel="noopener"}
 
 !!! info "Práctica guiada — sin código, y sin servidor propio todavía"
-    Esta semana, en Acceso a Datos, tu propio GameVault solo tiene entidades JPA — todavía no existe ningún endpoint que puedas invocar. Así que hoy no vas a lanzar peticiones contra tu proyecto: vas a diseccionar, con papel y con `curl` contra un objetivo controlado, conversaciones HTTP reales, para que la semana que viene, en cuanto tu propio CRUD esté vivo, ya sepas leer lo que ves.
+    En este punto del curso, en Acceso a Datos tu propio GameVault todavía solo tiene entidades JPA — no existe ningún endpoint que puedas invocar. Así que hoy no vas a lanzar peticiones contra tu proyecto: vas a diseccionar, con papel y con `curl` contra un objetivo controlado, conversaciones HTTP reales, para que en cuanto tu propio CRUD esté vivo (Actividad 1.2), ya sepas leer lo que ves.
 
 ## Qué vas a practicar
 
@@ -132,7 +132,11 @@ curl -v http://localhost:8000/no-existe.json
     ```
     Es completamente opcional — para esta actividad te basta con leer el JSON tal como lo devuelve `curl -v`.
 
-Detén el servidor con `Ctrl+C` cuando termines.
+Detén el servidor con `Ctrl+C` cuando termines, y borra la carpeta `curl-practica` — era solo para esta prueba, no forma parte de tu proyecto:
+
+```bash
+cd .. && rm -rf curl-practica
+```
 
 ---
 
@@ -159,10 +163,10 @@ Sin más indicaciones que las de los Pasos 1-2, diseccionalo tú mismo: verbo, r
 
 ## Pregunta final
 
-`curl` no sabe nada de Java, ni de Spring, ni de cómo está construido un proyecto por dentro — y aun así has podido usarlo contra un servidor de Python en el Paso 3 con la misma sintaxis que usarías contra cualquier API REST. ¿Por qué? Relaciona tu respuesta con la idea de **protocolo estándar** vista en la teoría: ¿qué tendría que pasar para que `curl` (o Postman, o cualquier otro cliente) NO pudiera hablar con un servidor?
+`curl` no sabe nada de Java, ni de Spring, ni de cómo está construido un proyecto por dentro — y aun así has podido usarlo contra un servidor de Python en el Paso 3 con la misma sintaxis que usarías contra cualquier API REST. ¿Por qué? Relaciona tu respuesta con la idea de **protocolo estándar** vista en la teoría: ¿qué tendría que pasar para que `curl` (o cualquier otro cliente) NO pudiera hablar con un servidor?
 
 ---
 
 ## ✅ Cierre
 
-Ya sabes leer una conversación HTTP real —verbo, ruta, código de estado, cabeceras, cuerpo— y relacionarla con el código Java que la genera. En cuanto tu propio GameVault tenga su primer endpoint (Acceso a Datos, esta misma semana que viene), vas a lanzarle estas mismas preguntas a peticiones de verdad, contra tu propio proyecto.
+Ya sabes leer una conversación HTTP real —verbo, ruta, código de estado, cabeceras, cuerpo— y relacionarla con el código Java que la genera. En cuanto tu propio GameVault tenga su primer endpoint (Acceso a Datos, Actividad 1.2), vas a lanzarle estas mismas preguntas a peticiones de verdad, contra tu propio proyecto.

@@ -29,14 +29,14 @@
 1. [Protocolos estándar y servicios REST: leyendo el controlador](protocolos-y-rest.md)
 2. [Escritura en la API y documentación con OpenAPI](escritura-y-openapi.md)
 3. [Probar servicios con MockMvc](tests-mockmvc.md)
-4. [Disponibilidad del servicio: Actuator](actuator-disponibilidad.md)
+4. [Comunicación simultánea y disponibilidad del servicio](actuator-disponibilidad.md)
 
 **Actividades:**
 
-- [Actividad 1.1 — Explorando la API de GameVault con un cliente HTTP](actividad_1_1.md)
+- [Actividad 1.1 — Diseccionando peticiones y respuestas HTTP](actividad_1_1.md)
 - [Actividad 1.2 — Swagger/OpenAPI: documenta y prueba tu API](actividad_1_2.md)
-- [Actividad 1.3 — Tests MockMvc y el PUT de Estudio](actividad_1_3.md)
-- [Actividad 1.4 — El DELETE de Estudio y Actuator `/health`](actividad_1_4.md)
+- [Actividad 1.3 — Tests MockMvc sobre `Videojuego` y `Estudio`](actividad_1_3.md)
+- [Actividad 1.4 — Comunicación simultánea y disponibilidad del servicio](actividad_1_4.md)
 
 ---
 

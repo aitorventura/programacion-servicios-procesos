@@ -35,7 +35,7 @@ Podrías pensar en usar SHA-256 directamente. El problema es justo su virtud en 
 **BCrypt** está diseñado deliberadamente para ser **lento**, con un coste computacional configurable (el llamado *factor de coste*): cuanto mayor el coste, más tiempo (y recursos) hace falta para calcular un solo hash — insignificante para un login legítimo (una fracción de segundo), pero devastador para un atacante que necesita probar millones de combinaciones. BCrypt incluye además la sal automáticamente, como parte del propio hash resultante.
 
 !!! tip "Un apunte sobre criptografía de clave pública/privada"
-    Existe otra familia de criptografía, la de **clave pública/privada**: un par de claves matemáticamente relacionadas donde lo que cifra una (o firma) solo lo puede verificar la otra. No la necesitas todavía — la retomarás la semana que viene, cuando veas cómo se firma un JWT.
+    Existe otra familia de criptografía, la de **clave pública/privada**: un par de claves matemáticamente relacionadas donde lo que cifra una (o firma) solo lo puede verificar la otra. No la necesitas todavía — la retomarás en el próximo apartado, cuando veas cómo se firma un JWT.
 
 ---
 
@@ -109,13 +109,13 @@ public class BdUserDetailsService implements UserDetailsService {
 }
 ```
 
-Es el reemplazo directo del `InMemoryUserDetailsManager` de la semana pasada: implementa `UserDetailsService`, y en vez de buscar en una lista fija en memoria, busca en `UsuarioRepository` — la misma base de datos que usas para todo lo demás. Spring Security llama a `loadUserByUsername(...)` automáticamente cuando alguien intenta autenticarse; tú solo tienes que decirle dónde encontrar al usuario.
+Es el reemplazo directo del `InMemoryUserDetailsManager` del apartado anterior: implementa `UserDetailsService`, y en vez de buscar en una lista fija en memoria, busca en `UsuarioRepository` — la misma base de datos que usas para todo lo demás. Spring Security llama a `loadUserByUsername(...)` automáticamente cuando alguien intenta autenticarse; tú solo tienes que decirle dónde encontrar al usuario.
 
 ---
 
 ## 🧭 Lo que aún falta
 
-Ya no hay usuarios hardcodeados que desaparezcan al reiniciar — están en PostgreSQL, con contraseñas que ni tú mismo puedes leer. Pero sigue quedando el segundo problema del apartado anterior: las credenciales viajan en **cada** petición, aunque sea con HTTP Basic. La semana que viene lo resuelve JWT: autenticarte una vez, y presentar un token en las peticiones siguientes.
+Ya no hay usuarios hardcodeados que desaparezcan al reiniciar — están en PostgreSQL, con contraseñas que ni tú mismo puedes leer. Pero sigue quedando el segundo problema del apartado anterior: las credenciales viajan en **cada** petición, aunque sea con HTTP Basic. En el próximo apartado lo resuelve JWT: autenticarte una vez, y presentar un token en las peticiones siguientes.
 
 ---
 

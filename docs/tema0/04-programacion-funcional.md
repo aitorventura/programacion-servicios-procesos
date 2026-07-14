@@ -91,7 +91,7 @@ Fíjate en las tres piezas por separado, porque las vas a reconocer en todas las
 !!! warning "Cuidado"
     No confundas `Comparable` (visto en el apartado de [relaciones entre clases](02-relaciones-clases.md), define el orden natural de una clase con `compareTo`) con `Comparator` (define un criterio de orden externo con `compare`, que es el que se usa aquí). Un `Comparator` te permite ordenar la misma lista de formas distintas según lo necesites, sin tocar la clase `Persona`.
 
-`Comparator` es en realidad el mismo tipo de interfaz funcional que viste en el apartado anterior con `Comparable`: una interfaz con un único método abstracto, que es justo lo que hace falta para poder sustituirla por una lambda.
+`Comparator` es en realidad el mismo tipo de interfaz funcional que viste en el apartado de [relaciones entre clases](02-relaciones-clases.md) con `Comparable`: una interfaz con un único método abstracto, que es justo lo que hace falta para poder sustituirla por una lambda.
 
 ## 4.3 Métodos de referencia
 
@@ -201,7 +201,7 @@ Operación intermedia: aplica una función a cada elemento y devuelve un stream 
 
 ### sorted — ordenar los elementos
 
-Operación intermedia: ordena el stream según el `Comparator` que le pases, igual que hacía `sort` en el apartado anterior.
+Operación intermedia: ordena el stream según el `Comparator` que le pases, igual que hacía `sort` más arriba.
 
 <div class="tabs-colored" markdown>
 

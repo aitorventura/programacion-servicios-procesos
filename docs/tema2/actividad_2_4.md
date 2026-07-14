@@ -234,4 +234,4 @@ El payload de un JWT se puede decodificar sin conocer el secreto (lo acabas de h
 
 ## ✅ Cierre
 
-Tu GameVault ya no reenvía credenciales en cada petición. La semana que viene completas la política de rutas y añades tests automatizados de seguridad.
+Tu GameVault ya no reenvía credenciales en cada petición. En la próxima actividad completas la política de rutas y añades tests automatizados de seguridad.

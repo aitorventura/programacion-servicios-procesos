@@ -2,7 +2,7 @@
 
 # 🧩 3. Listeners asíncronos: el warm-up de caché (2/2)
 
-La semana pasada construiste el evento y su publicación — sin ningún efecto visible todavía. Hoy construyes la pieza que le da sentido a todo: el listener que reacciona, recalentando la caché en un hilo aparte. Aquí es donde entra en juego `@EnableAsync` — la capacidad que en la Actividad 3.2 comprobaste que tu proyecto todavía no usaba en ningún sitio, y que hoy activas tú mismo junto a la anotación `@Async`.
+En el apartado anterior construiste el evento y su publicación — sin ningún efecto visible todavía. Hoy construyes la pieza que le da sentido a todo: el listener que reacciona, recalentando la caché en un hilo aparte. Aquí es donde entra en juego `@EnableAsync` — la capacidad que en la Actividad 3.2 comprobaste que tu proyecto todavía no usaba en ningún sitio, y que hoy activas tú mismo junto a la anotación `@Async`.
 
 ---
 
@@ -16,7 +16,7 @@ Ya tienes el contraste medido en la Actividad 3.3: sin `@Async`, tu listener tri
 
 ## ⏱️ `@TransactionalEventListener(phase = AFTER_COMMIT)`
 
-Aquí aparece un problema real, sutil, que un `@EventListener` a secas no resuelve: si el listener se dispara **antes** de que la transacción de `LibroService.create()` haga *commit*, el hilo del warm-up podría leer la base de datos en un estado que **todavía no incluye** el libro recién creado — y recalentaría la caché con datos viejos, justo lo contrario de lo que quieres.
+Aquí aparece un problema real, sutil, que un `@EventListener` a secas no resuelve: si el listener se dispara **antes** de que la transacción de `VideojuegoService.create()` haga *commit*, el hilo del warm-up podría leer la base de datos en un estado que **todavía no incluye** el libro recién creado — y recalentaría la caché con datos viejos, justo lo contrario de lo que quieres.
 
 `@TransactionalEventListener(phase = AFTER_COMMIT)` resuelve esto: en vez de dispararse en el momento de `publishEvent(...)`, espera a que la transacción que publicó el evento haga *commit* con éxito, y solo entonces ejecuta el listener. Es la **técnica específica de sincronización** que necesitas para este caso concreto: sincronizar el arranque del hilo del listener con el momento exacto en que los datos ya son consistentes y visibles. Ya conoces `@Transactional` de Acceso a Datos — esto es la contrapartida del lado "quien reacciona a que una transacción ha terminado", no del lado "quien abre la transacción".
 

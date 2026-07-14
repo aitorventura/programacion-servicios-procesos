@@ -38,13 +38,13 @@ nav:
   - Tema 1 - Servicios en red:
       - Tema 1 - Introducción: tema1/index.md
       - Protocolos estándar y servicios REST: tema1/protocolos-y-rest.md
-      - Actividad 1.1 - Explorando la API con un cliente HTTP: tema1/actividad_1_1.md
+      - Actividad 1.1 - Diseccionando peticiones y respuestas HTTP: tema1/actividad_1_1.md
       - Escritura en la API y OpenAPI: tema1/escritura-y-openapi.md
       - Actividad 1.2 - Swagger/OpenAPI: tema1/actividad_1_2.md
       - Probar servicios con MockMvc: tema1/tests-mockmvc.md
-      - Actividad 1.3 - Tests MockMvc y el PUT de Estudio: tema1/actividad_1_3.md
-      - Disponibilidad del servicio (Actuator): tema1/actuator-disponibilidad.md
-      - Actividad 1.4 - DELETE de Estudio y Actuator /health: tema1/actividad_1_4.md
+      - Actividad 1.3 - Tests MockMvc sobre Videojuego y Estudio: tema1/actividad_1_3.md
+      - Comunicación simultánea y disponibilidad (Actuator): tema1/actuator-disponibilidad.md
+      - Actividad 1.4 - Comunicación simultánea y disponibilidad: tema1/actividad_1_4.md
   - Tema 2 - Programación segura:
       - Tema 2 - Introducción: tema2/index.md
       - Principios de programación segura: tema2/principios-programacion-segura.md

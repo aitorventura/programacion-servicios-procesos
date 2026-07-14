@@ -35,7 +35,7 @@ El bloque `authorizeHttpRequests` de tu `SecurityConfig.java` define **toda** la
 )
 ```
 
-La línea más importante de todo el bloque es la última: **`anyRequest().denyAll()`**. Cualquier ruta que no aparezca explícitamente en las reglas anteriores queda **cerrada por defecto** — es el principio de mínima exposición del apartado 1, llevado hasta el final: nada se abre "por accidente" simplemente por existir.
+La línea más importante de todo el bloque es la última: **`anyRequest().denyAll()`**. Cualquier ruta que no aparezca explícitamente en las reglas anteriores queda **cerrada por defecto** — es el principio de mínima exposición de "Principios de programación segura", llevado hasta el final: nada se abre "por accidente" simplemente por existir.
 
 !!! warning "Cada ruta nueva necesita su propia regla, o queda bloqueada"
     Si has ido añadiendo rutas propias durante el curso (el `PUT`/`DELETE` del Tema 1, el ranking de Acceso a Datos...) y no tienen una regla explícita en este bloque, `denyAll()` las bloqueará — aunque el endpoint en sí funcione perfectamente. Este es un error típico y real: "he probado mi endpoint nuevo y me da 403/401 sin motivo aparente" casi siempre significa "se me ha olvidado añadir su regla aquí".

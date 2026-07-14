@@ -1,7 +1,7 @@
 # 🧪 Actividad 3.3: El evento del warm-up de caché (1/2)
 
 !!! info "Práctica guiada — pieza 1 de 2"
-    Antes de nada, montas Redis y activas la caché real de `getTopNovedades()`. Con eso listo, construyes el evento interno y su publicación. Todavía no vas a ver ningún efecto sobre la lentitud de `/top` tras una escritura — eso llega la semana que viene con el listener.
+    Antes de nada, montas Redis y activas la caché real de `getTopNovedades()`. Con eso listo, construyes el evento interno y su publicación. Todavía no vas a ver ningún efecto sobre la lentitud de `/top` tras una escritura — eso llega en la Actividad 3.4 con el listener.
 
 ## Qué vas a practicar
 
@@ -14,7 +14,7 @@
 
 ## Requisitos previos
 
-Tu `VideojuegoService` con `getTopNovedades()` funcionando (sin caché todavía, Actividad 1.3) — la caché con Redis y `@Cacheable` la montas tú mismo en el Paso 0 de hoy.
+Tu `VideojuegoService` con `getTopNovedades()` funcionando (sin caché todavía, Actividad 1.4) — la caché con Redis y `@Cacheable` la montas tú mismo en el Paso 0 de hoy.
 
 ---
 
@@ -114,7 +114,7 @@ curl -X POST http://localhost:8080/api/v1/videojuegos \
 time curl -s http://localhost:8080/api/v1/videojuegos/top > /dev/null
 ```
 
-**Anota** los tres tiempos medidos. Ese "tercer usuario que paga otra vez los 2 segundos, justo después de una escritura" es exactamente lo que el warm-up de las próximas dos semanas va a eliminar.
+**Anota** los tres tiempos medidos. Ese "tercer usuario que paga otra vez los 2 segundos, justo después de una escritura" es exactamente lo que el warm-up de esta y la próxima actividad va a eliminar.
 
 ---
 
@@ -192,16 +192,16 @@ public class ListenerDePruebaTemporal {
 
 Crea un videojuego y mira la consola. **Comprueba** que la traza aparece. **Anota** el nombre del hilo en el que se ejecuta este listener — sin `@Async` todavía, ¿es el mismo hilo que procesó la petición HTTP, o uno distinto? Este dato es el contraste clave que vas a necesitar la próxima actividad: cuando añadas `@Async`, ese nombre de hilo va a cambiar.
 
-Cuando termines de comprobarlo, **retira** esta clase — es solo para esta verificación, la semana que viene construyes el listener real.
+Cuando termines de comprobarlo, **retira** esta clase — es solo para esta verificación, en la Actividad 3.4 construyes el listener real.
 
 ---
 
 ## Pregunta final
 
-¿Por qué conviene que `TopNovedadesInvalidadoEvent` sea un `record` inmutable, sabiendo que la semana que viene va a ser leído desde un hilo distinto al que lo publica? ¿Qué problema evita concretamente la inmutabilidad, comparado con si `TopNovedadesInvalidadoEvent` fuera una clase mutable con setters?
+¿Por qué conviene que `TopNovedadesInvalidadoEvent` sea un `record` inmutable, sabiendo que en la próxima actividad va a ser leído desde un hilo distinto al que lo publica? ¿Qué problema evita concretamente la inmutabilidad, comparado con si `TopNovedadesInvalidadoEvent` fuera una clase mutable con setters?
 
 ---
 
 ## ✅ Cierre
 
-Tu GameVault ya emite un evento cada vez que la caché de novedades se invalida — aunque, de momento, nadie reaccione a él de forma permanente. La semana que viene construyes el listener `@Async` que cierra el ciclo: recalentar la caché en un hilo aparte, justo después del commit.
+Tu GameVault ya emite un evento cada vez que la caché de novedades se invalida — aunque, de momento, nadie reaccione a él de forma permanente. En la próxima actividad construyes el listener `@Async` que cierra el ciclo: recalentar la caché en un hilo aparte, justo después del commit.

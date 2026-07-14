@@ -1,20 +1,19 @@
-# 🧪 Actividad 1.3: Tests MockMvc y el PUT de Estudio
+# 🧪 Actividad 1.3: Tests MockMvc sobre `Videojuego` y `Estudio`
 
-!!! info "Práctica guiada"
-    Dos bloques hoy: primero escribes tests MockMvc sobre los endpoints de `Videojuego` que ya tienes; después añades el `PUT` de `Estudio`, que todavía no existe en tu proyecto.
+!!! info "Práctica guiada — un patrón, dos entidades"
+    Escribes tests MockMvc sobre los endpoints de `Videojuego` (guiado al completo), y repites el mismo patrón sobre `Estudio` (con menos ayuda) — las dos entidades ya tienen su CRUD completo desde la Actividad 1.2 de AD, así que hoy no construyes ningún endpoint nuevo, solo los pones a prueba.
 
 ## Qué vas a practicar
 
 - Escribir tests MockMvc que prueben un controller de forma aislada.
 - Distinguir qué se mockea de qué se ejecuta de verdad en un test de capa web.
-- Añadir una operación nueva (`PUT`) a un controller existente, siguiendo un patrón ya conocido.
-- Comprobar experimentalmente la atención simultánea de varios clientes.
+- Repetir el mismo patrón de test sobre un segundo controller, con menos guía cada vez.
 
 ---
 
 ## Requisitos previos
 
-Tu CRUD de `Videojuego` (Actividad 1.2 de AD) y el `GET`/`POST` de `Estudio` ya funcionando en tu proyecto — y, aunque todavía no tenga endpoint, `EstudioService` ya trae los métodos `update`/`delete` completos (Actividad 1.2 de AD), listos para que hoy les conectes el `PUT`.
+Tu CRUD completo de `Videojuego` y de `Estudio` (Actividad 1.2 de AD) — las cuatro operaciones de cada uno, funcionando.
 
 ---
 
@@ -87,102 +86,38 @@ void getById_DebeDevolver404_CuandoNoExiste() throws Exception {
 
 Aquí el mock, en vez de devolver un valor, **lanza una excepción** — así reproduces, sin tocar la base de datos, exactamente el mismo escenario que viviste con `curl` en la Actividad 1.1 cuando pediste un id inexistente.
 
-### Mini-reto — test del POST
+### Paso 3 — Escritura: `POST`, `PUT` y `DELETE`
 
-Repite el mismo patrón (preparar el mock con `when(...).thenReturn(...)`, actuar con `mockMvc.perform(post(...).contentType(...).content(...))`, afirmar con `.andExpect(status().isCreated())`) para probar que un `POST /api/v1/videojuegos` válido devuelve `201`. Guíate por el test de `create` que ya viste en la teoría para el cuerpo JSON de la petición.
+Repite el mismo patrón (preparar el mock con `when(...).thenReturn(...)`, actuar con `mockMvc.perform(post(...).contentType(...).content(...))`, afirmar con `.andExpect(status().isCreated())`) para probar:
 
----
+- Que un `POST /api/v1/videojuegos` válido devuelve `201`. Guíate por el test de `create` que ya viste en la teoría para el cuerpo JSON de la petición.
+- Que un `PUT /api/v1/videojuegos/{id}` válido devuelve `200`.
+- Que un `DELETE /api/v1/videojuegos/{id}` devuelve `204`.
 
-## Bloque 2 — El PUT de Estudio
-
-### Paso 3 — Conectar el endpoint a un service que ya existe
-
-A diferencia del resto de operaciones que has ido construyendo, aquí no partes de cero: en Acceso a Datos (Actividad 1.2) ya se construyó `EstudioService.update(...)` completo — solo que, hasta hoy, ningún endpoint lo invoca. Ábrelo y compruébalo tú mismo:
-
-```java
-// Ya existe en EstudioService (Acceso a Datos, Actividad 1.2) — no lo reescribas
-@Transactional
-public EstudioDTO update(Long id, EstudioDTO dto) {
-    Estudio estudio = estudioRepository.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Estudio no encontrado"));
-    estudio.setNombre(dto.nombre());
-    estudio.setPais(dto.pais());
-    return mapToDTO(estudioRepository.save(estudio));
-}
-```
-
-Tu trabajo de hoy es solo la capa que falta: el endpoint `@PutMapping("/{id}")` en `EstudioController` que reciba la petición HTTP y delegue en ese método ya construido — exactamente el mismo papel que cumple el `PUT` de `Videojuego` que ya conoces, pero esta vez el "cargar y comprobar existencia" ya lo hace el service, no lo repites tú en el controller.
-
-**Pregunta antes de continuar**: ¿qué parte del patrón de `Videojuego` NO tiene equivalente en `Estudio` (pista: `Videojuego.update` también busca y valida un `Estudio` relacionado — `Estudio` no tiene ninguna relación de ese tipo que validar)?
-
-### Paso 4 — Verificar el PUT nuevo
-
-Primero a mano, desde Swagger UI (Actividad 1.2): despliega el nuevo `PUT /api/v1/estudios/{id}`, pruébalo con un cambio de `nombre` o `pais`, y comprueba el `200`.
-
-Después, con un test MockMvc — repite el mismo patrón del Bloque 1 (mockear el service, `mockMvc.perform(put(...))`, afirmar el `200` y el cuerpo actualizado). Solo se indica el objetivo: escríbelo tú.
+Tres tests, mismo patrón, sin más pistas que las de los Pasos 1-2.
 
 ---
 
-## Bloque 3 — Comunicación simultánea
+## Bloque 2 — Repite el patrón sobre `Estudio`
 
-### Paso 5 — Un método lento, para tener algo que medir
+`EstudioController` tiene las mismas cinco operaciones que `VideojuegoController` (`getAll`, `getById`, `create`, `update`, `delete`), así que `EstudioControllerTest` es el mismo ejercicio otra vez — pero esta vez sin el primer test dado como ejemplo.
 
-Antes del experimento necesitas un endpoint que tarde de verdad — la teoría lo daba por hecho, así que lo construyes ahora. Añade a `VideojuegoRepository`:
+**Escribe `EstudioControllerTest`**, mockeando `EstudioService`, con al menos:
 
-```java
-List<Videojuego> findTop5ByOrderByFechaLanzamientoDesc();
-```
+- Un test de `getAll` (o `getById`) en el caso de éxito.
+- Un test del caso `404` (con el mock lanzando `ResponseStatusException`).
+- Un test de `create` (`201`), uno de `update` (`200`) y uno de `delete` (`204`).
 
-Y a `VideojuegoService`:
-
-```java
-public List<VideojuegoResponseDTO> getTopNovedades() {
-    try {
-        Thread.sleep(2000); // simula una consulta costosa
-    } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-    }
-    return videojuegoRepository.findTop5ByOrderByFechaLanzamientoDesc()
-            .stream()
-            .map(this::mapToDTO)
-            .toList();
-}
-```
-
-Y en `VideojuegoController`:
-
-```java
-@GetMapping("/top")
-public ResponseEntity<List<VideojuegoResponseDTO>> getTopNovedades() {
-    return ResponseEntity.ok(videojuegoService.getTopNovedades());
-}
-```
-
-!!! warning "El orden de las rutas importa"
-    Declara `@GetMapping("/top")` **antes** que `@GetMapping("/{id}")` en la clase — si no, Spring intenta interpretar `top` como un `id` y falla al convertirlo a `Long`.
-
-Arranca tu aplicación y comprueba con una sola llamada que `GET /api/v1/videojuegos/top` tarda efectivamente unos 2 segundos.
-
-### Paso 6 — Medir la concurrencia
-
-Repite el experimento de la teoría con tu propio proyecto:
-
-```bash
-time (curl -s http://localhost:8080/api/v1/videojuegos/top & \
-      curl -s http://localhost:8080/api/v1/videojuegos/top & \
-      wait)
-```
-
-**Anota** el tiempo total mostrado por `time`. Añade temporalmente una línea `System.out.println(Thread.currentThread().getName())` al principio de `getTopNovedades()` en tu service, repite la prueba, y anota los dos nombres de hilo que aparecen en la consola. Cuando termines, retira esa línea — era solo para observar, no para quedarse en el código.
+**Pregunta antes de escribir nada**: ¿qué cambia realmente entre testear `VideojuegoController` y testear `EstudioController` — la estructura del test, o solo los nombres de clases y campos? Si tu respuesta es "solo los nombres", ya sabes por qué esta actividad no necesitaba darte otro ejemplo completo.
 
 ---
 
 ## Pregunta final
 
-¿Qué relación hay entre este "una petición, un hilo" que acabas de observar y lo que has hecho al lanzar dos `curl` a la vez? Si en vez de dos lanzaras cincuenta peticiones simultáneas, ¿crees que el comportamiento sería exactamente el mismo, o hay algún límite? (No hace falta que sepas la respuesta exacta todavía — se trabaja a fondo en el Tema 3).
+Un test MockMvc como los que has escrito no toca la base de datos en ningún momento — el service está mockeado. ¿Qué es lo que SÍ estás verificando entonces? ¿Qué tipo de fallo detectaría uno de estos tests que un test sobre el service real (sin pasar por HTTP) no detectaría?
 
 ---
 
 ## ✅ Cierre
 
-Tienes tests automatizados sobre tu API y el `PUT` de `Estudio` ya funcionando. La semana que viene cierras el CRUD de `Estudio` con el `DELETE` y activas Actuator para verificar la disponibilidad del servicio.
+Tienes tests automatizados sobre los dos controllers completos de tu API. En la próxima actividad cierras el tema: mides cómo tu aplicación atiende varias peticiones a la vez, y activas Actuator para verificar su disponibilidad.

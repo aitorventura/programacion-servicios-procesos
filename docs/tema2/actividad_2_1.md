@@ -1,11 +1,11 @@
 # 🧪 Actividad 2.1: Validación y `GlobalExceptionHandler`
 
 !!! info "Práctica guiada"
-    Vas a construir en tu GameVault la validación de entrada y la gestión centralizada de errores, viendo primero por qué la respuesta por defecto de Spring no es suficiente.
+    Vas a construir en tu GameVault la gestión centralizada de errores, viendo primero por qué la respuesta por defecto de Spring no es suficiente — aunque la validación de entrada ya la tenías, hoy la haces más útil de cara al cliente.
 
 ## Qué vas a practicar
 
-- Añadir validación con Bean Validation a un DTO de entrada.
+- Personalizar los mensajes de la validación con Bean Validation que ya tienes en un DTO de entrada.
 - Ver la diferencia entre la respuesta de error por defecto de Spring y una gestionada.
 - Construir un `@RestControllerAdvice` centralizado.
 
@@ -13,13 +13,13 @@
 
 ## Requisitos previos
 
-Tu CRUD de `Videojuego` funcionando (Tema 1).
+Tu CRUD de `Videojuego` y de `Estudio` funcionando, con validación y `@Valid` (Acceso a Datos, Tema 1).
 
 ---
 
-## Paso 1 — Validación en `VideojuegoCreateDTO`
+## Paso 1 — Mensajes de error personalizados en `VideojuegoCreateDTO`
 
-Añade a tu DTO las anotaciones de validación:
+Tu DTO ya tiene validación — la construiste en Acceso a Datos (Tema 1), con `@Valid` ya puesto en el controller. Pero cada anotación usa el mensaje por defecto de Bean Validation, genérico y en inglés (`"must not be blank"`, por ejemplo). Añade un mensaje propio, descriptivo, con el atributo `message`:
 
 ```java
 public record VideojuegoCreateDTO(
@@ -41,7 +41,7 @@ public record VideojuegoCreateDTO(
 ) {}
 ```
 
-Comprueba que el método `create` de tu controller ya tiene `@Valid` delante del parámetro (`@Valid @RequestBody VideojuegoCreateDTO dto`) — si no lo tenías, añádelo ahora.
+Este mensaje es justo lo que vas a recuperar dentro de poco, en el `GlobalExceptionHandler` del Paso 3, con `error.getDefaultMessage()` — sin un mensaje propio, ese campo sería igual de genérico y poco útil.
 
 ---
 
@@ -160,9 +160,9 @@ curl -i -X POST http://localhost:8080/api/v1/videojuegos \
 
 ---
 
-## Mini-reto — validación en `EstudioDTO`
+## Mini-reto — mensajes personalizados en `EstudioCreateDTO`
 
-Repite el patrón del Paso 1, esta vez sobre `EstudioDTO` (paquete `catalogo.dto`) — que hoy no tiene ninguna validación: añade `@NotBlank` a `nombre` y a `pais`. Comprueba también que `EstudioController.create(...)` lleva `@Valid` delante del parámetro (si no lo tenía, añádelo ahora, igual que hiciste en el Paso 1 con `Videojuego`). Provoca el error con una petición POST inválida a `/api/v1/estudios` y comprueba que `GlobalExceptionHandler` también lo captura, sin tener que tocar ni una línea de la clase que acabas de construir.
+Repite el patrón del Paso 1, esta vez sobre `EstudioCreateDTO` (paquete `catalogo.dto`): ya tiene `@NotBlank` en `nombre` y en `pais` (Acceso a Datos, Tema 1), pero sin mensaje propio. Añádeselo a los dos. Provoca el error con una petición POST inválida a `/api/v1/estudios` y comprueba que `GlobalExceptionHandler` también lo captura, con tus mensajes nuevos en el campo `fields` — sin tener que tocar ni una línea de la clase que acabas de construir.
 
 ---
 
@@ -174,4 +174,4 @@ Repite el patrón del Paso 1, esta vez sobre `EstudioDTO` (paquete `catalogo.dto
 
 ## ✅ Cierre
 
-Tu API ya no confía ciegamente en lo que le llega, y sus errores tienen un formato coherente que no filtra detalles internos. La semana que viene empiezas con Spring Security: usuarios en memoria y HTTP Basic — la primera barrera de acceso real.
+Tu API ya no confía ciegamente en lo que le llega, y sus errores tienen un formato coherente que no filtra detalles internos. En la próxima actividad empiezas con Spring Security: usuarios en memoria y HTTP Basic — la primera barrera de acceso real.

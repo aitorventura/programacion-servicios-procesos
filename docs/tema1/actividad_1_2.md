@@ -1,7 +1,7 @@
 # 🧪 Actividad 1.2: Swagger/OpenAPI — documenta y prueba tu API
 
 !!! info "Práctica guiada"
-    Esta semana, en Acceso a Datos, estás construyendo el CRUD completo de `Videojuego` en tu propio proyecto. Aquí vas a documentarlo con OpenAPI/Swagger y a usarlo como cliente para probar esos mismos endpoints de escritura — sin necesitar `curl` ni Postman.
+    En Acceso a Datos estás construyendo (o ya has construido) el CRUD completo de `Videojuego` en tu propio proyecto. Aquí vas a documentarlo con OpenAPI/Swagger y a usarlo como cliente para probar esos mismos endpoints de escritura — sin necesitar `curl`.
 
 ## Qué vas a practicar
 
@@ -113,4 +113,4 @@ En la Actividad 1.1 usaste `curl`; hoy has usado Swagger UI. Ambos han hablado c
 
 ## ✅ Cierre
 
-Tu GameVault ya tiene documentación automática y un cliente interactivo para probarlo sin `curl`. La semana que viene, en el Tema 1 sigues con los tests automatizados (MockMvc) — la forma de probar estos mismos endpoints sin depender de que abras el navegador cada vez.
+Tu GameVault ya tiene documentación automática y un cliente interactivo para probarlo sin `curl`. En la próxima actividad (1.3) sigues con los tests automatizados (MockMvc) — la forma de probar estos mismos endpoints sin depender de que abras el navegador cada vez.

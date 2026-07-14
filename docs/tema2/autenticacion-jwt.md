@@ -32,7 +32,7 @@ flowchart LR
 
 ## ✍️ Qué significa "firmado"
 
-Retoma la criptografía de la semana pasada: **firmar no es lo mismo que cifrar**. Firmar un dato no oculta su contenido — sigue siendo legible por cualquiera — pero garantiza dos cosas: que no se ha modificado desde que se firmó, y quién lo firmó (si conoces la clave de verificación). Un JWT está firmado, no cifrado: su contenido es legible por cualquiera que lo intercepte, pero nadie puede modificarlo sin invalidar la firma.
+Retoma la criptografía del apartado anterior: **firmar no es lo mismo que cifrar**. Firmar un dato no oculta su contenido — sigue siendo legible por cualquiera — pero garantiza dos cosas: que no se ha modificado desde que se firmó, y quién lo firmó (si conoces la clave de verificación). Un JWT está firmado, no cifrado: su contenido es legible por cualquiera que lo intercepte, pero nadie puede modificarlo sin invalidar la firma.
 
 ---
 
@@ -52,7 +52,7 @@ Decodifica el `payload` de cualquier JWT (por ejemplo, en [jwt.io](https://jwt.i
 ```
 
 !!! danger "El contenido NO va cifrado"
-    Cualquiera que capture un JWT puede leer su payload completo, sin necesitar ninguna clave — igual que decodificaste HTTP Basic la semana pasada. Lo que impide falsificarlo es la **firma** (la tercera parte), calculada con un algoritmo criptográfico (HMAC, en el ejemplo que vas a ver) y un secreto que solo conoce el servidor. Si alguien modificara el payload a mano, la firma dejaría de coincidir, y el servidor lo rechazaría.
+    Cualquiera que capture un JWT puede leer su payload completo, sin necesitar ninguna clave — igual que decodificaste HTTP Basic en la Actividad 2.2. Lo que impide falsificarlo es la **firma** (la tercera parte), calculada con un algoritmo criptográfico (HMAC, en el ejemplo que vas a ver) y un secreto que solo conoce el servidor. Si alguien modificara el payload a mano, la firma dejaría de coincidir, y el servidor lo rechazaría.
 
 ---
 
@@ -118,7 +118,7 @@ public class AuthController {
 }
 ```
 
-`AuthenticationManager.authenticate(...)` es quien verifica de verdad las credenciales — por debajo, usa el `UserDetailsService` y el `PasswordEncoder` que ya construiste la semana pasada. Si las credenciales son correctas, genera el token; si no, lanza una excepción (que `GlobalExceptionHandler`, del apartado 1, convierte en una respuesta coherente).
+`AuthenticationManager.authenticate(...)` es quien verifica de verdad las credenciales — por debajo, usa el `UserDetailsService` y el `PasswordEncoder` que ya construiste en el apartado anterior. Si las credenciales son correctas, genera el token; si no, lanza una excepción (que `GlobalExceptionHandler`, de "Principios de programación segura", convierte en una respuesta coherente).
 
 ### El cambio de modo en `SecurityConfig`
 
@@ -132,9 +132,9 @@ public class AuthController {
 .httpBasic(AbstractHttpConfigurer::disable)
 ```
 
-`SessionCreationPolicy.STATELESS` es la consecuencia directa de usar tokens autocontenidos: con JWT no hace falta que el servidor guarde ninguna sesión, así que se lo dices explícitamente a Spring Security. `oauth2ResourceServer(oauth2 -> oauth2.jwt(...))` activa la validación de JWT en cada petición protegida — Spring verifica la firma automáticamente, usando el `JwtDecoder` configurado con el mismo secreto. `httpBasic(AbstractHttpConfigurer::disable)` retira oficialmente el mecanismo provisional de las semanas 8-9: JWT es ahora el único mecanismo de autenticación.
+`SessionCreationPolicy.STATELESS` es la consecuencia directa de usar tokens autocontenidos: con JWT no hace falta que el servidor guarde ninguna sesión, así que se lo dices explícitamente a Spring Security. `oauth2ResourceServer(oauth2 -> oauth2.jwt(...))` activa la validación de JWT en cada petición protegida — Spring verifica la firma automáticamente, usando el `JwtDecoder` configurado con el mismo secreto. `httpBasic(AbstractHttpConfigurer::disable)` retira oficialmente el mecanismo provisional de los apartados anteriores ("Seguridad básica" y "Usuarios persistidos y BCrypt"): JWT es ahora el único mecanismo de autenticación.
 
-Sobre el secreto (`@Value("${libreria.jwt.secret}")`): sigue el mismo principio que viste en el apartado 1 — nunca en el código, siempre en configuración externa (`application-dev.yaml`), para que en un entorno real ese valor pueda ser distinto y no viaje en el propio código fuente.
+Sobre el secreto (`@Value("${libreria.jwt.secret}")`): sigue el mismo principio que viste en "Principios de programación segura" — nunca en el código, siempre en configuración externa (`application-dev.yaml`), para que en un entorno real ese valor pueda ser distinto y no viaje en el propio código fuente.
 
 ### `GET /api/v1/auth/me`
 

@@ -93,45 +93,37 @@ public class WebSocketTestController {
 
 ## Paso 4 — El cliente, guiado al completo
 
-<div class="tabs-colored" markdown>
+Crea `src/main/resources/static/actividad.html`:
 
-=== "🟢 Página HTML mínima con STOMP.js"
-    Crea `src/main/resources/static/actividad.html`:
+```html
+<!DOCTYPE html>
+<html>
+<head><title>Actividad en vivo</title></head>
+<body>
+    <h1>Actividad en vivo</h1>
+    <ul id="mensajes"></ul>
 
-    ```html
-    <!DOCTYPE html>
-    <html>
-    <head><title>Actividad en vivo</title></head>
-    <body>
-        <h1>Actividad en vivo</h1>
-        <ul id="mensajes"></ul>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
+    <script>
+        const client = new StompJs.Client({
+            brokerURL: 'ws://localhost:8080/ws-actividad'  // conexión al endpoint
+        });
 
-        <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
-        <script>
-            const client = new StompJs.Client({
-                brokerURL: 'ws://localhost:8080/ws-actividad'  // conexión al endpoint
+        client.onConnect = () => {
+            client.subscribe('/topic/actividad', (mensaje) => {  // suscripción al topic
+                const li = document.createElement('li');
+                li.textContent = mensaje.body;
+                document.getElementById('mensajes').appendChild(li);  // pintar lo recibido
             });
+        };
 
-            client.onConnect = () => {
-                client.subscribe('/topic/actividad', (mensaje) => {  // suscripción al topic
-                    const li = document.createElement('li');
-                    li.textContent = mensaje.body;
-                    document.getElementById('mensajes').appendChild(li);  // pintar lo recibido
-                });
-            };
+        client.activate();
+    </script>
+</body>
+</html>
+```
 
-            client.activate();
-        </script>
-    </body>
-    </html>
-    ```
-
-    Ábrela en `http://localhost:8080/actividad.html`.
-
-=== "🔵 Postman"
-    Postman soporta WebSocket/STOMP nativamente: crea una nueva petición de tipo WebSocket, conecta a `ws://localhost:8080/ws-actividad`, y usa el panel STOMP para suscribirte a `/topic/actividad`.
-
-</div>
+Ábrela en `http://localhost:8080/actividad.html`.
 
 Con el cliente conectado y suscrito, dispara el mensaje de prueba:
 
@@ -139,7 +131,7 @@ Con el cliente conectado y suscrito, dispara el mensaje de prueba:
 curl -X POST http://localhost:8080/api/v1/test/emitir
 ```
 
-**Comprueba**: que el mensaje aparece en tu cliente (la página HTML o Postman) casi al instante.
+**Comprueba**: que el mensaje aparece en tu cliente (la página HTML) casi al instante.
 
 ---
 

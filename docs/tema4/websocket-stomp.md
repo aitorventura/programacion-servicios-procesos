@@ -3,7 +3,7 @@
 # 🧩 2. WebSocket con STOMP: el canal de actividad en vivo
 
 !!! warning "Una pieza construida enteramente aquí, paso a paso"
-    Lo que ves en este apartado no es un patrón estándar de un manual de Spring — es una funcionalidad concreta que vas a construir completamente guiado, sin nada previo sobre lo que apoyarte. Lo que ya viste la semana pasada con sockets Java reales (Actividad 4.1) queda cubierto de forma completa — este apartado lo **amplía** sobre un protocolo de nivel más alto, pero no es un punto de partida obligatorio para lo anterior.
+    Lo que ves en este apartado no es un patrón estándar de un manual de Spring — es una funcionalidad concreta que vas a construir completamente guiado, sin nada previo sobre lo que apoyarte. Lo que ya viste con sockets Java reales (Actividad 4.1) queda cubierto de forma completa — este apartado lo **amplía** sobre un protocolo de nivel más alto, pero no es un punto de partida obligatorio para lo anterior.
 
 ---
 
@@ -96,7 +96,7 @@ Y el paralelismo con RabbitMQ que ya conoces: el mismo modelo publicación-suscr
 
 ## 🧪 Cómo probar un WebSocket sin escribir un frontend entero
 
-No hace falta una aplicación cliente completa para probar esto — basta con una página HTML mínima con un cliente STOMP en JavaScript (la librería `@stomp/stompjs`, servida desde un CDN o un fichero estático), o con Postman, que también soporta WebSocket/STOMP. La Actividad 4.2 te guía por una de las dos vías.
+No hace falta una aplicación cliente completa para probar esto — basta con una página HTML mínima con un cliente STOMP en JavaScript (la librería `@stomp/stompjs`, servida desde un CDN o un fichero estático). La Actividad 4.2 te guía paso a paso por esa vía.
 
 ---
 
@@ -109,4 +109,4 @@ No hace falta una aplicación cliente completa para probar esto — basta con un
     - **STOMP** añade semántica de mensajería (destinos, suscripción) sobre el tubo de bytes desnudo de WebSocket.
     - `@EnableWebSocketMessageBroker` + `registerStompEndpoints` + `configureMessageBroker` son las tres piezas de configuración base.
     - Mismo modelo pub-sub que RabbitMQ, distinto alcance: RabbitMQ entre módulos del backend, WebSocket entre backend y navegadores.
-    - Se puede probar sin frontend completo: una página HTML mínima con STOMP.js, o Postman.
+    - Se puede probar sin frontend completo: una página HTML mínima con STOMP.js basta.

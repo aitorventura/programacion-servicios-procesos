@@ -2,13 +2,13 @@
 
 # 🧩 2. Escritura en la API y documentación con OpenAPI
 
-Esta misma semana, en Acceso a Datos, estás construyendo un CRUD completo — controller, service y DTOs de escritura incluidos. Aquí no repites esa construcción: ves la **vertiente HTTP** de ese tipo de endpoints (qué código de estado espera cada verbo, qué significa que una operación sea idempotente) y añades algo que la semana pasada no tenías — documentación automática de tu API con OpenAPI.
+En Acceso a Datos estás construyendo (o vas a construir) un CRUD completo — controller, service y DTOs de escritura incluidos. Aquí no repites esa construcción: ves la **vertiente HTTP** de ese tipo de endpoints (qué código de estado espera cada verbo, qué significa que una operación sea idempotente) y añades algo que no tenías en el apartado anterior — documentación automática de tu API con OpenAPI.
 
 ---
 
 ## ✍️ La semántica completa de los verbos de escritura
 
-La semana pasada viste `GET`. Los otros tres verbos, con el código de estado que "les corresponde" quinientos por defecto:
+En el apartado anterior viste `GET`. Los otros tres verbos, con el código de estado que "les corresponde" por defecto:
 
 | Verbo | Qué hace | Código habitual de éxito |
 |---|---|---|
@@ -37,7 +37,10 @@ Una operación es **idempotente** si repetirla varias veces produce el mismo res
 
 Cuando el consumidor de tu API es otro programa (o un compañero de equipo que no ha leído tu código), necesita saber, sin adivinar: qué rutas existen, qué verbo usa cada una, qué reciben y qué devuelven. A esa descripción formal se la llama el **contrato** de la API.
 
-**OpenAPI** es el formato estándar más usado para escribir ese contrato (un documento, normalmente en YAML o JSON, que describe rutas, verbos, parámetros y esquemas de datos). **Swagger UI** es un visor interactivo que lee ese documento y genera, automáticamente, una página web donde se puede explorar y **probar** la API sin escribir una sola línea de código — ni siquiera un `curl`.
+**OpenAPI** es el formato estándar más usado para escribir ese contrato (un documento, normalmente en YAML o JSON, que describe rutas, verbos, parámetros y esquemas de datos). **Swagger UI** es un visor interactivo que lee ese documento y genera, automáticamente, una página web donde se puede explorar la API — y también **ejecutarla de verdad**.
+
+!!! info "Swagger UI no es solo documentación: manda peticiones HTTP reales"
+    No es una vista estática ni una simulación. Cada endpoint tiene un botón **"Try it out"**: rellenas los parámetros (o el cuerpo JSON, en un `POST`/`PUT`) desde un formulario, pulsas **Execute**, y Swagger UI construye y envía una petición HTTP de verdad contra tu aplicación, corriendo en `localhost:8080` — la misma petición que mandarías con `curl`, byte a byte. La respuesta que ves (código de estado, cabeceras, cuerpo) es la respuesta real de tu servidor, no una previsualización. Si el `POST` crea un libro, ese libro queda guardado en tu base de datos exactamente igual que si lo hubieras creado con `curl`.
 
 ```mermaid
 flowchart LR
@@ -51,7 +54,7 @@ Lo importante: tú no escribes el documento OpenAPI a mano. Una librería lo gen
 
 ## 📖 Los endpoints de escritura, leídos desde HTTP
 
-Con esa base, lee ahora los métodos de escritura del `LibroController` del apartado anterior desde la óptica HTTP:
+Con esa base, lee ahora los métodos de escritura de ese mismo `LibroController`, esta vez completo, desde la óptica HTTP:
 
 ```java
 @PostMapping
@@ -98,16 +101,16 @@ public class OpenApiConfig {
 }
 ```
 
-Con solo esa dependencia y esa clase, springdoc escanea todos los `@RestController` del proyecto y genera, sin más trabajo por tu parte, la especificación OpenAPI en `/v3/api-docs` y la interfaz visual en `/swagger-ui.html` — los mismos endpoints que el controller ya tenía quedan documentados y son "probables" desde el navegador.
+Con solo esa dependencia y esa clase, springdoc escanea todos los `@RestController` del proyecto y genera, sin más trabajo por tu parte, la especificación OpenAPI en `/v3/api-docs` y la interfaz visual en `/swagger-ui.html` — los mismos endpoints que el controller ya tenía quedan documentados, y puedes ejecutarlos de verdad desde el navegador con "Try it out", tal como acabas de ver.
 
 ---
 
 ## 🆚 Ventajas del protocolo estándar, con ejemplos concretos
 
-Ya viste la semana pasada que un protocolo estándar permite que cualquier cliente hable con tu API sin acordar nada a medida. Aquí tienes dos consecuencias prácticas de esa idea:
+Ya viste en el apartado anterior que un protocolo estándar permite que cualquier cliente hable con tu API sin acordar nada a medida. Aquí tienes dos consecuencias prácticas de esa idea:
 
 - Los **códigos de estado son universales**: cualquier cliente (el tuyo, el de un compañero, una app de otro lenguaje) sabe qué significa un `201` o un `404` sin necesidad de leer tu documentación particular — es parte del estándar HTTP, no una convención tuya.
-- Las **herramientas funcionan sin configuración específica**: Postman, Swagger UI, `curl`... todas saben "hablar HTTP" de fábrica. No has tenido que instalar ni configurar nada especial en Swagger UI para que entienda las respuestas de tu API — el protocolo ya es compartido.
+- Las **herramientas funcionan sin configuración específica**: Swagger UI, `curl`... todas saben "hablar HTTP" de fábrica. No has tenido que instalar ni configurar nada especial en Swagger UI para que entienda las respuestas de tu API — el protocolo ya es compartido.
 
 ---
 
@@ -118,6 +121,6 @@ Ya viste la semana pasada que un protocolo estándar permite que cualquier clien
     - `POST` → `201 Created`; `PUT` → `200 OK`; `DELETE` → `204 No Content` son las combinaciones habituales verbo/código para operaciones de escritura.
     - Una operación es **idempotente** si repetirla no cambia el resultado respecto a hacerla una vez: `PUT` y `DELETE` lo son, `POST` no.
     - El **contrato** de una API describe formalmente sus rutas, verbos y datos; **OpenAPI** es el formato estándar de ese contrato, generado automáticamente a partir de las anotaciones del código (no se escribe a mano).
-    - **Swagger UI** visualiza ese contrato y permite probar la API desde el navegador, sin escribir código.
+    - **Swagger UI** no solo visualiza el contrato: su botón "Try it out" manda peticiones HTTP reales contra tu aplicación en marcha, sin escribir código — la misma petición que mandarías con `curl`.
     - `@RequestBody` mapea el cuerpo JSON a un objeto Java; `@Valid` activa su validación.
-    - Que Swagger UI, `curl` y Postman puedan hablar todos con la misma API sin adaptar nada en el servidor es la demostración práctica de qué aporta un protocolo estándar.
+    - Que Swagger UI y `curl` puedan hablar los dos con la misma API sin adaptar nada en el servidor es la demostración práctica de qué aporta un protocolo estándar.

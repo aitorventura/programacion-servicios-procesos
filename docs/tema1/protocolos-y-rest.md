@@ -24,7 +24,7 @@ protocolo  host:puerto      ruta
 
 ## 📨 Qué es HTTP
 
-**HTTP** (*HyperText Transfer Protocol*) es el protocolo de petición-respuesta que usa la web: el cliente manda una petición con un formato fijo, el servidor responde con una respuesta con otro formato fijo, y ahí termina esa conversación (la siguiente petición empieza de cero). Por debajo del navegador, o de una herramienta como **Postman** —un programa que te deja construir y mandar peticiones HTTP a mano, sin escribir código, muy útil para probar una API mientras la desarrollas—, una petición HTTP real es texto plano con esta forma:
+**HTTP** (*HyperText Transfer Protocol*) es el protocolo de petición-respuesta que usa la web: el cliente manda una petición con un formato fijo, el servidor responde con una respuesta con otro formato fijo, y ahí termina esa conversación (la siguiente petición empieza de cero). Por debajo del navegador, o de una herramienta de línea de comandos como **`curl`** —la que vas a usar en la Actividad 1.1 para mandar peticiones HTTP a mano, sin escribir código—, una petición HTTP real es texto plano con esta forma:
 
 ```http
 GET /api/v1/libros/3 HTTP/1.1
@@ -114,7 +114,7 @@ Piensa en el mando de una tele: tiene un botón para subir volumen, otro para ca
 
 ## 📖 Leyendo un controlador REST completo
 
-Con esa base, ya puedes leer un controlador REST real — el de la API de libros del ejemplo, de momento solo con los métodos `GET` (los de escritura llegan la semana que viene). No hace falta que entiendas cada símbolo a la primera: mira primero la forma general (una clase con dos métodos, cada uno con una anotación encima) y luego ve bajando a la tabla, anotación por anotación.
+Con esa base, ya puedes leer un controlador REST real — el de la API de libros del ejemplo, de momento solo con los métodos `GET` (los de escritura llegan en el próximo apartado). No hace falta que entiendas cada símbolo a la primera: mira primero la forma general (una clase con dos métodos, cada uno con una anotación encima) y luego ve bajando a la tabla, anotación por anotación.
 
 ```java
 @RestController
@@ -145,7 +145,7 @@ Anotación a anotación, mirando solo la parte de HTTP (qué hace cada cosa con 
 | `@RequestMapping("/api/v1/libros")` | La ruta base del recurso — todo lo que hay dentro de esta clase cuelga de `/api/v1/libros`. El `/v1` es el **versionado** de la API: si el día de mañana cambia el contrato, se puede publicar un `/v2` sin romper a los clientes que siguen usando la v1. |
 | `@GetMapping` / `@GetMapping("/{id}")` | Verbo (`GET`) + ruta = una operación concreta. Los dos métodos cuelgan de la misma ruta base (`/api/v1/libros`), pero Spring solo ejecuta uno de los dos según cómo termine esa combinación: si la petición es exactamente `/api/v1/libros`, entra `getAll`; si trae algo más detrás (`/3`, `/57`...), entra `getById`. `{id}` es esa parte variable de la ruta. |
 | `@PathVariable Long id` | Extrae ese trozo variable de la URL y lo entrega como parámetro Java — el `3` de `/api/v1/libros/3` llega aquí convertido ya en un `Long`, listo para usar. |
-| `ResponseEntity.ok(...)` | Construye la respuesta con el código de estado `200` explícito y el cuerpo indicado — es tu código Java decidiendo, a propósito, la primera línea de la respuesta HTTP que viste en el apartado anterior. |
+| `ResponseEntity.ok(...)` | Construye la respuesta con el código de estado `200` explícito y el cuerpo indicado — es tu código Java decidiendo, a propósito, la primera línea de la respuesta HTTP que viste más arriba. |
 
 Vuelve un momento a la petición en texto plano de antes: `GET /api/v1/libros/3 HTTP/1.1`. Ese `GET`, esa ruta y ese `3` son exactamente lo que decide Spring para escoger `getById` y rellenar su parámetro `id` — nada de lo que hace el controlador es magia añadida, es la traducción directa de esas tres piezas del texto plano a una llamada Java.
 
@@ -210,11 +210,11 @@ public ResponseEntity<LibroResponseDTO> getById(@PathVariable Long id) {
 
 ## 🆚 Por qué un protocolo estándar
 
-Podrías diseñar tu propio protocolo casero sobre sockets (lo verás en el Tema 4) en vez de usar HTTP/REST. La diferencia es que HTTP es un protocolo **estándar**: cualquier cliente que exista — un navegador, `curl`, Postman, otra aplicación escrita en otro lenguaje — ya sabe hablarlo, sin que tengas que documentar ni acordar nada a medida. Con un protocolo propio, cada cliente nuevo tendría que aprender tus reglas particulares desde cero.
+Podrías diseñar tu propio protocolo casero sobre sockets (lo verás en el Tema 4) en vez de usar HTTP/REST. La diferencia es que HTTP es un protocolo **estándar**: cualquier cliente que exista — un navegador, `curl`, otra aplicación escrita en otro lenguaje — ya sabe hablarlo, sin que tengas que documentar ni acordar nada a medida. Con un protocolo propio, cada cliente nuevo tendría que aprender tus reglas particulares desde cero.
 
 | | Protocolo estándar (HTTP) | Protocolo propio a medida |
 |---|---|---|
-| ¿Quién ya sabe hablarlo? | Cualquier cliente existente: navegadores, `curl`, Postman, librerías de cualquier lenguaje. | Solo el que tú mismo escribas para hablarlo. |
+| ¿Quién ya sabe hablarlo? | Cualquier cliente existente: navegadores, `curl`, librerías de cualquier lenguaje. | Solo el que tú mismo escribas para hablarlo. |
 | Documentación necesaria | La del propio recurso (qué rutas, qué devuelve cada una) — el formato de mensaje ya está definido de antemano. | Tienes que documentar y mantener también el propio formato de mensaje. |
 | Herramientas de por medio | Servidores, proxies, balanceadores, cachés — todos entienden HTTP sin configuración especial. | Ninguna herramienta genérica te sirve; hay que escribirlas o adaptarlas todas. |
 | Coste de un cliente nuevo | Bajo: ya sabe HTTP, solo aprende tus rutas. | Alto: tiene que aprender tu protocolo entero desde cero. |
