@@ -574,7 +574,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.1 - Explorando la API con un cliente HTTP
+    Actividad 1.1 - Diseccionando peticiones y respuestas HTTP
     
   </span>
   
@@ -777,7 +777,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.3 - Tests MockMvc y el PUT de Estudio
+    Actividad 1.3 - Tests MockMvc sobre Videojuego y Estudio
     
   </span>
   
@@ -800,7 +800,7 @@
   
   
   <span class="md-ellipsis">
-    Disponibilidad del servicio (Actuator)
+    Comunicación simultánea y disponibilidad (Actuator)
     
   </span>
   
@@ -823,7 +823,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.4 - DELETE de Estudio y Actuator /health
+    Actividad 1.4 - Comunicación simultánea y disponibilidad
     
   </span>
   
@@ -1733,10 +1733,10 @@
 
 <div><p><a id="escritura-y-openapi"></a></p>
 <h1 id="2-escritura-en-la-api-y-documentacion-con-openapi">🧩 2. Escritura en la API y documentación con OpenAPI<a class="headerlink" href="#2-escritura-en-la-api-y-documentacion-con-openapi" title="Permanent link">¶</a></h1>
-<p>Esta misma semana, en Acceso a Datos, estás construyendo un CRUD completo — controller, service y DTOs de escritura incluidos. Aquí no repites esa construcción: ves la <strong>vertiente HTTP</strong> de ese tipo de endpoints (qué código de estado espera cada verbo, qué significa que una operación sea idempotente) y añades algo que la semana pasada no tenías — documentación automática de tu API con OpenAPI.</p>
+<p>En Acceso a Datos estás construyendo (o vas a construir) un CRUD completo — controller, service y DTOs de escritura incluidos. Aquí no repites esa construcción: ves la <strong>vertiente HTTP</strong> de ese tipo de endpoints (qué código de estado espera cada verbo, qué significa que una operación sea idempotente) y añades algo que no tenías en el apartado anterior — documentación automática de tu API con OpenAPI.</p>
 <hr>
 <h2 id="la-semantica-completa-de-los-verbos-de-escritura">✍️ La semántica completa de los verbos de escritura<a class="headerlink" href="#la-semantica-completa-de-los-verbos-de-escritura" title="Permanent link">¶</a></h2>
-<p>La semana pasada viste <code>GET</code>. Los otros tres verbos, con el código de estado que "les corresponde" quinientos por defecto:</p>
+<p>En el apartado anterior viste <code>GET</code>. Los otros tres verbos, con el código de estado que "les corresponde" por defecto:</p>
 <table>
 <thead>
 <tr>
@@ -1779,14 +1779,18 @@
 <hr>
 <h2 id="el-contrato-de-una-api-que-es-openapi">📜 El contrato de una API: qué es OpenAPI<a class="headerlink" href="#el-contrato-de-una-api-que-es-openapi" title="Permanent link">¶</a></h2>
 <p>Cuando el consumidor de tu API es otro programa (o un compañero de equipo que no ha leído tu código), necesita saber, sin adivinar: qué rutas existen, qué verbo usa cada una, qué reciben y qué devuelven. A esa descripción formal se la llama el <strong>contrato</strong> de la API.</p>
-<p><strong>OpenAPI</strong> es el formato estándar más usado para escribir ese contrato (un documento, normalmente en YAML o JSON, que describe rutas, verbos, parámetros y esquemas de datos). <strong>Swagger UI</strong> es un visor interactivo que lee ese documento y genera, automáticamente, una página web donde se puede explorar y <strong>probar</strong> la API sin escribir una sola línea de código — ni siquiera un <code>curl</code>.</p>
+<p><strong>OpenAPI</strong> es el formato estándar más usado para escribir ese contrato (un documento, normalmente en YAML o JSON, que describe rutas, verbos, parámetros y esquemas de datos). <strong>Swagger UI</strong> es un visor interactivo que lee ese documento y genera, automáticamente, una página web donde se puede explorar la API — y también <strong>ejecutarla de verdad</strong>.</p>
+<div class="admonition info">
+<p class="admonition-title">Swagger UI no es solo documentación: manda peticiones HTTP reales</p>
+<p>No es una vista estática ni una simulación. Cada endpoint tiene un botón <strong>"Try it out"</strong>: rellenas los parámetros (o el cuerpo JSON, en un <code>POST</code>/<code>PUT</code>) desde un formulario, pulsas <strong>Execute</strong>, y Swagger UI construye y envía una petición HTTP de verdad contra tu aplicación, corriendo en <code>localhost:8080</code> — la misma petición que mandarías con <code>curl</code>, byte a byte. La respuesta que ves (código de estado, cabeceras, cuerpo) es la respuesta real de tu servidor, no una previsualización. Si el <code>POST</code> crea un libro, ese libro queda guardado en tu base de datos exactamente igual que si lo hubieras creado con <code>curl</code>.</p>
+</div>
 <pre class="mermaid"><code>flowchart LR
     A["📝 Anotaciones en tu código&lt;br/&gt;(@RestController, @GetMapping...)"] -- "genera" --&gt; B["📄 Contrato OpenAPI&lt;br/&gt;(/v3/api-docs)"]
     B -- "se visualiza en" --&gt; C["🖥️ Swagger UI&lt;br/&gt;(/swagger-ui.html)"]</code></pre>
 <p>Lo importante: tú no escribes el documento OpenAPI a mano. Una librería lo genera automáticamente, leyendo las mismas anotaciones (<code>@RestController</code>, <code>@GetMapping</code>, los DTOs...) que ya usas para construir la API — el contrato y el código nunca se desincronizan porque son la misma fuente.</p>
 <hr>
 <h2 id="los-endpoints-de-escritura-leidos-desde-http">📖 Los endpoints de escritura, leídos desde HTTP<a class="headerlink" href="#los-endpoints-de-escritura-leidos-desde-http" title="Permanent link">¶</a></h2>
-<p>Con esa base, lee ahora los métodos de escritura del <code>LibroController</code> del apartado anterior desde la óptica HTTP:</p>
+<p>Con esa base, lee ahora los métodos de escritura de ese mismo <code>LibroController</code>, esta vez completo, desde la óptica HTTP:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
@@ -1873,13 +1877,13 @@
 <a id="__codelineno-1-11" name="__codelineno-1-11"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-1-12" name="__codelineno-1-12"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p>Con solo esa dependencia y esa clase, springdoc escanea todos los <code>@RestController</code> del proyecto y genera, sin más trabajo por tu parte, la especificación OpenAPI en <code>/v3/api-docs</code> y la interfaz visual en <code>/swagger-ui.html</code> — los mismos endpoints que el controller ya tenía quedan documentados y son "probables" desde el navegador.</p>
+<p>Con solo esa dependencia y esa clase, springdoc escanea todos los <code>@RestController</code> del proyecto y genera, sin más trabajo por tu parte, la especificación OpenAPI en <code>/v3/api-docs</code> y la interfaz visual en <code>/swagger-ui.html</code> — los mismos endpoints que el controller ya tenía quedan documentados, y puedes ejecutarlos de verdad desde el navegador con "Try it out", tal como acabas de ver.</p>
 <hr>
 <h2 id="ventajas-del-protocolo-estandar-con-ejemplos-concretos">🆚 Ventajas del protocolo estándar, con ejemplos concretos<a class="headerlink" href="#ventajas-del-protocolo-estandar-con-ejemplos-concretos" title="Permanent link">¶</a></h2>
-<p>Ya viste la semana pasada que un protocolo estándar permite que cualquier cliente hable con tu API sin acordar nada a medida. Aquí tienes dos consecuencias prácticas de esa idea:</p>
+<p>Ya viste en el apartado anterior que un protocolo estándar permite que cualquier cliente hable con tu API sin acordar nada a medida. Aquí tienes dos consecuencias prácticas de esa idea:</p>
 <ul>
 <li>Los <strong>códigos de estado son universales</strong>: cualquier cliente (el tuyo, el de un compañero, una app de otro lenguaje) sabe qué significa un <code>201</code> o un <code>404</code> sin necesidad de leer tu documentación particular — es parte del estándar HTTP, no una convención tuya.</li>
-<li>Las <strong>herramientas funcionan sin configuración específica</strong>: Postman, Swagger UI, <code>curl</code>... todas saben "hablar HTTP" de fábrica. No has tenido que instalar ni configurar nada especial en Swagger UI para que entienda las respuestas de tu API — el protocolo ya es compartido.</li>
+<li>Las <strong>herramientas funcionan sin configuración específica</strong>: Swagger UI, <code>curl</code>... todas saben "hablar HTTP" de fábrica. No has tenido que instalar ni configurar nada especial en Swagger UI para que entienda las respuestas de tu API — el protocolo ya es compartido.</li>
 </ul>
 <hr>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
@@ -1889,9 +1893,9 @@
 <li><code>POST</code> → <code>201 Created</code>; <code>PUT</code> → <code>200 OK</code>; <code>DELETE</code> → <code>204 No Content</code> son las combinaciones habituales verbo/código para operaciones de escritura.</li>
 <li>Una operación es <strong>idempotente</strong> si repetirla no cambia el resultado respecto a hacerla una vez: <code>PUT</code> y <code>DELETE</code> lo son, <code>POST</code> no.</li>
 <li>El <strong>contrato</strong> de una API describe formalmente sus rutas, verbos y datos; <strong>OpenAPI</strong> es el formato estándar de ese contrato, generado automáticamente a partir de las anotaciones del código (no se escribe a mano).</li>
-<li><strong>Swagger UI</strong> visualiza ese contrato y permite probar la API desde el navegador, sin escribir código.</li>
+<li><strong>Swagger UI</strong> no solo visualiza el contrato: su botón "Try it out" manda peticiones HTTP reales contra tu aplicación en marcha, sin escribir código — la misma petición que mandarías con <code>curl</code>.</li>
 <li><code>@RequestBody</code> mapea el cuerpo JSON a un objeto Java; <code>@Valid</code> activa su validación.</li>
-<li>Que Swagger UI, <code>curl</code> y Postman puedan hablar todos con la misma API sin adaptar nada en el servidor es la demostración práctica de qué aporta un protocolo estándar.</li>
+<li>Que Swagger UI y <code>curl</code> puedan hablar los dos con la misma API sin adaptar nada en el servidor es la demostración práctica de qué aporta un protocolo estándar.</li>
 </ul>
 </details></div>
 
@@ -1929,7 +1933,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Pie" >
         
           
-          <a href="../actividad_1_1/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Actividad 1.1 - Explorando la API con un cliente HTTP">
+          <a href="../actividad_1_1/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Actividad 1.1 - Diseccionando peticiones y respuestas HTTP">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1939,7 +1943,7 @@
                 Anterior
               </span>
               <div class="md-ellipsis">
-                Actividad 1.1 - Explorando la API con un cliente HTTP
+                Actividad 1.1 - Diseccionando peticiones y respuestas HTTP
               </div>
             </div>
           </a>

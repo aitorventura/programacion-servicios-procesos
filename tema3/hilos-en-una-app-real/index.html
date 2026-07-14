@@ -572,7 +572,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.1 - Explorando la API con un cliente HTTP
+    Actividad 1.1 - Diseccionando peticiones y respuestas HTTP
     
   </span>
   
@@ -664,7 +664,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.3 - Tests MockMvc y el PUT de Estudio
+    Actividad 1.3 - Tests MockMvc sobre Videojuego y Estudio
     
   </span>
   
@@ -687,7 +687,7 @@
   
   
   <span class="md-ellipsis">
-    Disponibilidad del servicio (Actuator)
+    Comunicación simultánea y disponibilidad (Actuator)
     
   </span>
   
@@ -710,7 +710,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.4 - DELETE de Estudio y Actuator /health
+    Actividad 1.4 - Comunicación simultánea y disponibilidad
     
   </span>
   
@@ -1805,7 +1805,7 @@
 
 <div><p><a id="hilos-en-una-app-real"></a></p>
 <h1 id="1-hilos-en-una-aplicacion-real-donde-ya-los-estas-usando">🧩 1. Hilos en una aplicación real: dónde ya los estás usando<a class="headerlink" href="#1-hilos-en-una-aplicacion-real-donde-ya-los-estas-usando" title="Permanent link">¶</a></h1>
-<p>Esta semana es distinta a todas las anteriores: no vas a escribir código de producción — vas a aprender a <strong>ver</strong> algo que ya está pasando delante de ti sin que lo hayas notado. Tu aplicación Spring Boot ya es multihilo, aunque nunca hayas escrito <code>new Thread()</code>.</p>
+<p>Este apartado es distinto a todos los anteriores: no vas a escribir código de producción — vas a aprender a <strong>ver</strong> algo que ya está pasando delante de ti sin que lo hayas notado. Tu aplicación Spring Boot ya es multihilo, aunque nunca hayas escrito <code>new Thread()</code>.</p>
 <hr>
 <h2 id="proceso-vs-hilo">🧵 Proceso vs. hilo<a class="headerlink" href="#proceso-vs-hilo" title="Permanent link">¶</a></h2>
 <p>Un <strong>proceso</strong> es un programa en ejecución con su propia memoria, aislada de la de otros procesos — cuando arrancas tu aplicación Spring Boot, la JVM entera es un proceso (puedes comprobarlo en el administrador de tareas de tu sistema: verás un proceso <code>java</code>).</p>
@@ -1882,7 +1882,7 @@
 <hr>
 <h2 id="la-escala-de-abstraccion">🪜 La escala de abstracción<a class="headerlink" href="#la-escala-de-abstraccion" title="Permanent link">¶</a></h2>
 <p>Crear hilos con <code>Thread</code>/<code>Runnable</code> a mano funciona, pero no escala: crear un hilo nuevo por cada tarea, sin límite, puede agotar los recursos del sistema. La siguiente capa de abstracción es un <strong><code>ExecutorService</code></strong>: un <em>pool</em> de hilos reutilizables que toman tareas de una cola, en vez de crear un hilo nuevo cada vez.</p>
-<p>Y por encima de eso están las abstracciones de Spring que usarás en las próximas semanas (<code>@Async</code>, los <em>listeners</em> de eventos): delegan toda esta gestión en el framework, para que tú declares "esto debe ejecutarse en otro hilo" sin gestionar el <code>Thread</code>/<code>Runnable</code>/<code>ExecutorService</code> explícitamente.</p>
+<p>Y por encima de eso están las abstracciones de Spring que usarás en los próximos apartados (<code>@Async</code>, los <em>listeners</em> de eventos): delegan toda esta gestión en el framework, para que tú declares "esto debe ejecutarse en otro hilo" sin gestionar el <code>Thread</code>/<code>Runnable</code>/<code>ExecutorService</code> explícitamente.</p>
 <hr>
 <h2 id="tu-aplicacion-ya-es-multihilo">🔍 Tu aplicación ya es multihilo<a class="headerlink" href="#tu-aplicacion-ya-es-multihilo" title="Permanent link">¶</a></h2>
 <p>Siguiendo con la API de la librería que conoces de los temas anteriores, hay al menos dos sitios donde ya hay varios hilos trabajando sin que tú lo hayas pedido.</p>
@@ -1928,7 +1928,7 @@
     C -.-&gt; D["ActividadLibroEventConsumer&lt;br/&gt;@RabbitListener (hilo B, contenedor AMQP)"]</code></pre>
 <p><code>LibroService.create()</code> (hilo A, el de la petición HTTP) publica el evento y <strong>no espera</strong> a que se procese — sigue su camino y responde al cliente. El consumer lo recoge y lo procesa en su propio hilo (hilo B), en su propio momento. Eso es justo lo que gana la aplicación: la petición HTTP no se queda esperando a que se registre la actividad.</p>
 <h3 id="el-problema-motivador-el-warm-up-de-una-cache">El problema motivador: el warm-up de una caché<a class="headerlink" href="#el-problema-motivador-el-warm-up-de-una-cache" title="Permanent link">¶</a></h3>
-<p>Imagina ahora un método <code>getTopNovedades()</code> (los libros más recientes del catálogo) anotado con <code>@Cacheable("topNovedades")</code>, que simula 2 segundos de lentitud con <code>Thread.sleep(2000)</code>; cada <code>create</code>/<code>update</code>/<code>delete</code> invalida esa caché con <code>@CacheEvict</code>. El resultado: tras cada escritura, el <strong>siguiente</strong> usuario que pida el top paga esos 2 segundos de golpe. Un hilo en segundo plano que recaliente la caché justo después de invalidarla — sin que ningún usuario tenga que esperar — es la situación "útil" de libro para usar varios hilos. Es exactamente lo que vas a construir en las próximas dos semanas, con <code>@EnableAsync</code> y <code>@Async</code>.</p>
+<p>Imagina ahora un método <code>getTopNovedades()</code> (los libros más recientes del catálogo) anotado con <code>@Cacheable("topNovedades")</code>, que simula 2 segundos de lentitud con <code>Thread.sleep(2000)</code>; cada <code>create</code>/<code>update</code>/<code>delete</code> invalida esa caché con <code>@CacheEvict</code>. El resultado: tras cada escritura, el <strong>siguiente</strong> usuario que pida el top paga esos 2 segundos de golpe. Un hilo en segundo plano que recaliente la caché justo después de invalidarla — sin que ningún usuario tenga que esperar — es la situación "útil" de libro para usar varios hilos. Es exactamente lo que vas a construir en las próximas actividades, con <code>@EnableAsync</code> y <code>@Async</code>.</p>
 <hr>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
 <details class="tip">
@@ -1941,7 +1941,7 @@
 <li>La <strong>condición de carrera</strong> ocurre cuando varios hilos modifican el mismo dato sin coordinación; <code>synchronized</code> la resuelve creando una sección crítica — pero en exceso puede provocar <strong>deadlock</strong>.</li>
 <li><strong>RabbitMQ</strong>: un broker de mensajería con colas y exchanges; <code>@RabbitListener</code> procesa mensajes en un hilo propio del contenedor, distinto del hilo que publicó.</li>
 <li>Tu aplicación ya es multihilo: el pool de Tomcat (una petición, un hilo) y los listeners de RabbitMQ (hilo del contenedor AMQP) son avistamientos reales, sin que hayas escrito <code>new Thread()</code> nunca.</li>
-<li>El warm-up de una caché tras invalidarla es el caso motivador que construirás con <code>@EnableAsync</code>/<code>@Async</code> en las próximas semanas.</li>
+<li>El warm-up de una caché tras invalidarla es el caso motivador que construirás con <code>@EnableAsync</code>/<code>@Async</code> en los próximos apartados.</li>
 </ul>
 </details></div>
 

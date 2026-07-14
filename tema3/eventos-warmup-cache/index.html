@@ -572,7 +572,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.1 - Explorando la API con un cliente HTTP
+    Actividad 1.1 - Diseccionando peticiones y respuestas HTTP
     
   </span>
   
@@ -664,7 +664,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.3 - Tests MockMvc y el PUT de Estudio
+    Actividad 1.3 - Tests MockMvc sobre Videojuego y Estudio
     
   </span>
   
@@ -687,7 +687,7 @@
   
   
   <span class="md-ellipsis">
-    Disponibilidad del servicio (Actuator)
+    Comunicación simultánea y disponibilidad (Actuator)
     
   </span>
   
@@ -710,7 +710,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.4 - DELETE de Estudio y Actuator /health
+    Actividad 1.4 - Comunicación simultánea y disponibilidad
     
   </span>
   
@@ -1769,7 +1769,7 @@
 
 <div><p><a id="eventos-warmup-cache"></a></p>
 <h1 id="2-eventos-internos-de-spring-el-warm-up-de-cache-12">🧩 2. Eventos internos de Spring: el warm-up de caché (1/2)<a class="headerlink" href="#2-eventos-internos-de-spring-el-warm-up-de-cache-12" title="Permanent link">¶</a></h1>
-<p>Tras exámenes y las vacaciones de Navidad, retomas el tema donde lo dejaste: sabes que tu aplicación ya es multihilo (pool de Tomcat, listeners de RabbitMQ), y que el warm-up de la caché quedó como problema pendiente. Su solución llega ahora, en dos piezas repartidas en dos semanas: hoy el evento y su publicación; la semana que viene, el listener que reacciona.</p>
+<p>Sabes que tu aplicación ya es multihilo (pool de Tomcat, listeners de RabbitMQ), y que el warm-up de la caché quedó como problema pendiente. Su solución llega ahora, en dos piezas repartidas en dos apartados: hoy el evento y su publicación; en el próximo apartado, el listener que reacciona.</p>
 <hr>
 <h2 id="que-es-un-evento-patron-observadorpublicador-suscriptor">📢 Qué es un evento (patrón observador/publicador-suscriptor)<a class="headerlink" href="#que-es-un-evento-patron-observadorpublicador-suscriptor" title="Permanent link">¶</a></h2>
 <p>Un <strong>evento</strong> es, conceptualmente, "algo ha pasado" — empaquetado como un objeto que describe ese suceso. El patrón que lo rodea tiene dos papeles: quien <strong>publica</strong> el evento (lo anuncia, sin saber quién lo va a escuchar) y quien <strong>escucha</strong> (reacciona cuando ocurre, sin que el publicador tenga que conocerlo).</p>
@@ -1777,11 +1777,11 @@
 <p class="admonition-title">Una notificación con varios suscriptores</p>
 <p>Piensa en publicar una foto en una red social: tú (el publicador) no sabes, ni te importa, cuántas apps o servicios reaccionarán a ese evento (notificar a tus seguidores, generar una miniatura, actualizar un contador) — cada uno se suscribe por su cuenta, y podrían añadirse reacciones nuevas sin que tú cambies nada de cómo publicas la foto.</p>
 </div>
-<p>Ese desacoplamiento es la ganancia central del patrón: el que publica no conoce a los que reaccionan, y se pueden añadir reacciones nuevas sin tocar al emisor. De hecho, ya has usado dos versiones de este mismo patrón sin ponerles ese nombre: los eventos de una interfaz gráfica (un clic de botón dispara un <em>listener</em>, sin que el botón sepa qué hace ese listener) y RabbitMQ, que analizaste la semana 12 — un broker externo con productores y consumidores que no se conocen entre sí. Es el mismo patrón, a distintas escalas.</p>
+<p>Ese desacoplamiento es la ganancia central del patrón: el que publica no conoce a los que reaccionan, y se pueden añadir reacciones nuevas sin tocar al emisor. De hecho, ya has usado dos versiones de este mismo patrón sin ponerles ese nombre: los eventos de una interfaz gráfica (un clic de botón dispara un <em>listener</em>, sin que el botón sepa qué hace ese listener) y RabbitMQ, que ya conoces (Actividad 3.1) — un broker externo con productores y consumidores que no se conocen entre sí. Es el mismo patrón, a distintas escalas.</p>
 <hr>
 <h2 id="que-es-una-cache">💾 Qué es una caché<a class="headerlink" href="#que-es-una-cache" title="Permanent link">¶</a></h2>
 <p>Una <strong>caché</strong> guarda el resultado de una operación cara (lenta, costosa) para reutilizarlo sin repetir el trabajo. Cuando ese resultado deja de ser válido (los datos subyacentes han cambiado), hay que <strong>invalidarla</strong> — borrar el resultado guardado, para que la próxima vez se recalcule. <strong>Recalentar</strong> una caché es volver a calcular ese resultado por adelantado, antes de que alguien lo pida, para que quien lo pida a continuación no pague el coste de calcularlo de cero.</p>
-<p>Es exactamente lo que vas a conseguir hoy con <code>@Cacheable</code> sobre el <code>getTopNovedades()</code> que ya tienes (Actividad 1.3) — pero antes de anotarlo, falta decidir <strong>dónde</strong> se guarda físicamente ese resultado.</p>
+<p>Es exactamente lo que vas a conseguir en esta pareja de apartados con <code>@Cacheable</code> sobre el <code>getTopNovedades()</code> que ya tienes (Actividad 1.4) — pero antes de anotarlo, falta decidir <strong>dónde</strong> se guarda físicamente ese resultado.</p>
 <hr>
 <h2 id="que-es-redis-y-por-que-aparece-en-este-proyecto">🔴 Qué es Redis, y por qué aparece en este proyecto<a class="headerlink" href="#que-es-redis-y-por-que-aparece-en-este-proyecto" title="Permanent link">¶</a></h2>
 <p><strong>Redis</strong> es una base de datos en memoria, de tipo clave-valor, muy rápida, que se usa típicamente como <strong>caché compartida</strong>. La diferencia frente a una caché que viviera solo en la memoria de tu propia aplicación: una caché en Redis sobrevive a un reinicio de la aplicación, y podría compartirse entre varias instancias de la misma aplicación corriendo a la vez (si algún día hubiera más de una).</p>
@@ -1799,15 +1799,15 @@
 <p>Spring implementa el patrón observador/publicador-suscriptor <strong>dentro de la propia aplicación</strong>, sin ningún broker externo de por medio, con <code>ApplicationEventPublisher</code> y los <em>listeners</em> que reaccionan a lo que publica.</p>
 <div class="admonition danger">
 <p class="admonition-title">No lo confundas con RabbitMQ</p>
-<p>Es fácil mezclar ambos, así que distínguelos desde ya: <strong>RabbitMQ</strong> es mensajería entre procesos/módulos, a través de un broker externo (lo que analizaste la semana pasada, con <code>LibroEvent</code> en el paquete de eventos del catálogo). <strong><code>ApplicationEventPublisher</code></strong> son eventos <strong>dentro de la misma JVM</strong>, entre beans de la misma aplicación, sin ningún broker — mucho más ligero, pero solo sirve dentro del propio proceso.</p>
+<p>Es fácil mezclar ambos, así que distínguelos desde ya: <strong>RabbitMQ</strong> es mensajería entre procesos/módulos, a través de un broker externo (lo que ya conoces, con <code>VideojuegoEvent</code> en el paquete de eventos del catálogo). <strong><code>ApplicationEventPublisher</code></strong> son eventos <strong>dentro de la misma JVM</strong>, entre beans de la misma aplicación, sin ningún broker — mucho más ligero, pero solo sirve dentro del propio proceso.</p>
 </div>
 <hr>
 <h2 id="el-diseno-del-warm-up-pieza-1-de-2">🎯 El diseño del warm-up (pieza 1 de 2)<a class="headerlink" href="#el-diseno-del-warm-up-pieza-1-de-2" title="Permanent link">¶</a></h2>
-<p>Esta semana construyes el evento y su publicación; la semana que viene, el listener que reacciona. El plan completo:</p>
+<p>En este apartado construyes el evento y su publicación; en el próximo, el listener que reacciona. El plan completo:</p>
 <pre class="mermaid"><code>flowchart LR
-    A["LibroService&lt;br/&gt;@CacheEvict tras escritura"] --&gt;|"publica"| B["TopNovedadesInvalidadoEvent"]
-    B -.-&gt;|"semana que viene"| C["Listener @Async&lt;br/&gt;recalienta la caché"]</code></pre>
-<p>Cuando <code>LibroService</code> invalida la caché <code>"topNovedades"</code> (en <code>create</code>/<code>update</code>/<code>delete</code>, cada uno anotado <code>@CacheEvict</code>), va a publicar además un evento interno <code>TopNovedadesInvalidadoEvent</code>. Ahora mismo, sin listener todavía, publicar ese evento <strong>no hace nada visible</strong> — el sistema queda "emitiendo" a la espera de la pieza 2.</p>
+    A["VideojuegoService&lt;br/&gt;@CacheEvict tras escritura"] --&gt;|"publica"| B["TopNovedadesInvalidadoEvent"]
+    B -.-&gt;|"próximo apartado"| C["Listener @Async&lt;br/&gt;recalienta la caché"]</code></pre>
+<p>Cuando <code>VideojuegoService</code> invalida la caché <code>"topNovedades"</code> (en <code>create</code>/<code>update</code>/<code>delete</code>, cada uno anotado <code>@CacheEvict</code>), va a publicar además un evento interno <code>TopNovedadesInvalidadoEvent</code>. Ahora mismo, sin listener todavía, publicar ese evento <strong>no hace nada visible</strong> — el sistema queda "emitiendo" a la espera de la pieza 2.</p>
 <h3 id="la-clase-de-evento-un-record-inmutable">La clase de evento: un record inmutable<a class="headerlink" href="#la-clase-de-evento-un-record-inmutable" title="Permanent link">¶</a></h3>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">record</span> <span class="nc">TopNovedadesInvalidadoEvent</span><span class="p">(</span><span class="n">Instant</span><span class="w"> </span><span class="n">momento</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
 </code></pre></div></td></tr></table></div>
@@ -1828,13 +1828,13 @@
 <span class="normal"><a href="#__codelineno-2-13">13</a></span>
 <span class="normal"><a href="#__codelineno-2-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nd">@Service</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="nd">@RequiredArgsConstructor</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LibroService</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">LibroRepository</span><span class="w"> </span><span class="n">libroRepository</span><span class="p">;</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">VideojuegoService</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">VideojuegoRepository</span><span class="w"> </span><span class="n">videojuegoRepository</span><span class="p">;</span>
 <a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ApplicationEventPublisher</span><span class="w"> </span><span class="n">eventPublisher</span><span class="p">;</span>
 <a id="__codelineno-2-6" name="__codelineno-2-6"></a>
 <a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">    </span><span class="nd">@CacheEvict</span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"topNovedades"</span><span class="p">,</span><span class="w"> </span><span class="n">allEntries</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
 <a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="w">    </span><span class="nd">@Transactional</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">LibroResponseDTO</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="n">LibroCreateDTO</span><span class="w"> </span><span class="n">dto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">VideojuegoResponseDTO</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="n">VideojuegoCreateDTO</span><span class="w"> </span><span class="n">dto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="w">        </span><span class="c1">// ... lógica de creación ya existente ...</span>
 <a id="__codelineno-2-11" name="__codelineno-2-11"></a><span class="w">        </span><span class="n">eventPublisher</span><span class="p">.</span><span class="na">publishEvent</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">TopNovedadesInvalidadoEvent</span><span class="p">(</span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">()));</span>
 <a id="__codelineno-2-12" name="__codelineno-2-12"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mapToDTO</span><span class="p">(</span><span class="n">saved</span><span class="p">);</span>
@@ -1844,11 +1844,11 @@
 <p><code>ApplicationEventPublisher</code> se inyecta exactamente igual que cualquier otra dependencia — con <code>@RequiredArgsConstructor</code>, como todo en este proyecto. <code>publishEvent(...)</code> es la llamada que dispara el evento hacia quien esté escuchando — que, de momento, es nadie.</p>
 <div class="admonition tip">
 <p class="admonition-title">Esta pieza es nueva, no la tienes todavía</p>
-<p>Es una mejora que tú vas a construir desde cero: no confundas este evento interno de Spring con los <code>LibroEvent</code> que ya conoces, que son de RabbitMQ, entre módulos — son dos mecanismos distintos.</p>
+<p>Es una mejora que tú vas a construir desde cero: no confundas este evento interno de Spring con los <code>VideojuegoEvent</code> que ya conoces, que son de RabbitMQ, entre módulos — son dos mecanismos distintos.</p>
 </div>
 <hr>
 <h2 id="el-mapa-completo">🗺️ El mapa completo<a class="headerlink" href="#el-mapa-completo" title="Permanent link">¶</a></h2>
-<p>Semana 14 (hoy): evento + publicación. Semana 15: listener <code>@Async</code> que recalienta la caché, sincronizado con el momento exacto en que la transacción hace commit. Con las dos piezas montadas, el "primer usuario tras una escritura" dejará de pagar los 2 segundos de <code>getTopNovedades()</code>.</p>
+<p>Este apartado: evento + publicación. El próximo: listener <code>@Async</code> que recalienta la caché, sincronizado con el momento exacto en que la transacción hace commit. Con las dos piezas montadas, el "primer usuario tras una escritura" dejará de pagar los 2 segundos de <code>getTopNovedades()</code>.</p>
 <hr>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
 <details class="tip">
@@ -1859,7 +1859,7 @@
 <li><strong>Redis</strong> es una base de datos en memoria clave-valor, usada aquí como caché compartida real detrás de <code>@Cacheable</code> — el resultado de <code>getTopNovedades()</code> se guarda físicamente en el contenedor Redis, no en memoria de la aplicación.</li>
 <li><code>ApplicationEventPublisher</code> implementa eventos <strong>dentro</strong> de la JVM, entre beans — distinto de RabbitMQ (broker externo, entre procesos).</li>
 <li>Un evento como <code>record</code> es inmutable, lo que lo hace seguro de compartir entre hilos sin locks.</li>
-<li>Esta semana: evento + publicación (sin efecto visible todavía). Semana que viene: el listener <code>@Async</code> que cierra el ciclo.</li>
+<li>En este apartado: evento + publicación (sin efecto visible todavía). En el próximo: el listener <code>@Async</code> que cierra el ciclo.</li>
 </ul>
 </details></div>
 

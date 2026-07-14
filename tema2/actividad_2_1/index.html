@@ -572,7 +572,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.1 - Explorando la API con un cliente HTTP
+    Actividad 1.1 - Diseccionando peticiones y respuestas HTTP
     
   </span>
   
@@ -664,7 +664,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.3 - Tests MockMvc y el PUT de Estudio
+    Actividad 1.3 - Tests MockMvc sobre Videojuego y Estudio
     
   </span>
   
@@ -687,7 +687,7 @@
   
   
   <span class="md-ellipsis">
-    Disponibilidad del servicio (Actuator)
+    Comunicación simultánea y disponibilidad (Actuator)
     
   </span>
   
@@ -710,7 +710,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.4 - DELETE de Estudio y Actuator /health
+    Actividad 1.4 - Comunicación simultánea y disponibilidad
     
   </span>
   
@@ -889,9 +889,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#paso-1-validacion-en-videojuegocreatedto" class="md-nav__link">
+  <a href="#paso-1-mensajes-de-error-personalizados-en-videojuegocreatedto" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 1 — Validación en VideojuegoCreateDTO
+      Paso 1 — Mensajes de error personalizados en VideojuegoCreateDTO
     </span>
   </a>
   
@@ -925,9 +925,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#mini-reto-validacion-en-estudiodto" class="md-nav__link">
+  <a href="#mini-reto-mensajes-personalizados-en-estudiocreatedto" class="md-nav__link">
     <span class="md-ellipsis">
-      Mini-reto — validación en EstudioDTO
+      Mini-reto — mensajes personalizados en EstudioCreateDTO
     </span>
   </a>
   
@@ -1677,9 +1677,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#paso-1-validacion-en-videojuegocreatedto" class="md-nav__link">
+  <a href="#paso-1-mensajes-de-error-personalizados-en-videojuegocreatedto" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 1 — Validación en VideojuegoCreateDTO
+      Paso 1 — Mensajes de error personalizados en VideojuegoCreateDTO
     </span>
   </a>
   
@@ -1713,9 +1713,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#mini-reto-validacion-en-estudiodto" class="md-nav__link">
+  <a href="#mini-reto-mensajes-personalizados-en-estudiocreatedto" class="md-nav__link">
     <span class="md-ellipsis">
-      Mini-reto — validación en EstudioDTO
+      Mini-reto — mensajes personalizados en EstudioCreateDTO
     </span>
   </a>
   
@@ -1758,20 +1758,20 @@
 <div><h1 id="actividad-21-validacion-y-globalexceptionhandler">🧪 Actividad 2.1: Validación y <code>GlobalExceptionHandler</code><a class="headerlink" href="#actividad-21-validacion-y-globalexceptionhandler" title="Permanent link">¶</a></h1>
 <div class="admonition info">
 <p class="admonition-title">Práctica guiada</p>
-<p>Vas a construir en tu GameVault la validación de entrada y la gestión centralizada de errores, viendo primero por qué la respuesta por defecto de Spring no es suficiente.</p>
+<p>Vas a construir en tu GameVault la gestión centralizada de errores, viendo primero por qué la respuesta por defecto de Spring no es suficiente — aunque la validación de entrada ya la tenías, hoy la haces más útil de cara al cliente.</p>
 </div>
 <h2 id="que-vas-a-practicar">Qué vas a practicar<a class="headerlink" href="#que-vas-a-practicar" title="Permanent link">¶</a></h2>
 <ul>
-<li>Añadir validación con Bean Validation a un DTO de entrada.</li>
+<li>Personalizar los mensajes de la validación con Bean Validation que ya tienes en un DTO de entrada.</li>
 <li>Ver la diferencia entre la respuesta de error por defecto de Spring y una gestionada.</li>
 <li>Construir un <code>@RestControllerAdvice</code> centralizado.</li>
 </ul>
 <hr>
 <h2 id="requisitos-previos">Requisitos previos<a class="headerlink" href="#requisitos-previos" title="Permanent link">¶</a></h2>
-<p>Tu CRUD de <code>Videojuego</code> funcionando (Tema 1).</p>
+<p>Tu CRUD de <code>Videojuego</code> y de <code>Estudio</code> funcionando, con validación y <code>@Valid</code> (Acceso a Datos, Tema 1).</p>
 <hr>
-<h2 id="paso-1-validacion-en-videojuegocreatedto">Paso 1 — Validación en <code>VideojuegoCreateDTO</code><a class="headerlink" href="#paso-1-validacion-en-videojuegocreatedto" title="Permanent link">¶</a></h2>
-<p>Añade a tu DTO las anotaciones de validación:</p>
+<h2 id="paso-1-mensajes-de-error-personalizados-en-videojuegocreatedto">Paso 1 — Mensajes de error personalizados en <code>VideojuegoCreateDTO</code><a class="headerlink" href="#paso-1-mensajes-de-error-personalizados-en-videojuegocreatedto" title="Permanent link">¶</a></h2>
+<p>Tu DTO ya tiene validación — la construiste en Acceso a Datos (Tema 1), con <code>@Valid</code> ya puesto en el controller. Pero cada anotación usa el mensaje por defecto de Bean Validation, genérico y en inglés (<code>"must not be blank"</code>, por ejemplo). Añade un mensaje propio, descriptivo, con el atributo <code>message</code>:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
@@ -1806,7 +1806,7 @@
 <a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="w">        </span><span class="n">Long</span><span class="w"> </span><span class="n">estudioId</span>
 <a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
 </code></pre></div></td></tr></table></div>
-<p>Comprueba que el método <code>create</code> de tu controller ya tiene <code>@Valid</code> delante del parámetro (<code>@Valid @RequestBody VideojuegoCreateDTO dto</code>) — si no lo tenías, añádelo ahora.</p>
+<p>Este mensaje es justo lo que vas a recuperar dentro de poco, en el <code>GlobalExceptionHandler</code> del Paso 3, con <code>error.getDefaultMessage()</code> — sin un mensaje propio, ese campo sería igual de genérico y poco útil.</p>
 <hr>
 <h2 id="paso-2-ver-la-respuesta-por-defecto">Paso 2 — Ver la respuesta por defecto<a class="headerlink" href="#paso-2-ver-la-respuesta-por-defecto" title="Permanent link">¶</a></h2>
 <p>Provoca un error de validación real:</p>
@@ -1972,14 +1972,14 @@
 </code></pre></div></td></tr></table></div>
 <p><strong>Compara</strong> ambas respuestas (la del Paso 2 y esta) campo a campo. <strong>Responde</strong>: ¿qué información nueva aparece ahora que antes no estaba (pista: el campo <code>fields</code>)? ¿Qué información que antes podía filtrarse (si hubiera sido una excepción no controlada, no una de validación) ya no puede llegar al cliente?</p>
 <hr>
-<h2 id="mini-reto-validacion-en-estudiodto">Mini-reto — validación en <code>EstudioDTO</code><a class="headerlink" href="#mini-reto-validacion-en-estudiodto" title="Permanent link">¶</a></h2>
-<p>Repite el patrón del Paso 1, esta vez sobre <code>EstudioDTO</code> (paquete <code>catalogo.dto</code>) — que hoy no tiene ninguna validación: añade <code>@NotBlank</code> a <code>nombre</code> y a <code>pais</code>. Comprueba también que <code>EstudioController.create(...)</code> lleva <code>@Valid</code> delante del parámetro (si no lo tenía, añádelo ahora, igual que hiciste en el Paso 1 con <code>Videojuego</code>). Provoca el error con una petición POST inválida a <code>/api/v1/estudios</code> y comprueba que <code>GlobalExceptionHandler</code> también lo captura, sin tener que tocar ni una línea de la clase que acabas de construir.</p>
+<h2 id="mini-reto-mensajes-personalizados-en-estudiocreatedto">Mini-reto — mensajes personalizados en <code>EstudioCreateDTO</code><a class="headerlink" href="#mini-reto-mensajes-personalizados-en-estudiocreatedto" title="Permanent link">¶</a></h2>
+<p>Repite el patrón del Paso 1, esta vez sobre <code>EstudioCreateDTO</code> (paquete <code>catalogo.dto</code>): ya tiene <code>@NotBlank</code> en <code>nombre</code> y en <code>pais</code> (Acceso a Datos, Tema 1), pero sin mensaje propio. Añádeselo a los dos. Provoca el error con una petición POST inválida a <code>/api/v1/estudios</code> y comprueba que <code>GlobalExceptionHandler</code> también lo captura, con tus mensajes nuevos en el campo <code>fields</code> — sin tener que tocar ni una línea de la clase que acabas de construir.</p>
 <hr>
 <h2 id="pregunta-final">Pregunta final<a class="headerlink" href="#pregunta-final" title="Permanent link">¶</a></h2>
 <p>¿Por qué conviene que <strong>todas</strong> las excepciones de la aplicación pasen por un único punto (<code>GlobalExceptionHandler</code>) antes de convertirse en respuesta HTTP, en vez de gestionar cada error donde ocurre? Nombra un dato interno concreto de tu propio proyecto (una clase, una tabla, una ruta de fichero) que este handler evita que se filtre a quien esté probando tu API desde fuera.</p>
 <hr>
 <h2 id="cierre">✅ Cierre<a class="headerlink" href="#cierre" title="Permanent link">¶</a></h2>
-<p>Tu API ya no confía ciegamente en lo que le llega, y sus errores tienen un formato coherente que no filtra detalles internos. La semana que viene empiezas con Spring Security: usuarios en memoria y HTTP Basic — la primera barrera de acceso real.</p></div>
+<p>Tu API ya no confía ciegamente en lo que le llega, y sus errores tienen un formato coherente que no filtra detalles internos. En la próxima actividad empiezas con Spring Security: usuarios en memoria y HTTP Basic — la primera barrera de acceso real.</p></div>
 
 
 

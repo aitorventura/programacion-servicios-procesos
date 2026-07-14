@@ -574,7 +574,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.1 - Explorando la API con un cliente HTTP
+    Actividad 1.1 - Diseccionando peticiones y respuestas HTTP
     
   </span>
   
@@ -739,15 +739,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#comunicacion-simultanea-de-varios-clientes" class="md-nav__link">
-    <span class="md-ellipsis">
-      🧵 Comunicación simultánea de varios clientes
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#lo-que-viene" class="md-nav__link">
     <span class="md-ellipsis">
       🎯 Lo que viene
@@ -786,7 +777,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.3 - Tests MockMvc y el PUT de Estudio
+    Actividad 1.3 - Tests MockMvc sobre Videojuego y Estudio
     
   </span>
   
@@ -809,7 +800,7 @@
   
   
   <span class="md-ellipsis">
-    Disponibilidad del servicio (Actuator)
+    Comunicación simultánea y disponibilidad (Actuator)
     
   </span>
   
@@ -832,7 +823,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.4 - DELETE de Estudio y Actuator /health
+    Actividad 1.4 - Comunicación simultánea y disponibilidad
     
   </span>
   
@@ -1707,15 +1698,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#comunicacion-simultanea-de-varios-clientes" class="md-nav__link">
-    <span class="md-ellipsis">
-      🧵 Comunicación simultánea de varios clientes
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#lo-que-viene" class="md-nav__link">
     <span class="md-ellipsis">
       🎯 Lo que viene
@@ -1754,7 +1736,7 @@
 <p>Hasta ahora has probado la API a mano: con <code>curl</code> (Actividad 1.1) y con Swagger UI (Actividad 1.2). Los dos funcionan, pero comparten un problema — tienes que repetir los mismos clics o comandos cada vez que quieres comprobar que todo sigue funcionando. Hoy conoces un tercer cliente, uno que se ejecuta solo: un <strong>test automatizado</strong>.</p>
 <hr>
 <h2 id="que-es-un-test-automatizado">🧪 Qué es un test automatizado<a class="headerlink" href="#que-es-un-test-automatizado" title="Permanent link">¶</a></h2>
-<p>Un <strong>test automatizado</strong> es código que comprueba el comportamiento de otro código, sin intervención humana. En vez de abrir Postman y pulsar "Enviar" cada vez que cambias algo, escribes una vez el test y lo ejecutas las veces que haga falta — en segundos, sin volver a hacer los mismos clics, y de forma que cualquiera (incluido un pipeline de integración continua, como el que viste en el Tema 0 de AD con GitHub Actions) pueda ejecutarlo automáticamente en cada cambio.</p>
+<p>Un <strong>test automatizado</strong> es código que comprueba el comportamiento de otro código, sin intervención humana. En vez de abrir Swagger UI y pulsar "Execute" cada vez que cambias algo, escribes una vez el test y lo ejecutas las veces que haga falta — en segundos, sin volver a hacer los mismos clics, y de forma que cualquiera (incluido un pipeline de integración continua, como el que viste en el Tema 0 de AD con GitHub Actions) pueda ejecutarlo automáticamente en cada cambio.</p>
 <p>Un test JUnit sigue casi siempre la misma estructura, conocida como <strong>preparar-actuar-afirmar</strong> (<em>Arrange-Act-Assert</em>):</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
 <span class="normal"><a href="#__codelineno-0-2">2</a></span>
@@ -1867,19 +1849,8 @@
 <h3 id="y-el-test-de-integracion-completo">¿Y el test de integración completo?<a class="headerlink" href="#y-el-test-de-integracion-completo" title="Permanent link">¶</a></h3>
 <p>Existe otro tipo de test, con <code>@Testcontainers</code>, que levanta bases de datos <strong>reales</strong> en contenedores Docker solo para la duración del test — no mockea nada. Lo trabajarás a fondo en Acceso a Datos; aquí basta con que sitúes los dos niveles: <code>@WebMvcTest</code> prueba una capa aislada y rápida, un test de integración prueba varias piezas reales trabajando juntas y es más lento pero da más confianza sobre el sistema completo.</p>
 <hr>
-<h2 id="comunicacion-simultanea-de-varios-clientes">🧵 Comunicación simultánea de varios clientes<a class="headerlink" href="#comunicacion-simultanea-de-varios-clientes" title="Permanent link">¶</a></h2>
-<p>Un servidor real no atiende a un solo cliente a la vez. Spring Web, sobre Tomcat, atiende cada petición HTTP entrante en un <strong>hilo distinto</strong>, tomado de un <em>pool</em> — así que varias peticiones pueden procesarse en paralelo sin que unas esperen a que terminen las otras. Esta idea se retomará a fondo en el Tema 3, sobre programación multihilo; de momento, compruébala con un experimento sencillo.</p>
-<p>Imagina un método del service con un <code>Thread.sleep(2000)</code> puesto a propósito, que simula una consulta lenta (lo montarás así en la actividad). Lanza dos peticiones <strong>simultáneas</strong> contra su endpoint:</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
-<span class="normal"><a href="#__codelineno-2-2">2</a></span>
-<span class="normal"><a href="#__codelineno-2-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nb">time</span><span class="w"> </span><span class="o">(</span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/libros/top<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">      </span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/libros/top<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">      </span><span class="nb">wait</span><span class="o">)</span>
-</code></pre></div></td></tr></table></div>
-<p>Si las dos peticiones se atendieran una detrás de otra, el conjunto tardaría unos 4 segundos. Si se atienden en paralelo, tardan aproximadamente 2 — porque cada una la procesa un hilo distinto del pool. Puedes confirmarlo añadiendo temporalmente una traza con <code>Thread.currentThread().getName()</code> en el método y mirando el log: verás dos nombres de hilo distintos (<code>http-nio-8080-exec-1</code>, <code>http-nio-8080-exec-2</code>...) para las dos peticiones.</p>
-<hr>
 <h2 id="lo-que-viene">🎯 Lo que viene<a class="headerlink" href="#lo-que-viene" title="Permanent link">¶</a></h2>
-<p>En tu propio proyecto todavía te falta completar algunas operaciones de escritura. Esa es la práctica de esta semana y la siguiente: en la Actividad 1.3 construyes un <code>PUT</code> completo con su test MockMvc, replicando el patrón que ya conoces; el <code>DELETE</code> llega en la Actividad 1.4.</p>
+<p>Tu propio proyecto ya tiene el CRUD completo de <code>Videojuego</code> y de <code>Estudio</code> (Acceso a Datos, Actividad 1.2) — en la Actividad 1.3 no construyes ningún endpoint nuevo, escribes los tests MockMvc que los pongan a prueba, sobre los dos controllers. La Actividad 1.4 cierra el tema con dos piezas más: cuánto tarda tu API en atender varias peticiones a la vez, y Actuator.</p>
 <hr>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
 <details class="tip">
@@ -1889,8 +1860,7 @@
 <li>Un test <strong>unitario</strong> aísla una pieza con <strong>mocks</strong>; un test de <strong>integración</strong> prueba varias piezas reales juntas.</li>
 <li><strong>MockMvc</strong> simula peticiones HTTP contra tus controladores sin arrancar un servidor real — un cliente HTTP programable y repetible.</li>
 <li><code>@WebMvcTest</code> arranca solo la capa web; <code>@MockitoBean</code> sustituye una dependencia por un mock; <code>mockMvc.perform(...).andExpect(...)</code> construye la petición y afirma el resultado; <code>jsonPath</code> navega el cuerpo JSON.</li>
-<li>Cada petición HTTP la atiende un hilo distinto del pool de Tomcat — por eso dos peticiones lentas simultáneas no tardan el doble, sino aproximadamente lo mismo que una sola.</li>
-<li>Esta semana toca construir un <code>PUT</code> con su test MockMvc (Actividad 1.3), replicando el patrón ya visto.</li>
+<li>La Actividad 1.3 no construye endpoints nuevos: escribe los tests MockMvc de los dos controllers ya completos, <code>Videojuego</code> y <code>Estudio</code>.</li>
 </ul>
 </details></div>
 
@@ -1945,13 +1915,13 @@
         
         
           
-          <a href="../actividad_1_3/" class="md-footer__link md-footer__link--next" aria-label="Siguiente: Actividad 1.3 - Tests MockMvc y el PUT de Estudio">
+          <a href="../actividad_1_3/" class="md-footer__link md-footer__link--next" aria-label="Siguiente: Actividad 1.3 - Tests MockMvc sobre Videojuego y Estudio">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Siguiente
               </span>
               <div class="md-ellipsis">
-                Actividad 1.3 - Tests MockMvc y el PUT de Estudio
+                Actividad 1.3 - Tests MockMvc sobre Videojuego y Estudio
               </div>
             </div>
             <div class="md-footer__button md-icon">

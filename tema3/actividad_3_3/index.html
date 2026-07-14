@@ -572,7 +572,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.1 - Explorando la API con un cliente HTTP
+    Actividad 1.1 - Diseccionando peticiones y respuestas HTTP
     
   </span>
   
@@ -664,7 +664,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.3 - Tests MockMvc y el PUT de Estudio
+    Actividad 1.3 - Tests MockMvc sobre Videojuego y Estudio
     
   </span>
   
@@ -687,7 +687,7 @@
   
   
   <span class="md-ellipsis">
-    Disponibilidad del servicio (Actuator)
+    Comunicación simultánea y disponibilidad (Actuator)
     
   </span>
   
@@ -710,7 +710,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.4 - DELETE de Estudio y Actuator /health
+    Actividad 1.4 - Comunicación simultánea y disponibilidad
     
   </span>
   
@@ -1776,7 +1776,7 @@
 <div><h1 id="actividad-33-el-evento-del-warm-up-de-cache-12">🧪 Actividad 3.3: El evento del warm-up de caché (1/2)<a class="headerlink" href="#actividad-33-el-evento-del-warm-up-de-cache-12" title="Permanent link">¶</a></h1>
 <div class="admonition info">
 <p class="admonition-title">Práctica guiada — pieza 1 de 2</p>
-<p>Antes de nada, montas Redis y activas la caché real de <code>getTopNovedades()</code>. Con eso listo, construyes el evento interno y su publicación. Todavía no vas a ver ningún efecto sobre la lentitud de <code>/top</code> tras una escritura — eso llega la semana que viene con el listener.</p>
+<p>Antes de nada, montas Redis y activas la caché real de <code>getTopNovedades()</code>. Con eso listo, construyes el evento interno y su publicación. Todavía no vas a ver ningún efecto sobre la lentitud de <code>/top</code> tras una escritura — eso llega en la Actividad 3.4 con el listener.</p>
 </div>
 <h2 id="que-vas-a-practicar">Qué vas a practicar<a class="headerlink" href="#que-vas-a-practicar" title="Permanent link">¶</a></h2>
 <ul>
@@ -1787,7 +1787,7 @@
 </ul>
 <hr>
 <h2 id="requisitos-previos">Requisitos previos<a class="headerlink" href="#requisitos-previos" title="Permanent link">¶</a></h2>
-<p>Tu <code>VideojuegoService</code> con <code>getTopNovedades()</code> funcionando (sin caché todavía, Actividad 1.3) — la caché con Redis y <code>@Cacheable</code> la montas tú mismo en el Paso 0 de hoy.</p>
+<p>Tu <code>VideojuegoService</code> con <code>getTopNovedades()</code> funcionando (sin caché todavía, Actividad 1.4) — la caché con Redis y <code>@Cacheable</code> la montas tú mismo en el Paso 0 de hoy.</p>
 <hr>
 <h2 id="paso-0-redis-y-cacheable-antes-de-nada">Paso 0 — Redis y <code>@Cacheable</code>, antes de nada<a class="headerlink" href="#paso-0-redis-y-cacheable-antes-de-nada" title="Permanent link">¶</a></h2>
 <p>Añade Redis a <code>.devcontainer/docker-compose.yml</code>, junto a tus servicios ya existentes:</p>
@@ -1897,7 +1897,7 @@
 <a id="__codelineno-7-12" name="__codelineno-7-12"></a><span class="c1"># Tercera llamada: ha vuelto a pagar los 2 segundos</span>
 <a id="__codelineno-7-13" name="__codelineno-7-13"></a><span class="nb">time</span><span class="w"> </span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/videojuegos/top<span class="w"> </span>&gt;<span class="w"> </span>/dev/null
 </code></pre></div></td></tr></table></div>
-<p><strong>Anota</strong> los tres tiempos medidos. Ese "tercer usuario que paga otra vez los 2 segundos, justo después de una escritura" es exactamente lo que el warm-up de las próximas dos semanas va a eliminar.</p>
+<p><strong>Anota</strong> los tres tiempos medidos. Ese "tercer usuario que paga otra vez los 2 segundos, justo después de una escritura" es exactamente lo que el warm-up de esta y la próxima actividad va a eliminar.</p>
 <hr>
 <h2 id="paso-2-la-clase-de-evento">Paso 2 — La clase de evento<a class="headerlink" href="#paso-2-la-clase-de-evento" title="Permanent link">¶</a></h2>
 <p>Decide junto con el enunciado qué información debe transportar: para este warm-up basta con saber <strong>cuándo</strong> ocurrió la invalidación (no necesitas saber qué operación la causó, ni sobre qué videojuego).</p>
@@ -1987,13 +1987,13 @@
 <a id="__codelineno-10-14" name="__codelineno-10-14"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>Crea un videojuego y mira la consola. <strong>Comprueba</strong> que la traza aparece. <strong>Anota</strong> el nombre del hilo en el que se ejecuta este listener — sin <code>@Async</code> todavía, ¿es el mismo hilo que procesó la petición HTTP, o uno distinto? Este dato es el contraste clave que vas a necesitar la próxima actividad: cuando añadas <code>@Async</code>, ese nombre de hilo va a cambiar.</p>
-<p>Cuando termines de comprobarlo, <strong>retira</strong> esta clase — es solo para esta verificación, la semana que viene construyes el listener real.</p>
+<p>Cuando termines de comprobarlo, <strong>retira</strong> esta clase — es solo para esta verificación, en la Actividad 3.4 construyes el listener real.</p>
 <hr>
 <h2 id="pregunta-final">Pregunta final<a class="headerlink" href="#pregunta-final" title="Permanent link">¶</a></h2>
-<p>¿Por qué conviene que <code>TopNovedadesInvalidadoEvent</code> sea un <code>record</code> inmutable, sabiendo que la semana que viene va a ser leído desde un hilo distinto al que lo publica? ¿Qué problema evita concretamente la inmutabilidad, comparado con si <code>TopNovedadesInvalidadoEvent</code> fuera una clase mutable con setters?</p>
+<p>¿Por qué conviene que <code>TopNovedadesInvalidadoEvent</code> sea un <code>record</code> inmutable, sabiendo que en la próxima actividad va a ser leído desde un hilo distinto al que lo publica? ¿Qué problema evita concretamente la inmutabilidad, comparado con si <code>TopNovedadesInvalidadoEvent</code> fuera una clase mutable con setters?</p>
 <hr>
 <h2 id="cierre">✅ Cierre<a class="headerlink" href="#cierre" title="Permanent link">¶</a></h2>
-<p>Tu GameVault ya emite un evento cada vez que la caché de novedades se invalida — aunque, de momento, nadie reaccione a él de forma permanente. La semana que viene construyes el listener <code>@Async</code> que cierra el ciclo: recalentar la caché en un hilo aparte, justo después del commit.</p></div>
+<p>Tu GameVault ya emite un evento cada vez que la caché de novedades se invalida — aunque, de momento, nadie reaccione a él de forma permanente. En la próxima actividad construyes el listener <code>@Async</code> que cierra el ciclo: recalentar la caché en un hilo aparte, justo después del commit.</p></div>
 
 
 

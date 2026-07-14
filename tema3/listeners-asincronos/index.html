@@ -572,7 +572,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.1 - Explorando la API con un cliente HTTP
+    Actividad 1.1 - Diseccionando peticiones y respuestas HTTP
     
   </span>
   
@@ -664,7 +664,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.3 - Tests MockMvc y el PUT de Estudio
+    Actividad 1.3 - Tests MockMvc sobre Videojuego y Estudio
     
   </span>
   
@@ -687,7 +687,7 @@
   
   
   <span class="md-ellipsis">
-    Disponibilidad del servicio (Actuator)
+    Comunicación simultánea y disponibilidad (Actuator)
     
   </span>
   
@@ -710,7 +710,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.4 - DELETE de Estudio y Actuator /health
+    Actividad 1.4 - Comunicación simultánea y disponibilidad
     
   </span>
   
@@ -1703,14 +1703,14 @@
 
 <div><p><a id="listeners-asincronos"></a></p>
 <h1 id="3-listeners-asincronos-el-warm-up-de-cache-22">🧩 3. Listeners asíncronos: el warm-up de caché (2/2)<a class="headerlink" href="#3-listeners-asincronos-el-warm-up-de-cache-22" title="Permanent link">¶</a></h1>
-<p>La semana pasada construiste el evento y su publicación — sin ningún efecto visible todavía. Hoy construyes la pieza que le da sentido a todo: el listener que reacciona, recalentando la caché en un hilo aparte. Aquí es donde entra en juego <code>@EnableAsync</code> — la capacidad que en la Actividad 3.2 comprobaste que tu proyecto todavía no usaba en ningún sitio, y que hoy activas tú mismo junto a la anotación <code>@Async</code>.</p>
+<p>En el apartado anterior construiste el evento y su publicación — sin ningún efecto visible todavía. Hoy construyes la pieza que le da sentido a todo: el listener que reacciona, recalentando la caché en un hilo aparte. Aquí es donde entra en juego <code>@EnableAsync</code> — la capacidad que en la Actividad 3.2 comprobaste que tu proyecto todavía no usaba en ningún sitio, y que hoy activas tú mismo junto a la anotación <code>@Async</code>.</p>
 <hr>
 <h2 id="async-que-hace-exactamente">⚡ <code>@Async</code>: qué hace exactamente<a class="headerlink" href="#async-que-hace-exactamente" title="Permanent link">¶</a></h2>
 <p><code>@Async</code> sobre un método le dice a Spring: "no ejecutes este método en el hilo de quien lo llama — despáchalo a un pool de hilos aparte, y devuelve el control inmediatamente a quien llamó". Por debajo, Spring construye un <strong>proxy</strong> alrededor de tu bean: cuando alguien invoca un método <code>@Async</code>, en realidad no lo ejecuta directamente — el proxy intercepta la llamada, la envía a un <code>ExecutorService</code> (recuerda la escala de abstracción de la Actividad 3.2), y el método original se ejecuta en uno de esos hilos del pool.</p>
 <p>Ya tienes el contraste medido en la Actividad 3.3: sin <code>@Async</code>, tu listener trivial de prueba corría en el <strong>mismo hilo</strong> de la petición HTTP que publicó el evento. Con <code>@Async</code>, va a correr en un hilo <strong>distinto</strong> — lo vas a verificar de nuevo hoy, comparando los nombres de hilo en el log.</p>
 <hr>
 <h2 id="transactionaleventlistenerphase-after_commit">⏱️ <code>@TransactionalEventListener(phase = AFTER_COMMIT)</code><a class="headerlink" href="#transactionaleventlistenerphase-after_commit" title="Permanent link">¶</a></h2>
-<p>Aquí aparece un problema real, sutil, que un <code>@EventListener</code> a secas no resuelve: si el listener se dispara <strong>antes</strong> de que la transacción de <code>LibroService.create()</code> haga <em>commit</em>, el hilo del warm-up podría leer la base de datos en un estado que <strong>todavía no incluye</strong> el libro recién creado — y recalentaría la caché con datos viejos, justo lo contrario de lo que quieres.</p>
+<p>Aquí aparece un problema real, sutil, que un <code>@EventListener</code> a secas no resuelve: si el listener se dispara <strong>antes</strong> de que la transacción de <code>VideojuegoService.create()</code> haga <em>commit</em>, el hilo del warm-up podría leer la base de datos en un estado que <strong>todavía no incluye</strong> el libro recién creado — y recalentaría la caché con datos viejos, justo lo contrario de lo que quieres.</p>
 <p><code>@TransactionalEventListener(phase = AFTER_COMMIT)</code> resuelve esto: en vez de dispararse en el momento de <code>publishEvent(...)</code>, espera a que la transacción que publicó el evento haga <em>commit</em> con éxito, y solo entonces ejecuta el listener. Es la <strong>técnica específica de sincronización</strong> que necesitas para este caso concreto: sincronizar el arranque del hilo del listener con el momento exacto en que los datos ya son consistentes y visibles. Ya conoces <code>@Transactional</code> de Acceso a Datos — esto es la contrapartida del lado "quien reacciona a que una transacción ha terminado", no del lado "quien abre la transacción".</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
 <span class="normal"><a href="#__codelineno-0-2">2</a></span>

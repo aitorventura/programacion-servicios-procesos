@@ -20,7 +20,7 @@
     
     
       
-        <title>Actividad 1.4 - DELETE de Estudio y Actuator /health - Programación de Servicios y Procesos</title>
+        <title>Actividad 1.4 - Comunicación simultánea y disponibilidad - Programación de Servicios y Procesos</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#actividad-14-el-delete-de-estudio-y-actuator-health" class="md-skip">
+        <a href="#actividad-14-comunicacion-simultanea-y-disponibilidad-del-servicio" class="md-skip">
           Saltar a contenido
         </a>
       
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Actividad 1.4 - DELETE de Estudio y Actuator /health
+              Actividad 1.4 - Comunicación simultánea y disponibilidad
             
           </span>
         </div>
@@ -574,7 +574,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.1 - Explorando la API con un cliente HTTP
+    Actividad 1.1 - Diseccionando peticiones y respuestas HTTP
     
   </span>
   
@@ -666,7 +666,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.3 - Tests MockMvc y el PUT de Estudio
+    Actividad 1.3 - Tests MockMvc sobre Videojuego y Estudio
     
   </span>
   
@@ -689,7 +689,7 @@
   
   
   <span class="md-ellipsis">
-    Disponibilidad del servicio (Actuator)
+    Comunicación simultánea y disponibilidad (Actuator)
     
   </span>
   
@@ -721,7 +721,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.4 - DELETE de Estudio y Actuator /health
+    Actividad 1.4 - Comunicación simultánea y disponibilidad
     
   </span>
   
@@ -734,7 +734,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.4 - DELETE de Estudio y Actuator /health
+    Actividad 1.4 - Comunicación simultánea y disponibilidad
     
   </span>
   
@@ -775,46 +775,61 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#reto-el-delete-de-estudio" class="md-nav__link">
+  <a href="#bloque-1-comunicacion-simultanea" class="md-nav__link">
     <span class="md-ellipsis">
-      Reto — el DELETE de Estudio
+      Bloque 1 — Comunicación simultánea
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#verificacion-del-delete-tambien-como-reto" class="md-nav__link">
-    <span class="md-ellipsis">
-      Verificación del DELETE — también como reto
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#actuator-guiado-paso-a-paso" class="md-nav__link">
-    <span class="md-ellipsis">
-      Actuator, guiado paso a paso
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Actuator, guiado paso a paso">
+    <nav class="md-nav" aria-label="Bloque 1 — Comunicación simultánea">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#paso-1-anadir-la-dependencia" class="md-nav__link">
+  <a href="#paso-1-un-metodo-lento-para-tener-algo-que-medir" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 1 — Añadir la dependencia
+      Paso 1 — Un método lento, para tener algo que medir
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#paso-2-exponer-el-detalle-de-salud" class="md-nav__link">
+  <a href="#paso-2-medir-la-concurrencia" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 2 — Exponer el detalle de salud
+      Paso 2 — Medir la concurrencia
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bloque-2-actuator-guiado-paso-a-paso" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bloque 2 — Actuator, guiado paso a paso
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bloque 2 — Actuator, guiado paso a paso">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#paso-3-anadir-la-dependencia" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 3 — Añadir la dependencia
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-4-exponer-el-detalle-de-salud" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 4 — Exponer el detalle de salud
     </span>
   </a>
   
@@ -836,18 +851,18 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#paso-3-parar-una-dependencia" class="md-nav__link">
+  <a href="#paso-5-parar-una-dependencia" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 3 — Parar una dependencia
+      Paso 5 — Parar una dependencia
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#paso-4-recuperar-el-servicio" class="md-nav__link">
+  <a href="#paso-6-recuperar-el-servicio" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 4 — Recuperar el servicio
+      Paso 6 — Recuperar el servicio
     </span>
   </a>
   
@@ -1716,46 +1731,61 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#reto-el-delete-de-estudio" class="md-nav__link">
+  <a href="#bloque-1-comunicacion-simultanea" class="md-nav__link">
     <span class="md-ellipsis">
-      Reto — el DELETE de Estudio
+      Bloque 1 — Comunicación simultánea
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#verificacion-del-delete-tambien-como-reto" class="md-nav__link">
-    <span class="md-ellipsis">
-      Verificación del DELETE — también como reto
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#actuator-guiado-paso-a-paso" class="md-nav__link">
-    <span class="md-ellipsis">
-      Actuator, guiado paso a paso
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Actuator, guiado paso a paso">
+    <nav class="md-nav" aria-label="Bloque 1 — Comunicación simultánea">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#paso-1-anadir-la-dependencia" class="md-nav__link">
+  <a href="#paso-1-un-metodo-lento-para-tener-algo-que-medir" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 1 — Añadir la dependencia
+      Paso 1 — Un método lento, para tener algo que medir
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#paso-2-exponer-el-detalle-de-salud" class="md-nav__link">
+  <a href="#paso-2-medir-la-concurrencia" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 2 — Exponer el detalle de salud
+      Paso 2 — Medir la concurrencia
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bloque-2-actuator-guiado-paso-a-paso" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bloque 2 — Actuator, guiado paso a paso
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bloque 2 — Actuator, guiado paso a paso">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#paso-3-anadir-la-dependencia" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 3 — Añadir la dependencia
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-4-exponer-el-detalle-de-salud" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 4 — Exponer el detalle de salud
     </span>
   </a>
   
@@ -1777,18 +1807,18 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#paso-3-parar-una-dependencia" class="md-nav__link">
+  <a href="#paso-5-parar-una-dependencia" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 3 — Parar una dependencia
+      Paso 5 — Parar una dependencia
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#paso-4-recuperar-el-servicio" class="md-nav__link">
+  <a href="#paso-6-recuperar-el-servicio" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 4 — Recuperar el servicio
+      Paso 6 — Recuperar el servicio
     </span>
   </a>
   
@@ -1833,61 +1863,98 @@
 
 
 
-<div><h1 id="actividad-14-el-delete-de-estudio-y-actuator-health">🧪 Actividad 1.4: El DELETE de Estudio y Actuator <code>/health</code><a class="headerlink" href="#actividad-14-el-delete-de-estudio-y-actuator-health" title="Permanent link">¶</a></h1>
+<div><h1 id="actividad-14-comunicacion-simultanea-y-disponibilidad-del-servicio">🧪 Actividad 1.4: Comunicación simultánea y disponibilidad del servicio<a class="headerlink" href="#actividad-14-comunicacion-simultanea-y-disponibilidad-del-servicio" title="Permanent link">¶</a></h1>
 <div class="admonition info">
-<p class="admonition-title">Reto de repetición + práctica guiada</p>
-<p>El endpoint <code>DELETE</code> de Estudio lo escribes tú solo — es la tercera vez que conectas este patrón (<code>DELETE</code> de Videojuego en AD, <code>PUT</code> de Estudio en la Actividad 1.3), así que no llevas la mano guiada esta vez. Actuator sí va paso a paso, es contenido nuevo.</p>
+<p class="admonition-title">Dos bloques, los dos guiados</p>
+<p>Cierras el tema con las dos últimas piezas de la teoría: comprobar que tu aplicación atiende varias peticiones a la vez sin que se pisen, y verificar de forma automatizable que sigue "sana" cuando una de sus dependencias falla.</p>
 </div>
 <h2 id="que-vas-a-practicar">Qué vas a practicar<a class="headerlink" href="#que-vas-a-practicar" title="Permanent link">¶</a></h2>
 <ul>
-<li>Completar un CRUD reutilizando un patrón ya practicado dos veces, sin guía paso a paso.</li>
+<li>Construir un endpoint deliberadamente lento para poder medir concurrencia.</li>
+<li>Comprobar experimentalmente que Spring atiende cada petición en un hilo distinto.</li>
 <li>Añadir Actuator y activar el detalle de salud de las dependencias.</li>
 <li>Observar en vivo cómo cae la disponibilidad de un componente concreto.</li>
 </ul>
 <hr>
 <h2 id="requisitos-previos">Requisitos previos<a class="headerlink" href="#requisitos-previos" title="Permanent link">¶</a></h2>
-<p>Tu <code>PUT</code> de <code>Estudio</code> de la Actividad 1.3 funcionando, y el <code>DELETE</code> de <code>Videojuego</code> de Acceso a Datos como segundo patrón ya construido para guiarte.</p>
+<p>Tu CRUD completo de <code>Videojuego</code> (con las cuatro operaciones) y los tests MockMvc de la Actividad 1.3.</p>
 <hr>
-<h2 id="reto-el-delete-de-estudio">Reto — el DELETE de Estudio<a class="headerlink" href="#reto-el-delete-de-estudio" title="Permanent link">¶</a></h2>
-<p>Igual que con el <code>PUT</code> de la semana pasada, no partes de cero: <code>EstudioService.delete(Long id)</code> ya existe (Acceso a Datos, Actividad 1.2), completo y funcionando — solo que, hasta hoy, ningún endpoint lo invoca. Sin más guía que esta especificación, añade el endpoint que falta:</p>
-<ul>
-<li>Ruta: <code>DELETE /api/v1/estudios/{id}</code></li>
-<li><code>204 No Content</code> si borra correctamente.</li>
-<li><code>404 Not Found</code> si el <code>id</code> no existe.</li>
-</ul>
-<p>Tienes <strong>dos</strong> ejemplos ya construidos del mismo patrón (controller que delega en un service que ya gestiona el "no encontrado"): el <code>DELETE</code> de <code>VideojuegoController</code> (Acceso a Datos) y el <code>PUT</code> de <code>EstudioController</code> que tú mismo escribiste en la Actividad 1.3, conectando un método de <code>EstudioService</code> que ya existía. Escribe el <code>@DeleteMapping</code> de <code>Estudio</code> siguiendo ese mismo patrón, sin que se te dé el código.</p>
-<p><strong>Pregunta de comprensión</strong>: al borrar un <code>Estudio</code> que tiene videojuegos asociados, ¿qué pasa con esos videojuegos? Relaciona tu respuesta con <code>cascade = CascadeType.ALL</code> y <code>orphanRemoval = true</code>, que viste al crear la entidad <code>Estudio</code> en Acceso a Datos (Actividad 1.1).</p>
-<hr>
-<h2 id="verificacion-del-delete-tambien-como-reto">Verificación del DELETE — también como reto<a class="headerlink" href="#verificacion-del-delete-tambien-como-reto" title="Permanent link">¶</a></h2>
-<p>Comprueba tu <code>DELETE</code> de dos formas, sin que se te dé el código de ninguna de las dos:</p>
-<ol>
-<li><strong>Manual</strong>, desde Swagger UI (Actividad 1.2): crea un estudio de prueba, bórralo, comprueba el <code>204</code>, y comprueba después que un <code>GET</code> sobre ese mismo <code>id</code> da <code>404</code>.</li>
-<li><strong>Automatizada</strong>, con un test MockMvc que siga el mismo patrón que ya usaste en la Actividad 1.3 (mockear el service, <code>mockMvc.perform(delete(...))</code>, afirmar el código de estado) — cubre los dos casos: <code>204</code> cuando existe, <code>404</code> cuando no.</li>
-</ol>
-<hr>
-<h2 id="actuator-guiado-paso-a-paso">Actuator, guiado paso a paso<a class="headerlink" href="#actuator-guiado-paso-a-paso" title="Permanent link">¶</a></h2>
-<h3 id="paso-1-anadir-la-dependencia">Paso 1 — Añadir la dependencia<a class="headerlink" href="#paso-1-anadir-la-dependencia" title="Permanent link">¶</a></h3>
-<p>En tu <code>pom.xml</code>:</p>
-<div class="language-xml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">XML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
-<span class="normal"><a href="#__codelineno-0-2">2</a></span>
-<span class="normal"><a href="#__codelineno-0-3">3</a></span>
-<span class="normal"><a href="#__codelineno-0-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nt">&lt;dependency&gt;</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-actuator<span class="nt">&lt;/artifactId&gt;</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="nt">&lt;/dependency&gt;</span>
+<h2 id="bloque-1-comunicacion-simultanea">Bloque 1 — Comunicación simultánea<a class="headerlink" href="#bloque-1-comunicacion-simultanea" title="Permanent link">¶</a></h2>
+<h3 id="paso-1-un-metodo-lento-para-tener-algo-que-medir">Paso 1 — Un método lento, para tener algo que medir<a class="headerlink" href="#paso-1-un-metodo-lento-para-tener-algo-que-medir" title="Permanent link">¶</a></h3>
+<p>Antes del experimento necesitas un endpoint que tarde de verdad — la teoría lo daba por hecho, así que lo construyes ahora. Añade a <code>VideojuegoRepository</code>:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="n">List</span><span class="o">&lt;</span><span class="n">Videojuego</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">findTop5ByOrderByFechaLanzamientoDesc</span><span class="p">();</span>
 </code></pre></div></td></tr></table></div>
-<h3 id="paso-2-exponer-el-detalle-de-salud">Paso 2 — Exponer el detalle de salud<a class="headerlink" href="#paso-2-exponer-el-detalle-de-salud" title="Permanent link">¶</a></h3>
+<p>Y a <code>VideojuegoService</code>:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-1-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-1-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-1-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-1-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-1-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-1-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-1-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-1-10">10</a></span>
+<span class="normal"><a href="#__codelineno-1-11">11</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">VideojuegoResponseDTO</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">getTopNovedades</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">        </span><span class="n">Thread</span><span class="p">.</span><span class="na">sleep</span><span class="p">(</span><span class="mi">2000</span><span class="p">);</span><span class="w"> </span><span class="c1">// simula una consulta costosa</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">InterruptedException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="w">        </span><span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">().</span><span class="na">interrupt</span><span class="p">();</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">videojuegoRepository</span><span class="p">.</span><span class="na">findTop5ByOrderByFechaLanzamientoDesc</span><span class="p">()</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="w">            </span><span class="p">.</span><span class="na">stream</span><span class="p">()</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="w">            </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="k">this</span><span class="p">::</span><span class="n">mapToDTO</span><span class="p">)</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10"></a><span class="w">            </span><span class="p">.</span><span class="na">toList</span><span class="p">();</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Y en <code>VideojuegoController</code>:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
+<span class="normal"><a href="#__codelineno-2-2">2</a></span>
+<span class="normal"><a href="#__codelineno-2-3">3</a></span>
+<span class="normal"><a href="#__codelineno-2-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/top"</span><span class="p">)</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">VideojuegoResponseDTO</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="nf">getTopNovedades</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="n">videojuegoService</span><span class="p">.</span><span class="na">getTopNovedades</span><span class="p">());</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<div class="admonition warning">
+<p class="admonition-title">El orden de las rutas importa</p>
+<p>Declara <code>@GetMapping("/top")</code> <strong>antes</strong> que <code>@GetMapping("/{id}")</code> en la clase — si no, Spring intenta interpretar <code>top</code> como un <code>id</code> y falla al convertirlo a <code>Long</code>.</p>
+</div>
+<p>Arranca tu aplicación y comprueba con una sola llamada que <code>GET /api/v1/videojuegos/top</code> tarda efectivamente unos 2 segundos.</p>
+<h3 id="paso-2-medir-la-concurrencia">Paso 2 — Medir la concurrencia<a class="headerlink" href="#paso-2-medir-la-concurrencia" title="Permanent link">¶</a></h3>
+<p>Repite el experimento de la teoría con tu propio proyecto:</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
+<span class="normal"><a href="#__codelineno-3-2">2</a></span>
+<span class="normal"><a href="#__codelineno-3-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nb">time</span><span class="w"> </span><span class="o">(</span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/videojuegos/top<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">      </span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/videojuegos/top<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">      </span><span class="nb">wait</span><span class="o">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Anota</strong> el tiempo total mostrado por <code>time</code>. Añade temporalmente una línea <code>System.out.println(Thread.currentThread().getName())</code> al principio de <code>getTopNovedades()</code> en tu service, repite la prueba, y anota los dos nombres de hilo que aparecen en la consola. Cuando termines, retira esa línea — era solo para observar, no para quedarse en el código.</p>
+<p><strong>Pregunta</strong>: ¿qué relación hay entre este "una petición, un hilo" que acabas de observar y el resultado de <code>time</code>? Si en vez de dos lanzaras cincuenta peticiones simultáneas, ¿crees que el comportamiento sería exactamente el mismo, o hay algún límite? (No hace falta que sepas la respuesta exacta todavía — se trabaja a fondo en el Tema 3).</p>
+<hr>
+<h2 id="bloque-2-actuator-guiado-paso-a-paso">Bloque 2 — Actuator, guiado paso a paso<a class="headerlink" href="#bloque-2-actuator-guiado-paso-a-paso" title="Permanent link">¶</a></h2>
+<h3 id="paso-3-anadir-la-dependencia">Paso 3 — Añadir la dependencia<a class="headerlink" href="#paso-3-anadir-la-dependencia" title="Permanent link">¶</a></h3>
+<p>En tu <code>pom.xml</code>:</p>
+<div class="language-xml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">XML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span>
+<span class="normal"><a href="#__codelineno-4-2">2</a></span>
+<span class="normal"><a href="#__codelineno-4-3">3</a></span>
+<span class="normal"><a href="#__codelineno-4-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="nt">&lt;dependency&gt;</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-actuator<span class="nt">&lt;/artifactId&gt;</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="paso-4-exponer-el-detalle-de-salud">Paso 4 — Exponer el detalle de salud<a class="headerlink" href="#paso-4-exponer-el-detalle-de-salud" title="Permanent link">¶</a></h3>
 <p>En <code>application.yaml</code> (la configuración común, no la de un perfil concreto):</p>
-<div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
-<span class="normal"><a href="#__codelineno-1-2">2</a></span>
-<span class="normal"><a href="#__codelineno-1-3">3</a></span>
-<span class="normal"><a href="#__codelineno-1-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nt">management</span><span class="p">:</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">    </span><span class="nt">health</span><span class="p">:</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">      </span><span class="nt">show-details</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always</span>
+<div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span>
+<span class="normal"><a href="#__codelineno-5-2">2</a></span>
+<span class="normal"><a href="#__codelineno-5-3">3</a></span>
+<span class="normal"><a href="#__codelineno-5-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="nt">management</span><span class="p">:</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="w">    </span><span class="nt">health</span><span class="p">:</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4"></a><span class="w">      </span><span class="nt">show-details</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always</span>
 </code></pre></div></td></tr></table></div>
 <p>Reinicia tu aplicación y consulta:</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/actuator/health<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/actuator/health<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq
 </code></pre></div></td></tr></table></div>
 <p><strong>Comprueba</strong>: que la respuesta incluye un bloque <code>components</code> con, al menos, tu base de datos PostgreSQL (<code>db</code>) en estado <code>UP</code>.</p>
 <hr>
@@ -1897,25 +1964,25 @@
 <p class="admonition-title">Dónde ejecutar estos comandos</p>
 <p>Puedes lanzarlos desde la propia terminal integrada de VS Code, dentro del Dev Container: el <code>docker-outside-of-docker</code> que configuraste en la Actividad 1.1 de Acceso a Datos hace que <code>docker compose</code> vea y controle los mismos contenedores que tu sistema operativo, aunque la terminal esté dentro de <code>app</code>. Como el fichero ya no está en la raíz del proyecto, apunta a él con <code>-f</code>; y como <code>docker compose</code> no adivina solo qué contenedores son "los tuyos", indícale también el proyecto con <code>-p gamevault_devcontainer</code> (el mismo nombre que ya usaste en la Actividad 1.1 de AD).</p>
 </div>
-<h3 id="paso-3-parar-una-dependencia">Paso 3 — Parar una dependencia<a class="headerlink" href="#paso-3-parar-una-dependencia" title="Permanent link">¶</a></h3>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>.devcontainer/docker-compose.yml<span class="w"> </span>-p<span class="w"> </span>gamevault_devcontainer<span class="w"> </span>stop<span class="w"> </span>postgres
+<h3 id="paso-5-parar-una-dependencia">Paso 5 — Parar una dependencia<a class="headerlink" href="#paso-5-parar-una-dependencia" title="Permanent link">¶</a></h3>
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>.devcontainer/docker-compose.yml<span class="w"> </span>-p<span class="w"> </span>gamevault_devcontainer<span class="w"> </span>stop<span class="w"> </span>postgres
 </code></pre></div></td></tr></table></div>
 <p>Vuelve a consultar:</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/actuator/health<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/actuator/health<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq
 </code></pre></div></td></tr></table></div>
 <p><strong>Predicción</strong>: antes de ejecutar el comando, escribe qué esperas ver en el campo <code>status</code> general y en el componente correspondiente a PostgreSQL.</p>
-<h3 id="paso-4-recuperar-el-servicio">Paso 4 — Recuperar el servicio<a class="headerlink" href="#paso-4-recuperar-el-servicio" title="Permanent link">¶</a></h3>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>.devcontainer/docker-compose.yml<span class="w"> </span>-p<span class="w"> </span>gamevault_devcontainer<span class="w"> </span>start<span class="w"> </span>postgres
+<h3 id="paso-6-recuperar-el-servicio">Paso 6 — Recuperar el servicio<a class="headerlink" href="#paso-6-recuperar-el-servicio" title="Permanent link">¶</a></h3>
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>.devcontainer/docker-compose.yml<span class="w"> </span>-p<span class="w"> </span>gamevault_devcontainer<span class="w"> </span>start<span class="w"> </span>postgres
 </code></pre></div></td></tr></table></div>
 <p>Espera unos segundos y vuelve a consultar <code>/actuator/health</code>.</p>
 <p><strong>Comprueba</strong>: que el estado ha vuelto a <code>UP</code> sin que hayas tenido que reiniciar tu aplicación Spring Boot — solo el contenedor de la base de datos.</p>
 <p><strong>Pregunta</strong>: si tu aplicación estuviera respondiendo peticiones GET normales mientras PostgreSQL estaba caído (por ejemplo, un endpoint que no toca la base de datos), ¿el servicio estaría "disponible" o no? Justifica tu respuesta con los tres niveles de disponibilidad vistos en la teoría.</p>
 <hr>
 <h2 id="repaso-del-tema">Repaso del tema<a class="headerlink" href="#repaso-del-tema" title="Permanent link">¶</a></h2>
-<p>Escribe un repaso propio (3-4 frases) del recorrido completo de este tema: leer la API y su protocolo → documentarla y entender su semántica de escritura → probarla con tests y varios clientes simultáneos → completarla (<code>PUT</code>/<code>DELETE</code> de Estudio) → verificar su disponibilidad. ¿Qué pieza te ha costado más entender, y por qué?</p>
+<p>Escribe un repaso propio (3-4 frases) del recorrido completo de este tema: leer la API y su protocolo → documentarla y entender su semántica de escritura → probarla con tests MockMvc → medir cómo atiende varios clientes a la vez → verificar su disponibilidad. ¿Qué pieza te ha costado más entender, y por qué?</p>
 <hr>
 <h2 id="cierre">✅ Cierre<a class="headerlink" href="#cierre" title="Permanent link">¶</a></h2>
-<p>La semana que viene entras en Programación Segura: hoy tu API está completamente abierta — nada te impide borrar cualquier recurso sin identificarte. Eso empieza a cambiar en el Tema 2.</p></div>
+<p>En el Tema 2 entras en Programación Segura: hoy tu API está completamente abierta — nada te impide borrar cualquier recurso sin identificarte. Eso empieza a cambiar ahí.</p></div>
 
 
 
@@ -1951,7 +2018,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Pie" >
         
           
-          <a href="../actuator-disponibilidad/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Disponibilidad del servicio (Actuator)">
+          <a href="../actuator-disponibilidad/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Comunicación simultánea y disponibilidad (Actuator)">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1961,7 +2028,7 @@
                 Anterior
               </span>
               <div class="md-ellipsis">
-                Disponibilidad del servicio (Actuator)
+                Comunicación simultánea y disponibilidad (Actuator)
               </div>
             </div>
           </a>

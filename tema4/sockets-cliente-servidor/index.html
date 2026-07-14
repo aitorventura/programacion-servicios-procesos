@@ -572,7 +572,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.1 - Explorando la API con un cliente HTTP
+    Actividad 1.1 - Diseccionando peticiones y respuestas HTTP
     
   </span>
   
@@ -664,7 +664,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.3 - Tests MockMvc y el PUT de Estudio
+    Actividad 1.3 - Tests MockMvc sobre Videojuego y Estudio
     
   </span>
   
@@ -687,7 +687,7 @@
   
   
   <span class="md-ellipsis">
-    Disponibilidad del servicio (Actuator)
+    Comunicación simultánea y disponibilidad (Actuator)
     
   </span>
   
@@ -710,7 +710,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.4 - DELETE de Estudio y Actuator /health
+    Actividad 1.4 - Comunicación simultánea y disponibilidad
     
   </span>
   
@@ -1721,7 +1721,7 @@
 
 <div><p><a id="sockets-cliente-servidor"></a></p>
 <h1 id="1-sockets-la-base-de-toda-comunicacion-en-red">🧩 1. Sockets: la base de toda comunicación en red<a class="headerlink" href="#1-sockets-la-base-de-toda-comunicacion-en-red" title="Permanent link">¶</a></h1>
-<p>Todo lo que has hecho hasta ahora en este módulo —peticiones REST, JWT, RabbitMQ— viaja, por debajo, sobre una pieza que nunca has tocado directamente: el <strong>socket</strong>. Esta semana la sacas a la superficie.</p>
+<p>Todo lo que has hecho hasta ahora en este módulo —peticiones REST, JWT, RabbitMQ— viaja, por debajo, sobre una pieza que nunca has tocado directamente: el <strong>socket</strong>. Este apartado la saca a la superficie.</p>
 <hr>
 <h2 id="que-es-un-socket">🔌 Qué es un socket<a class="headerlink" href="#que-es-un-socket" title="Permanent link">¶</a></h2>
 <p>Un <strong>socket</strong> es el extremo programable de una conexión de red: una combinación de IP y puerto por la que un programa envía y recibe datos. Es la pieza que hay <strong>debajo</strong> de todo lo que ya has usado sin saberlo: cuando <code>curl</code> habla con tu aplicación en el puerto 8080, cuando tu aplicación se conecta a PostgreSQL (5432), MongoDB (27017) o RabbitMQ (5672), hay sockets TCP funcionando por debajo, en cada uno de esos casos.</p>
@@ -1776,22 +1776,22 @@
 <pre class="mermaid"><code>flowchart TB
     A["🔄 Petición-respuesta síncrono&lt;br/&gt;(REST — todo el curso)"]
     B["📢 Publicación-suscripción asíncrono&lt;br/&gt;(RabbitMQ — Tema 3)"]
-    C["🔗 Canal bidireccional persistente&lt;br/&gt;(WebSocket — próxima semana)"]</code></pre>
+    C["🔗 Canal bidireccional persistente&lt;br/&gt;(WebSocket — próximo apartado)"]</code></pre>
 <ul>
 <li><strong>Petición-respuesta síncrono</strong>: el cliente pide, el servidor responde, ahí termina esa conversación — el modelo de todo REST que has construido en PSP y AD.</li>
 <li><strong>Publicación-suscripción asíncrono</strong>: productor y consumidor no se conocen ni tienen que estar activos a la vez — RabbitMQ, del Tema 3.</li>
-<li><strong>Canal bidireccional persistente</strong>: una conexión que permanece abierta, por la que ambos lados pueden enviar datos en cualquier momento sin volver a conectar — el modelo que falta por conocer, WebSocket, la próxima semana.</li>
+<li><strong>Canal bidireccional persistente</strong>: una conexión que permanece abierta, por la que ambos lados pueden enviar datos en cualquier momento sin volver a conectar — el modelo que falta por conocer, WebSocket, en el próximo apartado.</li>
 </ul>
 <hr>
 <h2 id="escenarios-que-necesitan-algo-mas-que-peticion-respuesta">🚨 Escenarios que necesitan algo más que petición-respuesta<a class="headerlink" href="#escenarios-que-necesitan-algo-mas-que-peticion-respuesta" title="Permanent link">¶</a></h2>
 <p>¿Cuándo no basta con petición-respuesta? Cuando el <strong>servidor</strong> necesita avisar al cliente de algo que acaba de pasar, <strong>sin que el cliente pregunte primero</strong>. Con REST puro, el cliente tendría que estar preguntando constantemente ("¿ha pasado algo? ¿y ahora? ¿y ahora?") para enterarse a tiempo — ineficiente y con retraso.</p>
-<p>El caso concreto que vas a construir en las próximas dos semanas: un panel de actividad en vivo de tu aplicación, donde el servidor empuja cada evento del catálogo (crear, actualizar, borrar un libro) hacia los clientes conectados, en el instante en que ocurre — sin que ellos tengan que preguntar.</p>
+<p>El caso concreto que vas a construir en las próximas actividades: un panel de actividad en vivo de tu aplicación, donde el servidor empuja cada evento del catálogo (crear, actualizar, borrar un libro) hacia los clientes conectados, en el instante en que ocurre — sin que ellos tengan que preguntar.</p>
 <hr>
 <h2 id="lo-que-viene-la-actividad-41">🧭 Lo que viene: la Actividad 4.1<a class="headerlink" href="#lo-que-viene-la-actividad-41" title="Permanent link">¶</a></h2>
-<p>La práctica de esta semana (Actividad 4.1) construye un mini cliente/servidor de consola con <code>ServerSocket</code>/<code>Socket</code> e hilos — para tocar con las manos exactamente lo que Spring normalmente esconde.</p>
+<p>La Actividad 4.1 construye un mini cliente/servidor de consola con <code>ServerSocket</code>/<code>Socket</code> e hilos — para tocar con las manos exactamente lo que Spring normalmente esconde.</p>
 <div class="admonition tip">
 <p class="admonition-title">Esta actividad, con sockets reales, ya cubre el contenido de forma completa</p>
-<p>La Actividad 4.1, con <code>java.net.Socket</code>/<code>ServerSocket</code> reales y multihilo, cubre de forma <strong>completa</strong> el uso de sockets — no es un aperitivo antes de la "cobertura real" con WebSocket: es ya la cobertura real. Las semanas 18-19 (WebSocket) amplían el mismo contenido sobre un caso de aplicación real, pero no son necesarias para tenerlo cubierto.</p>
+<p>La Actividad 4.1, con <code>java.net.Socket</code>/<code>ServerSocket</code> reales y multihilo, cubre de forma <strong>completa</strong> el uso de sockets — no es un aperitivo antes de la "cobertura real" con WebSocket: es ya la cobertura real. Las próximas actividades (WebSocket) amplían el mismo contenido sobre un caso de aplicación real, pero no son necesarias para tenerlo cubierto.</p>
 </div>
 <hr>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
@@ -1802,7 +1802,7 @@
 <li><strong>Servidor</strong> (<code>ServerSocket</code>: bind/listen/accept) escucha; <strong>cliente</strong> (<code>Socket</code>: connect) inicia la conexión.</li>
 <li><strong>TCP</strong> (orientado a conexión, fiable) es lo que usa todo lo construido en el curso; <strong>UDP</strong> (sin conexión, sin garantías) se usa donde la velocidad importa más que la fiabilidad total.</li>
 <li>Tres modelos de comunicación: petición-respuesta síncrono (REST), publicación-suscripción asíncrono (RabbitMQ), canal bidireccional persistente (WebSocket).</li>
-<li>Un servidor necesita avisar proactivamente al cliente cuando petición-respuesta no basta — el escenario que resuelve el panel de actividad en vivo de las próximas semanas.</li>
+<li>Un servidor necesita avisar proactivamente al cliente cuando petición-respuesta no basta — el escenario que resuelve el panel de actividad en vivo de las próximas actividades.</li>
 <li>La Actividad 4.1, con sockets reales, cubre el contenido de forma completa — WebSocket es ampliación, no requisito.</li>
 </ul>
 </details></div>

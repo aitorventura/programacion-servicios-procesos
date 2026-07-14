@@ -20,7 +20,7 @@
     
     
       
-        <title>Disponibilidad del servicio (Actuator) - Programación de Servicios y Procesos</title>
+        <title>Comunicación simultánea y disponibilidad (Actuator) - Programación de Servicios y Procesos</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#4-disponibilidad-del-servicio-actuator" class="md-skip">
+        <a href="#4-comunicacion-simultanea-y-disponibilidad-del-servicio" class="md-skip">
           Saltar a contenido
         </a>
       
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Disponibilidad del servicio (Actuator)
+              Comunicación simultánea y disponibilidad (Actuator)
             
           </span>
         </div>
@@ -574,7 +574,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.1 - Explorando la API con un cliente HTTP
+    Actividad 1.1 - Diseccionando peticiones y respuestas HTTP
     
   </span>
   
@@ -666,7 +666,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.3 - Tests MockMvc y el PUT de Estudio
+    Actividad 1.3 - Tests MockMvc sobre Videojuego y Estudio
     
   </span>
   
@@ -698,7 +698,7 @@
   
   
   <span class="md-ellipsis">
-    Disponibilidad del servicio (Actuator)
+    Comunicación simultánea y disponibilidad (Actuator)
     
   </span>
   
@@ -711,7 +711,7 @@
   
   
   <span class="md-ellipsis">
-    Disponibilidad del servicio (Actuator)
+    Comunicación simultánea y disponibilidad (Actuator)
     
   </span>
   
@@ -732,6 +732,15 @@
       Tabla de contenidos
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#comunicacion-simultanea-de-varios-clientes" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧵 Comunicación simultánea de varios clientes
+    </span>
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#que-es-la-disponibilidad-de-un-servicio" class="md-nav__link">
@@ -799,7 +808,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 1.4 - DELETE de Estudio y Actuator /health
+    Actividad 1.4 - Comunicación simultánea y disponibilidad
     
   </span>
   
@@ -1623,6 +1632,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#comunicacion-simultanea-de-varios-clientes" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧵 Comunicación simultánea de varios clientes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#que-es-la-disponibilidad-de-un-servicio" class="md-nav__link">
     <span class="md-ellipsis">
       🩺 Qué es la disponibilidad de un servicio
@@ -1684,8 +1702,19 @@
 
 
 <div><p><a id="actuator-disponibilidad"></a></p>
-<h1 id="4-disponibilidad-del-servicio-actuator">🧩 4. Disponibilidad del servicio: Actuator<a class="headerlink" href="#4-disponibilidad-del-servicio-actuator" title="Permanent link">¶</a></h1>
-<p>Un servicio en red, una vez desplegado, corre sin que nadie lo esté mirando en pantalla constantemente. Este apartado responde a una pregunta distinta de todo lo visto hasta ahora: no "¿funciona esta petición concreta?", sino "¿está el servicio, en general, sano y disponible ahora mismo?".</p>
+<h1 id="4-comunicacion-simultanea-y-disponibilidad-del-servicio">🧩 4. Comunicación simultánea y disponibilidad del servicio<a class="headerlink" href="#4-comunicacion-simultanea-y-disponibilidad-del-servicio" title="Permanent link">¶</a></h1>
+<p>Dos preguntas distintas de las que has visto hasta ahora, sobre el mismo servicio ya funcionando: no "¿responde bien esta petición concreta?", sino "¿aguanta varias peticiones a la vez sin que unas esperen a otras?" y "¿está el servicio, en general, sano y disponible ahora mismo?".</p>
+<hr>
+<h2 id="comunicacion-simultanea-de-varios-clientes">🧵 Comunicación simultánea de varios clientes<a class="headerlink" href="#comunicacion-simultanea-de-varios-clientes" title="Permanent link">¶</a></h2>
+<p>Un servidor real no atiende a un solo cliente a la vez. Spring Web, sobre Tomcat, atiende cada petición HTTP entrante en un <strong>hilo distinto</strong>, tomado de un <em>pool</em> — así que varias peticiones pueden procesarse en paralelo sin que unas esperen a que terminen las otras. Esta idea se retomará a fondo en el Tema 3, sobre programación multihilo; de momento, compruébala con un experimento sencillo.</p>
+<p>Imagina un método del service con un <code>Thread.sleep(2000)</code> puesto a propósito, que simula una consulta lenta (lo montarás así en la actividad). Lanza dos peticiones <strong>simultáneas</strong> contra su endpoint:</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
+<span class="normal"><a href="#__codelineno-0-2">2</a></span>
+<span class="normal"><a href="#__codelineno-0-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nb">time</span><span class="w"> </span><span class="o">(</span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/libros/top<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="w">      </span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/libros/top<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="w">      </span><span class="nb">wait</span><span class="o">)</span>
+</code></pre></div></td></tr></table></div>
+<p>Si las dos peticiones se atendieran una detrás de otra, el conjunto tardaría unos 4 segundos. Si se atienden en paralelo, tardan aproximadamente 2 — porque cada una la procesa un hilo distinto del pool. Puedes confirmarlo añadiendo temporalmente una traza con <code>Thread.currentThread().getName()</code> en el método y mirando el log: verás dos nombres de hilo distintos (<code>http-nio-8080-exec-1</code>, <code>http-nio-8080-exec-2</code>...) para las dos peticiones.</p>
 <hr>
 <h2 id="que-es-la-disponibilidad-de-un-servicio">🩺 Qué es la disponibilidad de un servicio<a class="headerlink" href="#que-es-la-disponibilidad-de-un-servicio" title="Permanent link">¶</a></h2>
 <p>Que un servicio esté <strong>disponible</strong> no es una única cosa binaria — hay distintos niveles de "estar bien":</p>
@@ -1699,39 +1728,39 @@
 <h2 id="spring-boot-actuator">🛠️ Spring Boot Actuator<a class="headerlink" href="#spring-boot-actuator" title="Permanent link">¶</a></h2>
 <p><strong>Spring Boot Actuator</strong> es la implementación de todo esto para una aplicación Spring Boot: un conjunto de endpoints HTTP listos para usar que exponen información operativa sobre tu aplicación — entre ellos, su salud.</p>
 <p>Tu propio proyecto no incluye Actuator todavía (revisa tu <code>pom.xml</code>: no está la dependencia) — es la mejora que añades esta semana:</p>
-<div class="language-xml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">XML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
-<span class="normal"><a href="#__codelineno-0-2">2</a></span>
-<span class="normal"><a href="#__codelineno-0-3">3</a></span>
-<span class="normal"><a href="#__codelineno-0-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nt">&lt;dependency&gt;</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-actuator<span class="nt">&lt;/artifactId&gt;</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="nt">&lt;/dependency&gt;</span>
-</code></pre></div></td></tr></table></div>
-<p>Con solo esa dependencia, Spring Boot expone automáticamente <code>/actuator/health</code>. Para ver el detalle de cada dependencia (y no solo un <code>UP</code>/<code>DOWN</code> genérico), hace falta una línea de configuración:</p>
-<div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
+<div class="language-xml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">XML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
 <span class="normal"><a href="#__codelineno-1-2">2</a></span>
 <span class="normal"><a href="#__codelineno-1-3">3</a></span>
-<span class="normal"><a href="#__codelineno-1-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nt">management</span><span class="p">:</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">    </span><span class="nt">health</span><span class="p">:</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">      </span><span class="nt">show-details</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always</span>
+<span class="normal"><a href="#__codelineno-1-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nt">&lt;dependency&gt;</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-actuator<span class="nt">&lt;/artifactId&gt;</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></td></tr></table></div>
+<p>Con solo esa dependencia, Spring Boot expone automáticamente <code>/actuator/health</code>. Para ver el detalle de cada dependencia (y no solo un <code>UP</code>/<code>DOWN</code> genérico), hace falta una línea de configuración:</p>
+<div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
+<span class="normal"><a href="#__codelineno-2-2">2</a></span>
+<span class="normal"><a href="#__codelineno-2-3">3</a></span>
+<span class="normal"><a href="#__codelineno-2-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nt">management</span><span class="p">:</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">    </span><span class="nt">health</span><span class="p">:</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">      </span><span class="nt">show-details</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always</span>
 </code></pre></div></td></tr></table></div>
 <hr>
 <h2 id="el-endpoint-actuatorhealth">🟢 El endpoint <code>/actuator/health</code><a class="headerlink" href="#el-endpoint-actuatorhealth" title="Permanent link">¶</a></h2>
-<p>Con los detalles activados, <code>/actuator/health</code> no solo dice si tu aplicación responde — agrega el estado de <strong>cada dependencia real</strong> que Spring Boot detecta en el classpath. En una aplicación que use PostgreSQL y MongoDB (como la librería que has visto de ejemplo), eso se ve así:</p>
-<div class="language-json highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">JSON</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
-<span class="normal"><a href="#__codelineno-2-2">2</a></span>
-<span class="normal"><a href="#__codelineno-2-3">3</a></span>
-<span class="normal"><a href="#__codelineno-2-4">4</a></span>
-<span class="normal"><a href="#__codelineno-2-5">5</a></span>
-<span class="normal"><a href="#__codelineno-2-6">6</a></span>
-<span class="normal"><a href="#__codelineno-2-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="p">{</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">  </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UP"</span><span class="p">,</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">  </span><span class="nt">"components"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">    </span><span class="nt">"db"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UP"</span><span class="w"> </span><span class="p">},</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">    </span><span class="nt">"mongo"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UP"</span><span class="w"> </span><span class="p">}</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">  </span><span class="p">}</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="p">}</span>
+<p>Con los detalles activados, <code>/actuator/health</code> no solo dice si tu aplicación responde — agrega el estado de <strong>cada dependencia real</strong> que Spring Boot detecta en el classpath. En una aplicación con varias piezas de infraestructura (por ejemplo, tu propio GameVault más adelante, cuando tenga PostgreSQL y MongoDB a la vez), eso se ve así:</p>
+<div class="language-json highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">JSON</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
+<span class="normal"><a href="#__codelineno-3-2">2</a></span>
+<span class="normal"><a href="#__codelineno-3-3">3</a></span>
+<span class="normal"><a href="#__codelineno-3-4">4</a></span>
+<span class="normal"><a href="#__codelineno-3-5">5</a></span>
+<span class="normal"><a href="#__codelineno-3-6">6</a></span>
+<span class="normal"><a href="#__codelineno-3-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="p">{</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">  </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UP"</span><span class="p">,</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">  </span><span class="nt">"components"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="w">    </span><span class="nt">"db"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UP"</span><span class="w"> </span><span class="p">},</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="w">    </span><span class="nt">"mongo"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UP"</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>Fíjate en la implicación: si el contenedor de MongoDB se cae, <code>/actuator/health</code> pasa a <code>DOWN</code> con el detalle del componente <code>mongo</code> marcado como el culpable — <strong>aunque la aplicación siga respondiendo peticiones sobre PostgreSQL sin ningún problema</strong>. Es exactamente el matiz del punto 3 de más arriba: "responder" y "estar realmente sano" no son lo mismo.</p>
 <div class="admonition tip">
@@ -1741,12 +1770,13 @@
 <p>Actuator trae también otros endpoints útiles, como <code>/actuator/info</code> (metadatos de la aplicación) o <code>/actuator/metrics</code> (métricas de rendimiento) — no vas a profundizar en ellos ahora, pero conviene que sepas que existen.</p>
 <hr>
 <h2 id="recapitulacion-del-tema">🧭 Recapitulación del tema<a class="headerlink" href="#recapitulacion-del-tema" title="Permanent link">¶</a></h2>
-<p>Con esto se completa el recorrido: leíste la API y su protocolo (apartado 1), la documentaste y entendiste su semántica de escritura con OpenAPI (apartado 2), la probaste con MockMvc y con varios clientes simultáneos (apartado 3), y hoy verificas su disponibilidad de forma automatizable. En la Actividad 1.4 completas el <code>DELETE</code> que falta en tu proyecto y pones en marcha Actuator.</p>
+<p>Con esto se completa el recorrido: leíste la API y su protocolo, la documentaste y entendiste su semántica de escritura con OpenAPI, la probaste con tests MockMvc, y hoy compruebas cómo atiende varias peticiones a la vez y verificas su disponibilidad de forma automatizable. En la Actividad 1.4 mides ambas cosas sobre tu propio proyecto y pones en marcha Actuator.</p>
 <hr>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
 <details class="tip">
 <summary>Abrir resumen</summary>
 <ul>
+<li>Cada petición HTTP la atiende un hilo distinto del <em>pool</em> de Tomcat — por eso dos peticiones lentas simultáneas no tardan el doble, sino aproximadamente lo mismo que una sola.</li>
 <li>La <strong>disponibilidad</strong> de un servicio tiene varios niveles: proceso vivo, responde peticiones, dependencias funcionando — no son lo mismo.</li>
 <li>Un <strong>health check</strong> es una comprobación automática, pensada para que la consulte una máquina (monitor, orquestador, CI), no una persona.</li>
 <li><strong>Spring Boot Actuator</strong> expone <code>/actuator/health</code> con la dependencia <code>spring-boot-starter-actuator</code>; <code>management.endpoint.health.show-details: always</code> muestra el detalle de cada dependencia.</li>
@@ -1788,7 +1818,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Pie" >
         
           
-          <a href="../actividad_1_3/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Actividad 1.3 - Tests MockMvc y el PUT de Estudio">
+          <a href="../actividad_1_3/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Actividad 1.3 - Tests MockMvc sobre Videojuego y Estudio">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1798,20 +1828,20 @@
                 Anterior
               </span>
               <div class="md-ellipsis">
-                Actividad 1.3 - Tests MockMvc y el PUT de Estudio
+                Actividad 1.3 - Tests MockMvc sobre Videojuego y Estudio
               </div>
             </div>
           </a>
         
         
           
-          <a href="../actividad_1_4/" class="md-footer__link md-footer__link--next" aria-label="Siguiente: Actividad 1.4 - DELETE de Estudio y Actuator /health">
+          <a href="../actividad_1_4/" class="md-footer__link md-footer__link--next" aria-label="Siguiente: Actividad 1.4 - Comunicación simultánea y disponibilidad">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Siguiente
               </span>
               <div class="md-ellipsis">
-                Actividad 1.4 - DELETE de Estudio y Actuator /health
+                Actividad 1.4 - Comunicación simultánea y disponibilidad
               </div>
             </div>
             <div class="md-footer__button md-icon">
