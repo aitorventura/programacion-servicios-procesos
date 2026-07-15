@@ -642,18 +642,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#la-semantica-completa-de-los-verbos-de-escritura" class="md-nav__link">
+  <a href="#el-librocontroller-completo-leido-desde-http" class="md-nav__link">
     <span class="md-ellipsis">
-      ✍️ La semántica completa de los verbos de escritura
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#que-es-la-idempotencia" class="md-nav__link">
-    <span class="md-ellipsis">
-      🔁 Qué es la idempotencia
+      📖 El LibroController completo, leído desde HTTP
     </span>
   </a>
   
@@ -666,17 +657,17 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#los-endpoints-de-escritura-leidos-desde-http" class="md-nav__link">
+    <nav class="md-nav" aria-label="📜 El contrato de una API: qué es OpenAPI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#asi-se-ve-swagger-ui-paso-a-paso" class="md-nav__link">
     <span class="md-ellipsis">
-      📖 Los endpoints de escritura, leídos desde HTTP
+      🖥️ Así se ve Swagger UI, paso a paso
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="📖 Los endpoints de escritura, leídos desde HTTP">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
   <a href="#documentando-con-openapi" class="md-nav__link">
@@ -1647,18 +1638,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#la-semantica-completa-de-los-verbos-de-escritura" class="md-nav__link">
+  <a href="#el-librocontroller-completo-leido-desde-http" class="md-nav__link">
     <span class="md-ellipsis">
-      ✍️ La semántica completa de los verbos de escritura
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#que-es-la-idempotencia" class="md-nav__link">
-    <span class="md-ellipsis">
-      🔁 Qué es la idempotencia
+      📖 El LibroController completo, leído desde HTTP
     </span>
   </a>
   
@@ -1671,17 +1653,17 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#los-endpoints-de-escritura-leidos-desde-http" class="md-nav__link">
+    <nav class="md-nav" aria-label="📜 El contrato de una API: qué es OpenAPI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#asi-se-ve-swagger-ui-paso-a-paso" class="md-nav__link">
     <span class="md-ellipsis">
-      📖 Los endpoints de escritura, leídos desde HTTP
+      🖥️ Así se ve Swagger UI, paso a paso
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="📖 Los endpoints de escritura, leídos desde HTTP">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
   <a href="#documentando-con-openapi" class="md-nav__link">
@@ -1733,64 +1715,10 @@
 
 <div><p><a id="escritura-y-openapi"></a></p>
 <h1 id="2-escritura-en-la-api-y-documentacion-con-openapi">🧩 2. Escritura en la API y documentación con OpenAPI<a class="headerlink" href="#2-escritura-en-la-api-y-documentacion-con-openapi" title="Permanent link">¶</a></h1>
-<p>En Acceso a Datos estás construyendo (o vas a construir) un CRUD completo — controller, service y DTOs de escritura incluidos. Aquí no repites esa construcción: ves la <strong>vertiente HTTP</strong> de ese tipo de endpoints (qué código de estado espera cada verbo, qué significa que una operación sea idempotente) y añades algo que no tenías en el apartado anterior — documentación automática de tu API con OpenAPI.</p>
+<p>Ya conoces los DTOs de entrada y de salida, las anotaciones de Bean Validation, <code>@Valid</code> y <code>@Transactional</code> — los has usado para construir un CRUD completo. Aquí no repites nada de eso: ves esos mismos endpoints de escritura completos, con su código real, y añades algo que todavía no tenías — documentación automática de tu API con OpenAPI.</p>
 <hr>
-<h2 id="la-semantica-completa-de-los-verbos-de-escritura">✍️ La semántica completa de los verbos de escritura<a class="headerlink" href="#la-semantica-completa-de-los-verbos-de-escritura" title="Permanent link">¶</a></h2>
-<p>En el apartado anterior viste <code>GET</code>. Los otros tres verbos, con el código de estado que "les corresponde" por defecto:</p>
-<table>
-<thead>
-<tr>
-<th>Verbo</th>
-<th>Qué hace</th>
-<th>Código habitual de éxito</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>POST</code></td>
-<td>Crea un recurso nuevo</td>
-<td><code>201 Created</code></td>
-</tr>
-<tr>
-<td><code>PUT</code></td>
-<td>Reemplaza un recurso existente</td>
-<td><code>200 OK</code></td>
-</tr>
-<tr>
-<td><code>DELETE</code></td>
-<td>Elimina un recurso</td>
-<td><code>204 No Content</code></td>
-</tr>
-</tbody>
-</table>
-<p><code>204 No Content</code> significa "todo ha ido bien, y no hay nada que devolverte en el cuerpo" — tiene sentido en un <code>DELETE</code>: una vez borrado el recurso, no hay nada que enseñar.</p>
-<hr>
-<h2 id="que-es-la-idempotencia">🔁 Qué es la idempotencia<a class="headerlink" href="#que-es-la-idempotencia" title="Permanent link">¶</a></h2>
-<p>Una operación es <strong>idempotente</strong> si repetirla varias veces produce el mismo resultado que hacerla una sola vez. Es una propiedad HTTP importante porque, en una red real, las peticiones pueden perderse o duplicarse (un reintento automático, una doble pulsación) — y conviene saber qué pasa si eso ocurre.</p>
-<ul>
-<li><strong><code>PUT</code> es idempotente</strong>: si mandas diez veces el mismo <code>PUT</code> con el mismo cuerpo, el recurso queda igual que si lo hubieras mandado una sola vez — cada vez "reemplaza" con los mismos datos.</li>
-<li><strong><code>DELETE</code> es idempotente</strong>: borrar algo que ya está borrado no cambia nada más (aunque el código de estado de la segunda vez pueda ser un <code>404</code> en vez de un <code>204</code>, el <em>estado del sistema</em> es el mismo).</li>
-<li><strong><code>POST</code> NO es idempotente</strong>: si mandas diez veces el mismo <code>POST</code> de "crear un libro", obtienes diez libros distintos — cada llamada crea uno nuevo.</li>
-</ul>
-<div class="admonition example">
-<p class="admonition-title">Por qué importa en la práctica</p>
-<p>Si el formulario de "añadir libro" de una aplicación web falla al enviar y el usuario pulsa "Reintentar", con un <code>POST</code> corres el riesgo de crear el recurso duplicado. Con un <code>PUT</code> (por ejemplo, "guardar cambios de este libro concreto"), reintentar no tiene ese riesgo: el resultado final es el mismo se mande una vez o cinco.</p>
-</div>
-<hr>
-<h2 id="el-contrato-de-una-api-que-es-openapi">📜 El contrato de una API: qué es OpenAPI<a class="headerlink" href="#el-contrato-de-una-api-que-es-openapi" title="Permanent link">¶</a></h2>
-<p>Cuando el consumidor de tu API es otro programa (o un compañero de equipo que no ha leído tu código), necesita saber, sin adivinar: qué rutas existen, qué verbo usa cada una, qué reciben y qué devuelven. A esa descripción formal se la llama el <strong>contrato</strong> de la API.</p>
-<p><strong>OpenAPI</strong> es el formato estándar más usado para escribir ese contrato (un documento, normalmente en YAML o JSON, que describe rutas, verbos, parámetros y esquemas de datos). <strong>Swagger UI</strong> es un visor interactivo que lee ese documento y genera, automáticamente, una página web donde se puede explorar la API — y también <strong>ejecutarla de verdad</strong>.</p>
-<div class="admonition info">
-<p class="admonition-title">Swagger UI no es solo documentación: manda peticiones HTTP reales</p>
-<p>No es una vista estática ni una simulación. Cada endpoint tiene un botón <strong>"Try it out"</strong>: rellenas los parámetros (o el cuerpo JSON, en un <code>POST</code>/<code>PUT</code>) desde un formulario, pulsas <strong>Execute</strong>, y Swagger UI construye y envía una petición HTTP de verdad contra tu aplicación, corriendo en <code>localhost:8080</code> — la misma petición que mandarías con <code>curl</code>, byte a byte. La respuesta que ves (código de estado, cabeceras, cuerpo) es la respuesta real de tu servidor, no una previsualización. Si el <code>POST</code> crea un libro, ese libro queda guardado en tu base de datos exactamente igual que si lo hubieras creado con <code>curl</code>.</p>
-</div>
-<pre class="mermaid"><code>flowchart LR
-    A["📝 Anotaciones en tu código&lt;br/&gt;(@RestController, @GetMapping...)"] -- "genera" --&gt; B["📄 Contrato OpenAPI&lt;br/&gt;(/v3/api-docs)"]
-    B -- "se visualiza en" --&gt; C["🖥️ Swagger UI&lt;br/&gt;(/swagger-ui.html)"]</code></pre>
-<p>Lo importante: tú no escribes el documento OpenAPI a mano. Una librería lo genera automáticamente, leyendo las mismas anotaciones (<code>@RestController</code>, <code>@GetMapping</code>, los DTOs...) que ya usas para construir la API — el contrato y el código nunca se desincronizan porque son la misma fuente.</p>
-<hr>
-<h2 id="los-endpoints-de-escritura-leidos-desde-http">📖 Los endpoints de escritura, leídos desde HTTP<a class="headerlink" href="#los-endpoints-de-escritura-leidos-desde-http" title="Permanent link">¶</a></h2>
-<p>Con esa base, lee ahora los métodos de escritura de ese mismo <code>LibroController</code>, esta vez completo, desde la óptica HTTP:</p>
+<h2 id="el-librocontroller-completo-leido-desde-http">📖 El <code>LibroController</code> completo, leído desde HTTP<a class="headerlink" href="#el-librocontroller-completo-leido-desde-http" title="Permanent link">¶</a></h2>
+<p>Aquí está de nuevo el <code>LibroController</code> que ya explicamos, esta vez completo, con los cinco métodos juntos:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
@@ -1805,22 +1733,84 @@
 <span class="normal"><a href="#__codelineno-0-12">12</a></span>
 <span class="normal"><a href="#__codelineno-0-13">13</a></span>
 <span class="normal"><a href="#__codelineno-0-14">14</a></span>
-<span class="normal"><a href="#__codelineno-0-15">15</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nd">@PostMapping</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">LibroResponseDTO</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="nd">@Valid</span><span class="w"> </span><span class="nd">@RequestBody</span><span class="w"> </span><span class="n">LibroCreateDTO</span><span class="w"> </span><span class="n">dto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">CREATED</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">libroService</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">dto</span><span class="p">));</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="p">}</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5"></a>
-<a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="nd">@PutMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">LibroResponseDTO</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="nd">@Valid</span><span class="w"> </span><span class="nd">@RequestBody</span><span class="w"> </span><span class="n">LibroCreateDTO</span><span class="w"> </span><span class="n">dto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="n">libroService</span><span class="p">.</span><span class="na">update</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">dto</span><span class="p">));</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="p">}</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10"></a>
-<a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="nd">@DeleteMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">Void</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="w">    </span><span class="n">libroService</span><span class="p">.</span><span class="na">delete</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">noContent</span><span class="p">().</span><span class="na">build</span><span class="p">();</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="p">}</span>
+<span class="normal"><a href="#__codelineno-0-15">15</a></span>
+<span class="normal"><a href="#__codelineno-0-16">16</a></span>
+<span class="normal"><a href="#__codelineno-0-17">17</a></span>
+<span class="normal"><a href="#__codelineno-0-18">18</a></span>
+<span class="normal"><a href="#__codelineno-0-19">19</a></span>
+<span class="normal"><a href="#__codelineno-0-20">20</a></span>
+<span class="normal"><a href="#__codelineno-0-21">21</a></span>
+<span class="normal"><a href="#__codelineno-0-22">22</a></span>
+<span class="normal"><a href="#__codelineno-0-23">23</a></span>
+<span class="normal"><a href="#__codelineno-0-24">24</a></span>
+<span class="normal"><a href="#__codelineno-0-25">25</a></span>
+<span class="normal"><a href="#__codelineno-0-26">26</a></span>
+<span class="normal"><a href="#__codelineno-0-27">27</a></span>
+<span class="normal"><a href="#__codelineno-0-28">28</a></span>
+<span class="normal"><a href="#__codelineno-0-29">29</a></span>
+<span class="normal"><a href="#__codelineno-0-30">30</a></span>
+<span class="normal"><a href="#__codelineno-0-31">31</a></span>
+<span class="normal"><a href="#__codelineno-0-32">32</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nd">@RestController</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="nd">@RequestMapping</span><span class="p">(</span><span class="s">"/api/v1/libros"</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="nd">@RequiredArgsConstructor</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LibroController</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">LibroService</span><span class="w"> </span><span class="n">libroService</span><span class="p">;</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6"></a>
+<a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="w">    </span><span class="nd">@GetMapping</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">LibroResponseDTO</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="nf">getAll</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="n">libroService</span><span class="p">.</span><span class="na">findAll</span><span class="p">());</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11"></a>
+<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="w">    </span><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">LibroResponseDTO</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">getById</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="n">libroService</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">));</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16"></a>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="w">    </span><span class="nd">@PostMapping</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">LibroResponseDTO</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="nd">@Valid</span><span class="w"> </span><span class="nd">@RequestBody</span><span class="w"> </span><span class="n">LibroCreateDTO</span><span class="w"> </span><span class="n">dto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">CREATED</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">libroService</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">dto</span><span class="p">));</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21"></a>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="w">    </span><span class="nd">@PutMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">LibroResponseDTO</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="nd">@Valid</span><span class="w"> </span><span class="nd">@RequestBody</span><span class="w"> </span><span class="n">LibroCreateDTO</span><span class="w"> </span><span class="n">dto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="n">libroService</span><span class="p">.</span><span class="na">update</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">dto</span><span class="p">));</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="w">    </span><span class="nd">@DeleteMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">Void</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="w">        </span><span class="n">libroService</span><span class="p">.</span><span class="na">delete</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">noContent</span><span class="p">().</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
+<p><code>getAll</code> y <code>getById</code> responden con <code>200</code>. Los otros tres, con el mismo criterio — qué código de estado espera cada uno y si repetirlo cambia algo:</p>
+<table>
+<thead>
+<tr>
+<th>Verbo</th>
+<th>Código habitual de éxito</th>
+<th>¿Repetirlo cambia algo?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>POST</code></td>
+<td><code>201 Created</code></td>
+<td>Sí — crea un recurso nuevo cada vez</td>
+</tr>
+<tr>
+<td><code>PUT</code></td>
+<td><code>200 OK</code></td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>DELETE</code></td>
+<td><code>204 No Content</code></td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>Y, elemento a elemento, lo que hace cada pieza de esos tres métodos:</p>
 <table>
 <thead>
 <tr>
@@ -1847,10 +1837,31 @@
 </tr>
 <tr>
 <td><code>@Valid</code></td>
-<td>Activa la validación del DTO antes de que el método se ejecute — se profundiza en el Tema 2.</td>
+<td>La misma validación que ya conoces, ahora en el flujo de escritura: si el DTO incumple alguna restricción, la petición nunca llega a ejecutar el método — se profundiza en el Tema 2.</td>
 </tr>
 </tbody>
 </table>
+<p>Fíjate en algo: nada de este código menciona OpenAPI ni Swagger. Eso es justo lo que viene ahora — cómo este mismo controller, sin tocarle una línea, termina documentado y ejecutable desde el navegador.</p>
+<hr>
+<h2 id="el-contrato-de-una-api-que-es-openapi">📜 El contrato de una API: qué es OpenAPI<a class="headerlink" href="#el-contrato-de-una-api-que-es-openapi" title="Permanent link">¶</a></h2>
+<p>Toda esa semántica —qué verbo usar, qué código esperar, si es seguro reintentar— la conoces tú, porque ya la viste en el apartado anterior. Pero cuando el consumidor de tu API es otro programa (o un compañero de equipo que no ha leído tu código), necesita saber lo mismo sin adivinar: qué rutas existen, qué verbo usa cada una, qué reciben y qué devuelven. A esa descripción formal se la llama el <strong>contrato</strong> de la API.</p>
+<p><strong>OpenAPI</strong> es el formato estándar más usado para escribir ese contrato (un documento, normalmente en YAML o JSON, que describe rutas, verbos, parámetros y esquemas de datos). <strong>Swagger UI</strong> es un visor interactivo que lee ese documento y genera, automáticamente, una página web donde se puede explorar la API — y también <strong>ejecutarla de verdad</strong>.</p>
+<pre class="mermaid"><code>flowchart LR
+    A["📝 Anotaciones en tu código&lt;br/&gt;(@RestController, @GetMapping...)"] -- "genera" --&gt; B["📄 Contrato OpenAPI&lt;br/&gt;(/v3/api-docs)"]
+    B -- "se visualiza en" --&gt; C["🖥️ Swagger UI&lt;br/&gt;(/swagger-ui.html)"]</code></pre>
+<p>Lo importante: tú no escribes el documento OpenAPI a mano. Una librería lo genera automáticamente, leyendo las mismas anotaciones (<code>@RestController</code>, <code>@GetMapping</code>, los DTOs...) que ya usas para construir la API — el contrato y el código nunca se desincronizan porque son la misma fuente.</p>
+<h3 id="asi-se-ve-swagger-ui-paso-a-paso">🖥️ Así se ve Swagger UI, paso a paso<a class="headerlink" href="#asi-se-ve-swagger-ui-paso-a-paso" title="Permanent link">¶</a></h3>
+<p>Esto es exactamente lo que vas a tener delante en tu propia pantalla, sobre tu propio <code>LibroController</code> (o el equivalente en tu proyecto):</p>
+<ol>
+<li>Abres <code>/swagger-ui.html</code> en el navegador y ves los controllers de tu API agrupados por <em>tag</em> (normalmente, el nombre de la clase), cada uno desplegable.</li>
+<li>Despliegas, por ejemplo, <code>POST /api/v1/libros</code> — Swagger UI te muestra el esquema esperado del cuerpo (los mismos campos de <code>LibroCreateDTO</code>, con sus tipos y sus restricciones de Bean Validation) y un ejemplo de JSON ya relleno.</li>
+<li>Pulsas <strong>Try it out</strong>: ese ejemplo se vuelve editable. Cambias los valores que quieras.</li>
+<li>Pulsas <strong>Execute</strong>.</li>
+</ol>
+<div class="admonition info">
+<p class="admonition-title">Swagger UI no es solo documentación: manda peticiones HTTP reales</p>
+<p>Ese último clic, <strong>Execute</strong>, no es una simulación. Swagger UI construye y envía una petición HTTP de verdad contra tu aplicación, corriendo en <code>localhost:8080</code> — la misma petición que mandarías con <code>curl</code>, byte a byte. La respuesta que aparece justo debajo (código de estado, cabeceras, cuerpo) es la respuesta real de tu servidor, no una previsualización. Si el <code>POST</code> crea un libro, ese libro queda guardado en tu base de datos exactamente igual que si lo hubieras creado con <code>curl</code>.</p>
+</div>
 <h3 id="documentando-con-openapi">Documentando con OpenAPI<a class="headerlink" href="#documentando-con-openapi" title="Permanent link">¶</a></h3>
 <p>La documentación se genera con la dependencia <code>springdoc-openapi-starter-webmvc-ui</code> y una clase de configuración mínima:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
@@ -1880,7 +1891,7 @@
 <p>Con solo esa dependencia y esa clase, springdoc escanea todos los <code>@RestController</code> del proyecto y genera, sin más trabajo por tu parte, la especificación OpenAPI en <code>/v3/api-docs</code> y la interfaz visual en <code>/swagger-ui.html</code> — los mismos endpoints que el controller ya tenía quedan documentados, y puedes ejecutarlos de verdad desde el navegador con "Try it out", tal como acabas de ver.</p>
 <hr>
 <h2 id="ventajas-del-protocolo-estandar-con-ejemplos-concretos">🆚 Ventajas del protocolo estándar, con ejemplos concretos<a class="headerlink" href="#ventajas-del-protocolo-estandar-con-ejemplos-concretos" title="Permanent link">¶</a></h2>
-<p>Ya viste en el apartado anterior que un protocolo estándar permite que cualquier cliente hable con tu API sin acordar nada a medida. Aquí tienes dos consecuencias prácticas de esa idea:</p>
+<p>Para el diagrama de arriba —anotaciones, contrato OpenAPI, Swagger UI— existe una condición: tu API tiene que hablar un protocolo que herramientas de terceros (springdoc, Swagger UI) ya entiendan de fábrica, sin que tú les enseñes nada. Ya viste en el apartado anterior que un protocolo estándar permite eso: que cualquier cliente hable con tu API sin acordar nada a medida. Aquí tienes dos consecuencias prácticas, ahora que ya has visto OpenAPI en marcha:</p>
 <ul>
 <li>Los <strong>códigos de estado son universales</strong>: cualquier cliente (el tuyo, el de un compañero, una app de otro lenguaje) sabe qué significa un <code>201</code> o un <code>404</code> sin necesidad de leer tu documentación particular — es parte del estándar HTTP, no una convención tuya.</li>
 <li>Las <strong>herramientas funcionan sin configuración específica</strong>: Swagger UI, <code>curl</code>... todas saben "hablar HTTP" de fábrica. No has tenido que instalar ni configurar nada especial en Swagger UI para que entienda las respuestas de tu API — el protocolo ya es compartido.</li>
@@ -1890,10 +1901,8 @@
 <details class="tip">
 <summary>Abrir resumen</summary>
 <ul>
-<li><code>POST</code> → <code>201 Created</code>; <code>PUT</code> → <code>200 OK</code>; <code>DELETE</code> → <code>204 No Content</code> son las combinaciones habituales verbo/código para operaciones de escritura.</li>
-<li>Una operación es <strong>idempotente</strong> si repetirla no cambia el resultado respecto a hacerla una vez: <code>PUT</code> y <code>DELETE</code> lo son, <code>POST</code> no.</li>
 <li>El <strong>contrato</strong> de una API describe formalmente sus rutas, verbos y datos; <strong>OpenAPI</strong> es el formato estándar de ese contrato, generado automáticamente a partir de las anotaciones del código (no se escribe a mano).</li>
-<li><strong>Swagger UI</strong> no solo visualiza el contrato: su botón "Try it out" manda peticiones HTTP reales contra tu aplicación en marcha, sin escribir código — la misma petición que mandarías con <code>curl</code>.</li>
+<li><strong>Swagger UI</strong> agrupa tus endpoints por controller; al desplegar uno ves su esquema, y con "Try it out" + "Execute" mandas una petición HTTP real contra tu aplicación, sin escribir código — la misma petición que mandarías con <code>curl</code>.</li>
 <li><code>@RequestBody</code> mapea el cuerpo JSON a un objeto Java; <code>@Valid</code> activa su validación.</li>
 <li>Que Swagger UI y <code>curl</code> puedan hablar los dos con la misma API sin adaptar nada en el servidor es la demostración práctica de qué aporta un protocolo estándar.</li>
 </ul>
