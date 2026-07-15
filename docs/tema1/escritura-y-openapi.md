@@ -2,45 +2,76 @@
 
 # 🧩 2. Escritura en la API y documentación con OpenAPI
 
-En Acceso a Datos estás construyendo (o vas a construir) un CRUD completo — controller, service y DTOs de escritura incluidos. Aquí no repites esa construcción: ves la **vertiente HTTP** de ese tipo de endpoints (qué código de estado espera cada verbo, qué significa que una operación sea idempotente) y añades algo que no tenías en el apartado anterior — documentación automática de tu API con OpenAPI.
+Ya conoces los DTOs de entrada y de salida, las anotaciones de Bean Validation, `@Valid` y `@Transactional` — los has usado para construir un CRUD completo. Aquí no repites nada de eso: ves esos mismos endpoints de escritura completos, con su código real, y añades algo que todavía no tenías — documentación automática de tu API con OpenAPI.
 
 ---
 
-## ✍️ La semántica completa de los verbos de escritura
+## 📖 El `LibroController` completo, leído desde HTTP
 
-En el apartado anterior viste `GET`. Los otros tres verbos, con el código de estado que "les corresponde" por defecto:
+Aquí está de nuevo el `LibroController` que ya explicamos, esta vez completo, con los cinco métodos juntos:
 
-| Verbo | Qué hace | Código habitual de éxito |
+```java
+@RestController
+@RequestMapping("/api/v1/libros")
+@RequiredArgsConstructor
+public class LibroController {
+    private final LibroService libroService;
+
+    @GetMapping
+    public ResponseEntity<List<LibroResponseDTO>> getAll() {
+        return ResponseEntity.ok(libroService.findAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<LibroResponseDTO> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(libroService.findById(id));
+    }
+
+    @PostMapping
+    public ResponseEntity<LibroResponseDTO> create(@Valid @RequestBody LibroCreateDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(libroService.create(dto));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<LibroResponseDTO> update(@PathVariable Long id, @Valid @RequestBody LibroCreateDTO dto) {
+        return ResponseEntity.ok(libroService.update(id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        libroService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+}
+```
+
+`getAll` y `getById` responden con `200`. Los otros tres, con el mismo criterio — qué código de estado espera cada uno y si repetirlo cambia algo:
+
+| Verbo | Código habitual de éxito | ¿Repetirlo cambia algo? |
 |---|---|---|
-| `POST` | Crea un recurso nuevo | `201 Created` |
-| `PUT` | Reemplaza un recurso existente | `200 OK` |
-| `DELETE` | Elimina un recurso | `204 No Content` |
+| `POST` | `201 Created` | Sí — crea un recurso nuevo cada vez |
+| `PUT` | `200 OK` | No |
+| `DELETE` | `204 No Content` | No |
 
-`204 No Content` significa "todo ha ido bien, y no hay nada que devolverte en el cuerpo" — tiene sentido en un `DELETE`: una vez borrado el recurso, no hay nada que enseñar.
+Y, elemento a elemento, lo que hace cada pieza de esos tres métodos:
 
----
+| Elemento | Qué representa |
+|---|---|
+| `ResponseEntity.status(HttpStatus.CREATED).body(...)` | `201`, con el recurso creado en el cuerpo — la respuesta natural de un `POST`. |
+| `ResponseEntity.ok(...)` en el `PUT` | `200`, con el recurso ya actualizado en el cuerpo. |
+| `ResponseEntity.noContent().build()` | `204`, sin cuerpo — la respuesta natural de un `DELETE`. |
+| `@RequestBody LibroCreateDTO dto` | El cuerpo JSON de la petición, convertido automáticamente en un objeto Java. |
+| `@Valid` | La misma validación que ya conoces, ahora en el flujo de escritura: si el DTO incumple alguna restricción, la petición nunca llega a ejecutar el método — se profundiza en el Tema 2. |
 
-## 🔁 Qué es la idempotencia
-
-Una operación es **idempotente** si repetirla varias veces produce el mismo resultado que hacerla una sola vez. Es una propiedad HTTP importante porque, en una red real, las peticiones pueden perderse o duplicarse (un reintento automático, una doble pulsación) — y conviene saber qué pasa si eso ocurre.
-
-- **`PUT` es idempotente**: si mandas diez veces el mismo `PUT` con el mismo cuerpo, el recurso queda igual que si lo hubieras mandado una sola vez — cada vez "reemplaza" con los mismos datos.
-- **`DELETE` es idempotente**: borrar algo que ya está borrado no cambia nada más (aunque el código de estado de la segunda vez pueda ser un `404` en vez de un `204`, el *estado del sistema* es el mismo).
-- **`POST` NO es idempotente**: si mandas diez veces el mismo `POST` de "crear un libro", obtienes diez libros distintos — cada llamada crea uno nuevo.
-
-!!! example "Por qué importa en la práctica"
-    Si el formulario de "añadir libro" de una aplicación web falla al enviar y el usuario pulsa "Reintentar", con un `POST` corres el riesgo de crear el recurso duplicado. Con un `PUT` (por ejemplo, "guardar cambios de este libro concreto"), reintentar no tiene ese riesgo: el resultado final es el mismo se mande una vez o cinco.
+Fíjate en algo: nada de este código menciona OpenAPI ni Swagger. Eso es justo lo que viene ahora — cómo este mismo controller, sin tocarle una línea, termina documentado y ejecutable desde el navegador.
 
 ---
 
 ## 📜 El contrato de una API: qué es OpenAPI
 
-Cuando el consumidor de tu API es otro programa (o un compañero de equipo que no ha leído tu código), necesita saber, sin adivinar: qué rutas existen, qué verbo usa cada una, qué reciben y qué devuelven. A esa descripción formal se la llama el **contrato** de la API.
+Toda esa semántica —qué verbo usar, qué código esperar, si es seguro reintentar— la conoces tú, porque ya la viste en el apartado anterior. Pero cuando el consumidor de tu API es otro programa (o un compañero de equipo que no ha leído tu código), necesita saber lo mismo sin adivinar: qué rutas existen, qué verbo usa cada una, qué reciben y qué devuelven. A esa descripción formal se la llama el **contrato** de la API.
 
 **OpenAPI** es el formato estándar más usado para escribir ese contrato (un documento, normalmente en YAML o JSON, que describe rutas, verbos, parámetros y esquemas de datos). **Swagger UI** es un visor interactivo que lee ese documento y genera, automáticamente, una página web donde se puede explorar la API — y también **ejecutarla de verdad**.
-
-!!! info "Swagger UI no es solo documentación: manda peticiones HTTP reales"
-    No es una vista estática ni una simulación. Cada endpoint tiene un botón **"Try it out"**: rellenas los parámetros (o el cuerpo JSON, en un `POST`/`PUT`) desde un formulario, pulsas **Execute**, y Swagger UI construye y envía una petición HTTP de verdad contra tu aplicación, corriendo en `localhost:8080` — la misma petición que mandarías con `curl`, byte a byte. La respuesta que ves (código de estado, cabeceras, cuerpo) es la respuesta real de tu servidor, no una previsualización. Si el `POST` crea un libro, ese libro queda guardado en tu base de datos exactamente igual que si lo hubieras creado con `curl`.
 
 ```mermaid
 flowchart LR
@@ -50,37 +81,17 @@ flowchart LR
 
 Lo importante: tú no escribes el documento OpenAPI a mano. Una librería lo genera automáticamente, leyendo las mismas anotaciones (`@RestController`, `@GetMapping`, los DTOs...) que ya usas para construir la API — el contrato y el código nunca se desincronizan porque son la misma fuente.
 
----
+### 🖥️ Así se ve Swagger UI, paso a paso
 
-## 📖 Los endpoints de escritura, leídos desde HTTP
+Esto es exactamente lo que vas a tener delante en tu propia pantalla, sobre tu propio `LibroController` (o el equivalente en tu proyecto):
 
-Con esa base, lee ahora los métodos de escritura de ese mismo `LibroController`, esta vez completo, desde la óptica HTTP:
+1. Abres `/swagger-ui.html` en el navegador y ves los controllers de tu API agrupados por *tag* (normalmente, el nombre de la clase), cada uno desplegable.
+2. Despliegas, por ejemplo, `POST /api/v1/libros` — Swagger UI te muestra el esquema esperado del cuerpo (los mismos campos de `LibroCreateDTO`, con sus tipos y sus restricciones de Bean Validation) y un ejemplo de JSON ya relleno.
+3. Pulsas **Try it out**: ese ejemplo se vuelve editable. Cambias los valores que quieras.
+4. Pulsas **Execute**.
 
-```java
-@PostMapping
-public ResponseEntity<LibroResponseDTO> create(@Valid @RequestBody LibroCreateDTO dto) {
-    return ResponseEntity.status(HttpStatus.CREATED).body(libroService.create(dto));
-}
-
-@PutMapping("/{id}")
-public ResponseEntity<LibroResponseDTO> update(@PathVariable Long id, @Valid @RequestBody LibroCreateDTO dto) {
-    return ResponseEntity.ok(libroService.update(id, dto));
-}
-
-@DeleteMapping("/{id}")
-public ResponseEntity<Void> delete(@PathVariable Long id) {
-    libroService.delete(id);
-    return ResponseEntity.noContent().build();
-}
-```
-
-| Elemento | Qué representa |
-|---|---|
-| `ResponseEntity.status(HttpStatus.CREATED).body(...)` | `201`, con el recurso creado en el cuerpo — la respuesta natural de un `POST`. |
-| `ResponseEntity.ok(...)` en el `PUT` | `200`, con el recurso ya actualizado en el cuerpo. |
-| `ResponseEntity.noContent().build()` | `204`, sin cuerpo — la respuesta natural de un `DELETE`. |
-| `@RequestBody LibroCreateDTO dto` | El cuerpo JSON de la petición, convertido automáticamente en un objeto Java. |
-| `@Valid` | Activa la validación del DTO antes de que el método se ejecute — se profundiza en el Tema 2. |
+!!! info "Swagger UI no es solo documentación: manda peticiones HTTP reales"
+    Ese último clic, **Execute**, no es una simulación. Swagger UI construye y envía una petición HTTP de verdad contra tu aplicación, corriendo en `localhost:8080` — la misma petición que mandarías con `curl`, byte a byte. La respuesta que aparece justo debajo (código de estado, cabeceras, cuerpo) es la respuesta real de tu servidor, no una previsualización. Si el `POST` crea un libro, ese libro queda guardado en tu base de datos exactamente igual que si lo hubieras creado con `curl`.
 
 ### Documentando con OpenAPI
 
@@ -107,7 +118,7 @@ Con solo esa dependencia y esa clase, springdoc escanea todos los `@RestControll
 
 ## 🆚 Ventajas del protocolo estándar, con ejemplos concretos
 
-Ya viste en el apartado anterior que un protocolo estándar permite que cualquier cliente hable con tu API sin acordar nada a medida. Aquí tienes dos consecuencias prácticas de esa idea:
+Para el diagrama de arriba —anotaciones, contrato OpenAPI, Swagger UI— existe una condición: tu API tiene que hablar un protocolo que herramientas de terceros (springdoc, Swagger UI) ya entiendan de fábrica, sin que tú les enseñes nada. Ya viste en el apartado anterior que un protocolo estándar permite eso: que cualquier cliente hable con tu API sin acordar nada a medida. Aquí tienes dos consecuencias prácticas, ahora que ya has visto OpenAPI en marcha:
 
 - Los **códigos de estado son universales**: cualquier cliente (el tuyo, el de un compañero, una app de otro lenguaje) sabe qué significa un `201` o un `404` sin necesidad de leer tu documentación particular — es parte del estándar HTTP, no una convención tuya.
 - Las **herramientas funcionan sin configuración específica**: Swagger UI, `curl`... todas saben "hablar HTTP" de fábrica. No has tenido que instalar ni configurar nada especial en Swagger UI para que entienda las respuestas de tu API — el protocolo ya es compartido.
@@ -118,9 +129,7 @@ Ya viste en el apartado anterior que un protocolo estándar permite que cualquie
 
 ??? tip "Abrir resumen"
 
-    - `POST` → `201 Created`; `PUT` → `200 OK`; `DELETE` → `204 No Content` son las combinaciones habituales verbo/código para operaciones de escritura.
-    - Una operación es **idempotente** si repetirla no cambia el resultado respecto a hacerla una vez: `PUT` y `DELETE` lo son, `POST` no.
     - El **contrato** de una API describe formalmente sus rutas, verbos y datos; **OpenAPI** es el formato estándar de ese contrato, generado automáticamente a partir de las anotaciones del código (no se escribe a mano).
-    - **Swagger UI** no solo visualiza el contrato: su botón "Try it out" manda peticiones HTTP reales contra tu aplicación en marcha, sin escribir código — la misma petición que mandarías con `curl`.
+    - **Swagger UI** agrupa tus endpoints por controller; al desplegar uno ves su esquema, y con "Try it out" + "Execute" mandas una petición HTTP real contra tu aplicación, sin escribir código — la misma petición que mandarías con `curl`.
     - `@RequestBody` mapea el cuerpo JSON a un objeto Java; `@Valid` activa su validación.
     - Que Swagger UI y `curl` puedan hablar los dos con la misma API sin adaptar nada en el servidor es la demostración práctica de qué aporta un protocolo estándar.
