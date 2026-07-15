@@ -36,7 +36,7 @@ curl -i http://localhost:8080/api/v1/videojuegos
 
 **Predicción**: antes de ejecutar, ¿qué código de estado esperas? Escríbelo.
 
-Deberías obtener un `401 Unauthorized` — incluso en un `GET` que hasta ahora era público. **Comprueba también** que Swagger UI (`/swagger-ui.html`) ha dejado de ser accesible sin autenticarte.
+Deberías obtener un `401 Unauthorized` — incluso en un `GET` que hasta ahora era público. **Comprueba también** que Swagger UI (`/documentacion`) ha dejado de ser accesible sin autenticarte.
 
 ---
 

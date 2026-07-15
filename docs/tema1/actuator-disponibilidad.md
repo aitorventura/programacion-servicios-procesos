@@ -47,6 +47,8 @@ Tu propio proyecto no incluye Actuator todavía (revisa tu `pom.xml`: no está l
 </dependency>
 ```
 
+<!-- TODO(autor): comprobar si springdoc lista los endpoints de Actuator en Swagger UI una vez añadida esta dependencia (no debería, al no ser un @RestController normal, pero verificarlo con un proyecto real). Si aparecen y ensucian la documentación pensada para consumidores de la API, marcarlos con @Hidden o excluirlos vía springdoc.paths-to-exclude en application.yml, y explicarlo aquí. -->
+
 Con solo esa dependencia, Spring Boot expone automáticamente `/actuator/health`. Para ver el detalle de cada dependencia (y no solo un `UP`/`DOWN` genérico), hace falta una línea de configuración:
 
 ```yaml

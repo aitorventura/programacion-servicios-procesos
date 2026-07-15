@@ -10,6 +10,7 @@
 
 - Añadir la documentación automática OpenAPI/Swagger a tu propio GameVault.
 - Leer y entender qué parte de Swagger UI viene de dónde en tu código.
+- Documentar con `@ApiResponses` qué códigos puede devolver de verdad un endpoint, más allá del `200` genérico.
 - Probar `GET`, `POST`, `PUT` y `DELETE` desde el navegador, sobre `Videojuego` y sobre `Estudio`, y observar sus códigos de estado.
 
 ---
@@ -22,7 +23,7 @@ Tu CRUD completo de `Videojuego` y de `Estudio` funcionando (Tema 1, Actividad 1
 
 ## Paso 1 — Añadir springdoc a tu proyecto
 
-Esto es imprescindible antes de seguir: sin esta dependencia no existe ni `/swagger-ui.html` ni el resto de la actividad. En tu `pom.xml`, añade:
+Esto es imprescindible antes de seguir: sin esta dependencia no existe Swagger UI ni el resto de la actividad. En tu `pom.xml`, añade:
 
 ```xml
 <dependency>
@@ -58,7 +59,21 @@ public class OpenApiConfig {
 
 `@Bean` le dice a Spring que este método construye un objeto que debe gestionar como bean — en este caso, la configuración que springdoc va a usar para generar la documentación. No tienes que llamarlo tú en ningún sitio: Spring lo detecta y lo usa automáticamente.
 
-Reinicia tu aplicación y comprueba que `http://localhost:8080/swagger-ui.html` carga y muestra tus controllers antes de seguir — si no aparece nada, revisa que la dependencia se ha descargado (Maven) y que la aplicación ha reiniciado de verdad con el cambio.
+De paso, añade esto a tu `application-dev.yaml`: sirve la interfaz en `/documentacion` en vez de la ruta por defecto (`/swagger-ui.html`), y ordena los endpoints alfabéticamente por verbo en vez de por el orden de declaración:
+
+```yaml
+springdoc:
+  swagger-ui:
+    path: /documentacion
+    operations-sorter: method
+```
+
+Reinicia tu aplicación y entra en `http://localhost:8080/documentacion` antes de seguir — si no aparece nada, revisa que la dependencia se ha descargado (Maven) y que la aplicación ha reiniciado de verdad con el cambio.
+
+!!! tip "Dos matices de estas dos propiedades"
+    `/documentacion` es solo el punto de entrada — Swagger UI redirige siempre a `/swagger-ui/index.html`, esa es la página real donde vive la interfaz; no hace falta que la URL final se quede en `/documentacion`. Y `operations-sorter: method` no da el orden CRUD `GET → POST → PUT → DELETE` — ordena alfabéticamente por el nombre del verbo, así que verás `DELETE` primero (`D` va antes que `G` en el alfabeto): `DELETE, GET, POST, PUT`.
+
+**Captura**: la pantalla completa de Swagger UI tras entrar en `/documentacion`, con la URL final visible en la barra de direcciones y los endpoints de `videojuego-controller` en orden `DELETE, GET, GET, POST, PUT`.
 
 ---
 
@@ -94,6 +109,50 @@ Usar `id` como `101`/`102` (en vez de `1`/`2`) es a propósito: evita chocar con
 ---
 
 ## Bloque A — Las cuatro operaciones de `Videojuego` (guiado)
+
+Antes de probar nada, documenta con `@ApiResponses` los cuatro métodos de `VideojuegoController` — igual que en el ejemplo de la teoría, cada uno con los códigos que de verdad puede devolver:
+
+```java
+@Operation(summary = "Obtener un videojuego por su id")
+@ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Videojuego encontrado"),
+        @ApiResponse(responseCode = "404", description = "No existe ningún videojuego con ese id")
+})
+@GetMapping("/{id}")
+
+@Operation(summary = "Listar todos los videojuegos")
+@ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Lista de videojuegos (puede estar vacía)")
+})
+@GetMapping
+
+@Operation(summary = "Crear un videojuego nuevo")
+@ApiResponses({
+        @ApiResponse(responseCode = "201", description = "Videojuego creado correctamente"),
+        @ApiResponse(responseCode = "400", description = "El cuerpo de la petición no supera las validaciones"),
+        @ApiResponse(responseCode = "404", description = "El estudio indicado no existe")
+})
+@PostMapping
+
+@Operation(summary = "Actualizar un videojuego existente")
+@ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Videojuego actualizado correctamente"),
+        @ApiResponse(responseCode = "400", description = "El cuerpo de la petición no supera las validaciones"),
+        @ApiResponse(responseCode = "404", description = "No existe ningún videojuego con ese id, o el estudio indicado no existe")
+})
+@PutMapping("/{id}")
+
+@Operation(summary = "Borrar un videojuego")
+@ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Videojuego borrado correctamente"),
+        @ApiResponse(responseCode = "404", description = "No existe ningún videojuego con ese id")
+})
+@DeleteMapping("/{id}")
+```
+
+Reinicia y despliega cada endpoint en Swagger UI: fíjate en que la sección "Responses" de cada uno lista ahora sus códigos reales, no solo el `200` genérico de antes.
+
+**Captura**: la sección "Responses" de `POST /api/v1/videojuegos` desplegada (sin ejecutar nada todavía), mostrando los tres códigos documentados (`201`/`400`/`404`) con su descripción.
 
 Con Swagger UI ya abierto sobre el bloque `videojuego-controller`, prueba las cuatro operaciones en orden. Para cada una, además de lo que se pide, haz una **captura de Swagger UI mostrando la petición enviada y la respuesta recibida** (cuerpo y código de estado visibles).
 
@@ -140,7 +199,10 @@ Repite exactamente el mismo patrón del Bloque A — `GET`, `POST`, `PUT`, `DELE
 
 - Las mismas cuatro operaciones, en el mismo orden.
 - Los mismos códigos de estado esperados que en `Videojuego` — recuerda la tabla del apartado de teoría si tienes dudas.
+- `@ApiResponses` sobre los cuatro métodos de `EstudioController` (no solo `create()`), con los códigos que de verdad puede devolver cada uno. Aquí no hay ningún estudio relacionado que pueda no existir — piensa qué códigos tienen sentido en cada método y cuáles no aplican, comparado con `Videojuego`.
 - La misma comprobación final: borra el estudio que has creado y verifica con un `GET` posterior que ya no existe.
+
+**Captura**: la sección "Responses" de `POST /api/v1/estudios` desplegada, mostrando los códigos que has documentado tú — igual que hiciste en el Bloque A.
 
 **Captura**: una por cada una de las cuatro operaciones (petición + respuesta visibles), igual que en el Bloque A.
 

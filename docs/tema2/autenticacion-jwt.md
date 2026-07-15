@@ -148,6 +148,8 @@ public ResponseEntity<AuthMeResponse> getCurrentUser() {
 
 Un endpoint sencillo para verificar qué información viaja dentro de tu propio token: útil tanto para probar como para entender qué sabe el servidor de ti en cada petición autenticada.
 
+<!-- TODO(autor): a partir de aquí ya hay endpoints protegidos que probar. Añadir a la teoría/actividad de este apartado un @SecurityScheme (+ .addSecuritySchemes(...) en el bean OpenAPI de OpenApiConfig) para que Swagger UI muestre el botón "Authorize" y no haya que pegar el header Authorization a mano en cada petición desde el navegador. -->
+
 ---
 
 ## 🔒 HTTPS: lo que JWT resuelve y lo que no

@@ -51,7 +51,7 @@ Ahora completa tu `SecurityConfig` regla a regla, siguiendo la tabla ya decidida
         .requestMatchers(HttpMethod.POST, "/api/v1/estudios").hasRole("ADMIN")
         // añade aquí, siguiendo el mismo patrón, la regla que decidiste para Estudio PUT/DELETE
         .requestMatchers("/error").permitAll()
-        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/documentacion").permitAll()
         .anyRequest().denyAll()
 )
 ```
