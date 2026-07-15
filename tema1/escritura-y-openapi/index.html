@@ -678,6 +678,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#documentando-que-puede-devolver-cada-endpoint-apiresponses" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentando qué puede devolver cada endpoint: @ApiResponses
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1674,6 +1683,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#documentando-que-puede-devolver-cada-endpoint-apiresponses" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentando qué puede devolver cada endpoint: @ApiResponses
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1889,6 +1907,45 @@
 <a id="__codelineno-1-12" name="__codelineno-1-12"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>Con solo esa dependencia y esa clase, springdoc escanea todos los <code>@RestController</code> del proyecto y genera, sin más trabajo por tu parte, la especificación OpenAPI en <code>/v3/api-docs</code> y la interfaz visual en <code>/swagger-ui.html</code> — los mismos endpoints que el controller ya tenía quedan documentados, y puedes ejecutarlos de verdad desde el navegador con "Try it out", tal como acabas de ver.</p>
+<div class="admonition tip">
+<p class="admonition-title">Cambiar la ruta de Swagger UI</p>
+<p>En tu <code>application-dev.yaml</code> puedes mover la documentación a otra ruta:
+</p><div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
+<span class="normal"><a href="#__codelineno-2-2">2</a></span>
+<span class="normal"><a href="#__codelineno-2-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nt">springdoc</span><span class="p">:</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">  </span><span class="nt">swagger-ui</span><span class="p">:</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/documentacion</span>
+</code></pre></div></td></tr></table></div>
+Con esto, entrar en <code>/documentacion</code> te lleva a Swagger UI — pero fíjate en que el navegador acaba redirigido a <code>/swagger-ui/index.html</code>: esa es la página real donde vive la interfaz (el propio recurso estático del <em>webjar</em>), y <code>/documentacion</code> es solo un punto de entrada más cómodo de recordar hacia ella. Por eso, si más adelante proteges tu API con Spring Security, tendrás que dejar pasar <strong>las dos rutas</strong>, no solo la que tú has elegido — lo verás en el Tema 2.
+</div>
+<div class="admonition warning">
+<p class="admonition-title"><code>operations-sorter: method</code> no hace lo que parece</p>
+<p>Existe esta propiedad, pero cuidado con lo que promete: no ordena por un criterio "lógico" (<code>GET → POST → PUT → DELETE</code>) — ordena <strong>alfabéticamente por el nombre del verbo</strong>, así que el resultado real es <code>DELETE, GET, PATCH, POST, PUT</code> (<code>D</code> va antes que <code>G</code> en el alfabeto). No hay ninguna propiedad simple en springdoc para conseguir el orden CRUD habitual; si lo necesitas de verdad, hay que sobrescribir la función de ordenación de Swagger UI, algo que queda fuera del alcance de este curso.</p>
+</div>
+<h3 id="documentando-que-puede-devolver-cada-endpoint-apiresponses">Documentando qué puede devolver cada endpoint: <code>@ApiResponses</code><a class="headerlink" href="#documentando-que-puede-devolver-cada-endpoint-apiresponses" title="Permanent link">¶</a></h3>
+<p>Hasta aquí, Swagger UI documenta un endpoint, pero no del todo bien: por defecto solo declara un <code>200</code> genérico ("successful operation"), aunque tú ya sabes que <code>create()</code> puede devolver un <code>201</code>, o un <code>400</code> si el DTO no pasa la validación, o un <code>404</code> si la editorial indicada no existe. <code>@ApiResponses</code> deja eso explícito:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-3-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-3-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-3-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-3-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-3-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-3-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-3-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-3-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-3-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nd">@Operation</span><span class="p">(</span><span class="n">summary</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Crear un libro nuevo"</span><span class="p">)</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="nd">@ApiResponses</span><span class="p">({</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">        </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"201"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Libro creado correctamente"</span><span class="p">),</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="w">        </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"400"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"El cuerpo de la petición no supera las validaciones"</span><span class="p">),</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="w">        </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"404"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"La editorial indicada no existe"</span><span class="p">)</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="p">})</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7"></a><span class="nd">@PostMapping</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">LibroResponseDTO</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="nd">@Valid</span><span class="w"> </span><span class="nd">@RequestBody</span><span class="w"> </span><span class="n">LibroCreateDTO</span><span class="w"> </span><span class="n">dto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">CREATED</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">libroService</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">dto</span><span class="p">));</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><code>@Operation(summary = ...)</code> pone un texto legible sobre el endpoint, en vez del nombre técnico del método Java. <code>@ApiResponses</code> agrupa uno o varios <code>@ApiResponse(responseCode =, description =)</code>: cada uno añade, en la sección "Responses" de Swagger UI, una entrada más además del <code>200</code> por defecto — con su código y una frase explicando cuándo ocurre. Nada de esto cambia el comportamiento real del endpoint (los códigos que de verdad devuelve siguen siendo los que decide tu código); solo hace que la documentación dependa de ti en vez de generarse a ciegas.</p>
+<p>Este mismo par de anotaciones se repite en <code>getById</code> (<code>200</code>/<code>404</code>), <code>getAll</code> (<code>200</code>), <code>update</code> (<code>200</code>/<code>400</code>/<code>404</code>) y <code>delete</code> (<code>204</code>/<code>404</code>) — no es algo exclusivo de <code>create()</code>, es el mismo criterio aplicado a los cinco métodos: qué códigos puede devolver de verdad cada uno.</p>
 <hr>
 <h2 id="ventajas-del-protocolo-estandar-con-ejemplos-concretos">🆚 Ventajas del protocolo estándar, con ejemplos concretos<a class="headerlink" href="#ventajas-del-protocolo-estandar-con-ejemplos-concretos" title="Permanent link">¶</a></h2>
 <p>Para el diagrama de arriba —anotaciones, contrato OpenAPI, Swagger UI— existe una condición: tu API tiene que hablar un protocolo que herramientas de terceros (springdoc, Swagger UI) ya entiendan de fábrica, sin que tú les enseñes nada. Ya viste en el apartado anterior que un protocolo estándar permite eso: que cualquier cliente hable con tu API sin acordar nada a medida. Aquí tienes dos consecuencias prácticas, ahora que ya has visto OpenAPI en marcha:</p>
@@ -1904,6 +1961,7 @@
 <li>El <strong>contrato</strong> de una API describe formalmente sus rutas, verbos y datos; <strong>OpenAPI</strong> es el formato estándar de ese contrato, generado automáticamente a partir de las anotaciones del código (no se escribe a mano).</li>
 <li><strong>Swagger UI</strong> agrupa tus endpoints por controller; al desplegar uno ves su esquema, y con "Try it out" + "Execute" mandas una petición HTTP real contra tu aplicación, sin escribir código — la misma petición que mandarías con <code>curl</code>.</li>
 <li><code>@RequestBody</code> mapea el cuerpo JSON a un objeto Java; <code>@Valid</code> activa su validación.</li>
+<li><code>@ApiResponses</code>/<code>@ApiResponse</code> documentan explícitamente qué códigos puede devolver un endpoint (más allá del <code>200</code> genérico por defecto); <code>springdoc.swagger-ui.path</code> mueve la ruta de entrada a Swagger UI, aunque por debajo siempre redirige a <code>/swagger-ui/index.html</code>.</li>
 <li>Que Swagger UI y <code>curl</code> puedan hablar los dos con la misma API sin adaptar nada en el servidor es la demostración práctica de qué aporta un protocolo estándar.</li>
 </ul>
 </details></div>

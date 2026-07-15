@@ -1736,6 +1736,8 @@
 <a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-actuator<span class="nt">&lt;/artifactId&gt;</span>
 <a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div></td></tr></table></div>
+<!-- TODO(autor): comprobar si springdoc lista los endpoints de Actuator en Swagger UI una vez añadida esta dependencia (no debería, al no ser un @RestController normal, pero verificarlo con un proyecto real). Si aparecen y ensucian la documentación pensada para consumidores de la API, marcarlos con @Hidden o excluirlos vía springdoc.paths-to-exclude en application.yml, y explicarlo aquí. -->
+
 <p>Con solo esa dependencia, Spring Boot expone automáticamente <code>/actuator/health</code>. Para ver el detalle de cada dependencia (y no solo un <code>UP</code>/<code>DOWN</code> genérico), hace falta una línea de configuración:</p>
 <div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
 <span class="normal"><a href="#__codelineno-2-2">2</a></span>

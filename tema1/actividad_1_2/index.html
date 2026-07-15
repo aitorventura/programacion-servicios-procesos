@@ -1852,6 +1852,7 @@
 <ul>
 <li>Añadir la documentación automática OpenAPI/Swagger a tu propio GameVault.</li>
 <li>Leer y entender qué parte de Swagger UI viene de dónde en tu código.</li>
+<li>Documentar con <code>@ApiResponses</code> qué códigos puede devolver de verdad un endpoint, más allá del <code>200</code> genérico.</li>
 <li>Probar <code>GET</code>, <code>POST</code>, <code>PUT</code> y <code>DELETE</code> desde el navegador, sobre <code>Videojuego</code> y sobre <code>Estudio</code>, y observar sus códigos de estado.</li>
 </ul>
 <hr>
@@ -1859,7 +1860,7 @@
 <p>Tu CRUD completo de <code>Videojuego</code> y de <code>Estudio</code> funcionando (Tema 1, Actividad 1.2 de Acceso a Datos): las cuatro operaciones de cada uno, con sus DTOs y su validación ya puestos.</p>
 <hr>
 <h2 id="paso-1-anadir-springdoc-a-tu-proyecto">Paso 1 — Añadir springdoc a tu proyecto<a class="headerlink" href="#paso-1-anadir-springdoc-a-tu-proyecto" title="Permanent link">¶</a></h2>
-<p>Esto es imprescindible antes de seguir: sin esta dependencia no existe ni <code>/swagger-ui.html</code> ni el resto de la actividad. En tu <code>pom.xml</code>, añade:</p>
+<p>Esto es imprescindible antes de seguir: sin esta dependencia no existe Swagger UI ni el resto de la actividad. En tu <code>pom.xml</code>, añade:</p>
 <div class="language-xml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">XML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
 <span class="normal"><a href="#__codelineno-0-2">2</a></span>
 <span class="normal"><a href="#__codelineno-0-3">3</a></span>
@@ -1910,23 +1911,37 @@
 <a id="__codelineno-1-19" name="__codelineno-1-19"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p><code>@Bean</code> le dice a Spring que este método construye un objeto que debe gestionar como bean — en este caso, la configuración que springdoc va a usar para generar la documentación. No tienes que llamarlo tú en ningún sitio: Spring lo detecta y lo usa automáticamente.</p>
-<p>Reinicia tu aplicación y comprueba que <code>http://localhost:8080/swagger-ui.html</code> carga y muestra tus controllers antes de seguir — si no aparece nada, revisa que la dependencia se ha descargado (Maven) y que la aplicación ha reiniciado de verdad con el cambio.</p>
+<p>De paso, añade esto a tu <code>application-dev.yaml</code>: sirve la interfaz en <code>/documentacion</code> en vez de la ruta por defecto (<code>/swagger-ui.html</code>), y ordena los endpoints alfabéticamente por verbo en vez de por el orden de declaración:</p>
+<div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
+<span class="normal"><a href="#__codelineno-2-2">2</a></span>
+<span class="normal"><a href="#__codelineno-2-3">3</a></span>
+<span class="normal"><a href="#__codelineno-2-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nt">springdoc</span><span class="p">:</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">  </span><span class="nt">swagger-ui</span><span class="p">:</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/documentacion</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">    </span><span class="nt">operations-sorter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">method</span>
+</code></pre></div></td></tr></table></div>
+<p>Reinicia tu aplicación y entra en <code>http://localhost:8080/documentacion</code> antes de seguir — si no aparece nada, revisa que la dependencia se ha descargado (Maven) y que la aplicación ha reiniciado de verdad con el cambio.</p>
+<div class="admonition tip">
+<p class="admonition-title">Dos matices de estas dos propiedades</p>
+<p><code>/documentacion</code> es solo el punto de entrada — Swagger UI redirige siempre a <code>/swagger-ui/index.html</code>, esa es la página real donde vive la interfaz; no hace falta que la URL final se quede en <code>/documentacion</code>. Y <code>operations-sorter: method</code> no da el orden CRUD <code>GET → POST → PUT → DELETE</code> — ordena alfabéticamente por el nombre del verbo, así que verás <code>DELETE</code> primero (<code>D</code> va antes que <code>G</code> en el alfabeto): <code>DELETE, GET, POST, PUT</code>.</p>
+</div>
+<p><strong>Captura</strong>: la pantalla completa de Swagger UI tras entrar en <code>/documentacion</code>, con la URL final visible en la barra de direcciones y los endpoints de <code>videojuego-controller</code> en orden <code>DELETE, GET, GET, POST, PUT</code>.</p>
 <hr>
 <h2 id="paso-2-sembrar-algunos-datos-de-prueba">Paso 2 — Sembrar algunos datos de prueba<a class="headerlink" href="#paso-2-sembrar-algunos-datos-de-prueba" title="Permanent link">¶</a></h2>
 <p>Antes de probar nada, conviene tener algo real que leer — un <code>GET</code> contra una tabla vacía funciona, pero no enseña gran cosa. Inserta un par de filas de cada tabla, con la herramienta que prefieras (terminal <code>psql</code>, pgAdmin, o cualquier otro cliente gráfico que ya uses) — esta vez fijando tú el <code>id</code> en vez de dejar que lo genere la base de datos, para que se vea sin ninguna duda qué <code>estudio_id</code> apunta a qué estudio:</p>
-<div class="language-sql highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">SQL</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
-<span class="normal"><a href="#__codelineno-2-2">2</a></span>
-<span class="normal"><a href="#__codelineno-2-3">3</a></span>
-<span class="normal"><a href="#__codelineno-2-4">4</a></span>
-<span class="normal"><a href="#__codelineno-2-5">5</a></span>
-<span class="normal"><a href="#__codelineno-2-6">6</a></span>
-<span class="normal"><a href="#__codelineno-2-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">estudio</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">nombre</span><span class="p">,</span><span class="w"> </span><span class="n">pais</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">    </span><span class="p">(</span><span class="mi">101</span><span class="p">,</span><span class="w"> </span><span class="s1">'Supergiant Games'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Estados Unidos'</span><span class="p">),</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">    </span><span class="p">(</span><span class="mi">102</span><span class="p">,</span><span class="w"> </span><span class="s1">'FromSoftware'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Japón'</span><span class="p">);</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4"></a>
-<a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">videojuego</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">titulo</span><span class="p">,</span><span class="w"> </span><span class="n">precio</span><span class="p">,</span><span class="w"> </span><span class="n">fecha_lanzamiento</span><span class="p">,</span><span class="w"> </span><span class="n">estudio_id</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">    </span><span class="p">(</span><span class="mi">101</span><span class="p">,</span><span class="w"> </span><span class="s1">'Hades'</span><span class="p">,</span><span class="w"> </span><span class="mi">24</span><span class="p">.</span><span class="mi">99</span><span class="p">,</span><span class="w"> </span><span class="s1">'2020-09-17'</span><span class="p">,</span><span class="w"> </span><span class="mi">101</span><span class="p">),</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">    </span><span class="p">(</span><span class="mi">102</span><span class="p">,</span><span class="w"> </span><span class="s1">'Elden Ring'</span><span class="p">,</span><span class="w"> </span><span class="mi">59</span><span class="p">.</span><span class="mi">99</span><span class="p">,</span><span class="w"> </span><span class="s1">'2022-02-25'</span><span class="p">,</span><span class="w"> </span><span class="mi">102</span><span class="p">);</span>
+<div class="language-sql highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">SQL</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
+<span class="normal"><a href="#__codelineno-3-2">2</a></span>
+<span class="normal"><a href="#__codelineno-3-3">3</a></span>
+<span class="normal"><a href="#__codelineno-3-4">4</a></span>
+<span class="normal"><a href="#__codelineno-3-5">5</a></span>
+<span class="normal"><a href="#__codelineno-3-6">6</a></span>
+<span class="normal"><a href="#__codelineno-3-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">estudio</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">nombre</span><span class="p">,</span><span class="w"> </span><span class="n">pais</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">    </span><span class="p">(</span><span class="mi">101</span><span class="p">,</span><span class="w"> </span><span class="s1">'Supergiant Games'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Estados Unidos'</span><span class="p">),</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">    </span><span class="p">(</span><span class="mi">102</span><span class="p">,</span><span class="w"> </span><span class="s1">'FromSoftware'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Japón'</span><span class="p">);</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">videojuego</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">titulo</span><span class="p">,</span><span class="w"> </span><span class="n">precio</span><span class="p">,</span><span class="w"> </span><span class="n">fecha_lanzamiento</span><span class="p">,</span><span class="w"> </span><span class="n">estudio_id</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="w">    </span><span class="p">(</span><span class="mi">101</span><span class="p">,</span><span class="w"> </span><span class="s1">'Hades'</span><span class="p">,</span><span class="w"> </span><span class="mi">24</span><span class="p">.</span><span class="mi">99</span><span class="p">,</span><span class="w"> </span><span class="s1">'2020-09-17'</span><span class="p">,</span><span class="w"> </span><span class="mi">101</span><span class="p">),</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7"></a><span class="w">    </span><span class="p">(</span><span class="mi">102</span><span class="p">,</span><span class="w"> </span><span class="s1">'Elden Ring'</span><span class="p">,</span><span class="w"> </span><span class="mi">59</span><span class="p">.</span><span class="mi">99</span><span class="p">,</span><span class="w"> </span><span class="s1">'2022-02-25'</span><span class="p">,</span><span class="w"> </span><span class="mi">102</span><span class="p">);</span>
 </code></pre></div></td></tr></table></div>
 <p>Usar <code>id</code> como <code>101</code>/<code>102</code> (en vez de <code>1</code>/<code>2</code>) es a propósito: evita chocar con filas que ya tuvieras de actividades anteriores, generadas automáticamente con <code>id</code> bajos. Comprueba con <code>SELECT * FROM estudio;</code> y <code>SELECT * FROM videojuego;</code> que las cuatro filas se han creado, y fíjate en que <code>videojuego.estudio_id</code> coincide exactamente con el <code>id</code> del estudio correspondiente — esa es la relación que vas a usar en los pasos siguientes.</p>
 <hr>
@@ -1940,23 +1955,96 @@
 <p><strong>Captura</strong>: la sección de Schemas con <code>VideojuegoCreateDTO</code> o <code>VideojuegoResponseDTO</code> desplegado.</p>
 <hr>
 <h2 id="bloque-a-las-cuatro-operaciones-de-videojuego-guiado">Bloque A — Las cuatro operaciones de <code>Videojuego</code> (guiado)<a class="headerlink" href="#bloque-a-las-cuatro-operaciones-de-videojuego-guiado" title="Permanent link">¶</a></h2>
+<p>Antes de probar nada, documenta con <code>@ApiResponses</code> los cuatro métodos de <code>VideojuegoController</code> — igual que en el ejemplo de la teoría, cada uno con los códigos que de verdad puede devolver:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-4-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-4-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-4-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-4-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-4-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-4-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-4-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-4-10">10</a></span>
+<span class="normal"><a href="#__codelineno-4-11">11</a></span>
+<span class="normal"><a href="#__codelineno-4-12">12</a></span>
+<span class="normal"><a href="#__codelineno-4-13">13</a></span>
+<span class="normal"><a href="#__codelineno-4-14">14</a></span>
+<span class="normal"><a href="#__codelineno-4-15">15</a></span>
+<span class="normal"><a href="#__codelineno-4-16">16</a></span>
+<span class="normal"><a href="#__codelineno-4-17">17</a></span>
+<span class="normal"><a href="#__codelineno-4-18">18</a></span>
+<span class="normal"><a href="#__codelineno-4-19">19</a></span>
+<span class="normal"><a href="#__codelineno-4-20">20</a></span>
+<span class="normal"><a href="#__codelineno-4-21">21</a></span>
+<span class="normal"><a href="#__codelineno-4-22">22</a></span>
+<span class="normal"><a href="#__codelineno-4-23">23</a></span>
+<span class="normal"><a href="#__codelineno-4-24">24</a></span>
+<span class="normal"><a href="#__codelineno-4-25">25</a></span>
+<span class="normal"><a href="#__codelineno-4-26">26</a></span>
+<span class="normal"><a href="#__codelineno-4-27">27</a></span>
+<span class="normal"><a href="#__codelineno-4-28">28</a></span>
+<span class="normal"><a href="#__codelineno-4-29">29</a></span>
+<span class="normal"><a href="#__codelineno-4-30">30</a></span>
+<span class="normal"><a href="#__codelineno-4-31">31</a></span>
+<span class="normal"><a href="#__codelineno-4-32">32</a></span>
+<span class="normal"><a href="#__codelineno-4-33">33</a></span>
+<span class="normal"><a href="#__codelineno-4-34">34</a></span>
+<span class="normal"><a href="#__codelineno-4-35">35</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="nd">@Operation</span><span class="p">(</span><span class="n">summary</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Obtener un videojuego por su id"</span><span class="p">)</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="nd">@ApiResponses</span><span class="p">({</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="w">        </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"200"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Videojuego encontrado"</span><span class="p">),</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="w">        </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"404"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"No existe ningún videojuego con ese id"</span><span class="p">)</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="p">})</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7"></a>
+<a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="nd">@Operation</span><span class="p">(</span><span class="n">summary</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Listar todos los videojuegos"</span><span class="p">)</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="nd">@ApiResponses</span><span class="p">({</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="w">        </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"200"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Lista de videojuegos (puede estar vacía)"</span><span class="p">)</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11"></a><span class="p">})</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12"></a><span class="nd">@GetMapping</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13"></a>
+<a id="__codelineno-4-14" name="__codelineno-4-14"></a><span class="nd">@Operation</span><span class="p">(</span><span class="n">summary</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Crear un videojuego nuevo"</span><span class="p">)</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15"></a><span class="nd">@ApiResponses</span><span class="p">({</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16"></a><span class="w">        </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"201"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Videojuego creado correctamente"</span><span class="p">),</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17"></a><span class="w">        </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"400"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"El cuerpo de la petición no supera las validaciones"</span><span class="p">),</span>
+<a id="__codelineno-4-18" name="__codelineno-4-18"></a><span class="w">        </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"404"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"El estudio indicado no existe"</span><span class="p">)</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19"></a><span class="p">})</span>
+<a id="__codelineno-4-20" name="__codelineno-4-20"></a><span class="nd">@PostMapping</span>
+<a id="__codelineno-4-21" name="__codelineno-4-21"></a>
+<a id="__codelineno-4-22" name="__codelineno-4-22"></a><span class="nd">@Operation</span><span class="p">(</span><span class="n">summary</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Actualizar un videojuego existente"</span><span class="p">)</span>
+<a id="__codelineno-4-23" name="__codelineno-4-23"></a><span class="nd">@ApiResponses</span><span class="p">({</span>
+<a id="__codelineno-4-24" name="__codelineno-4-24"></a><span class="w">        </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"200"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Videojuego actualizado correctamente"</span><span class="p">),</span>
+<a id="__codelineno-4-25" name="__codelineno-4-25"></a><span class="w">        </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"400"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"El cuerpo de la petición no supera las validaciones"</span><span class="p">),</span>
+<a id="__codelineno-4-26" name="__codelineno-4-26"></a><span class="w">        </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"404"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"No existe ningún videojuego con ese id, o el estudio indicado no existe"</span><span class="p">)</span>
+<a id="__codelineno-4-27" name="__codelineno-4-27"></a><span class="p">})</span>
+<a id="__codelineno-4-28" name="__codelineno-4-28"></a><span class="nd">@PutMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
+<a id="__codelineno-4-29" name="__codelineno-4-29"></a>
+<a id="__codelineno-4-30" name="__codelineno-4-30"></a><span class="nd">@Operation</span><span class="p">(</span><span class="n">summary</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Borrar un videojuego"</span><span class="p">)</span>
+<a id="__codelineno-4-31" name="__codelineno-4-31"></a><span class="nd">@ApiResponses</span><span class="p">({</span>
+<a id="__codelineno-4-32" name="__codelineno-4-32"></a><span class="w">        </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"204"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Videojuego borrado correctamente"</span><span class="p">),</span>
+<a id="__codelineno-4-33" name="__codelineno-4-33"></a><span class="w">        </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"404"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"No existe ningún videojuego con ese id"</span><span class="p">)</span>
+<a id="__codelineno-4-34" name="__codelineno-4-34"></a><span class="p">})</span>
+<a id="__codelineno-4-35" name="__codelineno-4-35"></a><span class="nd">@DeleteMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p>Reinicia y despliega cada endpoint en Swagger UI: fíjate en que la sección "Responses" de cada uno lista ahora sus códigos reales, no solo el <code>200</code> genérico de antes.</p>
+<p><strong>Captura</strong>: la sección "Responses" de <code>POST /api/v1/videojuegos</code> desplegada (sin ejecutar nada todavía), mostrando los tres códigos documentados (<code>201</code>/<code>400</code>/<code>404</code>) con su descripción.</p>
 <p>Con Swagger UI ya abierto sobre el bloque <code>videojuego-controller</code>, prueba las cuatro operaciones en orden. Para cada una, además de lo que se pide, haz una <strong>captura de Swagger UI mostrando la petición enviada y la respuesta recibida</strong> (cuerpo y código de estado visibles).</p>
 <h3 id="get-leer"><code>GET</code> — leer<a class="headerlink" href="#get-leer" title="Permanent link">¶</a></h3>
 <p>Despliega <code>GET /api/v1/videojuegos</code>, pulsa <strong>Try it out</strong> → <strong>Execute</strong>, sin rellenar nada. Comprueba el <code>200</code> y que la lista incluye los videojuegos que ya tenías. Repite con <code>GET /api/v1/videojuegos/{id}</code> sobre uno concreto.</p>
 <p><strong>Captura</strong>: la respuesta de <code>GET /api/v1/videojuegos/{id}</code>.</p>
 <h3 id="post-crear"><code>POST</code> — crear<a class="headerlink" href="#post-crear" title="Permanent link">¶</a></h3>
 <p>Despliega <code>POST /api/v1/videojuegos</code>, pulsa <strong>Try it out</strong> y sustituye el cuerpo de ejemplo por uno propio:</p>
-<div class="language-json highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">JSON</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
-<span class="normal"><a href="#__codelineno-3-2">2</a></span>
-<span class="normal"><a href="#__codelineno-3-3">3</a></span>
-<span class="normal"><a href="#__codelineno-3-4">4</a></span>
-<span class="normal"><a href="#__codelineno-3-5">5</a></span>
-<span class="normal"><a href="#__codelineno-3-6">6</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="p">{</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">  </span><span class="nt">"titulo"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Celeste"</span><span class="p">,</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">  </span><span class="nt">"precio"</span><span class="p">:</span><span class="w"> </span><span class="mf">19.99</span><span class="p">,</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="w">  </span><span class="nt">"fechaLanzamiento"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-01-25"</span><span class="p">,</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="w">  </span><span class="nt">"estudioId"</span><span class="p">:</span><span class="w"> </span><span class="mi">101</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="p">}</span>
+<div class="language-json highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">JSON</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span>
+<span class="normal"><a href="#__codelineno-5-2">2</a></span>
+<span class="normal"><a href="#__codelineno-5-3">3</a></span>
+<span class="normal"><a href="#__codelineno-5-4">4</a></span>
+<span class="normal"><a href="#__codelineno-5-5">5</a></span>
+<span class="normal"><a href="#__codelineno-5-6">6</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="p">{</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="w">  </span><span class="nt">"titulo"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Celeste"</span><span class="p">,</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="w">  </span><span class="nt">"precio"</span><span class="p">:</span><span class="w"> </span><span class="mf">19.99</span><span class="p">,</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4"></a><span class="w">  </span><span class="nt">"fechaLanzamiento"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2018-01-25"</span><span class="p">,</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5"></a><span class="w">  </span><span class="nt">"estudioId"</span><span class="p">:</span><span class="w"> </span><span class="mi">101</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>Pulsa <strong>Execute</strong>. Anota el código de estado devuelto y el cuerpo de la respuesta — debería ser un <code>201 Created</code> con el videojuego recién creado, incluyendo el <code>id</code> que le ha asignado la base de datos.</p>
 <p><strong>Captura</strong>: la petición y la respuesta del <code>POST</code>.</p>
@@ -1972,8 +2060,10 @@
 <ul>
 <li>Las mismas cuatro operaciones, en el mismo orden.</li>
 <li>Los mismos códigos de estado esperados que en <code>Videojuego</code> — recuerda la tabla del apartado de teoría si tienes dudas.</li>
+<li><code>@ApiResponses</code> sobre los cuatro métodos de <code>EstudioController</code> (no solo <code>create()</code>), con los códigos que de verdad puede devolver cada uno. Aquí no hay ningún estudio relacionado que pueda no existir — piensa qué códigos tienen sentido en cada método y cuáles no aplican, comparado con <code>Videojuego</code>.</li>
 <li>La misma comprobación final: borra el estudio que has creado y verifica con un <code>GET</code> posterior que ya no existe.</li>
 </ul>
+<p><strong>Captura</strong>: la sección "Responses" de <code>POST /api/v1/estudios</code> desplegada, mostrando los códigos que has documentado tú — igual que hiciste en el Bloque A.</p>
 <p><strong>Captura</strong>: una por cada una de las cuatro operaciones (petición + respuesta visibles), igual que en el Bloque A.</p>
 <hr>
 <h2 id="pregunta-final">Pregunta final<a class="headerlink" href="#pregunta-final" title="Permanent link">¶</a></h2>

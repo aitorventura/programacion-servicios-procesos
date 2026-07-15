@@ -2012,6 +2012,8 @@
 <a id="__codelineno-5-5" name="__codelineno-5-5"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>Un endpoint sencillo para verificar qué información viaja dentro de tu propio token: útil tanto para probar como para entender qué sabe el servidor de ti en cada petición autenticada.</p>
+<!-- TODO(autor): a partir de aquí ya hay endpoints protegidos que probar. Añadir a la teoría/actividad de este apartado un @SecurityScheme (+ .addSecuritySchemes(...) en el bean OpenAPI de OpenApiConfig) para que Swagger UI muestre el botón "Authorize" y no haya que pegar el header Authorization a mano en cada petición desde el navegador. -->
+
 <hr>
 <h2 id="https-lo-que-jwt-resuelve-y-lo-que-no">🔒 HTTPS: lo que JWT resuelve y lo que no<a class="headerlink" href="#https-lo-que-jwt-resuelve-y-lo-que-no" title="Permanent link">¶</a></h2>
 <p>JWT evita reenviar la contraseña en cada petición — un avance real. Pero el <strong>canal</strong> en sí sigue siendo el mismo: si no hay HTTPS, tanto el login como el propio token viajan en claro por la red, interceptables por cualquiera con acceso a esa red. La firma del JWT garantiza <strong>integridad</strong> (que no se ha modificado), no <strong>confidencialidad del transporte</strong> — son dos cosas distintas.</p>
