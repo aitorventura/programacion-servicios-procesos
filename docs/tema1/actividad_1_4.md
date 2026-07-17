@@ -113,7 +113,7 @@ curl -s http://localhost:8080/actuator/health | jq
 Este experimento necesita que tengas más de un servicio en tu `.devcontainer/docker-compose.yml` — si en este punto del curso solo tienes PostgreSQL, hazlo con ese mismo servicio (parándolo tendrás el mismo efecto sobre el componente `db`).
 
 !!! tip "Dónde ejecutar estos comandos"
-    Puedes lanzarlos desde la propia terminal integrada de VS Code, dentro del Dev Container: el `docker-outside-of-docker` que configuraste en la Actividad 1.1 de Acceso a Datos hace que `docker compose` vea y controle los mismos contenedores que tu sistema operativo, aunque la terminal esté dentro de `app`. Como el fichero ya no está en la raíz del proyecto, apunta a él con `-f`; y como `docker compose` no adivina solo qué contenedores son "los tuyos", indícale también el proyecto con `-p gamevault_devcontainer` (el mismo nombre que ya usaste en la Actividad 1.1 de AD).
+    Puedes lanzarlos desde la propia terminal integrada de tu editor (VS Code o IntelliJ IDEA), dentro del Dev Container: el `docker-outside-of-docker` que configuraste en la Actividad 1.1 de Acceso a Datos hace que `docker compose` vea y controle los mismos contenedores que tu sistema operativo, aunque la terminal esté dentro de `app`. Como el fichero ya no está en la raíz del proyecto, apunta a él con `-f`; y como `docker compose` no adivina solo qué contenedores son "los tuyos", indícale también el proyecto con `-p gamevault_devcontainer` (el mismo nombre que ya usaste en la Actividad 1.1 de AD).
 
 ### Paso 5 — Parar una dependencia
 

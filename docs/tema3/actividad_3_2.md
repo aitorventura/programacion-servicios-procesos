@@ -107,7 +107,7 @@ Mira la consola de tu aplicación. **Anota** los dos nombres de hilo que aparece
 Elige **una** de estas herramientas y síguela hasta el final:
 
 !!! warning "jconsole y VisualVM necesitan una ventana gráfica"
-    Tu aplicación corre dentro de tu Dev Container, y `jconsole`/`VisualVM` son programas con interfaz gráfica — si los lanzas desde la terminal integrada de VS Code, no van a tener ninguna pantalla donde abrirse. Si quieres usar alguno de los dos igualmente, tienes que instalarlo en tu propio equipo (fuera del contenedor) y conectarlo por red al proceso de dentro, algo que no vas a montar hoy. La opción que **sí** funciona sin nada adicional, directamente desde la terminal del contenedor, es `jstack` — sigue esa pestaña si no quieres complicarte.
+    Tu aplicación corre dentro de tu Dev Container, y `jconsole`/`VisualVM` son programas con interfaz gráfica — si los lanzas desde la terminal integrada de tu editor (VS Code o IntelliJ IDEA), no van a tener ninguna pantalla donde abrirse. Si quieres usar alguno de los dos igualmente, tienes que instalarlo en tu propio equipo (fuera del contenedor) y conectarlo por red al proceso de dentro, algo que no vas a montar hoy. La opción que **sí** funciona sin nada adicional, directamente desde la terminal del contenedor, es `jstack` — sigue esa pestaña si no quieres complicarte.
 
 <div class="tabs-colored" markdown>
 

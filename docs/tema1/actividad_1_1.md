@@ -89,7 +89,7 @@ No necesitas tu proyecto para practicar la herramienta en sí, pero sí necesita
 }
 ```
 
-Reconstruye el contenedor (paleta de comandos → **"Dev Containers: Rebuild Container"**) para que la nueva *feature* se instale — recuerda que editar `devcontainer.json` no tiene efecto hasta que reconstruyes.
+Reconstruye el contenedor para que la nueva *feature* se instale (en VS Code, paleta de comandos → **"Dev Containers: Rebuild Container"**; en IntelliJ IDEA, cierra la conexión desde la ventana **Services** y vuelve a crear el Dev Container desde `devcontainer.json`) — recuerda que editar `devcontainer.json` no tiene efecto hasta que reconstruyes.
 
 Con Python ya disponible, usa su servidor HTTP mínimo integrado — suficiente para tener algo real contra lo que lanzar peticiones:
 
