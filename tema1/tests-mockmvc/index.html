@@ -697,9 +697,18 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#que-es-un-mock" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎭 Qué es un mock
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#test-unitario-vs-test-de-integracion" class="md-nav__link">
     <span class="md-ellipsis">
-      🎭 Test unitario vs. test de integración
+      🆚 Test unitario vs. test de integración
     </span>
   </a>
   
@@ -715,14 +724,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#un-ejemplo-completo-el-test-del-librocontroller" class="md-nav__link">
+  <a href="#primer-ejemplo-un-test-que-si-necesita-el-mock" class="md-nav__link">
     <span class="md-ellipsis">
-      📖 Un ejemplo completo: el test del LibroController
+      📖 Primer ejemplo: un test que sí necesita el mock
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="📖 Un ejemplo completo: el test del LibroController">
+    <nav class="md-nav" aria-label="📖 Primer ejemplo: un test que sí necesita el mock">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#segundo-ejemplo-cuando-el-mock-no-hace-falta" class="md-nav__link">
+    <span class="md-ellipsis">
+      📖 Segundo ejemplo: cuando el mock no hace falta
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instruyendo-al-mock-para-que-falle-thenthrow" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎭 Instruyendo al mock para que falle: thenThrow
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#y-el-test-de-integracion-completo" class="md-nav__link">
@@ -1656,9 +1683,18 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#que-es-un-mock" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎭 Qué es un mock
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#test-unitario-vs-test-de-integracion" class="md-nav__link">
     <span class="md-ellipsis">
-      🎭 Test unitario vs. test de integración
+      🆚 Test unitario vs. test de integración
     </span>
   </a>
   
@@ -1674,14 +1710,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#un-ejemplo-completo-el-test-del-librocontroller" class="md-nav__link">
+  <a href="#primer-ejemplo-un-test-que-si-necesita-el-mock" class="md-nav__link">
     <span class="md-ellipsis">
-      📖 Un ejemplo completo: el test del LibroController
+      📖 Primer ejemplo: un test que sí necesita el mock
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="📖 Un ejemplo completo: el test del LibroController">
+    <nav class="md-nav" aria-label="📖 Primer ejemplo: un test que sí necesita el mock">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#segundo-ejemplo-cuando-el-mock-no-hace-falta" class="md-nav__link">
+    <span class="md-ellipsis">
+      📖 Segundo ejemplo: cuando el mock no hace falta
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instruyendo-al-mock-para-que-falle-thenthrow" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎭 Instruyendo al mock para que falle: thenThrow
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#y-el-test-de-integracion-completo" class="md-nav__link">
@@ -1736,8 +1790,8 @@
 <p>Hasta ahora has probado la API a mano: con <code>curl</code> (Actividad 1.1) y con Swagger UI (Actividad 1.2). Los dos funcionan, pero comparten un problema — tienes que repetir los mismos clics o comandos cada vez que quieres comprobar que todo sigue funcionando. Hoy conoces un tercer cliente, uno que se ejecuta solo: un <strong>test automatizado</strong>.</p>
 <hr>
 <h2 id="que-es-un-test-automatizado">🧪 Qué es un test automatizado<a class="headerlink" href="#que-es-un-test-automatizado" title="Permanent link">¶</a></h2>
-<p>Un <strong>test automatizado</strong> es código que comprueba el comportamiento de otro código, sin intervención humana. En vez de abrir Swagger UI y pulsar "Execute" cada vez que cambias algo, escribes una vez el test y lo ejecutas las veces que haga falta — en segundos, sin volver a hacer los mismos clics, y de forma que cualquiera (incluido un pipeline de integración continua, como el que viste en el Tema 0 de AD con GitHub Actions) pueda ejecutarlo automáticamente en cada cambio.</p>
-<p>Un test JUnit sigue casi siempre la misma estructura, conocida como <strong>preparar-actuar-afirmar</strong> (<em>Arrange-Act-Assert</em>):</p>
+<p>Imagina que <code>LibroService</code> ya funciona bien, y hoy cambias algo en <code>update()</code> para arreglar un fallo. ¿Cómo sabes que ese cambio no ha roto <code>create()</code>, que no habías tocado para nada? La forma manual es volver a probar cada endpoint a mano —con Swagger UI o <code>curl</code>— cada vez que cambias una línea, y eso se vuelve más pesado cuantos más endpoints tenga tu proyecto. Un <strong>test automatizado</strong> es código que hace exactamente esa comprobación por ti: lo escribes una vez, y lo repites en segundos cada vez que lo necesites, sin abrir el navegador ni recordar qué había que probar.</p>
+<p><strong>JUnit</strong> es la librería estándar para escribir y ejecutar tests en Java: tú escribes métodos que comprueban un comportamiento concreto, y JUnit se encarga de ejecutarlos todos y decirte, uno a uno, cuáles han pasado y cuáles no. Un test JUnit sigue casi siempre la misma estructura, conocida como <strong>preparar-actuar-afirmar</strong> (<em>Arrange-Act-Assert</em>):</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
 <span class="normal"><a href="#__codelineno-0-2">2</a></span>
 <span class="normal"><a href="#__codelineno-0-3">3</a></span>
@@ -1754,10 +1808,33 @@
 <a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="w">    </span><span class="n">assertEquals</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="n">resultado</span><span class="p">);</span><span class="w">                </span><span class="c1">// afirmar</span>
 <a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p><code>@Test</code> marca el método como un test que JUnit debe ejecutar. Primero <strong>preparas</strong> lo que necesitas, luego <strong>actúas</strong> (llamas al método que quieres probar), y por último <strong>afirmas</strong> (compruebas que el resultado es el esperado) — si la afirmación falla, el test falla y te avisa exactamente qué esperaba y qué obtuvo.</p>
+<p><code>@Test</code> marca el método como un test que JUnit debe ejecutar. Primero <strong>preparas</strong> lo que necesitas, luego <strong>actúas</strong> (llamas al método que quieres probar), y por último <strong>afirmas</strong> con <code>assertEquals(esperado, actual)</code> — el primer parámetro es siempre el valor que tú esperas, el segundo el que de verdad ha devuelto tu código. Si los inviertes el test sigue funcionando igual, pero el mensaje de error, cuando falle, sale con "esperado" y "obtenido" cambiados — confunde al leerlo, así que conviene respetar el orden.</p>
+<p>Cambia el <code>5</code> de arriba por un <code>6</code> (una afirmación ahora incorrecta) y ejecuta el test otra vez. JUnit no se limita a decir "algo falla" — te da un error concreto, con el valor que esperaba y el que ha obtenido de verdad:</p>
+<div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
+<span class="normal"><a href="#__codelineno-1-2">2</a></span>
+<span class="normal"><a href="#__codelineno-1-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a>org.opentest4j.AssertionFailedError:
+<a id="__codelineno-1-2" name="__codelineno-1-2"></a>Expected :6
+<a id="__codelineno-1-3" name="__codelineno-1-3"></a>Actual   :5
+</code></pre></div></td></tr></table></div>
+<p>Esa es la razón de ser de un test: no solo te avisa de que algo va mal, te dice exactamente qué esperabas y qué ha pasado en realidad, sin que tengas que ir imprimiendo valores por consola para averiguarlo tú mismo.</p>
 <hr>
-<h2 id="test-unitario-vs-test-de-integracion">🎭 Test unitario vs. test de integración<a class="headerlink" href="#test-unitario-vs-test-de-integracion" title="Permanent link">¶</a></h2>
-<p>No todos los tests prueban lo mismo ni al mismo nivel:</p>
+<h2 id="que-es-un-mock">🎭 Qué es un mock<a class="headerlink" href="#que-es-un-mock" title="Permanent link">¶</a></h2>
+<p>Antes de ver los dos tipos de test, entiende qué es un mock — lo vas a usar constantemente a partir de aquí. Piensa en una entrevista de trabajo simulada, antes de la real: alguien hace de entrevistador, siguiendo un guion que habéis decidido de antemano ("cuando te pregunte esto, responde aquello"), y tú practicas cómo reaccionar, sin que haya un puesto real en juego todavía. Un <strong>mock</strong> es exactamente eso, para código: un objeto falso que sustituye a una dependencia real, programado por ti para responder exactamente lo que decidas cuando lo llamen de una forma concreta.</p>
+<p>En Java, con Mockito (la librería que Spring Boot ya trae integrada), se ve así:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
+<span class="normal"><a href="#__codelineno-2-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="n">LibroService</span><span class="w"> </span><span class="n">mockService</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mock</span><span class="p">(</span><span class="n">LibroService</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="n">when</span><span class="p">(</span><span class="n">mockService</span><span class="p">.</span><span class="na">findAll</span><span class="p">()).</span><span class="na">thenReturn</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">());</span>
+</code></pre></div></td></tr></table></div>
+<p><code>mock(LibroService.class)</code> crea el objeto falso — por defecto, no sabe hacer nada por sí solo. <code>when(...).thenReturn(...)</code> es el "guion": le dices qué debe devolver cuando lo llamen de una forma concreta. Dentro de un test de Spring, en vez de crear el mock a mano con <code>mock(...)</code>, se usa la anotación <code>@MockitoBean</code> sobre el campo — Spring se encarga de crearlo e inyectarlo él solo, pero por debajo es exactamente el mismo mecanismo.</p>
+<p>¿Por qué usar un objeto falso en vez del real? Porque aísla lo que quieres probar. Si tu test dependiera del <code>LibroService</code> real, dependería a su vez de una base de datos real conectada, con datos reales dentro — y el resultado de tu test cambiaría según qué datos hubiera en ese momento en esa base de datos, algo que ni controlas ni te interesa cuando lo único que quieres saber es "¿mi controller responde bien a lo que le da el service?". Con un mock, el service siempre se comporta exactamente como tú decidiste, esté la base de datos levantada o no, sea la hora que sea.</p>
+<div class="admonition tip">
+<p class="admonition-title">Material de apoyo: JUnit y mocks desde cero</p>
+<p>Si quieres repasar JUnit y los mocks con más calma —antes de verlos aplicados aquí a un controller REST—, tienes material dedicado en <a href="https://aitorventura.github.io/entornos-de-desarrollo/tema3/unitarias/">Entornos de Desarrollo, Tema 3: Pruebas unitarias</a>.</p>
+</div>
+<p>Pero mockear no es obligatorio: a veces sí quieres saber si las piezas reales (el service de verdad, la base de datos de verdad) funcionan bien juntas, no solo si tu controller reacciona bien a un valor inventado. Esa decisión — mockear o no — es justo lo que separa dos tipos de test distintos.</p>
+<hr>
+<h2 id="test-unitario-vs-test-de-integracion">🆚 Test unitario vs. test de integración<a class="headerlink" href="#test-unitario-vs-test-de-integracion" title="Permanent link">¶</a></h2>
+<p>Según esa decisión, un test cae en uno de estos dos grupos:</p>
 <table>
 <thead>
 <tr>
@@ -1784,82 +1861,148 @@
 </tr>
 </tbody>
 </table>
-<p>Un <strong>mock</strong> es un objeto falso que sustituye a una dependencia real durante el test, y que tú programas para que se comporte exactamente como tú digas ("cuando te llamen con este parámetro, devuelve este resultado"). Sirve para aislar la pieza que quieres probar de todo lo demás: si estás probando un controller, no necesitas que la base de datos esté levantada de verdad — mockeas el service que hay detrás y decides tú qué devuelve.</p>
+<p>Visualmente, la diferencia está en dónde se corta la cadena real de piezas — en un test unitario, justo después del controller; en uno de integración, en ningún sitio:</p>
+<pre class="mermaid"><code>flowchart LR
+    subgraph U["🧪 Test unitario — @WebMvcTest"]
+        C1["Controller&lt;br/&gt;(real)"] --&gt; S1["Service&lt;br/&gt;(🎭 mock)"]
+    end
+    subgraph I["🔗 Test de integración — @Testcontainers"]
+        C2["Controller&lt;br/&gt;(real)"] --&gt; S2["Service&lt;br/&gt;(real)"] --&gt; R2["Repository&lt;br/&gt;(real)"] --&gt; DB[("PostgreSQL&lt;br/&gt;(real, en Docker)")]
+    end</code></pre>
+<p>El test unitario nunca llega a saber si hay una base de datos detrás siquiera — se detiene en el mock. El de integración recorre la cadena entera, con piezas reales de principio a fin.</p>
 <hr>
 <h2 id="mockmvc-un-cliente-http-programable">🌐 MockMvc: un cliente HTTP programable<a class="headerlink" href="#mockmvc-un-cliente-http-programable" title="Permanent link">¶</a></h2>
 <p><strong>MockMvc</strong> es la herramienta de Spring para probar controllers REST sin necesitar un servidor HTTP real arrancado: simula peticiones HTTP contra tus controladores, dentro del propio test, y te permite comprobar el código de estado y el cuerpo de la respuesta con código Java.</p>
 <p>Es, en esencia, un tercer cliente — como <code>curl</code> o Swagger UI — pero con una diferencia clave: es <strong>repetible</strong> y se puede ejecutar automáticamente (en tu máquina o en un pipeline de CI) cada vez que cambias algo, sin que nadie tenga que abrir el navegador.</p>
+<p>El viaje completo de una petición dentro de un test MockMvc, de principio a fin — fíjate en que nunca sale del propio proceso Java, no hay ningún puerto <code>8080</code> real de por medio:</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant Test as 🧪 Test (JUnit)
+    participant MockMvc as MockMvc
+    participant Controller as LibroController
+    participant Mock as 🎭 LibroService (mock)
+
+    Test-&gt;&gt;MockMvc: perform(get("/api/v1/libros"))
+    MockMvc-&gt;&gt;Controller: simula GET /api/v1/libros
+    Controller-&gt;&gt;Mock: findAll()
+    Mock--&gt;&gt;Controller: List.of(dto) — lo que tú preparaste con when(...)
+    Controller--&gt;&gt;MockMvc: ResponseEntity(200, JSON)
+    MockMvc--&gt;&gt;Test: andExpect(...) compara contra la respuesta real</code></pre>
+<p><code>MockMvc</code> simula la parte de Tomcat (recibir la petición, encaminarla al método correcto) sin arrancar ningún servidor de verdad; <code>LibroController</code> es exactamente el mismo código que corre en producción, sin cambiar una línea; y <code>LibroService</code>, al estar mockeado, responde con el valor que tú preparaste en el test — no con nada calculado de verdad.</p>
 <hr>
-<h2 id="un-ejemplo-completo-el-test-del-librocontroller">📖 Un ejemplo completo: el test del <code>LibroController</code><a class="headerlink" href="#un-ejemplo-completo-el-test-del-librocontroller" title="Permanent link">¶</a></h2>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-1-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-1-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-1-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-1-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-1-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-1-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-1-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-1-10">10</a></span>
-<span class="normal"><a href="#__codelineno-1-11">11</a></span>
-<span class="normal"><a href="#__codelineno-1-12">12</a></span>
-<span class="normal"><a href="#__codelineno-1-13">13</a></span>
-<span class="normal"><a href="#__codelineno-1-14">14</a></span>
-<span class="normal"><a href="#__codelineno-1-15">15</a></span>
-<span class="normal"><a href="#__codelineno-1-16">16</a></span>
-<span class="normal"><a href="#__codelineno-1-17">17</a></span>
-<span class="normal"><a href="#__codelineno-1-18">18</a></span>
-<span class="normal"><a href="#__codelineno-1-19">19</a></span>
-<span class="normal"><a href="#__codelineno-1-20">20</a></span>
-<span class="normal"><a href="#__codelineno-1-21">21</a></span>
-<span class="normal"><a href="#__codelineno-1-22">22</a></span>
-<span class="normal"><a href="#__codelineno-1-23">23</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nd">@WebMvcTest</span><span class="p">(</span><span class="n">LibroController</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="nd">@AutoConfigureMockMvc</span><span class="p">(</span><span class="n">addFilters</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="kd">class</span> <span class="nc">LibroControllerTest</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4"></a>
-<a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="w">    </span><span class="nd">@Autowired</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">MockMvc</span><span class="w"> </span><span class="n">mockMvc</span><span class="p">;</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7"></a>
-<a id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="w">    </span><span class="nd">@MockitoBean</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">LibroService</span><span class="w"> </span><span class="n">libroService</span><span class="p">;</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10"></a>
-<a id="__codelineno-1-11" name="__codelineno-1-11"></a><span class="w">    </span><span class="nd">@Test</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12"></a><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">create_DebeDevolver400_CuandoElDtoNoEsValido</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-1-13" name="__codelineno-1-13"></a><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"""</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14"></a><span class="s">                {"titulo": "", "precio": -5, "fechaPublicacion": null, "editorialId": -1}</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15"></a><span class="s">                """</span><span class="p">;</span>
-<a id="__codelineno-1-16" name="__codelineno-1-16"></a>
-<a id="__codelineno-1-17" name="__codelineno-1-17"></a><span class="w">        </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/libros"</span><span class="p">)</span>
-<a id="__codelineno-1-18" name="__codelineno-1-18"></a><span class="w">                        </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
-<a id="__codelineno-1-19" name="__codelineno-1-19"></a><span class="w">                        </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="n">body</span><span class="p">))</span>
-<a id="__codelineno-1-20" name="__codelineno-1-20"></a><span class="w">                </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isBadRequest</span><span class="p">())</span>
-<a id="__codelineno-1-21" name="__codelineno-1-21"></a><span class="w">                </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">jsonPath</span><span class="p">(</span><span class="s">"$.status"</span><span class="p">).</span><span class="na">value</span><span class="p">(</span><span class="mi">400</span><span class="p">));</span>
-<a id="__codelineno-1-22" name="__codelineno-1-22"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-1-23" name="__codelineno-1-23"></a><span class="p">}</span>
+<h2 id="primer-ejemplo-un-test-que-si-necesita-el-mock">📖 Primer ejemplo: un test que sí necesita el mock<a class="headerlink" href="#primer-ejemplo-un-test-que-si-necesita-el-mock" title="Permanent link">¶</a></h2>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-3-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-3-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-3-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-3-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-3-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-3-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-3-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-3-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-3-10">10</a></span>
+<span class="normal"><a href="#__codelineno-3-11">11</a></span>
+<span class="normal"><a href="#__codelineno-3-12">12</a></span>
+<span class="normal"><a href="#__codelineno-3-13">13</a></span>
+<span class="normal"><a href="#__codelineno-3-14">14</a></span>
+<span class="normal"><a href="#__codelineno-3-15">15</a></span>
+<span class="normal"><a href="#__codelineno-3-16">16</a></span>
+<span class="normal"><a href="#__codelineno-3-17">17</a></span>
+<span class="normal"><a href="#__codelineno-3-18">18</a></span>
+<span class="normal"><a href="#__codelineno-3-19">19</a></span>
+<span class="normal"><a href="#__codelineno-3-20">20</a></span>
+<span class="normal"><a href="#__codelineno-3-21">21</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nd">@WebMvcTest</span><span class="p">(</span><span class="n">LibroController</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="nd">@AutoConfigureMockMvc</span><span class="p">(</span><span class="n">addFilters</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="kd">class</span> <span class="nc">LibroControllerTest</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="w">    </span><span class="nd">@Autowired</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">MockMvc</span><span class="w"> </span><span class="n">mockMvc</span><span class="p">;</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7"></a>
+<a id="__codelineno-3-8" name="__codelineno-3-8"></a><span class="w">    </span><span class="nd">@MockitoBean</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">LibroService</span><span class="w"> </span><span class="n">libroService</span><span class="p">;</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10"></a>
+<a id="__codelineno-3-11" name="__codelineno-3-11"></a><span class="w">    </span><span class="nd">@Test</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12"></a><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">getAll_DebeDevolverListaDeLibros</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">dto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LibroResponseDTO</span><span class="p">(</span><span class="mi">1L</span><span class="p">,</span><span class="w"> </span><span class="s">"El nombre del viento"</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BigDecimal</span><span class="p">(</span><span class="s">"19.95"</span><span class="p">),</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14"></a><span class="w">                </span><span class="n">LocalDate</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">2007</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">27</span><span class="p">),</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">EditorialDTO</span><span class="p">(</span><span class="s">"Plaza &amp; Janés"</span><span class="p">));</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15"></a><span class="w">        </span><span class="n">when</span><span class="p">(</span><span class="n">libroService</span><span class="p">.</span><span class="na">findAll</span><span class="p">()).</span><span class="na">thenReturn</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">dto</span><span class="p">));</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16"></a>
+<a id="__codelineno-3-17" name="__codelineno-3-17"></a><span class="w">        </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">"/api/v1/libros"</span><span class="p">))</span>
+<a id="__codelineno-3-18" name="__codelineno-3-18"></a><span class="w">                </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isOk</span><span class="p">())</span>
+<a id="__codelineno-3-19" name="__codelineno-3-19"></a><span class="w">                </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">jsonPath</span><span class="p">(</span><span class="s">"$[0].titulo"</span><span class="p">).</span><span class="na">value</span><span class="p">(</span><span class="s">"El nombre del viento"</span><span class="p">));</span>
+<a id="__codelineno-3-20" name="__codelineno-3-20"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-3-21" name="__codelineno-3-21"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>Pieza a pieza:</p>
 <ul>
 <li><code>@WebMvcTest(LibroController.class)</code>: arranca solo la capa web de Spring (el controller y lo relacionado con MVC), sin levantar toda la aplicación ni conectar con una base de datos real — mucho más rápido que un arranque completo.</li>
+<li><code>@AutoConfigureMockMvc(addFilters = false)</code>: <code>@WebMvcTest</code> ya te prepara un <code>MockMvc</code> listo para usar; esta anotación te deja ajustar esa configuración. <code>addFilters = false</code> desactiva los filtros de <em>servlet</em> que se aplican a cada petición — en concreto, los que añadirá Spring Security a partir del Tema 2. Sin este flag, en cuanto tu proyecto tenga seguridad configurada, estos mismos tests empezarían a fallar con un <code>401</code> en vez del código que de verdad quieres comprobar, porque la petición simulada quedaría bloqueada por el login antes de llegar al controller. Ponerlo ya, desde ahora, evita ese problema por adelantado.</li>
 <li><code>@MockitoBean private LibroService libroService</code>: sustituye el service real por un mock — el test prueba el controller de forma aislada, sin que la lógica del service (ni la base de datos que hay detrás) entre en juego.</li>
-<li><code>mockMvc.perform(post(...).contentType(...).content(...))</code>: construye y envía una petición simulada — el equivalente, en código, al <code>curl -X POST</code> que ya conoces.</li>
-<li><code>.andExpect(status().isBadRequest())</code>: afirma el código de estado esperado (aquí, <code>400</code>).</li>
-<li><code>.andExpect(jsonPath("$.status").value(400))</code>: <code>jsonPath</code> navega el cuerpo JSON de la respuesta como si fuera un mini-selector, para afirmar valores concretos dentro de él.</li>
+<li><code>when(libroService.findAll()).thenReturn(List.of(dto))</code>: esta es la parte de <strong>preparar</strong>. Le dices al mock, explícitamente, qué debe devolver cuando alguien lo llame con <code>findAll()</code> — no hay ninguna base de datos decidiéndolo, decides tú, a mano, exactamente qué datos ve el controller.</li>
+<li><code>mockMvc.perform(get(...))</code>: construye y envía una petición simulada — el equivalente, en código, al <code>curl</code> que ya conoces.</li>
+<li><code>.andExpect(status().isOk())</code> / <code>.andExpect(jsonPath("$[0].titulo").value(...))</code>: la parte de <strong>afirmar</strong>. <code>jsonPath</code> navega el cuerpo JSON de la respuesta como si fuera un mini-selector — aquí, <code>$[0].titulo</code> es el campo <code>titulo</code> del primer elemento del array que devuelve <code>getAll()</code>.</li>
 </ul>
-<p>Este test concreto es de <strong>capa web</strong>: prueba que el controller valida correctamente el DTO de entrada (gracias a <code>@Valid</code>, que ya viste el apartado anterior) sin necesitar el service real ni una base de datos.</p>
+<h3 id="segundo-ejemplo-cuando-el-mock-no-hace-falta">📖 Segundo ejemplo: cuando el mock no hace falta<a class="headerlink" href="#segundo-ejemplo-cuando-el-mock-no-hace-falta" title="Permanent link">¶</a></h3>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-4-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-4-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-4-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-4-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-4-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-4-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-4-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-4-10">10</a></span>
+<span class="normal"><a href="#__codelineno-4-11">11</a></span>
+<span class="normal"><a href="#__codelineno-4-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="nd">@Test</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="kt">void</span><span class="w"> </span><span class="nf">create_DebeDevolver400_CuandoElDtoNoEsValido</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"""</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="s">            {"titulo": "", "precio": -5, "fechaPublicacion": null, "editorialId": -1}</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="s">            """</span><span class="p">;</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6"></a>
+<a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="w">    </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/libros"</span><span class="p">)</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="w">                    </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="w">                    </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="n">body</span><span class="p">))</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="w">            </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isBadRequest</span><span class="p">())</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11"></a><span class="w">            </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">jsonPath</span><span class="p">(</span><span class="s">"$.status"</span><span class="p">).</span><span class="na">value</span><span class="p">(</span><span class="mi">400</span><span class="p">));</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Fíjate en que este test <strong>no usa <code>when(...)</code> en ningún momento</strong>. La validación de <code>@Valid</code> ocurre antes de que el controller llegue a llamar a <code>libroService.create(...)</code> — Spring rechaza la petición con un <code>400</code> sin que el service (ni, por tanto, el mock que lo sustituye) entre nunca en juego. Este test concreto es de <strong>capa web</strong>: prueba que el controller valida correctamente el DTO de entrada (gracias a <code>@Valid</code>, que ya viste el apartado anterior) sin necesitar preparar ningún valor de retorno.</p>
+<h3 id="instruyendo-al-mock-para-que-falle-thenthrow">🎭 Instruyendo al mock para que falle: <code>thenThrow</code><a class="headerlink" href="#instruyendo-al-mock-para-que-falle-thenthrow" title="Permanent link">¶</a></h3>
+<p><code>thenReturn</code> prepara un valor de éxito. Para el caso "no encontrado", preparas una excepción en su lugar:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span>
+<span class="normal"><a href="#__codelineno-5-2">2</a></span>
+<span class="normal"><a href="#__codelineno-5-3">3</a></span>
+<span class="normal"><a href="#__codelineno-5-4">4</a></span>
+<span class="normal"><a href="#__codelineno-5-5">5</a></span>
+<span class="normal"><a href="#__codelineno-5-6">6</a></span>
+<span class="normal"><a href="#__codelineno-5-7">7</a></span>
+<span class="normal"><a href="#__codelineno-5-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="nd">@Test</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="kt">void</span><span class="w"> </span><span class="nf">getById_DebeDevolver404_CuandoNoExiste</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="w">    </span><span class="n">when</span><span class="p">(</span><span class="n">libroService</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="mi">999L</span><span class="p">))</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4"></a><span class="w">            </span><span class="p">.</span><span class="na">thenThrow</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">ResponseStatusException</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">NOT_FOUND</span><span class="p">,</span><span class="w"> </span><span class="s">"Libro no encontrado"</span><span class="p">));</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5"></a>
+<a id="__codelineno-5-6" name="__codelineno-5-6"></a><span class="w">    </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">"/api/v1/libros/999"</span><span class="p">))</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7"></a><span class="w">            </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isNotFound</span><span class="p">());</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><code>.thenThrow(...)</code> en vez de <code>.thenReturn(...)</code>: en vez de decirle al mock qué devolver, le dices qué excepción lanzar cuando lo llamen con ese parámetro concreto (<code>999L</code>). Reproduce, sin tocar la base de datos, exactamente el mismo camino que ya conoces del <code>orElseThrow(...)</code> real de <code>LibroService</code> (Tema 1 de Acceso a Datos) — el mock se limita a lanzar la misma excepción que lanzaría el service de verdad en ese caso.</p>
 <h3 id="y-el-test-de-integracion-completo">¿Y el test de integración completo?<a class="headerlink" href="#y-el-test-de-integracion-completo" title="Permanent link">¶</a></h3>
 <p>Existe otro tipo de test, con <code>@Testcontainers</code>, que levanta bases de datos <strong>reales</strong> en contenedores Docker solo para la duración del test — no mockea nada. Lo trabajarás a fondo en Acceso a Datos; aquí basta con que sitúes los dos niveles: <code>@WebMvcTest</code> prueba una capa aislada y rápida, un test de integración prueba varias piezas reales trabajando juntas y es más lento pero da más confianza sobre el sistema completo.</p>
 <hr>
 <h2 id="lo-que-viene">🎯 Lo que viene<a class="headerlink" href="#lo-que-viene" title="Permanent link">¶</a></h2>
-<p>Tu propio proyecto ya tiene el CRUD completo de <code>Videojuego</code> y de <code>Estudio</code> (Acceso a Datos, Actividad 1.2) — en la Actividad 1.3 no construyes ningún endpoint nuevo, escribes los tests MockMvc que los pongan a prueba, sobre los dos controllers. La Actividad 1.4 cierra el tema con dos piezas más: cuánto tarda tu API en atender varias peticiones a la vez, y Actuator.</p>
+<p>Tu propio proyecto ya tiene el CRUD completo de <code>Videojuego</code> y de <code>Estudio</code>, documentado además con <code>@ApiResponses</code> (Actividad 1.2) — en la Actividad 1.3 no construyes ningún endpoint nuevo, escribes los tests MockMvc que comprueban con código que esos mismos códigos que documentaste (<code>200</code>, <code>201</code>, <code>400</code>, <code>404</code>...) son, de verdad, los que tu API devuelve. La Actividad 1.4 cierra el tema con dos piezas más: cuánto tarda tu API en atender varias peticiones a la vez, y Actuator.</p>
 <hr>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
 <details class="tip">
 <summary>Abrir resumen</summary>
 <ul>
-<li>Un <strong>test automatizado</strong> comprueba comportamiento sin intervención humana, y se puede repetir en cada cambio; sigue el patrón preparar-actuar-afirmar.</li>
+<li>Un <strong>test automatizado</strong> comprueba comportamiento sin intervención humana, y se puede repetir en cada cambio; sigue el patrón preparar-actuar-afirmar. <code>assertEquals(esperado, actual)</code>: el orden importa para que el mensaje de error, si falla, se lea bien.</li>
+<li>Un <strong>mock</strong> es un objeto falso que sustituye a una dependencia real, programado por ti (<code>when(...).thenReturn(...)</code>) para aislar lo que quieres probar de todo lo demás — así el resultado del test no depende de que haya una base de datos real conectada, con datos reales dentro.</li>
 <li>Un test <strong>unitario</strong> aísla una pieza con <strong>mocks</strong>; un test de <strong>integración</strong> prueba varias piezas reales juntas.</li>
 <li><strong>MockMvc</strong> simula peticiones HTTP contra tus controladores sin arrancar un servidor real — un cliente HTTP programable y repetible.</li>
-<li><code>@WebMvcTest</code> arranca solo la capa web; <code>@MockitoBean</code> sustituye una dependencia por un mock; <code>mockMvc.perform(...).andExpect(...)</code> construye la petición y afirma el resultado; <code>jsonPath</code> navega el cuerpo JSON.</li>
+<li><code>@WebMvcTest</code> arranca solo la capa web; <code>@AutoConfigureMockMvc(addFilters = false)</code> desactiva los filtros de seguridad para que estos tests no dependan de login; <code>@MockitoBean</code> sustituye una dependencia por un mock; <code>mockMvc.perform(...).andExpect(...)</code> construye la petición y afirma el resultado; <code>jsonPath</code> navega el cuerpo JSON.</li>
+<li><code>when(mock.metodo(...)).thenReturn(valor)</code> prepara un valor de éxito; <code>.thenThrow(excepcion)</code> prepara que el mock lance una excepción en su lugar (el mismo camino que seguiría <code>orElseThrow(...)</code> en el service real).</li>
+<li>No todos los tests necesitan <code>when(...)</code>: uno que verifica una validación con <code>@Valid</code> puede fallar antes de que el controller llegue a llamar al service.</li>
 <li>La Actividad 1.3 no construye endpoints nuevos: escribe los tests MockMvc de los dos controllers ya completos, <code>Videojuego</code> y <code>Estudio</code>.</li>
 </ul>
 </details></div>

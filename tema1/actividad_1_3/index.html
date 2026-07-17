@@ -780,6 +780,30 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#bloque-3-ci-tus-tests-en-github-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bloque 3 — CI: tus tests, en GitHub Actions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bloque 3 — CI: tus tests, en GitHub Actions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mini-reto-rompelo-a-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mini-reto — rómpelo a propósito
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#pregunta-final" class="md-nav__link">
     <span class="md-ellipsis">
       Pregunta final
@@ -1734,6 +1758,30 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#bloque-3-ci-tus-tests-en-github-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bloque 3 — CI: tus tests, en GitHub Actions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bloque 3 — CI: tus tests, en GitHub Actions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mini-reto-rompelo-a-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mini-reto — rómpelo a propósito
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#pregunta-final" class="md-nav__link">
     <span class="md-ellipsis">
       Pregunta final
@@ -1768,23 +1816,28 @@
 
 
 <div><h1 id="actividad-13-tests-mockmvc-sobre-videojuego-y-estudio">🧪 Actividad 1.3: Tests MockMvc sobre <code>Videojuego</code> y <code>Estudio</code><a class="headerlink" href="#actividad-13-tests-mockmvc-sobre-videojuego-y-estudio" title="Permanent link">¶</a></h1>
-<div class="admonition info">
-<p class="admonition-title">Práctica guiada — un patrón, dos entidades</p>
-<p>Escribes tests MockMvc sobre los endpoints de <code>Videojuego</code> (guiado al completo), y repites el mismo patrón sobre <code>Estudio</code> (con menos ayuda) — las dos entidades ya tienen su CRUD completo desde la Actividad 1.2 de AD, así que hoy no construyes ningún endpoint nuevo, solo los pones a prueba.</p>
+<div class="admonition warning">
+<p class="admonition-title">Descarga la plantilla</p>
+<p>📄 <a href="../plantillas/Actividad_1_3_PSP_Plantilla.docx" rel="noopener" target="_blank">Plantilla 1.3 — Tests MockMvc sobre Videojuego y Estudio</a></p>
 </div>
 <h2 id="que-vas-a-practicar">Qué vas a practicar<a class="headerlink" href="#que-vas-a-practicar" title="Permanent link">¶</a></h2>
 <ul>
 <li>Escribir tests MockMvc que prueben un controller de forma aislada.</li>
 <li>Distinguir qué se mockea de qué se ejecuta de verdad en un test de capa web.</li>
 <li>Repetir el mismo patrón de test sobre un segundo controller, con menos guía cada vez.</li>
+<li>Ejecutar tus tests automáticamente en cada <code>push</code>, con un pipeline de CI en GitHub Actions.</li>
 </ul>
 <hr>
 <h2 id="requisitos-previos">Requisitos previos<a class="headerlink" href="#requisitos-previos" title="Permanent link">¶</a></h2>
 <p>Tu CRUD completo de <code>Videojuego</code> y de <code>Estudio</code> (Actividad 1.2 de AD) — las cuatro operaciones de cada uno, funcionando.</p>
+<div class="admonition note">
+<p class="admonition-title">Esto es una muestra representativa, no la batería de tests completa</p>
+<p>Por tiempo, aquí solo escribes un test por caso (éxito y <code>404</code> en lectura; éxito en escritura) sobre cada método. En un proyecto real, cada método merece más de un test: casos límite (una lista vacía en <code>getAll</code>, un DTO que falla la validación en <code>create</code>/<code>update</code>, un <code>id</code> que no existe también en <code>update</code>/<code>delete</code>, no solo en <code>getById</code>...). Aquí basta con que el patrón quede claro y aplicado una vez por caso — la cobertura exhaustiva es una decisión de cada proyecto, no algo que se pueda enseñar de una sola vez.</p>
+</div>
 <hr>
 <h2 id="bloque-1-tests-mockmvc-sobre-videojuego">Bloque 1 — Tests MockMvc sobre <code>Videojuego</code><a class="headerlink" href="#bloque-1-tests-mockmvc-sobre-videojuego" title="Permanent link">¶</a></h2>
 <h3 id="paso-1-primer-test-guiado-al-completo">Paso 1 — Primer test, guiado al completo<a class="headerlink" href="#paso-1-primer-test-guiado-al-completo" title="Permanent link">¶</a></h3>
-<p>Crea <code>VideojuegoControllerTest</code> en <code>src/test/java</code>, en el mismo paquete que tu controller:</p>
+<p>Crea <code>VideojuegoControllerTest.java</code> en <code>src/test/java/com/tunombre/gamevault/catalogo/</code> — el mismo paquete que tu controller, esta vez bajo <code>src/test/java</code> en vez de <code>src/main/java</code>:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
@@ -1892,22 +1945,118 @@
 <li>Que un <code>DELETE /api/v1/videojuegos/{id}</code> devuelve <code>204</code>.</li>
 </ul>
 <p>Tres tests, mismo patrón, sin más pistas que las de los Pasos 1-2.</p>
+<p>Con los cinco tests de <code>VideojuegoControllerTest</code> escritos, ejecútalos desde tu entorno de desarrollo (el botón ▷ junto a la clase, o junto a cada test).</p>
+<p><strong>Captura</strong>: los cinco tests de <code>VideojuegoControllerTest</code> en verde, ejecutados desde el propio IDE.</p>
 <hr>
 <h2 id="bloque-2-repite-el-patron-sobre-estudio">Bloque 2 — Repite el patrón sobre <code>Estudio</code><a class="headerlink" href="#bloque-2-repite-el-patron-sobre-estudio" title="Permanent link">¶</a></h2>
 <p><code>EstudioController</code> tiene las mismas cinco operaciones que <code>VideojuegoController</code> (<code>getAll</code>, <code>getById</code>, <code>create</code>, <code>update</code>, <code>delete</code>), así que <code>EstudioControllerTest</code> es el mismo ejercicio otra vez — pero esta vez sin el primer test dado como ejemplo.</p>
-<p><strong>Escribe <code>EstudioControllerTest</code></strong>, mockeando <code>EstudioService</code>, con al menos:</p>
+<p><strong>Escribe <code>EstudioControllerTest.java</code></strong> en <code>src/test/java/com/tunombre/gamevault/catalogo/</code>, mockeando <code>EstudioService</code>, con al menos:</p>
 <ul>
 <li>Un test de <code>getAll</code> (o <code>getById</code>) en el caso de éxito.</li>
 <li>Un test del caso <code>404</code> (con el mock lanzando <code>ResponseStatusException</code>).</li>
 <li>Un test de <code>create</code> (<code>201</code>), uno de <code>update</code> (<code>200</code>) y uno de <code>delete</code> (<code>204</code>).</li>
 </ul>
 <p><strong>Pregunta antes de escribir nada</strong>: ¿qué cambia realmente entre testear <code>VideojuegoController</code> y testear <code>EstudioController</code> — la estructura del test, o solo los nombres de clases y campos? Si tu respuesta es "solo los nombres", ya sabes por qué esta actividad no necesitaba darte otro ejemplo completo.</p>
+<p>Con <code>EstudioControllerTest</code> completo, ejecútalo también desde tu entorno de desarrollo.</p>
+<p><strong>Captura</strong>: los tests de <code>EstudioControllerTest</code> en verde, ejecutados desde el propio IDE.</p>
+<hr>
+<h2 id="bloque-3-ci-tus-tests-en-github-actions">Bloque 3 — CI: tus tests, en GitHub Actions<a class="headerlink" href="#bloque-3-ci-tus-tests-en-github-actions" title="Permanent link">¶</a></h2>
+<p>Ya montaste un pipeline de CI en Acceso a Datos (Actividad 0.5, sobre <code>validador-dni-ci</code>). Hoy aplicas exactamente el mismo patrón a tu propio GameVault — con la diferencia de que ahora sí tienes algo real que automatizar: los tests que acabas de escribir.</p>
+<p>Si tu GameVault todavía no está subido a un repositorio de GitHub, súbelo ahora. Crea <code>.github/workflows/ci.yml</code>:</p>
+<div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-2-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-2-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-2-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-2-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-2-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-2-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-2-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-2-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-2-10">10</a></span>
+<span class="normal"><a href="#__codelineno-2-11">11</a></span>
+<span class="normal"><a href="#__codelineno-2-12">12</a></span>
+<span class="normal"><a href="#__codelineno-2-13">13</a></span>
+<span class="normal"><a href="#__codelineno-2-14">14</a></span>
+<span class="normal"><a href="#__codelineno-2-15">15</a></span>
+<span class="normal"><a href="#__codelineno-2-16">16</a></span>
+<span class="normal"><a href="#__codelineno-2-17">17</a></span>
+<span class="normal"><a href="#__codelineno-2-18">18</a></span>
+<span class="normal"><a href="#__codelineno-2-19">19</a></span>
+<span class="normal"><a href="#__codelineno-2-20">20</a></span>
+<span class="normal"><a href="#__codelineno-2-21">21</a></span>
+<span class="normal"><a href="#__codelineno-2-22">22</a></span>
+<span class="normal"><a href="#__codelineno-2-23">23</a></span>
+<span class="normal"><a href="#__codelineno-2-24">24</a></span>
+<span class="normal"><a href="#__codelineno-2-25">25</a></span>
+<span class="normal"><a href="#__codelineno-2-26">26</a></span>
+<span class="normal"><a href="#__codelineno-2-27">27</a></span>
+<span class="normal"><a href="#__codelineno-2-28">28</a></span>
+<span class="normal"><a href="#__codelineno-2-29">29</a></span>
+<span class="normal"><a href="#__codelineno-2-30">30</a></span>
+<span class="normal"><a href="#__codelineno-2-31">31</a></span>
+<span class="normal"><a href="#__codelineno-2-32">32</a></span>
+<span class="normal"><a href="#__codelineno-2-33">33</a></span>
+<span class="normal"><a href="#__codelineno-2-34">34</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CI — GameVault</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="nt">on</span><span class="p">:</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">  </span><span class="nt">push</span><span class="p">:</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">    </span><span class="nt">branches</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">main</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">  </span><span class="nt">pull_request</span><span class="p">:</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">    </span><span class="nt">branches</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">main</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="nt">jobs</span><span class="p">:</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="w">  </span><span class="nt">test</span><span class="p">:</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11"></a><span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12"></a><span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Descargar el código fuente</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14"></a><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v4</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15"></a>
+<a id="__codelineno-2-16" name="__codelineno-2-16"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Instalar Java 21</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17"></a><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/setup-java@v4</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18"></a><span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19"></a><span class="w">          </span><span class="nt">java-version</span><span class="p">:</span><span class="w"> </span><span class="s">'21'</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20"></a><span class="w">          </span><span class="nt">distribution</span><span class="p">:</span><span class="w"> </span><span class="s">'temurin'</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21"></a><span class="w">          </span><span class="nt">cache</span><span class="p">:</span><span class="w"> </span><span class="s">'maven'</span>
+<a id="__codelineno-2-22" name="__codelineno-2-22"></a>
+<a id="__codelineno-2-23" name="__codelineno-2-23"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Dar permiso de ejecución al wrapper</span>
+<a id="__codelineno-2-24" name="__codelineno-2-24"></a><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chmod +x mvnw</span>
+<a id="__codelineno-2-25" name="__codelineno-2-25"></a>
+<a id="__codelineno-2-26" name="__codelineno-2-26"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ejecutar los tests</span>
+<a id="__codelineno-2-27" name="__codelineno-2-27"></a><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./mvnw test -B -Dtest='*ControllerTest'</span>
+<a id="__codelineno-2-28" name="__codelineno-2-28"></a>
+<a id="__codelineno-2-29" name="__codelineno-2-29"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Guardar el informe de tests</span>
+<a id="__codelineno-2-30" name="__codelineno-2-30"></a><span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always()</span>
+<a id="__codelineno-2-31" name="__codelineno-2-31"></a><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/upload-artifact@v4</span>
+<a id="__codelineno-2-32" name="__codelineno-2-32"></a><span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<a id="__codelineno-2-33" name="__codelineno-2-33"></a><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">informe-tests</span>
+<a id="__codelineno-2-34" name="__codelineno-2-34"></a><span class="w">          </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">target/surefire-reports/</span>
+</code></pre></div></td></tr></table></div>
+<div class="admonition tip">
+<p class="admonition-title">Fíjate en lo que NO lleva este workflow</p>
+<p>No hay ningún servicio de PostgreSQL levantado, ni ninguna configuración de base de datos — a diferencia de lo que quizá esperabas. Es la consecuencia directa de lo que ya sabes de la teoría: <code>@WebMvcTest</code> mockea el service, así que estos tests nunca tocan una base de datos real. Un futuro test de integración con <code>@Testcontainers</code> sí necesitaría un job bastante más complicado.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title"><code>./mvnw: Permission denied</code></p>
+<p>Si el workflow falla con este error, <code>mvnw</code> ha llegado a GitHub sin el bit de ejecución — algo muy habitual si generaste el proyecto en Windows, donde Git no siempre conserva ese permiso al hacer commit (Windows no tiene el mismo concepto de "permiso de ejecución" que Linux). El paso "Dar permiso de ejecución al wrapper" de arriba (<code>chmod +x mvnw</code>) lo arregla sin que dependa de qué permisos traiga el fichero desde tu máquina — es la forma robusta de resolverlo, en vez de intentar arreglar el permiso a mano en tu repositorio.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title"><code>GamevaultApplicationTests.contextLoads</code> falla con <code>Failed to load ApplicationContext</code></p>
+<p><code>mvn test</code>, sin más, ejecuta <strong>todos</strong> los tests del proyecto — incluido <code>GamevaultApplicationTests</code>, el test que Spring Initializr generó automáticamente cuando creaste el proyecto (Actividad 1.1). Ese test arranca la aplicación <strong>completa</strong>, con <code>DataSource</code> incluido, y necesita una PostgreSQL real corriendo — algo que este runner no tiene (recuerda el aviso de arriba: los tests MockMvc de hoy no la necesitan, pero ese test de arranque sí). <code>-Dtest='*ControllerTest'</code> le dice a Maven que ejecute solo las clases cuyo nombre termine en <code>ControllerTest</code> — exactamente <code>VideojuegoControllerTest</code> y <code>EstudioControllerTest</code>, los tests MockMvc que has escrito hoy, sin tocar el test de arranque completo. Levantar una PostgreSQL real dentro del propio workflow (con un servicio de GitHub Actions) es posible, pero es una pieza más compleja que queda fuera del alcance de esta actividad.</p>
+</div>
+<p><strong>Pregunta</strong>: tu <code>pom.xml</code> de GameVault viene con un <em>wrapper</em> (<code>mvnw</code>/<code>mvnw.cmd</code>), generado automáticamente por Spring Initializr — a diferencia de <code>validador-dni-ci</code>, donde no había ninguno. El workflow de arriba usa <code>./mvnw test</code>, no <code>mvn test</code>. ¿Qué garantiza usar el <em>wrapper</em> en vez del <code>mvn</code> que esté instalado en el runner de GitHub? Relaciónalo con por qué el Dev Container fija siempre las mismas versiones (Actividad 1.1).</p>
+<p><strong>Predicción</strong>: antes de hacer push, ¿cuántos tests esperas que se ejecuten en total, sumando <code>VideojuegoControllerTest</code> y <code>EstudioControllerTest</code>?</p>
+<p>Haz commit y push. Ve a la pestaña <strong>Actions</strong> de tu repositorio y observa el workflow ejecutarse.</p>
+<p><strong>Captura</strong>: el workflow terminado en verde, con el número de tests ejecutados visible en el log del step "Ejecutar los tests".</p>
+<h3 id="mini-reto-rompelo-a-proposito">Mini-reto — rómpelo a propósito<a class="headerlink" href="#mini-reto-rompelo-a-proposito" title="Permanent link">¶</a></h3>
+<p>Cambia, en cualquiera de tus tests, un valor esperado por uno incorrecto (por ejemplo, en una afirmación <code>jsonPath</code>, o un código de estado que no es el que de verdad devuelve tu endpoint). Haz commit y push.</p>
+<p><strong>Captura</strong>: el workflow terminado en rojo, con el test que ha fallado visible en el log.</p>
+<p>Corrige el cambio, vuelve a hacer push, y comprueba que el workflow recupera el verde.</p>
 <hr>
 <h2 id="pregunta-final">Pregunta final<a class="headerlink" href="#pregunta-final" title="Permanent link">¶</a></h2>
 <p>Un test MockMvc como los que has escrito no toca la base de datos en ningún momento — el service está mockeado. ¿Qué es lo que SÍ estás verificando entonces? ¿Qué tipo de fallo detectaría uno de estos tests que un test sobre el service real (sin pasar por HTTP) no detectaría?</p>
 <hr>
 <h2 id="cierre">✅ Cierre<a class="headerlink" href="#cierre" title="Permanent link">¶</a></h2>
-<p>Tienes tests automatizados sobre los dos controllers completos de tu API. En la próxima actividad cierras el tema: mides cómo tu aplicación atiende varias peticiones a la vez, y activas Actuator para verificar su disponibilidad.</p></div>
+<p>Tienes tests automatizados sobre los dos controllers completos de tu API, y un pipeline de CI que los ejecuta solo en cada <code>push</code> — si alguien (tú u otro compañero) rompe algo sin darse cuenta, GitHub Actions lo va a decir antes de que llegue a producción. En la próxima actividad cierras el tema: mides cómo tu aplicación atiende varias peticiones a la vez, y activas Actuator para verificar su disponibilidad.</p></div>
 
 
 
