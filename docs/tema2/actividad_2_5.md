@@ -34,7 +34,7 @@ Esta es la tabla objetivo — incluye tanto las rutas del catálogo base como la
 | Todo lo demás | — | Nadie |
 
 !!! tip "Las reseñas todavía no existen en tu proyecto"
-    Si más adelante añades el módulo de reseñas (Acceso a Datos, Tema 4), vas a tener que volver a esta tabla y a `SecurityConfig` para añadir `/api/v1/videojuegos/*/reviews` (`POST`, `USER` o `ADMIN`) — hoy no existe todavía, así que no lo incluyas.
+    Si más adelante añades el módulo de reseñas (Acceso a Datos, Tema 3), vas a tener que volver a esta tabla y a `SecurityConfig` para añadir `/api/v1/videojuegos/*/reviews` (`POST`, `USER` o `ADMIN`) — hoy no existe todavía, así que no lo incluyas.
 
 **Antes de escribir código**, decide y anota: el `PUT`/`DELETE` de `Estudio` que construiste en el Tema 1, ¿debería tener el mismo nivel de protección que el resto de escrituras del catálogo (`ADMIN`)? Justifica tu respuesta en una frase.
 

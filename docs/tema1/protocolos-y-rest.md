@@ -91,7 +91,7 @@ Ya has visto JSON antes, aunque sea de pasada — es el formato en el que casi t
 }
 ```
 
-Volverás a JSON con más detalle cuando lo necesites de verdad (al construir cuerpos de petición en la Actividad 1.1 y, en Acceso a Datos, al persistir estructuras JSON completas en el Tema 3) — de momento basta con reconocer la forma.
+Volverás a JSON con más detalle cuando lo necesites de verdad (al construir cuerpos de petición en la Actividad 1.1 y, en Acceso a Datos, al persistir estructuras JSON completas en el Tema 2) — de momento basta con reconocer la forma.
 
 ---
 
