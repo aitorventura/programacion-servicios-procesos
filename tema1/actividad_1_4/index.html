@@ -1190,9 +1190,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#repaso-del-tema" class="md-nav__link">
+  <a href="#paso-7-deja-el-endpoint-listo-de-verdad" class="md-nav__link">
     <span class="md-ellipsis">
-      Repaso del tema
+      Paso 7 — Deja el endpoint listo de verdad
     </span>
   </a>
   
@@ -2706,9 +2706,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#repaso-del-tema" class="md-nav__link">
+  <a href="#paso-7-deja-el-endpoint-listo-de-verdad" class="md-nav__link">
     <span class="md-ellipsis">
-      Repaso del tema
+      Paso 7 — Deja el endpoint listo de verdad
     </span>
   </a>
   
@@ -2740,6 +2740,10 @@
 
 
 <div><h1 id="actividad-14-comunicacion-simultanea-y-disponibilidad-del-servicio">🧪 Actividad 1.4: Comunicación simultánea y disponibilidad del servicio<a class="headerlink" href="#actividad-14-comunicacion-simultanea-y-disponibilidad-del-servicio" title="Permanent link">¶</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Descarga la plantilla</p>
+<p>📄 <a href="../plantillas/Actividad_1_4_PSP_Plantilla.docx" rel="noopener" target="_blank">Plantilla 1.4 — Comunicación simultánea y disponibilidad del servicio</a></p>
+</div>
 <div class="admonition info">
 <p class="admonition-title">Dos bloques, los dos guiados</p>
 <p>Cierras el tema con las dos últimas piezas de la teoría: comprobar que tu aplicación atiende varias peticiones a la vez sin que se pisen, y verificar de forma automatizable que sigue "sana" cuando una de sus dependencias falla.</p>
@@ -2771,30 +2775,40 @@
 <span class="normal"><a href="#__codelineno-1-8"> 8</a></span>
 <span class="normal"><a href="#__codelineno-1-9"> 9</a></span>
 <span class="normal"><a href="#__codelineno-1-10">10</a></span>
-<span class="normal"><a href="#__codelineno-1-11">11</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">VideojuegoResponseDTO</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">getTopNovedades</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">        </span><span class="n">Thread</span><span class="p">.</span><span class="na">sleep</span><span class="p">(</span><span class="mi">2000</span><span class="p">);</span><span class="w"> </span><span class="c1">// simula una consulta costosa</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">InterruptedException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="w">        </span><span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">().</span><span class="na">interrupt</span><span class="p">();</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">videojuegoRepository</span><span class="p">.</span><span class="na">findTop5ByOrderByFechaLanzamientoDesc</span><span class="p">()</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="w">            </span><span class="p">.</span><span class="na">stream</span><span class="p">()</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="w">            </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="k">this</span><span class="p">::</span><span class="n">mapToDTO</span><span class="p">)</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10"></a><span class="w">            </span><span class="p">.</span><span class="na">toList</span><span class="p">();</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11"></a><span class="p">}</span>
+<span class="normal"><a href="#__codelineno-1-11">11</a></span>
+<span class="normal"><a href="#__codelineno-1-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nd">@Transactional</span><span class="p">(</span><span class="n">readOnly</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">VideojuegoResponseDTO</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">getTopNovedades</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">        </span><span class="n">Thread</span><span class="p">.</span><span class="na">sleep</span><span class="p">(</span><span class="mi">2000</span><span class="p">);</span><span class="w"> </span><span class="c1">// simula una consulta costosa — lo quitas al final de la actividad</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">InterruptedException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="w">        </span><span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">().</span><span class="na">interrupt</span><span class="p">();</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">videojuegoRepository</span><span class="p">.</span><span class="na">findTop5ByOrderByFechaLanzamientoDesc</span><span class="p">()</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="w">            </span><span class="p">.</span><span class="na">stream</span><span class="p">()</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10"></a><span class="w">            </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="k">this</span><span class="p">::</span><span class="n">mapToDTO</span><span class="p">)</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11"></a><span class="w">            </span><span class="p">.</span><span class="na">toList</span><span class="p">();</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p>Y en <code>VideojuegoController</code>:</p>
+<p>Y en <code>VideojuegoController</code>, documentado igual que el resto de endpoints del proyecto:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
 <span class="normal"><a href="#__codelineno-2-2">2</a></span>
 <span class="normal"><a href="#__codelineno-2-3">3</a></span>
-<span class="normal"><a href="#__codelineno-2-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/top"</span><span class="p">)</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">VideojuegoResponseDTO</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="nf">getTopNovedades</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="n">videojuegoService</span><span class="p">.</span><span class="na">getTopNovedades</span><span class="p">());</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="p">}</span>
+<span class="normal"><a href="#__codelineno-2-4">4</a></span>
+<span class="normal"><a href="#__codelineno-2-5">5</a></span>
+<span class="normal"><a href="#__codelineno-2-6">6</a></span>
+<span class="normal"><a href="#__codelineno-2-7">7</a></span>
+<span class="normal"><a href="#__codelineno-2-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nd">@Operation</span><span class="p">(</span><span class="n">summary</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Listar los 5 videojuegos más recientes"</span><span class="p">)</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="nd">@ApiResponses</span><span class="p">({</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">        </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"200"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Listado obtenido correctamente"</span><span class="p">)</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="p">})</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/top"</span><span class="p">)</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">VideojuegoResponseDTO</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="nf">getTopNovedades</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="n">videojuegoService</span><span class="p">.</span><span class="na">getTopNovedades</span><span class="p">());</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<div class="admonition warning">
-<p class="admonition-title">El orden de las rutas importa</p>
-<p>Declara <code>@GetMapping("/top")</code> <strong>antes</strong> que <code>@GetMapping("/{id}")</code> en la clase — si no, Spring intenta interpretar <code>top</code> como un <code>id</code> y falla al convertirlo a <code>Long</code>.</p>
+<div class="admonition tip">
+<p class="admonition-title">¿Y si <code>/top</code> choca con <code>/{id}</code>?</p>
+<p>Podría parecer un problema: <code>GET /api/v1/videojuegos/top</code> encaja tanto con <code>@GetMapping("/top")</code> como con <code>@GetMapping("/{id}")</code> (que aceptaría, literalmente, cualquier texto en esa posición, incluida la palabra <code>top</code>). Pero Spring no decide por el orden en que declares los métodos en la clase: prioriza automáticamente la ruta más específica —una ruta literal, sin variables, como <code>/top</code>— sobre la que solo tiene un <code>{parámetro}</code> genérico. Declara los métodos en el orden que te resulte más cómodo de leer.</p>
 </div>
 <p>Arranca tu aplicación y comprueba con una sola llamada que <code>GET /api/v1/videojuegos/top</code> tarda efectivamente unos 2 segundos.</p>
 <h3 id="paso-2-medir-la-concurrencia">Paso 2 — Medir la concurrencia<a class="headerlink" href="#paso-2-medir-la-concurrencia" title="Permanent link">¶</a></h3>
@@ -2806,6 +2820,7 @@
 <a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">      </span><span class="nb">wait</span><span class="o">)</span>
 </code></pre></div></td></tr></table></div>
 <p><strong>Anota</strong> el tiempo total mostrado por <code>time</code>. Añade temporalmente una línea <code>System.out.println(Thread.currentThread().getName())</code> al principio de <code>getTopNovedades()</code> en tu service, repite la prueba, y anota los dos nombres de hilo que aparecen en la consola. Cuando termines, retira esa línea — era solo para observar, no para quedarse en el código.</p>
+<p><strong>Captura</strong>: la salida de la terminal con el resultado de <code>time</code>, y el fragmento del log de tu aplicación donde se ven los dos nombres de hilo distintos.</p>
 <p><strong>Pregunta</strong>: ¿qué relación hay entre este "una petición, un hilo" que acabas de observar y el resultado de <code>time</code>? Si en vez de dos lanzaras cincuenta peticiones simultáneas, ¿crees que el comportamiento sería exactamente el mismo, o hay algún límite? (No hace falta que sepas la respuesta exacta todavía — se trabaja a fondo en el Tema 3).</p>
 <hr>
 <h2 id="bloque-2-actuator-guiado-paso-a-paso">Bloque 2 — Actuator, guiado paso a paso<a class="headerlink" href="#bloque-2-actuator-guiado-paso-a-paso" title="Permanent link">¶</a></h2>
@@ -2820,7 +2835,7 @@
 <a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div></td></tr></table></div>
 <h3 id="paso-4-exponer-el-detalle-de-salud">Paso 4 — Exponer el detalle de salud<a class="headerlink" href="#paso-4-exponer-el-detalle-de-salud" title="Permanent link">¶</a></h3>
-<p>En <code>application.yaml</code> (la configuración común, no la de un perfil concreto):</p>
+<p>En <code>application.yml</code> (la configuración común, la que se carga siempre — no la confundas con <code>application-dev.yaml</code>, que solo se activa con el perfil <code>dev</code>):</p>
 <div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span>
 <span class="normal"><a href="#__codelineno-5-2">2</a></span>
 <span class="normal"><a href="#__codelineno-5-3">3</a></span>
@@ -2833,29 +2848,39 @@
 <div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/actuator/health<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq
 </code></pre></div></td></tr></table></div>
 <p><strong>Comprueba</strong>: que la respuesta incluye un bloque <code>components</code> con, al menos, tu base de datos PostgreSQL (<code>db</code>) en estado <code>UP</code>.</p>
+<p><strong>Captura</strong>: la respuesta completa de <code>curl -s http://localhost:8080/actuator/health | jq</code>, con el bloque <code>components</code> visible.</p>
 <hr>
 <h2 id="experimento-guiado-de-disponibilidad">Experimento guiado de disponibilidad<a class="headerlink" href="#experimento-guiado-de-disponibilidad" title="Permanent link">¶</a></h2>
 <p>Este experimento necesita que tengas más de un servicio en tu <code>.devcontainer/docker-compose.yml</code> — si en este punto del curso solo tienes PostgreSQL, hazlo con ese mismo servicio (parándolo tendrás el mismo efecto sobre el componente <code>db</code>).</p>
 <div class="admonition tip">
 <p class="admonition-title">Dónde ejecutar estos comandos</p>
-<p>Puedes lanzarlos desde la propia terminal integrada de tu editor (VS Code o IntelliJ IDEA), dentro del Dev Container: el <code>docker-outside-of-docker</code> que configuraste en la Actividad 1.1 de Acceso a Datos hace que <code>docker compose</code> vea y controle los mismos contenedores que tu sistema operativo, aunque la terminal esté dentro de <code>app</code>. Como el fichero ya no está en la raíz del proyecto, apunta a él con <code>-f</code>; y como <code>docker compose</code> no adivina solo qué contenedores son "los tuyos", indícale también el proyecto con <code>-p gamevault_devcontainer</code> (el mismo nombre que ya usaste en la Actividad 1.1 de AD).</p>
+<p>Puedes lanzarlos desde la propia terminal integrada de tu editor (VS Code o IntelliJ IDEA), dentro del Dev Container: el <code>docker-outside-of-docker</code> que configuraste en la Actividad 1.1 de Acceso a Datos hace que <code>docker compose</code> vea y controle los mismos contenedores que tu sistema operativo, aunque la terminal esté dentro de <code>app</code>. Como el fichero ya no está en la raíz del proyecto, apunta a él con <code>-f</code>; y como <code>docker compose</code> no adivina solo qué contenedores son "los tuyos", indícale también el proyecto con <code>-p</code>.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">No des por hecho el nombre del proyecto</p>
+<p><code>gamevault_devcontainer</code> es el nombre que usa VS Code, pero IntelliJ no siempre lo nombra igual (puede llamarlo simplemente <code>devcontainer</code>, entre otras variantes). Antes de ejecutar nada, comprueba el nombre real:
+</p><div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>ls
+</code></pre></div></td></tr></table></div>
+Si usas el nombre equivocado, <code>docker compose ... stop postgres</code> no encontrará el contenedor y no parará nada — sin avisarte de que ha fallado. Es exactamente lo que comprueba la actividad de disponibilidad: si <code>/actuator/health</code> sigue en <code>UP</code> después de "parar" PostgreSQL, sospecha primero de esto antes que de Actuator.
 </div>
 <h3 id="paso-5-parar-una-dependencia">Paso 5 — Parar una dependencia<a class="headerlink" href="#paso-5-parar-una-dependencia" title="Permanent link">¶</a></h3>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>.devcontainer/docker-compose.yml<span class="w"> </span>-p<span class="w"> </span>gamevault_devcontainer<span class="w"> </span>stop<span class="w"> </span>postgres
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>.devcontainer/docker-compose.yml<span class="w"> </span>-p<span class="w"> </span>&lt;proyecto&gt;<span class="w"> </span>stop<span class="w"> </span>postgres
 </code></pre></div></td></tr></table></div>
 <p>Vuelve a consultar:</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/actuator/health<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/actuator/health<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq
 </code></pre></div></td></tr></table></div>
 <p><strong>Predicción</strong>: antes de ejecutar el comando, escribe qué esperas ver en el campo <code>status</code> general y en el componente correspondiente a PostgreSQL.</p>
+<p><strong>Captura</strong>: la respuesta real de <code>/actuator/health</code> con PostgreSQL parado, con el <code>status</code> general y el componente <code>db</code> en <code>DOWN</code> — compárala con tu predicción.</p>
 <h3 id="paso-6-recuperar-el-servicio">Paso 6 — Recuperar el servicio<a class="headerlink" href="#paso-6-recuperar-el-servicio" title="Permanent link">¶</a></h3>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>.devcontainer/docker-compose.yml<span class="w"> </span>-p<span class="w"> </span>gamevault_devcontainer<span class="w"> </span>start<span class="w"> </span>postgres
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-10-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>.devcontainer/docker-compose.yml<span class="w"> </span>-p<span class="w"> </span>&lt;proyecto&gt;<span class="w"> </span>start<span class="w"> </span>postgres
 </code></pre></div></td></tr></table></div>
 <p>Espera unos segundos y vuelve a consultar <code>/actuator/health</code>.</p>
 <p><strong>Comprueba</strong>: que el estado ha vuelto a <code>UP</code> sin que hayas tenido que reiniciar tu aplicación Spring Boot — solo el contenedor de la base de datos.</p>
+<p><strong>Captura</strong>: la respuesta de <code>/actuator/health</code> ya recuperada, con <code>status: UP</code> de nuevo.</p>
 <p><strong>Pregunta</strong>: si tu aplicación estuviera respondiendo peticiones GET normales mientras PostgreSQL estaba caído (por ejemplo, un endpoint que no toca la base de datos), ¿el servicio estaría "disponible" o no? Justifica tu respuesta con los tres niveles de disponibilidad vistos en la teoría.</p>
 <hr>
-<h2 id="repaso-del-tema">Repaso del tema<a class="headerlink" href="#repaso-del-tema" title="Permanent link">¶</a></h2>
-<p>Escribe un repaso propio (3-4 frases) del recorrido completo de este tema: leer la API y su protocolo → documentarla y entender su semántica de escritura → probarla con tests MockMvc → medir cómo atiende varios clientes a la vez → verificar su disponibilidad. ¿Qué pieza te ha costado más entender, y por qué?</p>
+<h2 id="paso-7-deja-el-endpoint-listo-de-verdad">Paso 7 — Deja el endpoint listo de verdad<a class="headerlink" href="#paso-7-deja-el-endpoint-listo-de-verdad" title="Permanent link">¶</a></h2>
+<p>El <code>Thread.sleep(2000)</code> era solo para poder medir concurrencia — <code>getTopNovedades()</code> se queda en tu proyecto de forma permanente (mostrar las novedades del catálogo es una funcionalidad real), pero no tiene sentido que responda con un retraso artificial para siempre. Quítalo de <code>VideojuegoService.getTopNovedades()</code> y comprueba que el endpoint sigue funcionando, ahora sin demora.</p>
 <hr>
 <h2 id="cierre">✅ Cierre<a class="headerlink" href="#cierre" title="Permanent link">¶</a></h2>
 <p>En el Tema 2 entras en Programación Segura: hoy tu API está completamente abierta — nada te impide borrar cualquier recurso sin identificarte. Eso empieza a cambiar ahí.</p></div>

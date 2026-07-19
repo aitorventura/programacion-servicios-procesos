@@ -1086,15 +1086,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#recapitulacion-del-tema" class="md-nav__link">
-    <span class="md-ellipsis">
-      🧭 Recapitulación del tema
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#ideas-clave" class="md-nav__link">
     <span class="md-ellipsis">
       ✅ Ideas clave
@@ -2544,15 +2535,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#recapitulacion-del-tema" class="md-nav__link">
-    <span class="md-ellipsis">
-      🧭 Recapitulación del tema
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#ideas-clave" class="md-nav__link">
     <span class="md-ellipsis">
       ✅ Ideas clave
@@ -2579,27 +2561,49 @@
 
 <div><p><a id="actuator-disponibilidad"></a></p>
 <h1 id="4-comunicacion-simultanea-y-disponibilidad-del-servicio">🧩 4. Comunicación simultánea y disponibilidad del servicio<a class="headerlink" href="#4-comunicacion-simultanea-y-disponibilidad-del-servicio" title="Permanent link">¶</a></h1>
-<p>Dos preguntas distintas de las que has visto hasta ahora, sobre el mismo servicio ya funcionando: no "¿responde bien esta petición concreta?", sino "¿aguanta varias peticiones a la vez sin que unas esperen a otras?" y "¿está el servicio, en general, sano y disponible ahora mismo?".</p>
+<p>Hasta ahora has comprobado que tu API responde bien a una petición aislada: el código de estado correcto, el JSON esperado, el test que pasa. Hoy cierras el tema con dos preguntas distintas, sobre ese mismo servicio ya en marcha: ¿aguanta varias peticiones a la vez sin que unas tengan que esperar a otras? Y, más allá de una petición concreta, ¿cómo sabes si el servicio en general sigue sano y disponible ahora mismo, sin tener que comprobarlo tú a mano?</p>
 <hr>
 <h2 id="comunicacion-simultanea-de-varios-clientes">🧵 Comunicación simultánea de varios clientes<a class="headerlink" href="#comunicacion-simultanea-de-varios-clientes" title="Permanent link">¶</a></h2>
-<p>Un servidor real no atiende a un solo cliente a la vez. Spring Web, sobre Tomcat, atiende cada petición HTTP entrante en un <strong>hilo distinto</strong>, tomado de un <em>pool</em> — así que varias peticiones pueden procesarse en paralelo sin que unas esperen a que terminen las otras. Esta idea se retomará a fondo en el Tema 3, sobre programación multihilo; de momento, compruébala con un experimento sencillo.</p>
-<p>Imagina un método del service con un <code>Thread.sleep(2000)</code> puesto a propósito, que simula una consulta lenta (lo montarás así en la actividad). Lanza dos peticiones <strong>simultáneas</strong> contra su endpoint:</p>
+<p>Piensa en tu propio GameVault, ya en producción: no lo vas a usar solo tú. Si veinte personas consultan el catálogo a la vez y tu servidor las atendiera de una en una —terminar la primera antes de empezar la segunda—, la última persona esperaría veinte veces más que la primera.</p>
+<p>Por suerte, no funciona así: Spring Web, sobre Tomcat, atiende cada petición HTTP en un <strong>hilo</strong> distinto —una línea de ejecución independiente dentro de tu propia aplicación, que avanza en paralelo con las demás— tomado de un <strong><em>pool</em></strong>: un conjunto de hilos ya creados de antemano y listos para usar, en vez de crear uno nuevo por cada petición (verás ambas ideas con detalle en el Tema 3). Es como varios camareros, cada uno con su propia mesa, en vez de un único camarero que no pasa a la siguiente mesa hasta terminar con la anterior:</p>
+<pre class="mermaid"><code>flowchart LR
+    C1["🧑‍🍳 Hilo 1"] --&gt; M1["Petición 1"]
+    C2["🧑‍🍳 Hilo 2"] --&gt; M2["Petición 2"]
+    C3["🧑‍🍳 Hilo 3"] --&gt; M3["Petición 3"]</code></pre>
+<p>Vas a comprobarlo tú mismo en la Actividad 1.4: montarás un método del service con un <code>Thread.sleep(2000)</code> puesto a propósito, que simula una consulta lenta, y lanzarás dos peticiones <strong>simultáneas</strong> contra su endpoint, así:</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
 <span class="normal"><a href="#__codelineno-0-2">2</a></span>
 <span class="normal"><a href="#__codelineno-0-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nb">time</span><span class="w"> </span><span class="o">(</span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/libros/top<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="w">      </span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/libros/top<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="w">      </span><span class="nb">wait</span><span class="o">)</span>
 </code></pre></div></td></tr></table></div>
-<p>Si las dos peticiones se atendieran una detrás de otra, el conjunto tardaría unos 4 segundos. Si se atienden en paralelo, tardan aproximadamente 2 — porque cada una la procesa un hilo distinto del pool. Puedes confirmarlo añadiendo temporalmente una traza con <code>Thread.currentThread().getName()</code> en el método y mirando el log: verás dos nombres de hilo distintos (<code>http-nio-8080-exec-1</code>, <code>http-nio-8080-exec-2</code>...) para las dos peticiones.</p>
+<p>Antes de probarlo tú mismo, compara las dos formas posibles en que tu servidor podría atender esas dos peticiones:</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph SEC["🐢 Secuencial — un solo hilo"]
+        direction LR
+        A1["Petición 1 — 2s"] --&gt; A2["Petición 2 — 2s"]
+    end
+    subgraph PAR["🐇 En paralelo — un hilo por petición"]
+        direction LR
+        B1["Petición 1 — 2s"]
+        B2["Petición 2 — 2s"]
+    end</code></pre>
+<p>Si las dos peticiones se atendieran una detrás de otra (el bloque "Secuencial"), el conjunto tardaría unos 4 segundos. Si se atienden en paralelo (el bloque "En paralelo"), tardan aproximadamente 2 — porque cada una la procesa un hilo distinto del pool, igual que los dos camareros de la analogía. Puedes confirmarlo añadiendo temporalmente una traza con <code>Thread.currentThread().getName()</code> en el método y mirando el log: verás dos nombres de hilo distintos (<code>http-nio-8080-exec-1</code>, <code>http-nio-8080-exec-2</code>...) para las dos peticiones.</p>
 <hr>
 <h2 id="que-es-la-disponibilidad-de-un-servicio">🩺 Qué es la disponibilidad de un servicio<a class="headerlink" href="#que-es-la-disponibilidad-de-un-servicio" title="Permanent link">¶</a></h2>
-<p>Que un servicio esté <strong>disponible</strong> no es una única cosa binaria — hay distintos niveles de "estar bien":</p>
+<p>Todo lo anterior daba por hecho algo que no has cuestionado en ningún momento: que tu servicio está funcionando de verdad. ¿Cómo lo sabes, en realidad?</p>
+<p>Imagina que tu GameVault, ya desplegado, se cae un sábado a las tres de la madrugada. Si nadie lo comprueba a mano, nadie se entera hasta que un usuario se queja de que la web no funciona — pueden pasar horas. Este es exactamente el problema que resuelve comprobar la disponibilidad de forma automática, sin esperar a que un humano lo note.</p>
+<p>Que un servicio esté <strong>disponible</strong> no es una única cosa binaria — hay distintos niveles de "estar bien", cada uno más exigente que el anterior:</p>
 <ol>
 <li><strong>El proceso está arrancado</strong>: la aplicación no se ha caído, sigue viva.</li>
 <li><strong>Responde peticiones</strong>: acepta conexiones y contesta algo, lo que sea.</li>
 <li><strong>Sus dependencias funcionan</strong>: la base de datos, la cola de mensajería, cualquier servicio del que dependa, están accesibles — un proceso vivo que no puede hablar con su base de datos no está realmente "disponible" para hacer su trabajo.</li>
 </ol>
-<p>Un <strong>health check</strong> (comprobación de salud) es una forma automática — pensada para que la ejecute una máquina, sin intervención humana — de responder a estas preguntas. Quien consume esa información no eres tú mirando una pantalla: son <strong>monitores de alertas</strong> (que avisan si algo cae), <strong>orquestadores</strong> (que reinician automáticamente un contenedor que no responde) o el propio <strong>CI</strong> (que puede comprobar que el servicio arranca correctamente antes de darlo por bueno).</p>
+<pre class="mermaid"><code>flowchart LR
+    A["🔴 Proceso caído"] --&gt; B["🟡 Proceso vivo,&lt;br/&gt;no responde"]
+    B --&gt; C["🟠 Responde,&lt;br/&gt;pero fallan sus dependencias"]
+    C --&gt; D["🟢 Realmente&lt;br/&gt;disponible"]</code></pre>
+<p>Un <strong>health check</strong> (comprobación de salud) es una forma automática — pensada para que la ejecute una máquina, sin intervención humana — de responder a estas preguntas cada pocos segundos, sin que nadie tenga que mirar una pantalla. Quien consulta esa información no eres tú, a mano: puede ser un programa que compruebe el servicio cada pocos minutos y avise a alguien en cuanto deje de responder, un sistema de despliegue que reinicie el servicio automáticamente si detecta que ha dejado de estar sano, o el propio <strong>CI</strong>, que puede comprobar que el servicio arranca correctamente antes de darlo por bueno.</p>
 <hr>
 <h2 id="spring-boot-actuator">🛠️ Spring Boot Actuator<a class="headerlink" href="#spring-boot-actuator" title="Permanent link">¶</a></h2>
 <p><strong>Spring Boot Actuator</strong> es la implementación de todo esto para una aplicación Spring Boot: un conjunto de endpoints HTTP listos para usar que exponen información operativa sobre tu aplicación — entre ellos, su salud.</p>
@@ -2612,8 +2616,10 @@
 <a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-actuator<span class="nt">&lt;/artifactId&gt;</span>
 <a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div></td></tr></table></div>
-<!-- TODO(autor): comprobar si springdoc lista los endpoints de Actuator en Swagger UI una vez añadida esta dependencia (no debería, al no ser un @RestController normal, pero verificarlo con un proyecto real). Si aparecen y ensucian la documentación pensada para consumidores de la API, marcarlos con @Hidden o excluirlos vía springdoc.paths-to-exclude en application.yml, y explicarlo aquí. -->
-
+<div class="admonition tip">
+<p class="admonition-title">No vas a verlos en Swagger UI, y es lo esperado</p>
+<p>Los endpoints de Actuator no aparecen en tu documentación de Swagger UI, aunque ya la tengas configurada desde el apartado anterior. No es un descuido: springdoc solo documenta los <code>@RestController</code> de tu propia API, y Actuator expone sus endpoints por un mecanismo completamente distinto, al margen de ese escaneo. Tiene sentido — <code>/actuator/health</code> no es un recurso de tu API pensado para los clientes de GameVault, es información operativa para quien vigila que el servicio esté vivo.</p>
+</div>
 <p>Con solo esa dependencia, Spring Boot expone automáticamente <code>/actuator/health</code>. Para ver el detalle de cada dependencia (y no solo un <code>UP</code>/<code>DOWN</code> genérico), hace falta una línea de configuración:</p>
 <div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
 <span class="normal"><a href="#__codelineno-2-2">2</a></span>
@@ -2647,18 +2653,16 @@
 </div>
 <p>Actuator trae también otros endpoints útiles, como <code>/actuator/info</code> (metadatos de la aplicación) o <code>/actuator/metrics</code> (métricas de rendimiento) — no vas a profundizar en ellos ahora, pero conviene que sepas que existen.</p>
 <hr>
-<h2 id="recapitulacion-del-tema">🧭 Recapitulación del tema<a class="headerlink" href="#recapitulacion-del-tema" title="Permanent link">¶</a></h2>
-<p>Con esto se completa el recorrido: leíste la API y su protocolo, la documentaste y entendiste su semántica de escritura con OpenAPI, la probaste con tests MockMvc, y hoy compruebas cómo atiende varias peticiones a la vez y verificas su disponibilidad de forma automatizable. En la Actividad 1.4 mides ambas cosas sobre tu propio proyecto y pones en marcha Actuator.</p>
-<hr>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
 <details class="tip">
 <summary>Abrir resumen</summary>
 <ul>
 <li>Cada petición HTTP la atiende un hilo distinto del <em>pool</em> de Tomcat — por eso dos peticiones lentas simultáneas no tardan el doble, sino aproximadamente lo mismo que una sola.</li>
 <li>La <strong>disponibilidad</strong> de un servicio tiene varios niveles: proceso vivo, responde peticiones, dependencias funcionando — no son lo mismo.</li>
-<li>Un <strong>health check</strong> es una comprobación automática, pensada para que la consulte una máquina (monitor, orquestador, CI), no una persona.</li>
+<li>Un <strong>health check</strong> es una comprobación automática, pensada para que la consulte una máquina (un programa de monitorización, un sistema de despliegue, el propio CI), no una persona.</li>
 <li><strong>Spring Boot Actuator</strong> expone <code>/actuator/health</code> con la dependencia <code>spring-boot-starter-actuator</code>; <code>management.endpoint.health.show-details: always</code> muestra el detalle de cada dependencia.</li>
 <li><code>/actuator/health</code> agrega el estado de cada dependencia real (PostgreSQL, MongoDB...) — si una cae, el estado general pasa a <code>DOWN</code> aunque el resto siga funcionando.</li>
+<li>Los endpoints de Actuator no aparecen en Swagger UI: springdoc solo escanea tus propios <code>@RestController</code>, no el mecanismo aparte que usa Actuator.</li>
 </ul>
 </details></div>
 
