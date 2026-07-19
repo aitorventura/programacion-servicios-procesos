@@ -99,12 +99,6 @@ Depurar **y documentar** van de la mano. La propia tabla de política de rutas q
 
 ---
 
-## 🧭 Recapitulación del tema
-
-Con esto se completa el recorrido: validación de entrada y gestión centralizada de errores (no confiar nunca en lo que llega de fuera) → HTTP Basic con usuarios en memoria (primer mecanismo, deliberadamente provisional) → usuarios reales en PostgreSQL con BCrypt (contraseñas que ni tú puedes leer) → JWT (token autocontenido, sin reenviar credenciales) → roles y política completa, cerrada por defecto y verificada con tests. Este mismo JWT lo reutilizarás en Acceso a Datos para el `PUT` de reseñas con control de autoría.
-
----
-
 ## ✅ Ideas clave
 
 ??? tip "Abrir resumen"

@@ -80,12 +80,6 @@ Con el nombre de hilo distintivo, localizar los hilos `warmup-*` en un thread du
 
 ---
 
-## 🧭 Recapitulación del tema
-
-Con esto se completa el recorrido: analizar los hilos que ya existían en tu aplicación sin haberlos programado → construir un evento interno inmutable y publicarlo → un listener `@Async` sincronizado con el commit de la transacción → un `TaskExecutor` propio, con nombre y prioridad controlados (este apartado). En el Tema 4 los hilos vuelven a aparecer, esta vez gestionados completamente a mano: sockets y WebSocket.
-
----
-
 ## ✅ Ideas clave
 
 ??? tip "Abrir resumen"

@@ -1,5 +1,8 @@
 # 🧪 Actividad 1.4: Comunicación simultánea y disponibilidad del servicio
 
+!!! warning "Descarga la plantilla"
+    📄 [Plantilla 1.4 — Comunicación simultánea y disponibilidad del servicio](plantillas/Actividad_1_4_PSP_Plantilla.docx){target="_blank" rel="noopener"}
+
 !!! info "Dos bloques, los dos guiados"
     Cierras el tema con las dos últimas piezas de la teoría: comprobar que tu aplicación atiende varias peticiones a la vez sin que se pisen, y verificar de forma automatizable que sigue "sana" cuando una de sus dependencias falla.
 
@@ -31,9 +34,10 @@ List<Videojuego> findTop5ByOrderByFechaLanzamientoDesc();
 Y a `VideojuegoService`:
 
 ```java
+@Transactional(readOnly = true)
 public List<VideojuegoResponseDTO> getTopNovedades() {
     try {
-        Thread.sleep(2000); // simula una consulta costosa
+        Thread.sleep(2000); // simula una consulta costosa — lo quitas al final de la actividad
     } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
     }
@@ -44,17 +48,21 @@ public List<VideojuegoResponseDTO> getTopNovedades() {
 }
 ```
 
-Y en `VideojuegoController`:
+Y en `VideojuegoController`, documentado igual que el resto de endpoints del proyecto:
 
 ```java
+@Operation(summary = "Listar los 5 videojuegos más recientes")
+@ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Listado obtenido correctamente")
+})
 @GetMapping("/top")
 public ResponseEntity<List<VideojuegoResponseDTO>> getTopNovedades() {
     return ResponseEntity.ok(videojuegoService.getTopNovedades());
 }
 ```
 
-!!! warning "El orden de las rutas importa"
-    Declara `@GetMapping("/top")` **antes** que `@GetMapping("/{id}")` en la clase — si no, Spring intenta interpretar `top` como un `id` y falla al convertirlo a `Long`.
+!!! tip "¿Y si `/top` choca con `/{id}`?"
+    Podría parecer un problema: `GET /api/v1/videojuegos/top` encaja tanto con `@GetMapping("/top")` como con `@GetMapping("/{id}")` (que aceptaría, literalmente, cualquier texto en esa posición, incluida la palabra `top`). Pero Spring no decide por el orden en que declares los métodos en la clase: prioriza automáticamente la ruta más específica —una ruta literal, sin variables, como `/top`— sobre la que solo tiene un `{parámetro}` genérico. Declara los métodos en el orden que te resulte más cómodo de leer.
 
 Arranca tu aplicación y comprueba con una sola llamada que `GET /api/v1/videojuegos/top` tarda efectivamente unos 2 segundos.
 
@@ -69,6 +77,8 @@ time (curl -s http://localhost:8080/api/v1/videojuegos/top & \
 ```
 
 **Anota** el tiempo total mostrado por `time`. Añade temporalmente una línea `System.out.println(Thread.currentThread().getName())` al principio de `getTopNovedades()` en tu service, repite la prueba, y anota los dos nombres de hilo que aparecen en la consola. Cuando termines, retira esa línea — era solo para observar, no para quedarse en el código.
+
+**Captura**: la salida de la terminal con el resultado de `time`, y el fragmento del log de tu aplicación donde se ven los dos nombres de hilo distintos.
 
 **Pregunta**: ¿qué relación hay entre este "una petición, un hilo" que acabas de observar y el resultado de `time`? Si en vez de dos lanzaras cincuenta peticiones simultáneas, ¿crees que el comportamiento sería exactamente el mismo, o hay algún límite? (No hace falta que sepas la respuesta exacta todavía — se trabaja a fondo en el Tema 3).
 
@@ -89,7 +99,7 @@ En tu `pom.xml`:
 
 ### Paso 4 — Exponer el detalle de salud
 
-En `application.yaml` (la configuración común, no la de un perfil concreto):
+En `application.yml` (la configuración común, la que se carga siempre — no la confundas con `application-dev.yaml`, que solo se activa con el perfil `dev`):
 
 ```yaml
 management:
@@ -106,6 +116,8 @@ curl -s http://localhost:8080/actuator/health | jq
 
 **Comprueba**: que la respuesta incluye un bloque `components` con, al menos, tu base de datos PostgreSQL (`db`) en estado `UP`.
 
+**Captura**: la respuesta completa de `curl -s http://localhost:8080/actuator/health | jq`, con el bloque `components` visible.
+
 ---
 
 ## Experimento guiado de disponibilidad
@@ -113,12 +125,19 @@ curl -s http://localhost:8080/actuator/health | jq
 Este experimento necesita que tengas más de un servicio en tu `.devcontainer/docker-compose.yml` — si en este punto del curso solo tienes PostgreSQL, hazlo con ese mismo servicio (parándolo tendrás el mismo efecto sobre el componente `db`).
 
 !!! tip "Dónde ejecutar estos comandos"
-    Puedes lanzarlos desde la propia terminal integrada de tu editor (VS Code o IntelliJ IDEA), dentro del Dev Container: el `docker-outside-of-docker` que configuraste en la Actividad 1.1 de Acceso a Datos hace que `docker compose` vea y controle los mismos contenedores que tu sistema operativo, aunque la terminal esté dentro de `app`. Como el fichero ya no está en la raíz del proyecto, apunta a él con `-f`; y como `docker compose` no adivina solo qué contenedores son "los tuyos", indícale también el proyecto con `-p gamevault_devcontainer` (el mismo nombre que ya usaste en la Actividad 1.1 de AD).
+    Puedes lanzarlos desde la propia terminal integrada de tu editor (VS Code o IntelliJ IDEA), dentro del Dev Container: el `docker-outside-of-docker` que configuraste en la Actividad 1.1 de Acceso a Datos hace que `docker compose` vea y controle los mismos contenedores que tu sistema operativo, aunque la terminal esté dentro de `app`. Como el fichero ya no está en la raíz del proyecto, apunta a él con `-f`; y como `docker compose` no adivina solo qué contenedores son "los tuyos", indícale también el proyecto con `-p`.
+
+!!! warning "No des por hecho el nombre del proyecto"
+    `gamevault_devcontainer` es el nombre que usa VS Code, pero IntelliJ no siempre lo nombra igual (puede llamarlo simplemente `devcontainer`, entre otras variantes). Antes de ejecutar nada, comprueba el nombre real:
+    ```bash
+    docker compose ls
+    ```
+    Si usas el nombre equivocado, `docker compose ... stop postgres` no encontrará el contenedor y no parará nada — sin avisarte de que ha fallado. Es exactamente lo que comprueba la actividad de disponibilidad: si `/actuator/health` sigue en `UP` después de "parar" PostgreSQL, sospecha primero de esto antes que de Actuator.
 
 ### Paso 5 — Parar una dependencia
 
 ```bash
-docker compose -f .devcontainer/docker-compose.yml -p gamevault_devcontainer stop postgres
+docker compose -f .devcontainer/docker-compose.yml -p <proyecto> stop postgres
 ```
 
 Vuelve a consultar:
@@ -129,23 +148,27 @@ curl -s http://localhost:8080/actuator/health | jq
 
 **Predicción**: antes de ejecutar el comando, escribe qué esperas ver en el campo `status` general y en el componente correspondiente a PostgreSQL.
 
+**Captura**: la respuesta real de `/actuator/health` con PostgreSQL parado, con el `status` general y el componente `db` en `DOWN` — compárala con tu predicción.
+
 ### Paso 6 — Recuperar el servicio
 
 ```bash
-docker compose -f .devcontainer/docker-compose.yml -p gamevault_devcontainer start postgres
+docker compose -f .devcontainer/docker-compose.yml -p <proyecto> start postgres
 ```
 
 Espera unos segundos y vuelve a consultar `/actuator/health`.
 
 **Comprueba**: que el estado ha vuelto a `UP` sin que hayas tenido que reiniciar tu aplicación Spring Boot — solo el contenedor de la base de datos.
 
+**Captura**: la respuesta de `/actuator/health` ya recuperada, con `status: UP` de nuevo.
+
 **Pregunta**: si tu aplicación estuviera respondiendo peticiones GET normales mientras PostgreSQL estaba caído (por ejemplo, un endpoint que no toca la base de datos), ¿el servicio estaría "disponible" o no? Justifica tu respuesta con los tres niveles de disponibilidad vistos en la teoría.
 
 ---
 
-## Repaso del tema
+## Paso 7 — Deja el endpoint listo de verdad
 
-Escribe un repaso propio (3-4 frases) del recorrido completo de este tema: leer la API y su protocolo → documentarla y entender su semántica de escritura → probarla con tests MockMvc → medir cómo atiende varios clientes a la vez → verificar su disponibilidad. ¿Qué pieza te ha costado más entender, y por qué?
+El `Thread.sleep(2000)` era solo para poder medir concurrencia — `getTopNovedades()` se queda en tu proyecto de forma permanente (mostrar las novedades del catálogo es una funcionalidad real), pero no tiene sentido que responda con un retraso artificial para siempre. Quítalo de `VideojuegoService.getTopNovedades()` y comprueba que el endpoint sigue funcionando, ahora sin demora.
 
 ---
 

@@ -36,7 +36,7 @@ volumes:
   rabbitmq_data:
 ```
 
-El puerto `5672` es el protocolo AMQP (por el que va a hablar tu aplicación); el `15672` es una interfaz web de administración — levanta el contenedor (`docker compose -f .devcontainer/docker-compose.yml -p gamevault_devcontainer up -d rabbitmq` desde la terminal integrada, o reconstruyendo el Dev Container: "Dev Containers: Rebuild Container" en VS Code, o recreándolo desde `devcontainer.json` en IntelliJ IDEA) y entra en `http://localhost:15672` (usuario y contraseña por defecto: `guest`/`guest`) para ver, más adelante, las colas y los mensajes pasando por ellas en vivo.
+El puerto `5672` es el protocolo AMQP (por el que va a hablar tu aplicación); el `15672` es una interfaz web de administración — levanta el contenedor desde la terminal integrada (comprueba primero el nombre real de tu proyecto con `docker compose ls` — no siempre es `gamevault_devcontainer`, depende de tu editor — y sustitúyelo en `docker compose -f .devcontainer/docker-compose.yml -p <proyecto> up -d rabbitmq`), o reconstruyendo el Dev Container: "Dev Containers: Rebuild Container" en VS Code, o recreándolo desde `devcontainer.json` en IntelliJ IDEA. Después entra en `http://localhost:15672` (usuario y contraseña por defecto: `guest`/`guest`) para ver, más adelante, las colas y los mensajes pasando por ellas en vivo.
 
 En tu `pom.xml`:
 

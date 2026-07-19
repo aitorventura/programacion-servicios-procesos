@@ -2,15 +2,24 @@
 
 # 🧩 4. Comunicación simultánea y disponibilidad del servicio
 
-Dos preguntas distintas de las que has visto hasta ahora, sobre el mismo servicio ya funcionando: no "¿responde bien esta petición concreta?", sino "¿aguanta varias peticiones a la vez sin que unas esperen a otras?" y "¿está el servicio, en general, sano y disponible ahora mismo?".
+Hasta ahora has comprobado que tu API responde bien a una petición aislada: el código de estado correcto, el JSON esperado, el test que pasa. Hoy cierras el tema con dos preguntas distintas, sobre ese mismo servicio ya en marcha: ¿aguanta varias peticiones a la vez sin que unas tengan que esperar a otras? Y, más allá de una petición concreta, ¿cómo sabes si el servicio en general sigue sano y disponible ahora mismo, sin tener que comprobarlo tú a mano?
 
 ---
 
 ## 🧵 Comunicación simultánea de varios clientes
 
-Un servidor real no atiende a un solo cliente a la vez. Spring Web, sobre Tomcat, atiende cada petición HTTP entrante en un **hilo distinto**, tomado de un *pool* — así que varias peticiones pueden procesarse en paralelo sin que unas esperen a que terminen las otras. Esta idea se retomará a fondo en el Tema 3, sobre programación multihilo; de momento, compruébala con un experimento sencillo.
+Piensa en tu propio GameVault, ya en producción: no lo vas a usar solo tú. Si veinte personas consultan el catálogo a la vez y tu servidor las atendiera de una en una —terminar la primera antes de empezar la segunda—, la última persona esperaría veinte veces más que la primera.
 
-Imagina un método del service con un `Thread.sleep(2000)` puesto a propósito, que simula una consulta lenta (lo montarás así en la actividad). Lanza dos peticiones **simultáneas** contra su endpoint:
+Por suerte, no funciona así: Spring Web, sobre Tomcat, atiende cada petición HTTP en un **hilo** distinto —una línea de ejecución independiente dentro de tu propia aplicación, que avanza en paralelo con las demás— tomado de un ***pool***: un conjunto de hilos ya creados de antemano y listos para usar, en vez de crear uno nuevo por cada petición (verás ambas ideas con detalle en el Tema 3). Es como varios camareros, cada uno con su propia mesa, en vez de un único camarero que no pasa a la siguiente mesa hasta terminar con la anterior:
+
+```mermaid
+flowchart LR
+    C1["🧑‍🍳 Hilo 1"] --> M1["Petición 1"]
+    C2["🧑‍🍳 Hilo 2"] --> M2["Petición 2"]
+    C3["🧑‍🍳 Hilo 3"] --> M3["Petición 3"]
+```
+
+Vas a comprobarlo tú mismo en la Actividad 1.4: montarás un método del service con un `Thread.sleep(2000)` puesto a propósito, que simula una consulta lenta, y lanzarás dos peticiones **simultáneas** contra su endpoint, así:
 
 ```bash
 time (curl -s http://localhost:8080/api/v1/libros/top & \
@@ -18,19 +27,45 @@ time (curl -s http://localhost:8080/api/v1/libros/top & \
       wait)
 ```
 
-Si las dos peticiones se atendieran una detrás de otra, el conjunto tardaría unos 4 segundos. Si se atienden en paralelo, tardan aproximadamente 2 — porque cada una la procesa un hilo distinto del pool. Puedes confirmarlo añadiendo temporalmente una traza con `Thread.currentThread().getName()` en el método y mirando el log: verás dos nombres de hilo distintos (`http-nio-8080-exec-1`, `http-nio-8080-exec-2`...) para las dos peticiones.
+Antes de probarlo tú mismo, compara las dos formas posibles en que tu servidor podría atender esas dos peticiones:
+
+```mermaid
+flowchart TD
+    subgraph SEC["🐢 Secuencial — un solo hilo"]
+        direction LR
+        A1["Petición 1 — 2s"] --> A2["Petición 2 — 2s"]
+    end
+    subgraph PAR["🐇 En paralelo — un hilo por petición"]
+        direction LR
+        B1["Petición 1 — 2s"]
+        B2["Petición 2 — 2s"]
+    end
+```
+
+Si las dos peticiones se atendieran una detrás de otra (el bloque "Secuencial"), el conjunto tardaría unos 4 segundos. Si se atienden en paralelo (el bloque "En paralelo"), tardan aproximadamente 2 — porque cada una la procesa un hilo distinto del pool, igual que los dos camareros de la analogía. Puedes confirmarlo añadiendo temporalmente una traza con `Thread.currentThread().getName()` en el método y mirando el log: verás dos nombres de hilo distintos (`http-nio-8080-exec-1`, `http-nio-8080-exec-2`...) para las dos peticiones.
 
 ---
 
 ## 🩺 Qué es la disponibilidad de un servicio
 
-Que un servicio esté **disponible** no es una única cosa binaria — hay distintos niveles de "estar bien":
+Todo lo anterior daba por hecho algo que no has cuestionado en ningún momento: que tu servicio está funcionando de verdad. ¿Cómo lo sabes, en realidad?
+
+Imagina que tu GameVault, ya desplegado, se cae un sábado a las tres de la madrugada. Si nadie lo comprueba a mano, nadie se entera hasta que un usuario se queja de que la web no funciona — pueden pasar horas. Este es exactamente el problema que resuelve comprobar la disponibilidad de forma automática, sin esperar a que un humano lo note.
+
+Que un servicio esté **disponible** no es una única cosa binaria — hay distintos niveles de "estar bien", cada uno más exigente que el anterior:
 
 1. **El proceso está arrancado**: la aplicación no se ha caído, sigue viva.
 2. **Responde peticiones**: acepta conexiones y contesta algo, lo que sea.
 3. **Sus dependencias funcionan**: la base de datos, la cola de mensajería, cualquier servicio del que dependa, están accesibles — un proceso vivo que no puede hablar con su base de datos no está realmente "disponible" para hacer su trabajo.
 
-Un **health check** (comprobación de salud) es una forma automática — pensada para que la ejecute una máquina, sin intervención humana — de responder a estas preguntas. Quien consume esa información no eres tú mirando una pantalla: son **monitores de alertas** (que avisan si algo cae), **orquestadores** (que reinician automáticamente un contenedor que no responde) o el propio **CI** (que puede comprobar que el servicio arranca correctamente antes de darlo por bueno).
+```mermaid
+flowchart LR
+    A["🔴 Proceso caído"] --> B["🟡 Proceso vivo,<br/>no responde"]
+    B --> C["🟠 Responde,<br/>pero fallan sus dependencias"]
+    C --> D["🟢 Realmente<br/>disponible"]
+```
+
+Un **health check** (comprobación de salud) es una forma automática — pensada para que la ejecute una máquina, sin intervención humana — de responder a estas preguntas cada pocos segundos, sin que nadie tenga que mirar una pantalla. Quien consulta esa información no eres tú, a mano: puede ser un programa que compruebe el servicio cada pocos minutos y avise a alguien en cuanto deje de responder, un sistema de despliegue que reinicie el servicio automáticamente si detecta que ha dejado de estar sano, o el propio **CI**, que puede comprobar que el servicio arranca correctamente antes de darlo por bueno.
 
 ---
 
@@ -47,7 +82,8 @@ Tu propio proyecto no incluye Actuator todavía (revisa tu `pom.xml`: no está l
 </dependency>
 ```
 
-<!-- TODO(autor): comprobar si springdoc lista los endpoints de Actuator en Swagger UI una vez añadida esta dependencia (no debería, al no ser un @RestController normal, pero verificarlo con un proyecto real). Si aparecen y ensucian la documentación pensada para consumidores de la API, marcarlos con @Hidden o excluirlos vía springdoc.paths-to-exclude en application.yml, y explicarlo aquí. -->
+!!! tip "No vas a verlos en Swagger UI, y es lo esperado"
+    Los endpoints de Actuator no aparecen en tu documentación de Swagger UI, aunque ya la tengas configurada desde el apartado anterior. No es un descuido: springdoc solo documenta los `@RestController` de tu propia API, y Actuator expone sus endpoints por un mecanismo completamente distinto, al margen de ese escaneo. Tiene sentido — `/actuator/health` no es un recurso de tu API pensado para los clientes de GameVault, es información operativa para quien vigila que el servicio esté vivo.
 
 Con solo esa dependencia, Spring Boot expone automáticamente `/actuator/health`. Para ver el detalle de cada dependencia (y no solo un `UP`/`DOWN` genérico), hace falta una línea de configuración:
 
@@ -83,18 +119,13 @@ Actuator trae también otros endpoints útiles, como `/actuator/info` (metadatos
 
 ---
 
-## 🧭 Recapitulación del tema
-
-Con esto se completa el recorrido: leíste la API y su protocolo, la documentaste y entendiste su semántica de escritura con OpenAPI, la probaste con tests MockMvc, y hoy compruebas cómo atiende varias peticiones a la vez y verificas su disponibilidad de forma automatizable. En la Actividad 1.4 mides ambas cosas sobre tu propio proyecto y pones en marcha Actuator.
-
----
-
 ## ✅ Ideas clave
 
 ??? tip "Abrir resumen"
 
     - Cada petición HTTP la atiende un hilo distinto del *pool* de Tomcat — por eso dos peticiones lentas simultáneas no tardan el doble, sino aproximadamente lo mismo que una sola.
     - La **disponibilidad** de un servicio tiene varios niveles: proceso vivo, responde peticiones, dependencias funcionando — no son lo mismo.
-    - Un **health check** es una comprobación automática, pensada para que la consulte una máquina (monitor, orquestador, CI), no una persona.
+    - Un **health check** es una comprobación automática, pensada para que la consulte una máquina (un programa de monitorización, un sistema de despliegue, el propio CI), no una persona.
     - **Spring Boot Actuator** expone `/actuator/health` con la dependencia `spring-boot-starter-actuator`; `management.endpoint.health.show-details: always` muestra el detalle de cada dependencia.
     - `/actuator/health` agrega el estado de cada dependencia real (PostgreSQL, MongoDB...) — si una cae, el estado general pasa a `DOWN` aunque el resto siga funcionando.
+    - Los endpoints de Actuator no aparecen en Swagger UI: springdoc solo escanea tus propios `@RestController`, no el mecanismo aparte que usa Actuator.
