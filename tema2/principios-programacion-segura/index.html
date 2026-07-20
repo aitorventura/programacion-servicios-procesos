@@ -2760,6 +2760,16 @@
 <p>Sin él, una excepción no controlada puede acabar devolviendo al cliente una traza de pila completa: nombres de clases internas, de tablas, incluso versiones de librerías. Eso es información gratis para un atacante sobre cómo está construido tu sistema por dentro. <code>GlobalExceptionHandler</code> garantiza que, pase lo que pase, el cliente solo ve el mensaje controlado que tú decides — nunca los detalles internos.</p>
 </div>
 <p>Esto conecta con algo que ya conocías: los <code>404</code> de <code>ResponseStatusException</code> que viste en el Tema 1 pasan también por este mismo handler — es la misma política de errores, ahora aplicada de forma uniforme a toda la aplicación.</p>
+<!-- NOTA PARA DESARROLLO FUTURO (no student-facing): al ampliar este apartado,
+     añadir un tercer @ExceptionHandler(InvalidDataAccessApiUsageException.class)
+     que convierta esa excepción en 400 Bad Request. Motivo: en Acceso a Datos,
+     Tema 1, Actividad 1.5 (Specifications + paginación), pedir un campo de
+     `sort` que no existe en la entidad lanza InvalidDataAccessApiUsageException,
+     y sin este handler cae al 500 por defecto de Spring — un error de entrada
+     del cliente disfrazado de fallo del servidor. Ahora mismo (dos handlers:
+     MethodArgumentNotValidException y ResponseStatusException) el proyecto
+     todavía no lo cubre; añadirlo aquí cuando se desarrolle más este apartado. -->
+
 <hr>
 <h2 id="lo-que-viene">🗺️ Lo que viene<a class="headerlink" href="#lo-que-viene" title="Permanent link">¶</a></h2>
 <p>El resto de este tema va a materializar, uno a uno, los principios que has visto hoy: mínima exposición se convierte en rutas cerradas por defecto ("Roles, rutas protegidas y tests de seguridad"), no guardar secretos en el código se convierte en el <code>jwt.secret</code> como propiedad externa ("Autenticación con JWT"), no almacenar contraseñas en claro se convierte en BCrypt ("Usuarios persistidos y BCrypt"). Hoy has visto los principios; en los próximos apartados les pones nombre y apellido en Spring Security.</p>
