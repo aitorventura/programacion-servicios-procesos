@@ -8,7 +8,7 @@ En este módulo aprendes a que tus programas dejen de ser aplicaciones sueltas: 
 
 ## 🎯 Qué vas a aprender
 
-- 💻 Programación multiproceso y multihilo: crear procesos e hilos, sincronizarlos y compartir información entre ellos de forma segura.
+- 💻 Programación multihilo: crear hilos, sincronizarlos y compartir información entre ellos de forma segura.
 - 🌐 Comunicación en red con sockets: programar aplicaciones cliente y servidor que intercambian datos.
 - 🧰 Servicios en red: exponer funcionalidad mediante protocolos estándar, atendiendo a varios clientes a la vez.
 - 🔒 Programación segura: criptografía, control de acceso por roles y comunicaciones cifradas.
@@ -29,3 +29,6 @@ En este módulo aprendes a que tus programas dejen de ser aplicaciones sueltas: 
 
 !!! tip "Cómo navegar"
     Haz clic en cualquier tema de arriba para empezar. Dentro de cada tema encontrarás los apuntes y las actividades en orden. Puedes usar las **flechas al pie de cada página** para avanzar o retroceder.
+
+!!! note "Programación multiproceso (RA1)"
+    El RA1 de este módulo — crear y gestionar procesos — no se trabaja en estos apuntes: se cubre durante la Formación en Empresa (FE).

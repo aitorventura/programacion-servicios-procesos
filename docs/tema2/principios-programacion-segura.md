@@ -106,6 +106,16 @@ public class GlobalExceptionHandler {
 
 Esto conecta con algo que ya conocías: los `404` de `ResponseStatusException` que viste en el Tema 1 pasan también por este mismo handler — es la misma política de errores, ahora aplicada de forma uniforme a toda la aplicación.
 
+<!-- NOTA PARA DESARROLLO FUTURO (no student-facing): al ampliar este apartado,
+     añadir un tercer @ExceptionHandler(InvalidDataAccessApiUsageException.class)
+     que convierta esa excepción en 400 Bad Request. Motivo: en Acceso a Datos,
+     Tema 1, Actividad 1.5 (Specifications + paginación), pedir un campo de
+     `sort` que no existe en la entidad lanza InvalidDataAccessApiUsageException,
+     y sin este handler cae al 500 por defecto de Spring — un error de entrada
+     del cliente disfrazado de fallo del servidor. Ahora mismo (dos handlers:
+     MethodArgumentNotValidException y ResponseStatusException) el proyecto
+     todavía no lo cubre; añadirlo aquí cuando se desarrolle más este apartado. -->
+
 ---
 
 ## 🗺️ Lo que viene
