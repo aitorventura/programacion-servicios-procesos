@@ -1262,6 +1262,66 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Gestión centralizada de errores">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#handler-1-la-validacion-que-acabas-de-ver" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handler 1: la validación que acabas de ver
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handler-2-los-errores-que-ya-lanzas-tu-explicitamente" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handler 2: los errores que ya lanzas tú explícitamente
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handler-3-un-parametro-que-spring-data-no-sabe-interpretar" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handler 3: un parámetro que Spring Data no sabe interpretar
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handler-4-una-restriccion-que-solo-existe-en-la-base-de-datos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handler 4: una restricción que solo existe en la base de datos
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handler-5-la-red-de-seguridad-final" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handler 5: la red de seguridad final
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#todo-junto" class="md-nav__link">
+    <span class="md-ellipsis">
+      Todo junto
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -2584,6 +2644,66 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Gestión centralizada de errores">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#handler-1-la-validacion-que-acabas-de-ver" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handler 1: la validación que acabas de ver
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handler-2-los-errores-que-ya-lanzas-tu-explicitamente" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handler 2: los errores que ya lanzas tú explícitamente
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handler-3-un-parametro-que-spring-data-no-sabe-interpretar" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handler 3: un parámetro que Spring Data no sabe interpretar
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handler-4-una-restriccion-que-solo-existe-en-la-base-de-datos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handler 4: una restricción que solo existe en la base de datos
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handler-5-la-red-de-seguridad-final" class="md-nav__link">
+    <span class="md-ellipsis">
+      Handler 5: la red de seguridad final
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#todo-junto" class="md-nav__link">
+    <span class="md-ellipsis">
+      Todo junto
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -2627,7 +2747,12 @@
 
 <div><p><a id="principios-programacion-segura"></a></p>
 <h1 id="1-principios-de-programacion-segura-validacion-y-gestion-de-errores">🧩 1. Principios de programación segura: validación y gestión de errores<a class="headerlink" href="#1-principios-de-programacion-segura-validacion-y-gestion-de-errores" title="Permanent link">¶</a></h1>
-<p>Tu proyecto, tal y como está ahora, no comprueba quién hace las peticiones ni les pone ningún límite. Antes de tocar autenticación (eso empieza el apartado que viene), este apartado sienta las bases: qué significa que una aplicación sea "segura" y cómo se traduce eso en decisiones concretas de código, sin necesitar todavía ni un login.</p>
+<p>Tu proyecto, tal y como está ahora, no comprueba quién hace las peticiones ni les pone ningún límite: cualquiera que sepa la URL puede leer, crear, modificar o borrar lo que quiera. Antes de tocar autenticación (eso empieza el apartado que viene), toca dar un paso atrás y preguntarse algo más básico: ¿qué significa exactamente que una aplicación sea "segura"?</p>
+<div class="admonition example">
+<p class="admonition-title">Un caso concreto, sin que haga falta ningún atacante experto</p>
+<p>Manda un <code>POST /api/v1/videojuegos</code> con un <code>precio</code> negativo. Ya tienes <code>@Valid</code> desde Acceso a Datos, así que la petición se rechaza — pero mira la respuesta: un mensaje genérico en inglés, sin decirte qué campo ha fallado ni por qué. Ahora prueba a pedir un listado ordenado por un campo que no existe, algo como <code>?sort=noExiste,asc</code>: ahí ni siquiera hay rechazo controlado, lo que ves es una traza de pila completa. Ninguno de los dos casos necesita un atacante: basta con un cliente mal hecho, o con probar a mano.</p>
+</div>
+<p>Ese ejemplo, multiplicado por todos los puntos por los que algo externo entra en tu sistema, es justo lo que este apartado trata de arreglar — sin necesitar todavía ni un login.</p>
 <hr>
 <h2 id="que-significa-que-una-aplicacion-sea-segura">🔒 Qué significa que una aplicación sea "segura"<a class="headerlink" href="#que-significa-que-una-aplicacion-sea-segura" title="Permanent link">¶</a></h2>
 <p>La seguridad de una aplicación se apoya, clásicamente, en tres pilares:</p>
@@ -2655,13 +2780,14 @@
 </table>
 <hr>
 <h2 id="el-modelo-mental-del-atacante">🎯 El modelo mental del atacante<a class="headerlink" href="#el-modelo-mental-del-atacante" title="Permanent link">¶</a></h2>
-<p>Toda API tiene una <strong>superficie de ataque</strong>: todo endpoint expuesto, todo dato de entrada que acepta, todo mensaje de error que devuelve — cualquier punto por el que algo externo puede interactuar con tu sistema es, potencialmente, un punto de ataque.</p>
+<p>El ejemplo de antes no necesitaba mala intención — pero ese mismo hueco, aceptar cualquier dato sin comprobarlo, es también la puerta favorita de quien sí actúa con mala intención. Toda API tiene una <strong>superficie de ataque</strong>: todo endpoint expuesto, todo dato de entrada que acepta, todo mensaje de error que devuelve — cualquier punto por el que algo externo puede interactuar con tu sistema es, potencialmente, un punto de ataque.</p>
 <div class="admonition warning">
 <p class="admonition-title">La regla de oro</p>
 <p><strong>Nunca te fíes de lo que llega de fuera.</strong> Todo dato de entrada es hostil hasta que se valida — no porque asumas mala fe de cada usuario, sino porque no controlas qué envía realmente el cliente: puede ser un formulario mal rellenado, un bug del cliente, o alguien probando deliberadamente a romper tu API.</p>
 </div>
 <hr>
 <h2 id="principios-generales-de-programacion-segura">🛡️ Principios generales de programación segura<a class="headerlink" href="#principios-generales-de-programacion-segura" title="Permanent link">¶</a></h2>
+<p>La regla de oro de antes no se queda en una frase bonita: se traduce en varias decisiones concretas de diseño, antes incluso de escribir la primera línea de un endpoint.</p>
 <ul>
 <li><strong>Validar en la frontera</strong>: comprobar los datos de entrada en el punto donde entran al sistema, antes de que lleguen a la lógica de negocio — no confiar en que "ya vendrán bien" desde el cliente.</li>
 <li><strong>Mínimo privilegio / mínima exposición</strong>: por defecto, todo cerrado; se abre explícitamente solo lo necesario — no al revés.</li>
@@ -2669,18 +2795,42 @@
 <li><strong>No guardar secretos en el código</strong>: contraseñas, claves, tokens — nunca escritos directamente en una clase Java; viven en configuración externa.</li>
 <li><strong>Defensa en profundidad</strong>: varias capas de protección, no una sola barrera — si una falla, las siguientes siguen ahí.</li>
 </ul>
-<p>Estos principios no son abstractos: detrás de cada uno hay un ataque real que previenen. Un vistazo rápido, sin profundizar todavía (irás viendo cada uno con más detalle):</p>
-<ul>
-<li><strong>Inyección</strong>: ya la viste de primera mano en Acceso a Datos, con JDBC puro y <code>Statement</code> — código que trata datos externos como si fueran código.</li>
-<li><strong>Datos malformados</strong>: entradas que rompen la lógica de la aplicación si no se comprueban antes de usarlas.</li>
-<li><strong>Fuerza bruta sobre logins</strong>: probar contraseñas una tras otra hasta acertar.</li>
-<li><strong>Robo de credenciales en tránsito</strong>: interceptar datos sensibles mientras viajan por la red.</li>
-</ul>
+<div class="admonition tip">
+<p class="admonition-title">¿Y la contraseña de Postgres en tu propio <code>application-dev.yaml</code>?</p>
+<p>Si te has fijado, tu GameVault incumple este principio desde el primer día (Acceso a Datos, Actividad 1.1): <code>password: password123</code> viaja en un fichero versionado, subido a tu repositorio. Aquí se deja así a propósito — esa base de datos vive dentro de la red privada de tu Dev Container, nadie fuera de tu propia máquina puede alcanzarla, así que filtrar esa contraseña concreta no compromete nada real (es una convención habitual incluso en proyectos reales, para servicios que nunca salen de un entorno local). La diferencia está en la <strong>exposición</strong>, no en el tipo de dato: si algún día desplegaras GameVault contra una base de datos en la nube (un Postgres de Supabase, por ejemplo, en vez del contenedor local), esa misma contraseña dejaría de ser inofensiva y pasaría a ser un secreto real — del mismo tipo que los que vas a manejar más adelante en este tema, cuando trabajes con autenticación.</p>
+</div>
+<p>Estos principios no son abstractos: detrás de cada uno hay un ataque real que previenen. Un vistazo rápido, sin profundizar todavía — irás viendo cada uno con más detalle a lo largo del tema:</p>
+<table>
+<thead>
+<tr>
+<th>Ataque</th>
+<th>En qué consiste</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Inyección</strong></td>
+<td>Código que trata datos externos como si fueran código — ya lo has visto de primera mano en Acceso a Datos, con JDBC puro y <code>Statement</code>.</td>
+</tr>
+<tr>
+<td><strong>Datos malformados</strong></td>
+<td>Entradas que rompen la lógica de la aplicación si no se comprueban antes de usarlas.</td>
+</tr>
+<tr>
+<td><strong>Fuerza bruta sobre logins</strong></td>
+<td>Probar contraseñas una tras otra hasta acertar.</td>
+</tr>
+<tr>
+<td><strong>Robo de credenciales en tránsito</strong></td>
+<td>Interceptar datos sensibles mientras viajan por la red.</td>
+</tr>
+</tbody>
+</table>
 <hr>
 <h2 id="dos-practicas-concretas">🛠️ Dos prácticas concretas<a class="headerlink" href="#dos-practicas-concretas" title="Permanent link">¶</a></h2>
-<p>La seguridad no empieza en el login — empieza mucho antes: en no fiarte nunca de la entrada del usuario y en no filtrar información en los errores. Siguiendo con la API de la librería que ya conoces:</p>
+<p>De los cinco principios anteriores, hoy vas a convertir dos en código real: validar en la frontera y no filtrar información en los errores. Los otros tres —mínima exposición, no guardar secretos, defensa en profundidad— los vas a ver materializados en los próximos apartados, cuando entre en juego la autenticación (lo tienes resumido al final de esta página, en "Lo que viene"). Siguiendo con la API de la librería que ya conoces:</p>
 <h3 id="validacion-de-entrada-con-bean-validation">Validación de entrada con Bean Validation<a class="headerlink" href="#validacion-de-entrada-con-bean-validation" title="Permanent link">¶</a></h3>
-<p>El <code>create(...)</code> del controller usa <code>@Valid</code> sobre su DTO de entrada, y <code>LibroCreateDTO</code> lleva las anotaciones de <code>jakarta.validation</code>:</p>
+<p>Las anotaciones de Bean Validation (<code>@NotBlank</code>, <code>@NotNull</code>, <code>@PositiveOrZero</code>...) ya las conoces — las has usado para construir tu CRUD en Acceso a Datos. Lo que falta es decirles qué mensaje devolver cuando fallan, con el atributo <code>message</code>:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
@@ -2701,9 +2851,10 @@
 <a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="w">        </span><span class="c1">// ...</span>
 <a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
 </code></pre></div></td></tr></table></div>
-<p><code>@Valid</code>, en la firma del método del controller, activa la comprobación de estas anotaciones <strong>antes</strong> de que el cuerpo del método se ejecute — si algo no cumple, ni siquiera llega a tu lógica de negocio. Esto es "validar en la frontera" hecho código: el dato hostil se rechaza en la puerta, no dentro de la casa.</p>
+<p>Sin <code>message</code>, cada anotación usa su texto por defecto — genérico, y en inglés (<code>must not be blank</code>, por ejemplo). Con él, la respuesta dice exactamente lo que tú decidas, en el idioma que quieras.</p>
+<p>El <code>create(...)</code> del controller ya tiene <code>@Valid</code> sobre este DTO, así que nada cambia en esa parte: <code>@Valid</code> activa la comprobación de estas anotaciones <strong>antes</strong> de que el cuerpo del método se ejecute — si algo no cumple, ni siquiera llega a tu lógica de negocio. Esto es "validar en la frontera" hecho código: el dato hostil se rechaza en la puerta, no dentro de la casa.</p>
 <h3 id="gestion-centralizada-de-errores">Gestión centralizada de errores<a class="headerlink" href="#gestion-centralizada-de-errores" title="Permanent link">¶</a></h3>
-<p>Sin nada más, cuando una validación falla, Spring devuelve una respuesta por defecto — funcional, pero poco cuidada y potencialmente reveladora. La solución es centralizar la gestión de errores en un único punto:</p>
+<p>Sin nada más, cuando una validación falla, Spring devuelve una respuesta por defecto — funcional, pero poco cuidada y potencialmente reveladora. La solución pasa por centralizar la conversión de excepciones en un único punto, en vez de que cada método decida por su cuenta qué responder. Antes de escribir ningún handler, hace falta un formato común: así, sea cual sea el error, el cliente siempre recibe la misma forma.</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-1-3"> 3</a></span>
@@ -2715,61 +2866,410 @@
 <span class="normal"><a href="#__codelineno-1-9"> 9</a></span>
 <span class="normal"><a href="#__codelineno-1-10">10</a></span>
 <span class="normal"><a href="#__codelineno-1-11">11</a></span>
-<span class="normal"><a href="#__codelineno-1-12">12</a></span>
-<span class="normal"><a href="#__codelineno-1-13">13</a></span>
-<span class="normal"><a href="#__codelineno-1-14">14</a></span>
-<span class="normal"><a href="#__codelineno-1-15">15</a></span>
-<span class="normal"><a href="#__codelineno-1-16">16</a></span>
-<span class="normal"><a href="#__codelineno-1-17">17</a></span>
-<span class="normal"><a href="#__codelineno-1-18">18</a></span>
-<span class="normal"><a href="#__codelineno-1-19">19</a></span>
-<span class="normal"><a href="#__codelineno-1-20">20</a></span>
-<span class="normal"><a href="#__codelineno-1-21">21</a></span>
-<span class="normal"><a href="#__codelineno-1-22">22</a></span>
-<span class="normal"><a href="#__codelineno-1-23">23</a></span>
-<span class="normal"><a href="#__codelineno-1-24">24</a></span>
-<span class="normal"><a href="#__codelineno-1-25">25</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nd">@RestControllerAdvice</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">GlobalExceptionHandler</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3"></a>
-<a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">    </span><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">MethodArgumentNotValidException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">ErrorResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">handleValidationExceptions</span><span class="p">(</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="w">            </span><span class="n">MethodArgumentNotValidException</span><span class="w"> </span><span class="n">ex</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7"></a>
-<a id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="w">        </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fields</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LinkedHashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">FieldError</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ex</span><span class="p">.</span><span class="na">getBindingResult</span><span class="p">().</span><span class="na">getFieldErrors</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10"></a><span class="w">            </span><span class="n">fields</span><span class="p">.</span><span class="na">putIfAbsent</span><span class="p">(</span><span class="n">error</span><span class="p">.</span><span class="na">getField</span><span class="p">(),</span><span class="w"> </span><span class="n">error</span><span class="p">.</span><span class="na">getDefaultMessage</span><span class="p">());</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11"></a><span class="w">        </span><span class="p">}</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12"></a>
-<a id="__codelineno-1-13" name="__codelineno-1-13"></a><span class="w">        </span><span class="n">ErrorResponse</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ErrorResponse</span><span class="p">(</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14"></a><span class="w">                </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">(),</span><span class="w"> </span><span class="mi">400</span><span class="p">,</span><span class="w"> </span><span class="s">"Error de validación"</span><span class="p">,</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15"></a><span class="w">                </span><span class="s">"La petición contiene campos inválidos"</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getRequestURI</span><span class="p">(),</span><span class="w"> </span><span class="n">fields</span>
-<a id="__codelineno-1-16" name="__codelineno-1-16"></a><span class="w">        </span><span class="p">);</span>
-<a id="__codelineno-1-17" name="__codelineno-1-17"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">BAD_REQUEST</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
-<a id="__codelineno-1-18" name="__codelineno-1-18"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-1-19" name="__codelineno-1-19"></a>
-<a id="__codelineno-1-20" name="__codelineno-1-20"></a><span class="w">    </span><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">ResponseStatusException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
-<a id="__codelineno-1-21" name="__codelineno-1-21"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">ErrorResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">handleResponseStatusException</span><span class="p">(</span>
-<a id="__codelineno-1-22" name="__codelineno-1-22"></a><span class="w">            </span><span class="n">ResponseStatusException</span><span class="w"> </span><span class="n">ex</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-1-23" name="__codelineno-1-23"></a><span class="w">        </span><span class="c1">// convierte cualquier ResponseStatusException (los 404 que ya conoces) en el mismo formato</span>
-<a id="__codelineno-1-24" name="__codelineno-1-24"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-1-25" name="__codelineno-1-25"></a><span class="p">}</span>
+<span class="normal"><a href="#__codelineno-1-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">record</span> <span class="nc">ErrorResponse</span><span class="p">(</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">timestamp</span><span class="p">,</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">status</span><span class="p">,</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">error</span><span class="p">,</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">message</span><span class="p">,</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">path</span><span class="p">,</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7"></a><span class="w">        </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">fields</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">ErrorResponse</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">timestamp</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">error</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">message</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10"></a><span class="w">        </span><span class="k">this</span><span class="p">(</span><span class="n">timestamp</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="p">,</span><span class="w"> </span><span class="n">message</span><span class="p">,</span><span class="w"> </span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">Map</span><span class="p">.</span><span class="na">of</span><span class="p">());</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p><code>@RestControllerAdvice</code> marca esta clase como un punto <strong>transversal</strong>: se aplica a todos los controllers de la aplicación, no a uno concreto. <code>@ExceptionHandler(TipoDeExcepcion.class)</code> declara qué método atrapa qué tipo de excepción. El resultado: sea cual sea el error (una validación fallida, un <code>ResponseStatusException</code> de "no encontrado"...), la respuesta siempre tiene la misma forma — un <code>ErrorResponse</code> con <code>timestamp</code>, <code>status</code>, <code>error</code>, <code>message</code> y <code>path</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Qué guarda</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>timestamp</code></td>
+<td>Cuándo ha ocurrido el error.</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>El código HTTP, repetido también en el cuerpo, no solo en la cabecera.</td>
+</tr>
+<tr>
+<td><code>error</code></td>
+<td>Nombre corto del error ("Error de validación", "Not Found"...).</td>
+</tr>
+<tr>
+<td><code>message</code></td>
+<td>Explicación legible, pensada para quien consume la API.</td>
+</tr>
+<tr>
+<td><code>path</code></td>
+<td>La ruta que se ha pedido, para saber qué endpoint ha fallado.</td>
+</tr>
+<tr>
+<td><code>fields</code></td>
+<td>Solo se rellena en errores de validación: qué campo ha fallado y con qué mensajes — puede haber más de uno por campo, si incumple varias reglas a la vez. El segundo constructor, sin <code>fields</code>, la deja vacía para el resto de errores.</td>
+</tr>
+</tbody>
+</table>
+<p>Con esa forma decidida, <code>@RestControllerAdvice</code> es la anotación que la pone en marcha de verdad: marca una clase como punto <strong>transversal</strong>, que intercepta las excepciones de <strong>todos</strong> los controllers de la aplicación, no de uno solo. Dentro, cada método marcado con <code>@ExceptionHandler(TipoDeExcepcion.class)</code> decide qué tipo de excepción atrapa y cómo la convierte en un <code>ErrorResponse</code>.</p>
+<pre class="mermaid"><code>flowchart LR
+    A["Un método del controller&lt;br/&gt;lanza una excepción"] --&gt; B{"@RestControllerAdvice&lt;br/&gt;¿qué tipo de excepción es?"}
+    B --&gt;|MethodArgumentNotValidException| C[handleValidationExceptions]
+    B --&gt;|ResponseStatusException| D[handleResponseStatusException]
+    B --&gt;|PropertyReferenceException| E[handlePropertyReferenceException]
+    B --&gt;|DataIntegrityViolationException| G[handleDataIntegrityViolationException]
+    B --&gt;|"cualquier otra"| H[handleGenericException]
+    C --&gt; F["ErrorResponse uniforme"]
+    D --&gt; F
+    E --&gt; F
+    G --&gt; F
+    H --&gt; F</code></pre>
+<p>Vas a construir la clase con sus cinco handlers uno a uno — cada uno responde a una excepción que ya conoces de algún sitio.</p>
+<h4 id="handler-1-la-validacion-que-acabas-de-ver">Handler 1: la validación que acabas de ver<a class="headerlink" href="#handler-1-la-validacion-que-acabas-de-ver" title="Permanent link">¶</a></h4>
+<p>Es el que atrapa lo que provoca <code>@Valid</code> cuando <code>LibroCreateDTO</code> no cumple alguna de sus anotaciones:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-2-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-2-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-2-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-2-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-2-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-2-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-2-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-2-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-2-10">10</a></span>
+<span class="normal"><a href="#__codelineno-2-11">11</a></span>
+<span class="normal"><a href="#__codelineno-2-12">12</a></span>
+<span class="normal"><a href="#__codelineno-2-13">13</a></span>
+<span class="normal"><a href="#__codelineno-2-14">14</a></span>
+<span class="normal"><a href="#__codelineno-2-15">15</a></span>
+<span class="normal"><a href="#__codelineno-2-16">16</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">MethodArgumentNotValidException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">ErrorResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">handleValidationExceptions</span><span class="p">(</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">        </span><span class="n">MethodArgumentNotValidException</span><span class="w"> </span><span class="n">ex</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">    </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">fields</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ex</span><span class="p">.</span><span class="na">getBindingResult</span><span class="p">().</span><span class="na">getFieldErrors</span><span class="p">().</span><span class="na">stream</span><span class="p">()</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">            </span><span class="p">.</span><span class="na">collect</span><span class="p">(</span><span class="n">Collectors</span><span class="p">.</span><span class="na">groupingBy</span><span class="p">(</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">                    </span><span class="n">FieldError</span><span class="p">::</span><span class="n">getField</span><span class="p">,</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="w">                    </span><span class="n">Collectors</span><span class="p">.</span><span class="na">mapping</span><span class="p">(</span><span class="n">FieldError</span><span class="p">::</span><span class="n">getDefaultMessage</span><span class="p">,</span><span class="w"> </span><span class="n">Collectors</span><span class="p">.</span><span class="na">toList</span><span class="p">())</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="w">            </span><span class="p">));</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10"></a>
+<a id="__codelineno-2-11" name="__codelineno-2-11"></a><span class="w">    </span><span class="n">ErrorResponse</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ErrorResponse</span><span class="p">(</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12"></a><span class="w">            </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">(),</span><span class="w"> </span><span class="mi">400</span><span class="p">,</span><span class="w"> </span><span class="s">"Error de validación"</span><span class="p">,</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13"></a><span class="w">            </span><span class="s">"La petición contiene campos inválidos"</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getRequestURI</span><span class="p">(),</span><span class="w"> </span><span class="n">fields</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14"></a><span class="w">    </span><span class="p">);</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">BAD_REQUEST</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><code>ex.getBindingResult().getFieldErrors()</code> es la lista de campos que han fallado la validación, con el mensaje que tú mismo has escrito en el DTO (<code>message = "..."</code>). <code>Collectors.groupingBy</code> la convierte en un mapa campo → lista de mensajes: si un mismo campo incumple dos anotaciones a la vez —por ejemplo, <code>@NotBlank</code> y <code>@Size</code> sobre el mismo <code>titulo</code>— aparecen los dos mensajes, no solo el primero.</p>
+<h4 id="handler-2-los-errores-que-ya-lanzas-tu-explicitamente">Handler 2: los errores que ya lanzas tú explícitamente<a class="headerlink" href="#handler-2-los-errores-que-ya-lanzas-tu-explicitamente" title="Permanent link">¶</a></h4>
+<p>Este atrapa <code>ResponseStatusException</code>, la misma excepción que usas en el service al escribir <code>orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND, "..."))</code>. El resultado ya te suena: es el mismo <code>404</code> que has visto en el Tema 1 al pedir un <code>id</code> que no existe — solo que ahora pasa por este único punto, en vez de construirse "a mano" en cada sitio donde podría lanzarse.</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-3-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-3-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-3-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-3-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-3-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-3-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-3-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-3-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-3-10">10</a></span>
+<span class="normal"><a href="#__codelineno-3-11">11</a></span>
+<span class="normal"><a href="#__codelineno-3-12">12</a></span>
+<span class="normal"><a href="#__codelineno-3-13">13</a></span>
+<span class="normal"><a href="#__codelineno-3-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">ResponseStatusException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">ErrorResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">handleResponseStatusException</span><span class="p">(</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">        </span><span class="n">ResponseStatusException</span><span class="w"> </span><span class="n">ex</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">statusCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ex</span><span class="p">.</span><span class="na">getStatusCode</span><span class="p">().</span><span class="na">value</span><span class="p">();</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="w">    </span><span class="n">HttpStatus</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">resolve</span><span class="p">(</span><span class="n">statusCode</span><span class="p">);</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7"></a><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">status</span><span class="p">.</span><span class="na">getReasonPhrase</span><span class="p">()</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s">"Error"</span><span class="p">;</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8"></a><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ex</span><span class="p">.</span><span class="na">getReason</span><span class="p">()</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">ex</span><span class="p">.</span><span class="na">getReason</span><span class="p">()</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">error</span><span class="p">;</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9"></a>
+<a id="__codelineno-3-10" name="__codelineno-3-10"></a><span class="w">    </span><span class="n">ErrorResponse</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ErrorResponse</span><span class="p">(</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11"></a><span class="w">            </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">(),</span><span class="w"> </span><span class="n">statusCode</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="p">,</span><span class="w"> </span><span class="n">message</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getRequestURI</span><span class="p">()</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12"></a><span class="w">    </span><span class="p">);</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">ex</span><span class="p">.</span><span class="na">getStatusCode</span><span class="p">()).</span><span class="na">body</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Aquí el código de estado no está fijo, al contrario que en el handler anterior (siempre <code>400</code>): sale de la propia excepción, con <code>ex.getStatusCode()</code>, porque un <code>ResponseStatusException</code> puede llevar cualquier código que tú hayas decidido al lanzarla — no solo <code>404</code>.</p>
+<h4 id="handler-3-un-parametro-que-spring-data-no-sabe-interpretar">Handler 3: un parámetro que Spring Data no sabe interpretar<a class="headerlink" href="#handler-3-un-parametro-que-spring-data-no-sabe-interpretar" title="Permanent link">¶</a></h4>
+<p>El tercero viene motivado por un problema real, no teórico: en Acceso a Datos, Actividad 1.5 (Specifications y paginación), pedir un listado ordenado por un campo que no existe en la entidad —por ejemplo <code>?sort=noExiste,asc</code>— lanza <code>PropertyReferenceException</code> (<code>org.springframework.data.core</code>): Spring Data intenta traducir ese nombre de campo a una propiedad real de tu entidad, y no la encuentra. Sin capturarla, cae en exactamente lo que este apartado lleva rato evitando: una traza de pila filtrada al cliente, con un <code>500</code> que además es el código equivocado — el problema es que el <strong>cliente</strong> ha pedido algo que no existe, no que el servidor haya fallado.</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-4-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-4-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-4-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-4-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-4-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-4-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-4-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-4-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">PropertyReferenceException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">ErrorResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">handlePropertyReferenceException</span><span class="p">(</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="w">        </span><span class="n">PropertyReferenceException</span><span class="w"> </span><span class="n">ex</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4"></a>
+<a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="w">    </span><span class="n">ErrorResponse</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ErrorResponse</span><span class="p">(</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="w">            </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">(),</span><span class="w"> </span><span class="mi">400</span><span class="p">,</span><span class="w"> </span><span class="s">"Parámetro inválido"</span><span class="p">,</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="w">            </span><span class="s">"Uno de los parámetros de la consulta no es válido"</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getRequestURI</span><span class="p">()</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="w">    </span><span class="p">);</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">BAD_REQUEST</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>A diferencia del primer handler, aquí no hay un campo concreto que señalar —la excepción no identifica el parámetro que ha fallado con la misma precisión que <code>FieldError</code>—, así que el mensaje es fijo. Sigue siendo mucho mejor que una traza de pila de servidor.</p>
+<h4 id="handler-4-una-restriccion-que-solo-existe-en-la-base-de-datos">Handler 4: una restricción que solo existe en la base de datos<a class="headerlink" href="#handler-4-una-restriccion-que-solo-existe-en-la-base-de-datos" title="Permanent link">¶</a></h4>
+<p>Bean Validation comprueba lo que puede comprobar sin tocar la base de datos — pero una clave foránea solo existe ahí, y ninguna anotación puede replicarla. Dos ejemplos de tu propio GameVault, con destinos muy distintos:</p>
+<table>
+<thead>
+<tr>
+<th>Operación</th>
+<th>¿Algo lo comprueba antes de llegar a la base de datos?</th>
+<th>Qué pasa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>POST /videojuegos</code> con un <code>estudioId</code> inexistente</td>
+<td>Sí — <code>VideojuegoService.create()</code> hace <code>orElseThrow</code> sobre el <code>Estudio</code></td>
+<td>Nunca llega a la base de datos: se queda en un <code>404</code> controlado (Handler 2)</td>
+</tr>
+<tr>
+<td><code>DELETE /estudios/{id}</code> sobre un <code>Estudio</code> con <code>Videojuego</code>s asociados</td>
+<td>Solo si tu <code>@OneToMany</code> tiene <code>cascade</code>/<code>orphanRemoval</code> — y eso lo resuelve JPA, no una comprobación tuya</td>
+<td>Sin ese <code>cascade</code>, la clave foránea rechaza el borrado de verdad</td>
+</tr>
+</tbody>
+</table>
+<p>El segundo caso es el que vas a provocar tú mismo en la actividad, comentando ese <code>cascade</code> un momento. Es el mismo principio de <strong>defensa en profundidad</strong> que has visto al principio de este apartado: la comprobación explícita (o el <code>cascade</code> automático) es la primera barrera; la clave foránea es la segunda, por si el día de mañana algo se salta la primera. Este handler es lo que convierte esa segunda barrera en una respuesta útil, en vez de un <code>500</code> en blanco.</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-5-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-5-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-5-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-5-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-5-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-5-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-5-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-5-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-5-10">10</a></span>
+<span class="normal"><a href="#__codelineno-5-11">11</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">DataIntegrityViolationException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">ErrorResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">handleDataIntegrityViolationException</span><span class="p">(</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="w">        </span><span class="n">DataIntegrityViolationException</span><span class="w"> </span><span class="n">ex</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4"></a>
+<a id="__codelineno-5-5" name="__codelineno-5-5"></a><span class="w">    </span><span class="n">ErrorResponse</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ErrorResponse</span><span class="p">(</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6"></a><span class="w">            </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">(),</span><span class="w"> </span><span class="mi">409</span><span class="p">,</span><span class="w"> </span><span class="s">"Conflicto de datos"</span><span class="p">,</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7"></a><span class="w">            </span><span class="s">"La operación viola una restricción de la base de datos (una referencia que no existe, un registro del que aún dependen otros, un valor duplicado, etc.)"</span><span class="p">,</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8"></a><span class="w">            </span><span class="n">request</span><span class="p">.</span><span class="na">getRequestURI</span><span class="p">()</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9"></a><span class="w">    </span><span class="p">);</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">CONFLICT</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Aquí cambia también el código de estado: <code>409 Conflict</code>, no <code>400</code>. La diferencia es sutil pero real — un <code>400</code> dice "tu petición está mal construida"; un <code>409</code> dice "tu petición está bien construida, pero choca con el estado actual de los datos" (ese <code>estudioId</code> podría ser válido para <em>otro</em> videojuego, el problema es que ahora mismo no existe). Es el mismo tipo de fallo que provoca una clave foránea que no encaja al insertar directamente en la base de datos, solo que aquí puede ocurrir en caliente, con cualquier petición HTTP normal, no solo al cargar datos a mano.</p>
+<h4 id="handler-5-la-red-de-seguridad-final">Handler 5: la red de seguridad final<a class="headerlink" href="#handler-5-la-red-de-seguridad-final" title="Permanent link">¶</a></h4>
+<p>Los cuatro handlers anteriores cubren tipos concretos de error. Pero cualquier excepción que no sea ninguno de esos —un bug en tu propio código, por ejemplo— no tiene quién la atrape, y cae directamente en el manejo por defecto de Spring: la misma fuga de información que este apartado lleva rato evitando. Un último handler, genérico, cierra ese hueco:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-6-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-6-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-6-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-6-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-6-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-6-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-6-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-6-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-6-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">Exception</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">ErrorResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">handleGenericException</span><span class="p">(</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3"></a><span class="w">        </span><span class="n">Exception</span><span class="w"> </span><span class="n">ex</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4"></a>
+<a id="__codelineno-6-5" name="__codelineno-6-5"></a><span class="w">    </span><span class="n">ErrorResponse</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ErrorResponse</span><span class="p">(</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6"></a><span class="w">            </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">(),</span><span class="w"> </span><span class="mi">500</span><span class="p">,</span><span class="w"> </span><span class="s">"Error interno"</span><span class="p">,</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7"></a><span class="w">            </span><span class="s">"Ha ocurrido un error inesperado"</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getRequestURI</span><span class="p">()</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8"></a><span class="w">    </span><span class="p">);</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">INTERNAL_SERVER_ERROR</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<div class="admonition warning">
+<p class="admonition-title">No devuelvas <code>ex.getMessage()</code> aquí</p>
+<p>Es tentador pasarle al cliente el mensaje real de la excepción, para depurar más rápido — pero ese mensaje puede contener justo lo que este apartado lleva rato evitando: nombres de clases, de tablas, rutas internas. Usa siempre un mensaje fijo como el de arriba. El <code>ex</code> real solo debería acabar en un sitio donde solo tú lo veas (un logger del lado del servidor, algo que queda fuera del alcance de hoy), nunca en el cuerpo de la respuesta.</p>
+</div>
+<h4 id="todo-junto">Todo junto<a class="headerlink" href="#todo-junto" title="Permanent link">¶</a></h4>
+<p>Con los cinco handlers ya explicados por separado, así queda la clase completa:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-7-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-7-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-7-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-7-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-7-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-7-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-7-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-7-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-7-10">10</a></span>
+<span class="normal"><a href="#__codelineno-7-11">11</a></span>
+<span class="normal"><a href="#__codelineno-7-12">12</a></span>
+<span class="normal"><a href="#__codelineno-7-13">13</a></span>
+<span class="normal"><a href="#__codelineno-7-14">14</a></span>
+<span class="normal"><a href="#__codelineno-7-15">15</a></span>
+<span class="normal"><a href="#__codelineno-7-16">16</a></span>
+<span class="normal"><a href="#__codelineno-7-17">17</a></span>
+<span class="normal"><a href="#__codelineno-7-18">18</a></span>
+<span class="normal"><a href="#__codelineno-7-19">19</a></span>
+<span class="normal"><a href="#__codelineno-7-20">20</a></span>
+<span class="normal"><a href="#__codelineno-7-21">21</a></span>
+<span class="normal"><a href="#__codelineno-7-22">22</a></span>
+<span class="normal"><a href="#__codelineno-7-23">23</a></span>
+<span class="normal"><a href="#__codelineno-7-24">24</a></span>
+<span class="normal"><a href="#__codelineno-7-25">25</a></span>
+<span class="normal"><a href="#__codelineno-7-26">26</a></span>
+<span class="normal"><a href="#__codelineno-7-27">27</a></span>
+<span class="normal"><a href="#__codelineno-7-28">28</a></span>
+<span class="normal"><a href="#__codelineno-7-29">29</a></span>
+<span class="normal"><a href="#__codelineno-7-30">30</a></span>
+<span class="normal"><a href="#__codelineno-7-31">31</a></span>
+<span class="normal"><a href="#__codelineno-7-32">32</a></span>
+<span class="normal"><a href="#__codelineno-7-33">33</a></span>
+<span class="normal"><a href="#__codelineno-7-34">34</a></span>
+<span class="normal"><a href="#__codelineno-7-35">35</a></span>
+<span class="normal"><a href="#__codelineno-7-36">36</a></span>
+<span class="normal"><a href="#__codelineno-7-37">37</a></span>
+<span class="normal"><a href="#__codelineno-7-38">38</a></span>
+<span class="normal"><a href="#__codelineno-7-39">39</a></span>
+<span class="normal"><a href="#__codelineno-7-40">40</a></span>
+<span class="normal"><a href="#__codelineno-7-41">41</a></span>
+<span class="normal"><a href="#__codelineno-7-42">42</a></span>
+<span class="normal"><a href="#__codelineno-7-43">43</a></span>
+<span class="normal"><a href="#__codelineno-7-44">44</a></span>
+<span class="normal"><a href="#__codelineno-7-45">45</a></span>
+<span class="normal"><a href="#__codelineno-7-46">46</a></span>
+<span class="normal"><a href="#__codelineno-7-47">47</a></span>
+<span class="normal"><a href="#__codelineno-7-48">48</a></span>
+<span class="normal"><a href="#__codelineno-7-49">49</a></span>
+<span class="normal"><a href="#__codelineno-7-50">50</a></span>
+<span class="normal"><a href="#__codelineno-7-51">51</a></span>
+<span class="normal"><a href="#__codelineno-7-52">52</a></span>
+<span class="normal"><a href="#__codelineno-7-53">53</a></span>
+<span class="normal"><a href="#__codelineno-7-54">54</a></span>
+<span class="normal"><a href="#__codelineno-7-55">55</a></span>
+<span class="normal"><a href="#__codelineno-7-56">56</a></span>
+<span class="normal"><a href="#__codelineno-7-57">57</a></span>
+<span class="normal"><a href="#__codelineno-7-58">58</a></span>
+<span class="normal"><a href="#__codelineno-7-59">59</a></span>
+<span class="normal"><a href="#__codelineno-7-60">60</a></span>
+<span class="normal"><a href="#__codelineno-7-61">61</a></span>
+<span class="normal"><a href="#__codelineno-7-62">62</a></span>
+<span class="normal"><a href="#__codelineno-7-63">63</a></span>
+<span class="normal"><a href="#__codelineno-7-64">64</a></span>
+<span class="normal"><a href="#__codelineno-7-65">65</a></span>
+<span class="normal"><a href="#__codelineno-7-66">66</a></span>
+<span class="normal"><a href="#__codelineno-7-67">67</a></span>
+<span class="normal"><a href="#__codelineno-7-68">68</a></span>
+<span class="normal"><a href="#__codelineno-7-69">69</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="nd">@RestControllerAdvice</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">GlobalExceptionHandler</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3"></a>
+<a id="__codelineno-7-4" name="__codelineno-7-4"></a><span class="w">    </span><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">MethodArgumentNotValidException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">ErrorResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">handleValidationExceptions</span><span class="p">(</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6"></a><span class="w">            </span><span class="n">MethodArgumentNotValidException</span><span class="w"> </span><span class="n">ex</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7"></a>
+<a id="__codelineno-7-8" name="__codelineno-7-8"></a><span class="w">        </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">fields</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ex</span><span class="p">.</span><span class="na">getBindingResult</span><span class="p">().</span><span class="na">getFieldErrors</span><span class="p">().</span><span class="na">stream</span><span class="p">()</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9"></a><span class="w">                </span><span class="p">.</span><span class="na">collect</span><span class="p">(</span><span class="n">Collectors</span><span class="p">.</span><span class="na">groupingBy</span><span class="p">(</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10"></a><span class="w">                        </span><span class="n">FieldError</span><span class="p">::</span><span class="n">getField</span><span class="p">,</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11"></a><span class="w">                        </span><span class="n">Collectors</span><span class="p">.</span><span class="na">mapping</span><span class="p">(</span><span class="n">FieldError</span><span class="p">::</span><span class="n">getDefaultMessage</span><span class="p">,</span><span class="w"> </span><span class="n">Collectors</span><span class="p">.</span><span class="na">toList</span><span class="p">())</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12"></a><span class="w">                </span><span class="p">));</span>
+<a id="__codelineno-7-13" name="__codelineno-7-13"></a>
+<a id="__codelineno-7-14" name="__codelineno-7-14"></a><span class="w">        </span><span class="n">ErrorResponse</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ErrorResponse</span><span class="p">(</span>
+<a id="__codelineno-7-15" name="__codelineno-7-15"></a><span class="w">                </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">(),</span><span class="w"> </span><span class="mi">400</span><span class="p">,</span><span class="w"> </span><span class="s">"Error de validación"</span><span class="p">,</span>
+<a id="__codelineno-7-16" name="__codelineno-7-16"></a><span class="w">                </span><span class="s">"La petición contiene campos inválidos"</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getRequestURI</span><span class="p">(),</span><span class="w"> </span><span class="n">fields</span>
+<a id="__codelineno-7-17" name="__codelineno-7-17"></a><span class="w">        </span><span class="p">);</span>
+<a id="__codelineno-7-18" name="__codelineno-7-18"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">BAD_REQUEST</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
+<a id="__codelineno-7-19" name="__codelineno-7-19"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-7-20" name="__codelineno-7-20"></a>
+<a id="__codelineno-7-21" name="__codelineno-7-21"></a><span class="w">    </span><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">ResponseStatusException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<a id="__codelineno-7-22" name="__codelineno-7-22"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">ErrorResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">handleResponseStatusException</span><span class="p">(</span>
+<a id="__codelineno-7-23" name="__codelineno-7-23"></a><span class="w">            </span><span class="n">ResponseStatusException</span><span class="w"> </span><span class="n">ex</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-24" name="__codelineno-7-24"></a>
+<a id="__codelineno-7-25" name="__codelineno-7-25"></a><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">statusCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ex</span><span class="p">.</span><span class="na">getStatusCode</span><span class="p">().</span><span class="na">value</span><span class="p">();</span>
+<a id="__codelineno-7-26" name="__codelineno-7-26"></a><span class="w">        </span><span class="n">HttpStatus</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">resolve</span><span class="p">(</span><span class="n">statusCode</span><span class="p">);</span>
+<a id="__codelineno-7-27" name="__codelineno-7-27"></a><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">status</span><span class="p">.</span><span class="na">getReasonPhrase</span><span class="p">()</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s">"Error"</span><span class="p">;</span>
+<a id="__codelineno-7-28" name="__codelineno-7-28"></a><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ex</span><span class="p">.</span><span class="na">getReason</span><span class="p">()</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">ex</span><span class="p">.</span><span class="na">getReason</span><span class="p">()</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">error</span><span class="p">;</span>
+<a id="__codelineno-7-29" name="__codelineno-7-29"></a>
+<a id="__codelineno-7-30" name="__codelineno-7-30"></a><span class="w">        </span><span class="n">ErrorResponse</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ErrorResponse</span><span class="p">(</span>
+<a id="__codelineno-7-31" name="__codelineno-7-31"></a><span class="w">                </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">(),</span><span class="w"> </span><span class="n">statusCode</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="p">,</span><span class="w"> </span><span class="n">message</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getRequestURI</span><span class="p">()</span>
+<a id="__codelineno-7-32" name="__codelineno-7-32"></a><span class="w">        </span><span class="p">);</span>
+<a id="__codelineno-7-33" name="__codelineno-7-33"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">ex</span><span class="p">.</span><span class="na">getStatusCode</span><span class="p">()).</span><span class="na">body</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
+<a id="__codelineno-7-34" name="__codelineno-7-34"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-7-35" name="__codelineno-7-35"></a>
+<a id="__codelineno-7-36" name="__codelineno-7-36"></a><span class="w">    </span><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">PropertyReferenceException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<a id="__codelineno-7-37" name="__codelineno-7-37"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">ErrorResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">handlePropertyReferenceException</span><span class="p">(</span>
+<a id="__codelineno-7-38" name="__codelineno-7-38"></a><span class="w">            </span><span class="n">PropertyReferenceException</span><span class="w"> </span><span class="n">ex</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-39" name="__codelineno-7-39"></a>
+<a id="__codelineno-7-40" name="__codelineno-7-40"></a><span class="w">        </span><span class="n">ErrorResponse</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ErrorResponse</span><span class="p">(</span>
+<a id="__codelineno-7-41" name="__codelineno-7-41"></a><span class="w">                </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">(),</span><span class="w"> </span><span class="mi">400</span><span class="p">,</span><span class="w"> </span><span class="s">"Parámetro inválido"</span><span class="p">,</span>
+<a id="__codelineno-7-42" name="__codelineno-7-42"></a><span class="w">                </span><span class="s">"Uno de los parámetros de la consulta no es válido"</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getRequestURI</span><span class="p">()</span>
+<a id="__codelineno-7-43" name="__codelineno-7-43"></a><span class="w">        </span><span class="p">);</span>
+<a id="__codelineno-7-44" name="__codelineno-7-44"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">BAD_REQUEST</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
+<a id="__codelineno-7-45" name="__codelineno-7-45"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-7-46" name="__codelineno-7-46"></a>
+<a id="__codelineno-7-47" name="__codelineno-7-47"></a><span class="w">    </span><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">DataIntegrityViolationException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<a id="__codelineno-7-48" name="__codelineno-7-48"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">ErrorResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">handleDataIntegrityViolationException</span><span class="p">(</span>
+<a id="__codelineno-7-49" name="__codelineno-7-49"></a><span class="w">            </span><span class="n">DataIntegrityViolationException</span><span class="w"> </span><span class="n">ex</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-50" name="__codelineno-7-50"></a>
+<a id="__codelineno-7-51" name="__codelineno-7-51"></a><span class="w">        </span><span class="n">ErrorResponse</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ErrorResponse</span><span class="p">(</span>
+<a id="__codelineno-7-52" name="__codelineno-7-52"></a><span class="w">                </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">(),</span><span class="w"> </span><span class="mi">409</span><span class="p">,</span><span class="w"> </span><span class="s">"Conflicto de datos"</span><span class="p">,</span>
+<a id="__codelineno-7-53" name="__codelineno-7-53"></a><span class="w">                </span><span class="s">"La operación viola una restricción de la base de datos (una referencia que no existe, un registro del que aún dependen otros, un valor duplicado, etc.)"</span><span class="p">,</span>
+<a id="__codelineno-7-54" name="__codelineno-7-54"></a><span class="w">                </span><span class="n">request</span><span class="p">.</span><span class="na">getRequestURI</span><span class="p">()</span>
+<a id="__codelineno-7-55" name="__codelineno-7-55"></a><span class="w">        </span><span class="p">);</span>
+<a id="__codelineno-7-56" name="__codelineno-7-56"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">CONFLICT</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
+<a id="__codelineno-7-57" name="__codelineno-7-57"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-7-58" name="__codelineno-7-58"></a>
+<a id="__codelineno-7-59" name="__codelineno-7-59"></a><span class="w">    </span><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">Exception</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<a id="__codelineno-7-60" name="__codelineno-7-60"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">ErrorResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">handleGenericException</span><span class="p">(</span>
+<a id="__codelineno-7-61" name="__codelineno-7-61"></a><span class="w">            </span><span class="n">Exception</span><span class="w"> </span><span class="n">ex</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-62" name="__codelineno-7-62"></a>
+<a id="__codelineno-7-63" name="__codelineno-7-63"></a><span class="w">        </span><span class="n">ErrorResponse</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ErrorResponse</span><span class="p">(</span>
+<a id="__codelineno-7-64" name="__codelineno-7-64"></a><span class="w">                </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">(),</span><span class="w"> </span><span class="mi">500</span><span class="p">,</span><span class="w"> </span><span class="s">"Error interno"</span><span class="p">,</span>
+<a id="__codelineno-7-65" name="__codelineno-7-65"></a><span class="w">                </span><span class="s">"Ha ocurrido un error inesperado"</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getRequestURI</span><span class="p">()</span>
+<a id="__codelineno-7-66" name="__codelineno-7-66"></a><span class="w">        </span><span class="p">);</span>
+<a id="__codelineno-7-67" name="__codelineno-7-67"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">INTERNAL_SERVER_ERROR</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
+<a id="__codelineno-7-68" name="__codelineno-7-68"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-7-69" name="__codelineno-7-69"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Resumen de los cinco, de un vistazo:</p>
+<table>
+<thead>
+<tr>
+<th>Handler</th>
+<th>Qué atrapa</th>
+<th>Cuándo salta</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>handleValidationExceptions</code></td>
+<td><code>MethodArgumentNotValidException</code></td>
+<td>Un DTO con <code>@Valid</code> no cumple sus anotaciones (<code>@NotBlank</code>, <code>@PositiveOrZero</code>...)</td>
+</tr>
+<tr>
+<td><code>handleResponseStatusException</code></td>
+<td><code>ResponseStatusException</code></td>
+<td>Un <code>orElseThrow(...)</code> lanza un <code>404</code>, u otro código que hayas decidido tú explícitamente</td>
+</tr>
+<tr>
+<td><code>handlePropertyReferenceException</code></td>
+<td><code>PropertyReferenceException</code></td>
+<td>Spring Data recibe un parámetro que no sabe interpretar — por ejemplo, un <code>sort</code> sobre un campo que no existe</td>
+</tr>
+<tr>
+<td><code>handleDataIntegrityViolationException</code></td>
+<td><code>DataIntegrityViolationException</code></td>
+<td>La base de datos rechaza la operación — una clave foránea que no existe, un registro del que aún dependen otros, un valor duplicado, etc.</td>
+</tr>
+<tr>
+<td><code>handleGenericException</code></td>
+<td><code>Exception</code></td>
+<td>Cualquier otra excepción no prevista — la red de seguridad final</td>
+</tr>
+</tbody>
+</table>
 <div class="admonition danger">
 <p class="admonition-title">Lo que este handler evita filtrar</p>
 <p>Sin él, una excepción no controlada puede acabar devolviendo al cliente una traza de pila completa: nombres de clases internas, de tablas, incluso versiones de librerías. Eso es información gratis para un atacante sobre cómo está construido tu sistema por dentro. <code>GlobalExceptionHandler</code> garantiza que, pase lo que pase, el cliente solo ve el mensaje controlado que tú decides — nunca los detalles internos.</p>
 </div>
-<p>Esto conecta con algo que ya conocías: los <code>404</code> de <code>ResponseStatusException</code> que viste en el Tema 1 pasan también por este mismo handler — es la misma política de errores, ahora aplicada de forma uniforme a toda la aplicación.</p>
-<!-- NOTA PARA DESARROLLO FUTURO (no student-facing): al ampliar este apartado,
-     añadir un tercer @ExceptionHandler(InvalidDataAccessApiUsageException.class)
-     que convierta esa excepción en 400 Bad Request. Motivo: en Acceso a Datos,
-     Tema 1, Actividad 1.5 (Specifications + paginación), pedir un campo de
-     `sort` que no existe en la entidad lanza InvalidDataAccessApiUsageException,
-     y sin este handler cae al 500 por defecto de Spring — un error de entrada
-     del cliente disfrazado de fallo del servidor. Ahora mismo (dos handlers:
-     MethodArgumentNotValidException y ResponseStatusException) el proyecto
-     todavía no lo cubre; añadirlo aquí cuando se desarrolle más este apartado. -->
-
 <hr>
 <h2 id="lo-que-viene">🗺️ Lo que viene<a class="headerlink" href="#lo-que-viene" title="Permanent link">¶</a></h2>
 <p>El resto de este tema va a materializar, uno a uno, los principios que has visto hoy: mínima exposición se convierte en rutas cerradas por defecto ("Roles, rutas protegidas y tests de seguridad"), no guardar secretos en el código se convierte en el <code>jwt.secret</code> como propiedad externa ("Autenticación con JWT"), no almacenar contraseñas en claro se convierte en BCrypt ("Usuarios persistidos y BCrypt"). Hoy has visto los principios; en los próximos apartados les pones nombre y apellido en Spring Security.</p>
@@ -2783,6 +3283,7 @@
 <li>Principios clave: validar en la frontera, mínima exposición, no filtrar información en los errores, no guardar secretos en el código, defensa en profundidad.</li>
 <li><code>@Valid</code> + anotaciones de <code>jakarta.validation</code> en los DTOs validan la entrada antes de que llegue a la lógica de negocio.</li>
 <li><code>@RestControllerAdvice</code> + <code>@ExceptionHandler</code> centralizan la conversión de excepciones en respuestas HTTP coherentes, sin filtrar detalles internos.</li>
+<li>Cinco handlers cubren los casos que ya conoces: <code>MethodArgumentNotValidException</code> (validación), <code>ResponseStatusException</code> (404 y similares), <code>PropertyReferenceException</code> (parámetros de consulta que Spring Data no sabe interpretar, como un <code>sort</code> sobre un campo que no existe), <code>DataIntegrityViolationException</code> (restricciones que solo existen en la base de datos, como una clave foránea) y, como red de seguridad final, <code>Exception</code> genérica — todos devuelven un código y un formato coherente en vez del <code>500</code> genérico por defecto, sin filtrar nunca el mensaje real de la excepción al cliente.</li>
 </ul>
 </details></div>
 
