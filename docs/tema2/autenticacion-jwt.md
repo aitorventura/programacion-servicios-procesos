@@ -120,6 +120,8 @@ public class AuthController {
 
 `AuthenticationManager.authenticate(...)` es quien verifica de verdad las credenciales — por debajo, usa el `UserDetailsService` y el `PasswordEncoder` que ya construiste en el apartado anterior. Si las credenciales son correctas, genera el token; si no, lanza una excepción (que `GlobalExceptionHandler`, de "Principios de programación segura", convierte en una respuesta coherente).
 
+<!-- NOTA PARA DESARROLLO FUTURO: Esta frase asume que GlobalExceptionHandler ya sabe convertir el fallo de autenticación en una respuesta coherente, pero ahora mismo (tras la revisión de "Principios de programación segura") NO hay ningún @ExceptionHandler(AuthenticationException.class) — con el handler(Exception.class) genérico añadido en ese apartado, unas credenciales incorrectas caerían en un 500 Internal Server Error, no en un 401 Unauthorized, que es lo correcto semánticamente. Verificado: como authenticationManager.authenticate(...) se llama aquí dentro del propio método de controller (no en un filtro de seguridad), la excepción SÍ pasa por el ciclo normal de MVC y SÍ sería atrapada por un @ExceptionHandler(AuthenticationException.class) si se añade. Cuando se desarrolle este apartado, añadir ese handler (probablemente también captando BadCredentialsException, que extiende AuthenticationException) devolviendo 401, tanto en la teoría de "Principios de programación segura" (como Handler 6, o renumerando) como en actividad_2_1.md, y borrar este comentario. -->
+
 ### El cambio de modo en `SecurityConfig`
 
 ```java

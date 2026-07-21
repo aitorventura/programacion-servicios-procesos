@@ -31,6 +31,9 @@ gamevault:
 !!! warning "Nunca subas un secreto real a un repositorio"
     Este valor es válido solo para desarrollo local. En un proyecto real, el secreto de producción no viaja en ningún fichero versionado en Git — se inyecta como variable de entorno o desde un gestor de secretos.
 
+<!-- NOTA PARA DESARROLLO FUTURO: Este warning se queda en advertencia pasiva, sin mecanismo real. `application-dev.yaml` es un fichero versionado (se crea así desde Acceso a Datos, Actividad 1.1) y AHORA MISMO el jwt.secret vive dentro de él sin protección real, igual que la contraseña de Postgres. A diferencia de la contraseña de Postgres/RabbitMQ (que se queda hardcodeada porque son servicios solo accesibles dentro de la red local del Dev Container — ver justificación en "Principios de programación segura"), el jwt.secret SÍ es un secreto real: si el proyecto se llegara a desplegar, cualquiera que lo vea puede falsificar tokens válidos para cualquier usuario. Cuando se desarrolle esta actividad a fondo, sustituir el warning pasivo por un mecanismo real, por ejemplo: (1) mover `gamevault.jwt.secret` a un fichero separado no versionado (p. ej. `application-dev-local.yaml`, añadido a `.gitignore` — el alumnado ya conoce `.gitignore` y `git rm --cached` de Acceso a Datos, Tema 0), o (2) usar `${JWT_SECRET}` sin valor por defecto en `application-dev.yaml`, forzando a que cada alumno lo defina como variable de entorno local. También revisar y corregir la frase de `autenticacion-jwt.md` ("...siempre en configuración externa (`application-dev.yaml`)") que ahora mismo es engañosa, porque ese fichero SÍ está versionado. Borrar este comentario una vez implementado. -->
+
+
 En tu `SecurityConfig`:
 
 ```java

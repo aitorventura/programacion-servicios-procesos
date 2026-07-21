@@ -100,6 +100,8 @@ Volverás a JSON con más detalle cuando lo necesites de verdad (al construir cu
 Piensa en el mando de una tele: tiene un botón para subir volumen, otro para cambiar de canal, otro para apagar. No necesitas saber nada de electrónica para usarlo — solo conoces los botones disponibles y qué hace cada uno. Una **API** (*Application Programming Interface*) es exactamente eso, pero para programas: el conjunto de operaciones que una aplicación expone para que otros programas la usen, sin que necesiten conocer cómo está construida por dentro. **REST** es un estilo concreto de diseñar esos "botones" sobre HTTP: los datos se modelan como **recursos** (un libro, un usuario, un pedido), cada recurso tiene su propia **URL** — su propio "botón" — y las operaciones sobre ese recurso se expresan con los verbos HTTP que ya has visto (`GET` para leerlo, `POST` para crearlo...).
 
 !!! example "Una API de librería, como ejemplo de patrón"
+    Como ya has visto en Acceso a Datos, es el mismo dominio que usa toda la teoría del curso; tu proyecto real, GameVault, lo trabajas en las actividades.
+
     | Operación | Verbo + ruta |
     |---|---|
     | Listar todos los libros | `GET /libros` |
