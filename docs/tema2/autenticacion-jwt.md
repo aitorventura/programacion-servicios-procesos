@@ -118,7 +118,7 @@ public class AuthController {
 }
 ```
 
-`AuthenticationManager.authenticate(...)` es quien verifica de verdad las credenciales — por debajo, usa el `UserDetailsService` y el `PasswordEncoder` que ya construiste en el apartado anterior. Si las credenciales son correctas, genera el token; si no, lanza una excepción (que `GlobalExceptionHandler`, de "Principios de programación segura", convierte en una respuesta coherente).
+`AuthenticationManager.authenticate(...)` es quien verifica de verdad las credenciales — por debajo, usa el `UserDetailsService` y el `PasswordEncoder` que ya construiste en el apartado anterior. Si las credenciales son correctas, genera el token; si no, lanza una excepción (que tu `GlobalExceptionHandler`, del primer apartado del tema, convierte en una respuesta coherente).
 
 <!-- NOTA PARA DESARROLLO FUTURO: Esta frase asume que GlobalExceptionHandler ya sabe convertir el fallo de autenticación en una respuesta coherente, pero ahora mismo (tras la revisión de "Principios de programación segura") NO hay ningún @ExceptionHandler(AuthenticationException.class) — con el handler(Exception.class) genérico añadido en ese apartado, unas credenciales incorrectas caerían en un 500 Internal Server Error, no en un 401 Unauthorized, que es lo correcto semánticamente. Verificado: como authenticationManager.authenticate(...) se llama aquí dentro del propio método de controller (no en un filtro de seguridad), la excepción SÍ pasa por el ciclo normal de MVC y SÍ sería atrapada por un @ExceptionHandler(AuthenticationException.class) si se añade. Cuando se desarrolle este apartado, añadir ese handler (probablemente también captando BadCredentialsException, que extiende AuthenticationException) devolviendo 401, tanto en la teoría de "Principios de programación segura" (como Handler 6, o renumerando) como en actividad_2_1.md, y borrar este comentario. -->
 
@@ -134,9 +134,9 @@ public class AuthController {
 .httpBasic(AbstractHttpConfigurer::disable)
 ```
 
-`SessionCreationPolicy.STATELESS` es la consecuencia directa de usar tokens autocontenidos: con JWT no hace falta que el servidor guarde ninguna sesión, así que se lo dices explícitamente a Spring Security. `oauth2ResourceServer(oauth2 -> oauth2.jwt(...))` activa la validación de JWT en cada petición protegida — Spring verifica la firma automáticamente, usando el `JwtDecoder` configurado con el mismo secreto. `httpBasic(AbstractHttpConfigurer::disable)` retira oficialmente el mecanismo provisional de los apartados anteriores ("Seguridad básica" y "Usuarios persistidos y BCrypt"): JWT es ahora el único mecanismo de autenticación.
+`SessionCreationPolicy.STATELESS` es la consecuencia directa de usar tokens autocontenidos: con JWT no hace falta que el servidor guarde ninguna sesión, así que se lo dices explícitamente a Spring Security. `oauth2ResourceServer(oauth2 -> oauth2.jwt(...))` activa la validación de JWT en cada petición protegida — Spring verifica la firma automáticamente, usando el `JwtDecoder` configurado con el mismo secreto. `httpBasic(AbstractHttpConfigurer::disable)` retira oficialmente el mecanismo provisional de los apartados anteriores: JWT es ahora el único mecanismo de autenticación.
 
-Sobre el secreto (`@Value("${libreria.jwt.secret}")`): sigue el mismo principio que viste en "Principios de programación segura" — nunca en el código, siempre en configuración externa (`application-dev.yaml`), para que en un entorno real ese valor pueda ser distinto y no viaje en el propio código fuente.
+Sobre el secreto (`@Value("${libreria.jwt.secret}")`): sigue el mismo principio que viste en el primer apartado del tema — nunca en el código, siempre en configuración externa (`application-dev.yaml`), para que en un entorno real ese valor pueda ser distinto y no viaje en el propio código fuente.
 
 ### `GET /api/v1/auth/me`
 

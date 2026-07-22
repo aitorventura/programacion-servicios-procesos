@@ -35,7 +35,7 @@ El bloque `authorizeHttpRequests` de tu `SecurityConfig.java` define **toda** la
 )
 ```
 
-La línea más importante de todo el bloque es la última: **`anyRequest().denyAll()`**. Cualquier ruta que no aparezca explícitamente en las reglas anteriores queda **cerrada por defecto** — es el principio de mínima exposición de "Principios de programación segura", llevado hasta el final: nada se abre "por accidente" simplemente por existir.
+La línea más importante de todo el bloque es la última: **`anyRequest().denyAll()`**. Cualquier ruta que no aparezca explícitamente en las reglas anteriores queda **cerrada por defecto** — es el principio de mínima exposición del primer apartado del tema, llevado hasta el final: nada se abre "por accidente" simplemente por existir.
 
 !!! warning "Cada ruta nueva necesita su propia regla, o queda bloqueada"
     Si has ido añadiendo rutas propias durante el curso (el `PUT`/`DELETE` del Tema 1, el ranking de Acceso a Datos...) y no tienen una regla explícita en este bloque, `denyAll()` las bloqueará — aunque el endpoint en sí funcione perfectamente. Este es un error típico y real: "he probado mi endpoint nuevo y me da 403/401 sin motivo aparente" casi siempre significa "se me ha olvidado añadir su regla aquí".
@@ -52,6 +52,8 @@ Dos códigos que se confunden con frecuencia, pero responden a preguntas distint
 | `403 Forbidden` | Sabemos quién eres, pero no puedes hacer esto (no autorizado) | Token válido, pero rol insuficiente para esa regla concreta. |
 
 Con la tabla de arriba: un `POST /api/v1/libros` sin token da `401`; el mismo `POST` con el token de un usuario `USER` (no `ADMIN`) da `403`.
+
+<!-- NOTA PARA DESARROLLO FUTURO: Este 403 tiene el mismo problema de formato que ya se resolvió para el 401 en "Seguridad básica: usuarios en memoria y HTTP Basic" (Actividad 2.2, AuthenticationEntryPoint a medida que reutiliza ErrorResponse). El 403 lo genera Spring Security por su cuenta (vía AccessDeniedHandler por defecto), fuera de GlobalExceptionHandler, por la misma razón: es un filtro/pieza de seguridad, no pasa por el DispatcherServlet ni por @RestControllerAdvice. Cuando se desarrolle este apartado a fondo, añadir una explicación teórica de AccessDeniedHandler (mismo patrón que AuthenticationEntryPoint, pero para peticiones YA autenticadas sin el rol necesario) y su implementación correspondiente en la actividad emparejada, registrándolo en exceptionHandling(...).accessDeniedHandler(...) del SecurityConfig. Borrar este comentario cuando se implemente. -->
 
 ---
 

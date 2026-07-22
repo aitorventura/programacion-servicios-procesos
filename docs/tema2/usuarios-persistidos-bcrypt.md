@@ -2,6 +2,12 @@
 
 # 🧩 3. Usuarios persistidos y BCrypt
 
+## 📍 De dónde partimos
+
+Al terminar el apartado anterior, tu API ya distinguía autenticación de autorización, pero con dos piezas deliberadamente provisionales: los usuarios `user` y `admin` declarados a mano en un `InMemoryUserDetailsManager`, con la contraseña en texto plano (el prefijo `{noop}`); y HTTP Basic, mandando esas credenciales en cada petición, solo codificadas en Base64, no cifradas.
+
+Esa versión dejaba dos problemas señalados a propósito. Hoy resuelves el primero: los usuarios vivían en el propio código Java —visibles para cualquiera con acceso al repositorio, y se perdían cada vez que reiniciabas la aplicación—; a partir de ahora viven en PostgreSQL, con la contraseña protegida de verdad. El segundo problema —las credenciales viajando en cada petición— sigue abierto; lo resuelve JWT, más adelante en el tema.
+
 !!! tip "Esto sí es ya el estado final"
     A diferencia del apartado anterior (usuarios en memoria, un paso intermedio), lo que construyes hoy es la solución definitiva: usuarios reales en PostgreSQL, con la contraseña protegida por BCrypt.
 
