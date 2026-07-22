@@ -1,5 +1,8 @@
 # 🧪 Actividad 2.4: Login con JWT
 
+!!! warning "Descarga la plantilla"
+    📄 [Plantilla 2.4 — Login con JWT](plantillas/Actividad_2_4_PSP_Plantilla.docx){target="_blank" rel="noopener"}
+
 !!! info "Práctica guiada"
     Hoy sustituyes HTTP Basic por JWT: login una vez, token en las peticiones siguientes. Es el mecanismo de autenticación final de tu GameVault.
 
@@ -19,19 +22,36 @@ Tus usuarios reales en PostgreSQL con BCrypt (Actividad 2.3).
 
 ## Paso 1 — El secreto y los beans JWT
 
-En `application-dev.yaml`:
+Ya tienes preparado, desde la Actividad 2.3, `application-dev-local.yml` (fuera de Git) y su plantilla `application-dev-local.yml.example`. Añade el secreto ahí, no en `application-dev.yml`:
+
+```yaml
+# application-dev-local.yml (NO se sube a Git)
+gamevault:
+  admin:
+    password: admin123
+  jwt:
+    secret: un-secreto-largo-y-aleatorio-tuyo-para-desarrollo
+```
+
+```yaml
+# application-dev-local.yml.example (SÍ se sube a Git — sin valores reales)
+gamevault:
+  admin:
+    password: pon-aqui-tu-propia-contraseña
+  jwt:
+    secret: pon-aqui-tu-propio-secreto
+```
+
+En `application-dev.yml` (este sí se sube a Git) solo va lo que no es sensible:
 
 ```yaml
 gamevault:
   jwt:
-    secret: "un-secreto-de-desarrollo-que-no-subiras-a-produccion"
     expiration-minutes: 60
 ```
 
 !!! warning "Nunca subas un secreto real a un repositorio"
-    Este valor es válido solo para desarrollo local. En un proyecto real, el secreto de producción no viaja en ningún fichero versionado en Git — se inyecta como variable de entorno o desde un gestor de secretos.
-
-<!-- NOTA PARA DESARROLLO FUTURO: Este warning se queda en advertencia pasiva, sin mecanismo real. `application-dev.yaml` es un fichero versionado (se crea así desde Acceso a Datos, Actividad 1.1) y AHORA MISMO el jwt.secret vive dentro de él sin protección real, igual que la contraseña de Postgres. A diferencia de la contraseña de Postgres/RabbitMQ (que se queda hardcodeada porque son servicios solo accesibles dentro de la red local del Dev Container — ver justificación en "Principios de programación segura"), el jwt.secret SÍ es un secreto real: si el proyecto se llegara a desplegar, cualquiera que lo vea puede falsificar tokens válidos para cualquier usuario. Cuando se desarrolle esta actividad a fondo, sustituir el warning pasivo por un mecanismo real, por ejemplo: (1) mover `gamevault.jwt.secret` a un fichero separado no versionado (p. ej. `application-dev-local.yaml`, añadido a `.gitignore` — el alumnado ya conoce `.gitignore` y `git rm --cached` de Acceso a Datos, Tema 0), o (2) usar `${JWT_SECRET}` sin valor por defecto en `application-dev.yaml`, forzando a que cada alumno lo defina como variable de entorno local. También revisar y corregir la frase de `autenticacion-jwt.md` ("...siempre en configuración externa (`application-dev.yaml`)") que ahora mismo es engañosa, porque ese fichero SÍ está versionado. Borrar este comentario una vez implementado. -->
+    Un secreto de JWT filtrado permite falsificar tokens válidos para cualquier usuario — es un riesgo real, no una formalidad. Por eso vive en `application-dev-local.yml`, no en `application-dev.yml`: el mismo mecanismo que ya usaste para la contraseña del `admin` en la Actividad 2.3.
 
 
 En tu `SecurityConfig`:
@@ -57,7 +77,7 @@ public AuthenticationManager authenticationManager(AuthenticationConfiguration c
 }
 ```
 
-`JwtEncoder` firma tokens nuevos; `JwtDecoder` verifica los que llegan en cada petición — ambos usan el mismo secreto compartido. El `AuthenticationManager` es el bean que de verdad comprueba usuario/contraseña contra tu `GamevaultUserDetailsService`.
+`JwtEncoder` firma tokens nuevos; `JwtDecoder` verifica los que llegan en cada petición — ambos usan el mismo secreto compartido. El `AuthenticationManager` es el bean que de verdad comprueba usuario/contraseña contra tu `BdUserDetailsService`.
 
 ---
 
@@ -119,19 +139,41 @@ Cada claim tiene un porqué: `subject` es quién eres (lo que devolvió el login
 ## Paso 3 — El endpoint de login
 
 ```java
-public record LoginRequestDTO(@NotBlank String username, @NotBlank String password) {}
+package com.tunombre.gamevault.seguridad;
+
+public record LoginRequestDTO(
+        @NotBlank(message = "El nombre de usuario no puede estar vacío") String username,
+        @NotBlank(message = "La contraseña no puede estar vacía") String password
+) {}
 public record LoginResponseDTO(String accessToken, String tokenType, long expiresInSeconds) {}
 ```
 
+Tu `AuthController` ya existe desde la Actividad 2.3, con el endpoint `/register`. Añádele el login, con las dos dependencias nuevas:
+
 ```java
+package com.tunombre.gamevault.seguridad;
+
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
+    @PostMapping("/register")
+    public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequestDTO dto) {
+        // el mismo método de la Actividad 2.3, sin cambios
+    }
+
+    @Operation(summary = "Autenticarse y obtener un token JWT")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Login correcto, token generado"),
+            @ApiResponse(responseCode = "400", description = "El cuerpo de la petición no supera las validaciones"),
+            @ApiResponse(responseCode = "401", description = "Usuario o contraseña incorrectos")
+    })
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO dto) {
         Authentication authentication = authenticationManager.authenticate(
@@ -149,6 +191,8 @@ public class AuthController {
 .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
 ```
 
+(la regla de `/api/v1/auth/register` ya la tenías de la Actividad 2.3 — no hace falta tocarla).
+
 ---
 
 ## Paso 4 — El cambio de modo completo
@@ -161,7 +205,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
     return http
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/v1/auth/register", "/api/v1/auth/login").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/videojuegos/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/v1/videojuegos").hasRole("ADMIN")
                     .anyRequest().authenticated()
@@ -209,13 +253,17 @@ curl -i http://localhost:8080/api/v1/videojuegos
 
 **Comprueba**: `200` con el token, y compara con el resultado sin él sobre una ruta protegida (si tienes alguna que exija autenticación siempre, pruébala en vez de `GET /videojuegos`, que es pública).
 
+**Captura**: la respuesta del login (con el `accessToken`), y las dos peticiones siguientes, con y sin token, una junto a la otra.
+
 Decodifica el payload de tu propio token (cópialo, pégalo en [jwt.io](https://jwt.io) o decodifica la segunda parte con `base64 -d`) y **anota** los claims que ves.
+
+**Captura**: el payload ya decodificado, con los claims a la vista.
 
 ---
 
 ## Mini-reto — `GET /api/v1/auth/me`
 
-Añade un endpoint sencillo que devuelva quién eres según tu token actual:
+Añade un endpoint sencillo que devuelva quién eres según tu token actual, documentado con `@Operation`/`@ApiResponses` igual que el resto de tu API:
 
 ```java
 @GetMapping("/me")
@@ -226,6 +274,8 @@ public ResponseEntity<Map<String, Object>> me() {
 ```
 
 Pruébalo con tu token del Paso 5 y comprueba que la información coincide con lo que decodificaste a mano.
+
+**Captura**: la respuesta de `GET /api/v1/auth/me`.
 
 ---
 

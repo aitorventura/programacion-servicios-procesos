@@ -12,7 +12,7 @@ El bloque `authorizeHttpRequests` de tu `SecurityConfig.java` define **toda** la
 
 | Ruta | Verbo | Quién puede |
 |---|---|---|
-| `/api/v1/auth/login` | POST | Cualquiera |
+| `/api/v1/auth/register`, `/api/v1/auth/login` | POST | Cualquiera |
 | `/api/v1/libros`, `/api/v1/editoriales` | GET | Cualquiera |
 | `/api/v1/libros/*/resenas` | POST | `USER` o `ADMIN` |
 | `/api/v1/libros`, `/api/v1/editoriales` | POST/PUT/DELETE | Solo `ADMIN` |
@@ -21,7 +21,7 @@ El bloque `authorizeHttpRequests` de tu `SecurityConfig.java` define **toda** la
 
 ```java
 .authorizeHttpRequests(auth -> auth
-        .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+        .requestMatchers(HttpMethod.POST, "/api/v1/auth/register", "/api/v1/auth/login").permitAll()
         .requestMatchers(HttpMethod.GET, "/api/v1/libros", "/api/v1/libros/**").permitAll()
         .requestMatchers(HttpMethod.GET, "/api/v1/editoriales", "/api/v1/editoriales/**").permitAll()
         .requestMatchers(HttpMethod.POST, "/api/v1/libros/*/resenas").hasAnyRole("USER", "ADMIN")

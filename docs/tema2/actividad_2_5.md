@@ -23,7 +23,7 @@ Esta es la tabla objetivo — incluye tanto las rutas del catálogo base como la
 
 | Ruta | Verbo | Quién puede |
 |---|---|---|
-| `/api/v1/auth/login` | POST | Cualquiera |
+| `/api/v1/auth/register`, `/api/v1/auth/login` | POST | Cualquiera |
 | `/api/v1/videojuegos`, `/api/v1/estudios` (y sus `/{id}`) | GET | Cualquiera |
 | `/api/v1/videojuegos` | POST/PUT/DELETE | Solo `ADMIN` |
 | `/api/v1/estudios` | POST | Solo `ADMIN` |
@@ -42,7 +42,7 @@ Ahora completa tu `SecurityConfig` regla a regla, siguiendo la tabla ya decidida
 
 ```java
 .authorizeHttpRequests(auth -> auth
-        .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+        .requestMatchers(HttpMethod.POST, "/api/v1/auth/register", "/api/v1/auth/login").permitAll()
         .requestMatchers(HttpMethod.GET, "/api/v1/videojuegos/**").permitAll()
         .requestMatchers(HttpMethod.GET, "/api/v1/estudios/**").permitAll()
         .requestMatchers(HttpMethod.POST, "/api/v1/videojuegos").hasRole("ADMIN")

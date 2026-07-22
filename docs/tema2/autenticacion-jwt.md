@@ -98,15 +98,30 @@ Los **claims** son los datos que viajan dentro del token: `subject` (quién eres
 
 ### El endpoint de login
 
+`AuthController` ya existe desde el apartado anterior, con el endpoint de registro. Hoy le añades el login, con dos dependencias nuevas:
+
 ```java
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
+    @PostMapping("/register")
+    public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequestDTO dto) {
+        // el mismo método del apartado anterior, sin cambios
+    }
+
+    @Operation(summary = "Autenticarse y obtener un token JWT")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Login correcto, token generado"),
+            @ApiResponse(responseCode = "400", description = "El cuerpo de la petición no supera las validaciones"),
+            @ApiResponse(responseCode = "401", description = "Usuario o contraseña incorrectos")
+    })
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO dto) {
         Authentication authentication = authenticationManager.authenticate(
@@ -127,7 +142,7 @@ public class AuthController {
 ```java
 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 .authorizeHttpRequests(auth -> auth
-        .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+        .requestMatchers(HttpMethod.POST, "/api/v1/auth/register", "/api/v1/auth/login").permitAll()
         .anyRequest().authenticated()
 )
 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
@@ -136,7 +151,7 @@ public class AuthController {
 
 `SessionCreationPolicy.STATELESS` es la consecuencia directa de usar tokens autocontenidos: con JWT no hace falta que el servidor guarde ninguna sesión, así que se lo dices explícitamente a Spring Security. `oauth2ResourceServer(oauth2 -> oauth2.jwt(...))` activa la validación de JWT en cada petición protegida — Spring verifica la firma automáticamente, usando el `JwtDecoder` configurado con el mismo secreto. `httpBasic(AbstractHttpConfigurer::disable)` retira oficialmente el mecanismo provisional de los apartados anteriores: JWT es ahora el único mecanismo de autenticación.
 
-Sobre el secreto (`@Value("${libreria.jwt.secret}")`): sigue el mismo principio que viste en el primer apartado del tema — nunca en el código, siempre en configuración externa (`application-dev.yaml`), para que en un entorno real ese valor pueda ser distinto y no viaje en el propio código fuente.
+Sobre el secreto (`@Value("${libreria.jwt.secret}")`): nunca en el código, y ni siquiera en tu fichero de configuración habitual si ese fichero se sube a Git — vale el mismo mecanismo que ya usaste para la contraseña del primer `ADMIN`, en el apartado anterior: un fichero de propiedades aparte, excluido de control de versiones, con una plantilla sin valores reales que sí se comparte.
 
 ### `GET /api/v1/auth/me`
 
