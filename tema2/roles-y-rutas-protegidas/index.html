@@ -2632,7 +2632,7 @@
 <a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="w">        </span><span class="p">.</span><span class="na">anyRequest</span><span class="p">().</span><span class="na">denyAll</span><span class="p">()</span>
 <a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-<p>La línea más importante de todo el bloque es la última: <strong><code>anyRequest().denyAll()</code></strong>. Cualquier ruta que no aparezca explícitamente en las reglas anteriores queda <strong>cerrada por defecto</strong> — es el principio de mínima exposición de "Principios de programación segura", llevado hasta el final: nada se abre "por accidente" simplemente por existir.</p>
+<p>La línea más importante de todo el bloque es la última: <strong><code>anyRequest().denyAll()</code></strong>. Cualquier ruta que no aparezca explícitamente en las reglas anteriores queda <strong>cerrada por defecto</strong> — es el principio de mínima exposición del primer apartado del tema, llevado hasta el final: nada se abre "por accidente" simplemente por existir.</p>
 <div class="admonition warning">
 <p class="admonition-title">Cada ruta nueva necesita su propia regla, o queda bloqueada</p>
 <p>Si has ido añadiendo rutas propias durante el curso (el <code>PUT</code>/<code>DELETE</code> del Tema 1, el ranking de Acceso a Datos...) y no tienen una regla explícita en este bloque, <code>denyAll()</code> las bloqueará — aunque el endpoint en sí funcione perfectamente. Este es un error típico y real: "he probado mi endpoint nuevo y me da 403/401 sin motivo aparente" casi siempre significa "se me ha olvidado añadir su regla aquí".</p>
@@ -2662,6 +2662,8 @@
 </tbody>
 </table>
 <p>Con la tabla de arriba: un <code>POST /api/v1/libros</code> sin token da <code>401</code>; el mismo <code>POST</code> con el token de un usuario <code>USER</code> (no <code>ADMIN</code>) da <code>403</code>.</p>
+<!-- NOTA PARA DESARROLLO FUTURO: Este 403 tiene el mismo problema de formato que ya se resolvió para el 401 en "Seguridad básica: usuarios en memoria y HTTP Basic" (Actividad 2.2, AuthenticationEntryPoint a medida que reutiliza ErrorResponse). El 403 lo genera Spring Security por su cuenta (vía AccessDeniedHandler por defecto), fuera de GlobalExceptionHandler, por la misma razón: es un filtro/pieza de seguridad, no pasa por el DispatcherServlet ni por @RestControllerAdvice. Cuando se desarrolle este apartado a fondo, añadir una explicación teórica de AccessDeniedHandler (mismo patrón que AuthenticationEntryPoint, pero para peticiones YA autenticadas sin el rol necesario) y su implementación correspondiente en la actividad emparejada, registrándolo en exceptionHandling(...).accessDeniedHandler(...) del SecurityConfig. Borrar este comentario cuando se implemente. -->
+
 <hr>
 <h2 id="tests-de-seguridad-con-mockmvc">🧪 Tests de seguridad con MockMvc<a class="headerlink" href="#tests-de-seguridad-con-mockmvc" title="Permanent link">¶</a></h2>
 <p>Ya sabes construir tests MockMvc desde el Tema 1. Probar seguridad añade un matiz: necesitas un token real para las peticiones autenticadas. El patrón habitual es hacer un <strong>login real</strong> dentro del propio test, y reutilizar el token obtenido:</p>

@@ -1311,6 +1311,48 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#donde-encaja-spring-security-en-una-peticion" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚦 Dónde encaja Spring Security en una petición
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚦 Dónde encaja Spring Security en una petición">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-cuando-todo-va-bien" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Cuando todo va bien
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-sin-ninguna-cabecera-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Sin ninguna cabecera Authorization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-credenciales-incorrectas" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Credenciales incorrectas
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#autenticacion-vs-autorizacion" class="md-nav__link">
     <span class="md-ellipsis">
       🎭 Autenticación vs. autorización
@@ -1332,6 +1374,15 @@
   <a href="#usuarios-en-memoria-y-una-primera-politica-de-rutas" class="md-nav__link">
     <span class="md-ellipsis">
       🧑‍🤝‍🧑 Usuarios en memoria y una primera política de rutas
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cerrando-la-grieta-authenticationentrypoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      🩹 Cerrando la grieta: AuthenticationEntryPoint
     </span>
   </a>
   
@@ -2517,6 +2568,48 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#donde-encaja-spring-security-en-una-peticion" class="md-nav__link">
+    <span class="md-ellipsis">
+      🚦 Dónde encaja Spring Security en una petición
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚦 Dónde encaja Spring Security en una petición">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-cuando-todo-va-bien" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Cuando todo va bien
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-sin-ninguna-cabecera-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Sin ninguna cabecera Authorization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-credenciales-incorrectas" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Credenciales incorrectas
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#autenticacion-vs-autorizacion" class="md-nav__link">
     <span class="md-ellipsis">
       🎭 Autenticación vs. autorización
@@ -2538,6 +2631,15 @@
   <a href="#usuarios-en-memoria-y-una-primera-politica-de-rutas" class="md-nav__link">
     <span class="md-ellipsis">
       🧑‍🤝‍🧑 Usuarios en memoria y una primera política de rutas
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cerrando-la-grieta-authenticationentrypoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      🩹 Cerrando la grieta: AuthenticationEntryPoint
     </span>
   </a>
   
@@ -2580,12 +2682,73 @@
 <div><p><a id="seguridad-basica-http-basic"></a></p>
 <h1 id="2-seguridad-basica-usuarios-en-memoria-y-http-basic">🧩 2. Seguridad básica: usuarios en memoria y HTTP Basic<a class="headerlink" href="#2-seguridad-basica-usuarios-en-memoria-y-http-basic" title="Permanent link">¶</a></h1>
 <div class="admonition tip">
-<p class="admonition-title">Vas a construir un estado intermedio, no el final</p>
-<p>El <code>SecurityConfig.java</code> que tendrás al final del módulo usará autenticación con JWT, con HTTP Basic desactivado. Este apartado construye el paso <strong>intermedio</strong> por el que se pasa para llegar ahí — usuarios en memoria y HTTP Basic — y los próximos dos apartados lo van sustituyendo. Recorrer el camino completo (Basic → BCrypt → JWT) es deliberado: cada paso resuelve un problema concreto del anterior, y entenderlo así vale más que llegar directo al resultado final.</p>
+<p class="admonition-title">¿Por qué empezar por algo que vas a sustituir?</p>
+<p>Lo que ves en este apartado —usuarios en memoria y HTTP Basic— no es la versión final: dentro de dos apartados no quedará ni rastro de ninguna de las dos piezas. Puede parecer que se pierde tiempo construyendo algo que se va a borrar, pero es al revés: los problemas concretos de esta versión (los vas a ver explícitamente más abajo) son justo los que motivan lo que viene después. Si empezaras directamente por la versión final —contraseñas cifradas, autenticación con token— tendrías un código que funciona, pero no sabrías responder a "¿por qué hace falta cifrar la contraseña?" o "¿por qué no basta con mandar usuario y contraseña en cada petición?": esas respuestas solo se entienden habiendo visto antes la versión sin esa pieza, y el problema real que causa. El camino completo es: usuarios en memoria y HTTP Basic (aquí), contraseñas cifradas con BCrypt en base de datos (próximo apartado), autenticación con JWT (dos apartados más adelante) — cada paso resuelve un problema concreto del anterior.</p>
 </div>
 <hr>
 <h2 id="lo-primero-que-hace-spring-security-cerrarlo-todo">🔒 Lo primero que hace Spring Security: cerrarlo todo<a class="headerlink" href="#lo-primero-que-hace-spring-security-cerrarlo-todo" title="Permanent link">¶</a></h2>
-<p>En cuanto añades <code>spring-boot-starter-security</code> a un proyecto, sin configurar nada más, <strong>toda</strong> tu API deja de responder libremente — cada petición exige autenticarse. Es el principio de "mínima exposición" que viste el apartado anterior, llevado al extremo por defecto: Spring Security asume que, si no le dices explícitamente qué dejar abierto, todo debe estar cerrado.</p>
+<p><strong>Spring Security</strong> es el framework de seguridad del propio ecosistema Spring: una librería que se encarga de comprobar quién hace cada petición y qué tiene permiso para hacer, en vez de que tengas que escribir ese código a mano en cada controller. Se instala como una dependencia más de Maven, igual que <code>spring-boot-starter-webmvc</code> o <code>spring-boot-starter-data-jpa</code> — pero con una diferencia importante frente a esas otras: en cuanto está en el proyecto, empieza a actuar sola, con un comportamiento por defecto muy estricto, sin que hayas escrito ni una línea de configuración propia todavía.</p>
+<p>Hasta ahora, la API de la librería respondía a cualquiera que le preguntara. Imagina que, sobre ese proyecto, añadieras la dependencia <code>spring-boot-starter-security</code> al <code>pom.xml</code> y reiniciaras, sin tocar nada más — y repitieras la misma petición de siempre:</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a>curl<span class="w"> </span>-i<span class="w"> </span>http://localhost:8080/api/v1/libros
+</code></pre></div></td></tr></table></div>
+<p>Antes de esa dependencia, esta petición daba un <code>200</code> con el catálogo. Con Spring Security ya en el proyecto, la respuesta pasa a ser un <code>401 Unauthorized</code>, sin cuerpo útil, y con una cabecera nueva: <code>WWW-Authenticate: Basic realm="Realm"</code>. <strong>Toda</strong> la API deja de responder libremente de golpe — cada petición exige autenticarse, incluida la que hace un momento era pública. Es el principio de "mínima exposición" que has visto en el apartado anterior, llevado al extremo por defecto: Spring Security asume que, si no se le dice explícitamente qué dejar abierto, todo debe estar cerrado.</p>
+<p>Eso lo consigue insertando un <strong>filtro</strong> delante de todos los controllers — un filtro, en Spring, es una pieza que intercepta la petición HTTP antes de que llegue al código de la aplicación, la inspecciona (o la modifica), y decide si la deja continuar o la corta ahí mismo. Spring Security no añade uno, sino una cadena entera de ellos (la <em>filter chain</em>), y el primero que se encuentra cualquier petición es uno que, por defecto, exige credenciales válidas antes de dejarla pasar.</p>
+<hr>
+<h2 id="donde-encaja-spring-security-en-una-peticion">🚦 Dónde encaja Spring Security en una petición<a class="headerlink" href="#donde-encaja-spring-security-en-una-peticion" title="Permanent link">¶</a></h2>
+<p>Antes de tocar código, conviene ver el mapa completo: por dónde pasa una petición desde que sale del cliente hasta que llega al <code>Controller</code>, y qué pieza decide, en cada paso, si la deja continuar. Mejor verlo en tres pasos, de menos a más complicado, que de golpe.</p>
+<h3 id="1-cuando-todo-va-bien">1. Cuando todo va bien<a class="headerlink" href="#1-cuando-todo-va-bien" title="Permanent link">¶</a></h3>
+<pre class="mermaid"><code>sequenceDiagram
+    participant Cliente
+    participant Filtro as Filtro de seguridad&lt;br/&gt;(BasicAuthenticationFilter)
+    participant AuthManager as AuthenticationManager
+    participant UserDetails as UserDetailsService
+    participant Dispatcher as DispatcherServlet
+    participant Controller
+
+    Cliente-&gt;&gt;Filtro: GET /libros&lt;br/&gt;Authorization: Basic ...
+    Filtro-&gt;&gt;Filtro: Decodifica Base64 → user / user123
+    Filtro-&gt;&gt;AuthManager: ¿Son válidas estas credenciales?
+    AuthManager-&gt;&gt;UserDetails: Busca al usuario "user"
+    UserDetails--&gt;&gt;AuthManager: Sus datos (contraseña, roles)
+    AuthManager--&gt;&gt;Filtro: Sí, autenticado
+    Filtro-&gt;&gt;Dispatcher: Deja pasar la petición
+    Dispatcher-&gt;&gt;Controller: getAll()
+    Controller--&gt;&gt;Cliente: 200 OK</code></pre>
+<p>El filtro intercepta la petición y decodifica la cabecera; el <code>AuthenticationManager</code> coordina la comprobación; el <code>UserDetailsService</code> es quien de verdad sabe si ese usuario existe y con qué contraseña y roles. Si todo eso sale bien, la petición llega al <code>DispatcherServlet</code> — la pieza de Spring MVC que recibe <strong>todas</strong> las peticiones de tu aplicación, sin excepción, y decide a qué método de qué controller mandar cada una, mirando la URL y el verbo HTTP contra las anotaciones <code>@GetMapping</code>/<code>@PostMapping</code> que ya conoces. Es el mismo mecanismo que llevas usando desde tu primer <code>@RestController</code>, solo que hasta ahora nunca lo habías visto actuar de forma explícita, porque siempre acertaba sin que hicieras nada especial. Con Spring Security delante, el <code>DispatcherServlet</code> sigue haciendo exactamente lo mismo que siempre — lo único que cambia es que, antes de llegar hasta él, la petición ahora tiene que pasar primero el control del filtro.</p>
+<h3 id="2-sin-ninguna-cabecera-authorization">2. Sin ninguna cabecera <code>Authorization</code><a class="headerlink" href="#2-sin-ninguna-cabecera-authorization" title="Permanent link">¶</a></h3>
+<p>El fallo más simple: la petición no trae credenciales de ningún tipo.</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant Cliente
+    participant Filtro as Filtro de seguridad&lt;br/&gt;(BasicAuthenticationFilter)
+    participant Dispatcher as DispatcherServlet
+    participant Controller
+
+    Cliente-&gt;&gt;Filtro: GET /libros&lt;br/&gt;(sin cabecera Authorization)
+    Filtro--&gt;&gt;Cliente: 401 Unauthorized&lt;br/&gt;(ni siquiera intenta autenticar)</code></pre>
+<p>Fíjate en quién falta en este diagrama: ni <code>AuthenticationManager</code> ni <code>UserDetailsService</code> llegan a aparecer. Sin nada que comprobar, el filtro ni se molesta en preguntar — corta directamente, antes de que la petición se acerque siquiera al <code>DispatcherServlet</code>.</p>
+<h3 id="3-credenciales-incorrectas">3. Credenciales incorrectas<a class="headerlink" href="#3-credenciales-incorrectas" title="Permanent link">¶</a></h3>
+<p>El caso menos evidente: la petición sí trae una cabecera <code>Authorization</code>, con forma correcta, pero el usuario no existe o la contraseña no coincide.</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant Cliente
+    participant Filtro as Filtro de seguridad&lt;br/&gt;(BasicAuthenticationFilter)
+    participant AuthManager as AuthenticationManager
+    participant UserDetails as UserDetailsService
+    participant Dispatcher as DispatcherServlet
+    participant Controller
+
+    Cliente-&gt;&gt;Filtro: GET /libros&lt;br/&gt;Authorization: Basic ...
+    Filtro-&gt;&gt;Filtro: Decodifica Base64 → user / contraseñaMala
+    Filtro-&gt;&gt;AuthManager: ¿Son válidas estas credenciales?
+    AuthManager-&gt;&gt;UserDetails: Busca al usuario "user"
+    UserDetails--&gt;&gt;AuthManager: Sus datos (contraseña, roles)
+    AuthManager--&gt;&gt;Filtro: No, la contraseña no coincide
+    Filtro--&gt;&gt;Cliente: 401 Unauthorized&lt;br/&gt;(nunca llega a Dispatcher ni a Controller)</code></pre>
+<p>Este es casi idéntico al del punto 1 hasta el penúltimo paso — el filtro sí pregunta, <code>AuthenticationManager</code> sí consulta al <code>UserDetailsService</code>, todo el circuito se recorre igual — y solo al final cambia la respuesta. El resultado es el mismo <code>401</code> que en el punto 2, pero el camino para llegar hasta ahí es bastante más largo.</p>
+<p>En los tres casos, algo no cambia nunca: el filtro de seguridad actúa <strong>antes</strong> que el <code>DispatcherServlet</code>. Cuando falla —le falten credenciales o le sobren credenciales equivocadas—, la petición nunca llega a pisar tu <code>Controller</code>, ni ningún otro código de la aplicación, y el <code>401</code> lo construye Spring Security por su cuenta.</p>
+<div class="admonition note">
+<p class="admonition-title">Queda pendiente un tercer tipo de fallo: el <code>403</code></p>
+<p>Los tres diagramas de arriba son todos sobre <strong>autenticación</strong> (¿quién eres?): o se resuelve, o no. Pero hay un cuarto caso que no aparece aquí: credenciales perfectamente válidas, de un usuario real, que simplemente no tiene permiso para <em>esa</em> ruta en concreto — eso ya no es autenticación, es <strong>autorización</strong>, y da un <code>403 Forbidden</code>, no un <code>401</code>. Ese caso lo trabajarás a fondo más adelante en el tema, con su propia comparación <code>401</code> vs <code>403</code>.</p>
+</div>
 <hr>
 <h2 id="autenticacion-vs-autorizacion">🎭 Autenticación vs. autorización<a class="headerlink" href="#autenticacion-vs-autorizacion" title="Permanent link">¶</a></h2>
 <p>Dos preguntas distintas, que conviene no confundir:</p>
@@ -2611,86 +2774,231 @@
 </tbody>
 </table>
 <p>Puedes estar autenticado (Spring Security sabe quién eres) y aun así no autorizado para una acción concreta (no tienes el rol necesario). Son dos capas distintas, y las vas a ver aplicadas por separado.</p>
+<p>Piensa en la tarjeta de acceso de un edificio de oficinas: en la entrada, un lector comprueba que la tarjeta es tuya y está activa — eso es autenticación, y pasa una sola vez, al entrar. Pero esa misma tarjeta puede abrirte la puerta de tu planta y no la del laboratorio del piso de arriba — eso es autorización, y se comprueba cada vez que intentas abrir una puerta concreta, no solo al entrar al edificio. Spring Security separa las dos cosas igual: <code>httpBasic(...)</code> resuelve la autenticación (la petición trae credenciales válidas); <code>authorizeHttpRequests(...)</code>, que ves un poco más abajo, resuelve la autorización (esas credenciales, en concreto, tienen permiso para <em>esta</em> ruta).</p>
 <hr>
 <h2 id="http-basic-como-viaja-usuario-y-contrasena">📦 HTTP Basic: cómo viaja usuario y contraseña<a class="headerlink" href="#http-basic-como-viaja-usuario-y-contrasena" title="Permanent link">¶</a></h2>
-<p><strong>HTTP Basic</strong> es el mecanismo de autenticación más simple de HTTP: el cliente manda usuario y contraseña en una cabecera <code>Authorization</code>, codificados en <strong>Base64</strong>:</p>
-<div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a>Authorization: Basic dXNlcjp1c2VyMTIz
+<p><strong>HTTP Basic</strong> es el mecanismo de autenticación más simple de HTTP: el cliente manda usuario y contraseña en una cabecera <code>Authorization</code>, codificados en <strong>Base64</strong> — un sistema que convierte cualquier secuencia de bytes en texto imprimible, para que quepa sin problemas dentro de una cabecera HTTP. La construcción es mecánica, sin ningún secreto de por medio:</p>
+<div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a>"user:user123"  →  codificar en Base64  →  "dXNlcjp1c2VyMTIz"
+</code></pre></div></td></tr></table></div>
+<p>Usuario y contraseña, separados por <code>:</code>, codificados de un tirón. Así queda la cabecera completa:</p>
+<div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a>Authorization: Basic dXNlcjp1c2VyMTIz
 </code></pre></div></td></tr></table></div>
 <div class="admonition danger">
 <p class="admonition-title">Base64 NO es cifrado</p>
-<p>Decodifica tú mismo esa cabecera: <code>echo "dXNlcjp1c2VyMTIz" | base64 -d</code> — obtienes <code>user:user123</code>, en texto legible. Base64 es solo una <strong>codificación</strong> (una forma de representar bytes como texto), no una forma de ocultar información: cualquiera que intercepte esa cabecera lee la contraseña directamente. HTTP Basic solo es aceptable sobre una conexión cifrada con HTTPS — sin eso, la contraseña viaja prácticamente en claro en cada petición.</p>
+<p>Si decodificaras esa cabecera —<code>echo "dXNlcjp1c2VyMTIz" | base64 -d</code>— obtendrías <code>user:user123</code>, en texto legible. Base64 es solo una <strong>codificación</strong> (una forma de representar bytes como texto), no una forma de ocultar información: cualquiera que intercepte esa cabecera lee la contraseña directamente. HTTP Basic solo es aceptable sobre una conexión cifrada con HTTPS — sin eso, la contraseña viaja prácticamente en claro en cada petición.</p>
 </div>
 <hr>
 <h2 id="usuarios-en-memoria-y-una-primera-politica-de-rutas">🧑‍🤝‍🧑 Usuarios en memoria y una primera política de rutas<a class="headerlink" href="#usuarios-en-memoria-y-una-primera-politica-de-rutas" title="Permanent link">¶</a></h2>
-<p>Para empezar, sin base de datos todavía de por medio, Spring Security permite declarar usuarios directamente en código con <code>InMemoryUserDetailsManager</code>:</p>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-1-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-1-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-1-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-1-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-1-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-1-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-1-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-1-10">10</a></span>
-<span class="normal"><a href="#__codelineno-1-11">11</a></span>
-<span class="normal"><a href="#__codelineno-1-12">12</a></span>
-<span class="normal"><a href="#__codelineno-1-13">13</a></span>
-<span class="normal"><a href="#__codelineno-1-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nd">@Bean</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">UserDetailsService</span><span class="w"> </span><span class="nf">userDetailsService</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">    </span><span class="n">UserDetails</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">User</span><span class="p">.</span><span class="na">withUsername</span><span class="p">(</span><span class="s">"user"</span><span class="p">)</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">            </span><span class="p">.</span><span class="na">password</span><span class="p">(</span><span class="s">"{noop}user123"</span><span class="p">)</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="w">            </span><span class="p">.</span><span class="na">roles</span><span class="p">(</span><span class="s">"USER"</span><span class="p">)</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7"></a>
-<a id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="w">    </span><span class="n">UserDetails</span><span class="w"> </span><span class="n">admin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">User</span><span class="p">.</span><span class="na">withUsername</span><span class="p">(</span><span class="s">"admin"</span><span class="p">)</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="w">            </span><span class="p">.</span><span class="na">password</span><span class="p">(</span><span class="s">"{noop}admin123"</span><span class="p">)</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10"></a><span class="w">            </span><span class="p">.</span><span class="na">roles</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11"></a><span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12"></a>
-<a id="__codelineno-1-13" name="__codelineno-1-13"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">InMemoryUserDetailsManager</span><span class="p">(</span><span class="n">user</span><span class="p">,</span><span class="w"> </span><span class="n">admin</span><span class="p">);</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14"></a><span class="p">}</span>
+<p>Para empezar, sin base de datos todavía de por medio, Spring Security permite declarar usuarios directamente en código con <code>InMemoryUserDetailsManager</code> — es la pieza que en el diagrama de antes aparecía como <code>UserDetailsService</code>: quien responde cuando el <code>AuthenticationManager</code> pregunta "¿quién es el usuario <code>user</code>, y con qué contraseña y roles?".</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-3-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-3-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-3-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-3-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-3-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-3-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-3-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-3-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-3-10">10</a></span>
+<span class="normal"><a href="#__codelineno-3-11">11</a></span>
+<span class="normal"><a href="#__codelineno-3-12">12</a></span>
+<span class="normal"><a href="#__codelineno-3-13">13</a></span>
+<span class="normal"><a href="#__codelineno-3-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nd">@Bean</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">UserDetailsService</span><span class="w"> </span><span class="nf">userDetailsService</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">    </span><span class="n">UserDetails</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">User</span><span class="p">.</span><span class="na">withUsername</span><span class="p">(</span><span class="s">"user"</span><span class="p">)</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="w">            </span><span class="p">.</span><span class="na">password</span><span class="p">(</span><span class="s">"{noop}user123"</span><span class="p">)</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="w">            </span><span class="p">.</span><span class="na">roles</span><span class="p">(</span><span class="s">"USER"</span><span class="p">)</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7"></a>
+<a id="__codelineno-3-8" name="__codelineno-3-8"></a><span class="w">    </span><span class="n">UserDetails</span><span class="w"> </span><span class="n">admin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">User</span><span class="p">.</span><span class="na">withUsername</span><span class="p">(</span><span class="s">"admin"</span><span class="p">)</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9"></a><span class="w">            </span><span class="p">.</span><span class="na">password</span><span class="p">(</span><span class="s">"{noop}admin123"</span><span class="p">)</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10"></a><span class="w">            </span><span class="p">.</span><span class="na">roles</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11"></a><span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12"></a>
+<a id="__codelineno-3-13" name="__codelineno-3-13"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">InMemoryUserDetailsManager</span><span class="p">(</span><span class="n">user</span><span class="p">,</span><span class="w"> </span><span class="n">admin</span><span class="p">);</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>El prefijo <code>{noop}</code> le dice a Spring Security "esta contraseña no está cifrada, compárala tal cual" — una simplificación deliberada para este paso intermedio (en el próximo apartado la sustituyes por contraseñas de verdad protegidas con BCrypt).</p>
+<div class="admonition tip">
+<p class="admonition-title"><code>.roles("USER")</code> no es literalmente el rol</p>
+<p>Por debajo, Spring Security le añade el prefijo <code>ROLE_</code>: el rol real que queda registrado es <code>ROLE_USER</code>, no <code>USER</code>. No tienes que escribir ese prefijo tú mismo —<code>.roles("USER")</code> ya se encarga de añadirlo—, pero si más adelante lo comparas a mano en algún sitio (o ves <code>ROLE_USER</code> en un log o en un test), ya sabes de dónde sale.</p>
+</div>
 <p>Y una primera política de acceso, con <code>authorizeHttpRequests</code>:</p>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-2-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-2-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-2-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-2-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-2-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-2-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-2-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-2-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-2-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nd">@Bean</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">SecurityFilterChain</span><span class="w"> </span><span class="nf">securityFilterChain</span><span class="p">(</span><span class="n">HttpSecurity</span><span class="w"> </span><span class="n">http</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">http</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">            </span><span class="p">.</span><span class="na">authorizeHttpRequests</span><span class="p">(</span><span class="n">auth</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">auth</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">                    </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/libros/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">                    </span><span class="p">.</span><span class="na">anyRequest</span><span class="p">().</span><span class="na">authenticated</span><span class="p">()</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">            </span><span class="p">)</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="w">            </span><span class="p">.</span><span class="na">httpBasic</span><span class="p">(</span><span class="n">Customizer</span><span class="p">.</span><span class="na">withDefaults</span><span class="p">())</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="p">}</span>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-4-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-4-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-4-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-4-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-4-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-4-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-4-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-4-10">10</a></span>
+<span class="normal"><a href="#__codelineno-4-11">11</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="nd">@Bean</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">SecurityFilterChain</span><span class="w"> </span><span class="nf">securityFilterChain</span><span class="p">(</span><span class="n">HttpSecurity</span><span class="w"> </span><span class="n">http</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">http</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="w">            </span><span class="p">.</span><span class="na">authorizeHttpRequests</span><span class="p">(</span><span class="n">auth</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">auth</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="w">                    </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/libros/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="w">                    </span><span class="p">.</span><span class="na">anyRequest</span><span class="p">().</span><span class="na">authenticated</span><span class="p">()</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="w">            </span><span class="p">)</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="w">            </span><span class="p">.</span><span class="na">csrf</span><span class="p">(</span><span class="n">AbstractHttpConfigurer</span><span class="p">::</span><span class="n">disable</span><span class="p">)</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="w">            </span><span class="p">.</span><span class="na">httpBasic</span><span class="p">(</span><span class="n">Customizer</span><span class="p">.</span><span class="na">withDefaults</span><span class="p">())</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p>Esta es una versión simplificada — lectura del catálogo pública, todo lo demás exige estar autenticado — de la matriz de rutas completa que construirás en "Roles, rutas protegidas y tests de seguridad". Los roles <code>ADMIN</code> y <code>USER</code> que acabas de usar son los mismos que vas a formalizar más adelante como un enum <code>RolUsuario</code> — solo esos dos valores, sin más complicación.</p>
+<p>Léela como una lista de reglas, de arriba abajo:</p>
+<table>
+<thead>
+<tr>
+<th>Pieza</th>
+<th>Qué significa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.requestMatchers(HttpMethod.GET, "/api/v1/libros/**")</code></td>
+<td>Esta regla se aplica solo a peticiones <code>GET</code> bajo <code>/api/v1/libros/</code> (el <code>**</code> cubre cualquier cosa después, incluidos sub-recursos).</td>
+</tr>
+<tr>
+<td><code>.permitAll()</code></td>
+<td>Esa regla concreta no exige ninguna autenticación — pasan hasta las peticiones anónimas.</td>
+</tr>
+<tr>
+<td><code>.anyRequest()</code></td>
+<td>La regla "para todo lo demás" — solo se aplica a lo que ninguna regla anterior haya capturado ya.</td>
+</tr>
+<tr>
+<td><code>.authenticated()</code></td>
+<td>Exige estar autenticado (con cualquier usuario válido, sin mirar el rol todavía).</td>
+</tr>
+<tr>
+<td><code>.csrf(AbstractHttpConfigurer::disable)</code></td>
+<td>Desactiva la protección CSRF (ver aviso justo debajo).</td>
+</tr>
+<tr>
+<td><code>.httpBasic(Customizer.withDefaults())</code></td>
+<td>Activa HTTP Basic como mecanismo de autenticación — es lo que registra el <code>BasicAuthenticationFilter</code> del diagrama de antes en la cadena de filtros.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">El orden importa: gana la primera regla que encaje</p>
+<p>Spring Security evalúa las reglas de <code>authorizeHttpRequests</code> de arriba abajo, y aplica la <strong>primera</strong> que encaje con la petición — no la más específica, la primera en el código. Si pusieras <code>.anyRequest().authenticated()</code> antes que la regla de <code>/api/v1/libros/**</code>, esa segunda regla nunca llegaría a aplicarse: <code>anyRequest()</code> ya lo captura todo. Por eso las reglas más concretas (una ruta exacta) van siempre antes que las más generales (<code>anyRequest()</code>), nunca al revés.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Por qué hace falta <code>.csrf(AbstractHttpConfigurer::disable)</code></p>
+<p>Sin esta línea, cualquier <code>POST</code>/<code>PUT</code>/<code>DELETE</code> te va a devolver un <code>401</code> desconcertante <strong>aunque mandes las credenciales correctas</strong> — incluso antes de que Spring Security llegue a comprobarlas. CSRF (<em>Cross-Site Request Forgery</em>) es una protección pensada para aplicaciones que autentican con cookies de sesión automáticas del navegador: evita que una web maliciosa aproveche que ya estás logueado en otra pestaña para enviar peticiones en tu nombre sin que te enteres. Como Spring Security crea sesión por defecto, esa protección está activa aunque tu API no la necesite —te autenticas con una cabecera <code>Authorization</code> explícita en cada petición, no con una cookie que el navegador manda solo—, y el filtro de CSRF actúa <em>antes</em> que el filtro de HTTP Basic en la cadena, así que corta la petición sin haber llegado siquiera a mirar tus credenciales. Desactivarlo es lo normal en una API REST como esta.</p>
+</div>
+<p>Esta es una versión simplificada — lectura del catálogo pública, todo lo demás exige estar autenticado — de la matriz de rutas completa que construirás más adelante en el tema. Los roles <code>ADMIN</code> y <code>USER</code> que acabas de usar son los mismos que vas a formalizar más adelante como un enum <code>RolUsuario</code> — solo esos dos valores, sin más complicación.</p>
+<hr>
+<h2 id="cerrando-la-grieta-authenticationentrypoint">🩹 Cerrando la grieta: <code>AuthenticationEntryPoint</code><a class="headerlink" href="#cerrando-la-grieta-authenticationentrypoint" title="Permanent link">¶</a></h2>
+<p>Prueba a pedir una ruta protegida sin credenciales y mira el cuerpo del <code>401</code> que recibes: no tiene el formato de tu <code>ErrorResponse</code> (<code>timestamp</code>, <code>status</code>, <code>error</code>, <code>message</code>, <code>path</code>) — es la respuesta por defecto de Spring Security. La razón es la misma que separaba, en el apartado anterior, las excepciones que sí atrapa tu <code>@RestControllerAdvice</code> de las que no: este <code>401</code> lo genera un filtro de seguridad, <strong>antes</strong> de que la petición llegue al <code>DispatcherServlet</code> — tu <code>GlobalExceptionHandler</code> nunca llega a intervenir. Un séptimo <code>@ExceptionHandler</code> no serviría de nada: ese código nunca se ejecuta para este caso, porque la petición no llega tan lejos.</p>
+<p>Spring Security tiene su propia pieza para el mismo trabajo, con otro nombre: un <strong><code>AuthenticationEntryPoint</code></strong>. Es una interfaz con un único método, <code>commence(...)</code>, que Spring Security llama exactamente cuando una petición no autenticada intenta entrar en una ruta protegida — el mismo momento en el que, sin esta pieza, se genera la respuesta por defecto que acabas de ver.</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-5-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-5-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-5-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-5-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-5-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-5-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-5-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-5-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-5-10">10</a></span>
+<span class="normal"><a href="#__codelineno-5-11">11</a></span>
+<span class="normal"><a href="#__codelineno-5-12">12</a></span>
+<span class="normal"><a href="#__codelineno-5-13">13</a></span>
+<span class="normal"><a href="#__codelineno-5-14">14</a></span>
+<span class="normal"><a href="#__codelineno-5-15">15</a></span>
+<span class="normal"><a href="#__codelineno-5-16">16</a></span>
+<span class="normal"><a href="#__codelineno-5-17">17</a></span>
+<span class="normal"><a href="#__codelineno-5-18">18</a></span>
+<span class="normal"><a href="#__codelineno-5-19">19</a></span>
+<span class="normal"><a href="#__codelineno-5-20">20</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="nd">@Component</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ErrorResponseAuthenticationEntryPoint</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">AuthenticationEntryPoint</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3"></a>
+<a id="__codelineno-5-4" name="__codelineno-5-4"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ObjectMapper</span><span class="w"> </span><span class="n">objectMapper</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ObjectMapper</span><span class="p">();</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5"></a>
+<a id="__codelineno-5-6" name="__codelineno-5-6"></a><span class="w">    </span><span class="nd">@Override</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">commence</span><span class="p">(</span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletResponse</span><span class="w"> </span><span class="n">response</span><span class="p">,</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8"></a><span class="w">                          </span><span class="n">AuthenticationException</span><span class="w"> </span><span class="n">authException</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9"></a>
+<a id="__codelineno-5-10" name="__codelineno-5-10"></a><span class="w">        </span><span class="n">ErrorResponse</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ErrorResponse</span><span class="p">(</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11"></a><span class="w">                </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">(),</span><span class="w"> </span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">UNAUTHORIZED</span><span class="p">.</span><span class="na">value</span><span class="p">(),</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12"></a><span class="w">                </span><span class="s">"No autenticado"</span><span class="p">,</span><span class="w"> </span><span class="s">"Se requieren credenciales válidas para acceder a este recurso"</span><span class="p">,</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13"></a><span class="w">                </span><span class="n">request</span><span class="p">.</span><span class="na">getRequestURI</span><span class="p">()</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14"></a><span class="w">        </span><span class="p">);</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15"></a>
+<a id="__codelineno-5-16" name="__codelineno-5-16"></a><span class="w">        </span><span class="n">response</span><span class="p">.</span><span class="na">setStatus</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">UNAUTHORIZED</span><span class="p">.</span><span class="na">value</span><span class="p">());</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17"></a><span class="w">        </span><span class="n">response</span><span class="p">.</span><span class="na">setContentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON_VALUE</span><span class="p">);</span>
+<a id="__codelineno-5-18" name="__codelineno-5-18"></a><span class="w">        </span><span class="n">response</span><span class="p">.</span><span class="na">getWriter</span><span class="p">().</span><span class="na">write</span><span class="p">(</span><span class="n">objectMapper</span><span class="p">.</span><span class="na">writeValueAsString</span><span class="p">(</span><span class="n">error</span><span class="p">));</span>
+<a id="__codelineno-5-19" name="__codelineno-5-19"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-5-20" name="__codelineno-5-20"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<div class="admonition tip">
+<p class="admonition-title">No hace falta memorizar esto</p>
+<p>Esta clase es prácticamente idéntica en cualquier proyecto Spring Security que quiera dar errores coherentes — cambia poco más que el mensaje del <code>ErrorResponse</code>. No merece la pena memorizar la sintaxis exacta de <code>commence(...)</code> ni los detalles de <code>HttpServletResponse</code>; lo que importa es entender <strong>qué hace y por qué hace falta</strong>: que Spring Security tiene su propio punto de entrada para este caso, fuera del circuito normal de tu <code>GlobalExceptionHandler</code>. El código, cuando lo necesites, se copia y se adapta — es la misma idea en todos los proyectos.</p>
+</div>
+<p>Fíjate en la diferencia con un <code>@ExceptionHandler</code> normal: ahí devuelves un <code>ResponseEntity&lt;ErrorResponse&gt;</code> y Spring MVC se encarga solo de convertirlo a JSON. Aquí no hay ningún <code>ResponseEntity</code> — trabajas directamente sobre <code>HttpServletResponse</code>, la clase de bajo nivel que representa la respuesta HTTP en crudo, porque <code>commence(...)</code> se ejecuta <strong>antes</strong> de que exista ningún mecanismo de Spring MVC que convierta objetos a JSON por ti. Por eso el método construye su propio <code>ObjectMapper</code> (la misma clase de Jackson que usa Spring MVC por debajo) y llama a <code>writeValueAsString(...)</code> a mano.</p>
+<p>Falta un último paso: decirle a Spring Security que use esta pieza en vez de la suya por defecto. Se registra en el mismo <code>securityFilterChain</code> que has visto un poco más arriba, añadiendo un bloque nuevo:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-6-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-6-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-6-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-6-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-6-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-6-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-6-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-6-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-6-10">10</a></span>
+<span class="normal"><a href="#__codelineno-6-11">11</a></span>
+<span class="normal"><a href="#__codelineno-6-12">12</a></span>
+<span class="normal"><a href="#__codelineno-6-13">13</a></span>
+<span class="normal"><a href="#__codelineno-6-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="nd">@Bean</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">SecurityFilterChain</span><span class="w"> </span><span class="nf">securityFilterChain</span><span class="p">(</span><span class="n">HttpSecurity</span><span class="w"> </span><span class="n">http</span><span class="p">,</span><span class="w"> </span><span class="n">AuthenticationEntryPoint</span><span class="w"> </span><span class="n">customAuthenticationEntryPoint</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">http</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4"></a><span class="w">            </span><span class="p">.</span><span class="na">authorizeHttpRequests</span><span class="p">(</span><span class="n">auth</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">auth</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5"></a><span class="w">                    </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/libros/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6"></a><span class="w">                    </span><span class="p">.</span><span class="na">anyRequest</span><span class="p">().</span><span class="na">authenticated</span><span class="p">()</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7"></a><span class="w">            </span><span class="p">)</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8"></a><span class="w">            </span><span class="p">.</span><span class="na">exceptionHandling</span><span class="p">(</span><span class="n">exceptions</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">exceptions</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9"></a><span class="w">                    </span><span class="p">.</span><span class="na">authenticationEntryPoint</span><span class="p">(</span><span class="n">customAuthenticationEntryPoint</span><span class="p">)</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10"></a><span class="w">            </span><span class="p">)</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11"></a><span class="w">            </span><span class="p">.</span><span class="na">csrf</span><span class="p">(</span><span class="n">AbstractHttpConfigurer</span><span class="p">::</span><span class="n">disable</span><span class="p">)</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12"></a><span class="w">            </span><span class="p">.</span><span class="na">httpBasic</span><span class="p">(</span><span class="n">Customizer</span><span class="p">.</span><span class="na">withDefaults</span><span class="p">())</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13"></a><span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Fíjate en que <code>.httpBasic(Customizer.withDefaults())</code> no cambia — sigue activando HTTP Basic exactamente igual que antes. La pieza nueva vive en <code>.exceptionHandling(...)</code>, un bloque <strong>independiente de qué mecanismo de autenticación esté activo</strong>: le dice a Spring Security "cuando falle cualquier autenticación, consulta primero aquí, antes de aplicar tu respuesta por defecto" — sin importar si el fallo viene de HTTP Basic, de JWT, o de cualquier otro mecanismo que uses en el futuro. El propio <code>AuthenticationEntryPoint</code> que has anotado con <code>@Component</code> se inyecta solo, como parámetro del método, sin que tengas que instanciarlo tú.</p>
+<div class="admonition tip">
+<p class="admonition-title">Por qué no va dentro de <code>.httpBasic(...)</code></p>
+<p>Podrías registrarlo como <code>.httpBasic(basic -&gt; basic.authenticationEntryPoint(...))</code>, y también funcionaría — pero quedaría atado a HTTP Basic. Dentro de dos apartados sustituyes <code>.httpBasic(...)</code> por la configuración de JWT, y esa línea desaparecería con él, rompiendo la conexión. Puesto en <code>.exceptionHandling(...)</code>, en cambio, sobrevive al cambio sin tocar nada: es el mismo bloque, pase lo que pase con el mecanismo de autenticación que tengas encima.</p>
+</div>
+<p>Con esto, el <code>401</code> de HTTP Basic pasa a tener el mismo formato que cualquier otro error de tu API — aunque, técnicamente, nunca llegue a pasar por tu <code>GlobalExceptionHandler</code>. Vas a construir esta pieza tú mismo en la Actividad 2.2.</p>
+<div class="admonition note">
+<p class="admonition-title">El <code>403</code> tiene la misma grieta, y queda pendiente</p>
+<p>Todo lo de aquí es sobre <strong>autenticación</strong> — el <code>401</code>. La <strong>autorización</strong> (un usuario autenticado, pero sin el rol necesario) genera un <code>403</code> con el mismo problema de fondo, por la misma razón: lo construye Spring Security por su cuenta, fuera de tu <code>GlobalExceptionHandler</code>. La pieza equivalente se llama <code>AccessDeniedHandler</code>, y se registra en este mismo <code>.exceptionHandling(...)</code>, con <code>.accessDeniedHandler(...)</code> junto a <code>.authenticationEntryPoint(...)</code>. La trabajarás más adelante en el tema.</p>
+</div>
 <hr>
 <h2 id="las-limitaciones-de-esta-version-a-proposito">⚠️ Las limitaciones de esta versión — a propósito<a class="headerlink" href="#las-limitaciones-de-esta-version-a-proposito" title="Permanent link">¶</a></h2>
 <p>Esta configuración tiene dos problemas serios, y son intencionados: sirven de motivación para lo que viene.</p>
 <ol>
-<li><strong>Usuarios hardcodeados</strong>: viven en el propio código Java, se pierden cada vez que reinicias la aplicación, y cualquiera con acceso al código ve las contraseñas. El próximo apartado los mueve a PostgreSQL, con contraseñas protegidas por BCrypt.</li>
-<li><strong>Credenciales que viajan en cada petición</strong>: con HTTP Basic, cada única petición vuelve a mandar usuario y contraseña, apenas ofuscados en Base64. Dos apartados más adelante ("Autenticación con JWT") sustituye esto por JWT: te autenticas una vez, y presentas un token en las peticiones siguientes.</li>
+<li><strong>Usuarios hardcodeados</strong>: vivirían en el propio código Java, se perderían cada vez que se reiniciara la aplicación, y cualquiera con acceso al código vería las contraseñas. El próximo apartado los mueve a PostgreSQL, con contraseñas protegidas por BCrypt.</li>
+<li><strong>Credenciales que viajan en cada petición</strong>: con HTTP Basic, cada única petición volvería a mandar usuario y contraseña, apenas ofuscados en Base64. Más adelante en el tema esto se sustituye por JWT: te autenticas una vez, y presentas un token en las peticiones siguientes.</li>
 </ol>
 <hr>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
 <details class="tip">
 <summary>Abrir resumen</summary>
 <ul>
-<li>Spring Security, nada más añadirse, cierra <strong>todo</strong> por defecto — mínima exposición llevada al extremo.</li>
-<li><strong>Autenticación</strong> (¿quién eres?) y <strong>autorización</strong> (¿puedes hacer esto?) son capas distintas.</li>
-<li><strong>HTTP Basic</strong> manda usuario:contraseña en Base64 en la cabecera <code>Authorization</code> — Base64 no es cifrado, así que Basic solo es seguro sobre HTTPS.</li>
-<li><code>InMemoryUserDetailsManager</code> declara usuarios directamente en código — útil para empezar, pero se pierden al reiniciar.</li>
-<li>Esta configuración es un estado <strong>intermedio</strong> deliberado: "Usuarios persistidos y BCrypt" resuelve los usuarios hardcodeados (BCrypt + PostgreSQL), "Autenticación con JWT" resuelve las credenciales viajando en cada petición (JWT).</li>
+<li>Spring Security, nada más añadirse, cierra <strong>todo</strong> por defecto — mínima exposición llevada al extremo — insertando un filtro que examina cada petición antes de que llegue a tu <code>DispatcherServlet</code>.</li>
+<li><strong>Autenticación</strong> (¿quién eres?) y <strong>autorización</strong> (¿puedes hacer esto?) son capas distintas — la tarjeta de acceso de un edificio ilustra las dos: te identifica en la entrada, pero no todas las puertas se abren con ella.</li>
+<li><strong>HTTP Basic</strong> manda <code>usuario:contraseña</code> codificado en Base64 en la cabecera <code>Authorization</code> — Base64 no es cifrado, así que Basic solo es seguro sobre HTTPS.</li>
+<li><code>InMemoryUserDetailsManager</code> es tu <code>UserDetailsService</code> — declara usuarios directamente en código, útil para empezar, pero se pierden al reiniciar.</li>
+<li>En <code>authorizeHttpRequests</code>, las reglas se evalúan de arriba abajo y gana la primera que encaje — las rutas concretas van siempre antes que <code>anyRequest()</code>.</li>
+<li><code>.roles("USER")</code> registra internamente <code>ROLE_USER</code>, con el prefijo <code>ROLE_</code> añadido por Spring Security.</li>
+<li>Sin <code>.csrf(AbstractHttpConfigurer::disable)</code>, cualquier <code>POST</code>/<code>PUT</code>/<code>DELETE</code> da <code>401</code> aunque las credenciales sean correctas — el filtro de CSRF actúa antes que el de HTTP Basic. Es normal desactivarlo en una API que se autentica por cabecera, no por cookie de sesión.</li>
+<li>El <code>401</code> que genera Spring Security no pasa por tu <code>GlobalExceptionHandler</code> — lo lanza un filtro, antes de llegar al <code>DispatcherServlet</code>, así que no tiene el formato de tu <code>ErrorResponse</code>. Un <code>AuthenticationEntryPoint</code> a medida (Actividad 2.2) lo arregla, porque un <code>@ExceptionHandler</code> no puede.</li>
+<li>Esta configuración es un estado <strong>intermedio</strong> deliberado: más adelante en el tema se resuelven, por separado, los usuarios hardcodeados (BCrypt + PostgreSQL) y las credenciales viajando en cada petición (JWT).</li>
 </ul>
 </details></div>
 

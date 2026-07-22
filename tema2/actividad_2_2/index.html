@@ -1352,9 +1352,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#paso-2-securityconfig-inicial-guiada-al-completo" class="md-nav__link">
+  <a href="#paso-2-securityconfig-inicial-con-dos-huecos-por-rellenar" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 2 — SecurityConfig inicial, guiada al completo
+      Paso 2 — SecurityConfig inicial, con dos huecos por rellenar
     </span>
   </a>
   
@@ -1370,9 +1370,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#mini-reto-proteger-la-creacion-de-videojuegos-por-rol" class="md-nav__link">
+  <a href="#paso-4-proteger-la-creacion-de-videojuegos-por-rol" class="md-nav__link">
     <span class="md-ellipsis">
-      Mini-reto — proteger la creación de videojuegos por rol
+      Paso 4 — proteger la creación de videojuegos por rol
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-5-cerrando-la-grieta-un-authenticationentrypoint-a-medida" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 5 — cerrando la grieta: un AuthenticationEntryPoint a medida
     </span>
   </a>
   
@@ -1391,6 +1400,15 @@
   <a href="#cierre" class="md-nav__link">
     <span class="md-ellipsis">
       ✅ Cierre
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extra-opcional-swagger-ui-tras-el-authenticationentrypoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧭 Extra opcional — Swagger UI, tras el AuthenticationEntryPoint
     </span>
   </a>
   
@@ -2553,9 +2571,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#paso-2-securityconfig-inicial-guiada-al-completo" class="md-nav__link">
+  <a href="#paso-2-securityconfig-inicial-con-dos-huecos-por-rellenar" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 2 — SecurityConfig inicial, guiada al completo
+      Paso 2 — SecurityConfig inicial, con dos huecos por rellenar
     </span>
   </a>
   
@@ -2571,9 +2589,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#mini-reto-proteger-la-creacion-de-videojuegos-por-rol" class="md-nav__link">
+  <a href="#paso-4-proteger-la-creacion-de-videojuegos-por-rol" class="md-nav__link">
     <span class="md-ellipsis">
-      Mini-reto — proteger la creación de videojuegos por rol
+      Paso 4 — proteger la creación de videojuegos por rol
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-5-cerrando-la-grieta-un-authenticationentrypoint-a-medida" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 5 — cerrando la grieta: un AuthenticationEntryPoint a medida
     </span>
   </a>
   
@@ -2597,6 +2624,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#extra-opcional-swagger-ui-tras-el-authenticationentrypoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧭 Extra opcional — Swagger UI, tras el AuthenticationEntryPoint
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2614,6 +2650,10 @@
 
 
 <div><h1 id="actividad-22-primera-linea-de-defensa-http-basic">🧪 Actividad 2.2: Primera línea de defensa — HTTP Basic<a class="headerlink" href="#actividad-22-primera-linea-de-defensa-http-basic" title="Permanent link">¶</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Descarga la plantilla</p>
+<p>📄 <a href="../plantillas/Actividad_2_2_PSP_Plantilla.docx" rel="noopener" target="_blank">Plantilla 2.2 — Primera línea de defensa: HTTP Basic</a></p>
+</div>
 <div class="admonition info">
 <p class="admonition-title">Práctica guiada — estado intermedio deliberado</p>
 <p>Hoy añades Spring Security con usuarios en memoria y HTTP Basic. No es la versión final (eso llega en las Actividades 2.3 y 2.4) — es un paso intermedio para entender qué problema resuelve cada pieza.</p>
@@ -2623,6 +2663,7 @@
 <li>Observar el efecto de Spring Security "sin configurar nada".</li>
 <li>Configurar usuarios en memoria y una primera política de rutas.</li>
 <li>Comprobar cómo viaja una credencial HTTP Basic, decodificándola tú mismo.</li>
+<li>Unificar el formato de un error que Spring Security genera por su cuenta, con un <code>AuthenticationEntryPoint</code> a medida.</li>
 </ul>
 <hr>
 <h2 id="requisitos-previos">Requisitos previos<a class="headerlink" href="#requisitos-previos" title="Permanent link">¶</a></h2>
@@ -2642,10 +2683,13 @@
 <div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a>curl<span class="w"> </span>-i<span class="w"> </span>http://localhost:8080/api/v1/videojuegos
 </code></pre></div></td></tr></table></div>
 <p><strong>Predicción</strong>: antes de ejecutar, ¿qué código de estado esperas? Escríbelo.</p>
-<p>Deberías obtener un <code>401 Unauthorized</code> — incluso en un <code>GET</code> que hasta ahora era público. <strong>Comprueba también</strong> que Swagger UI (<code>/documentacion</code>) ha dejado de ser accesible sin autenticarte.</p>
+<p>Deberías obtener un <code>401 Unauthorized</code> — incluso en un <code>GET</code> que hasta ahora era público.</p>
+<p><strong>Captura</strong>: la respuesta completa de este <code>curl -i</code>.</p>
+<p>Comprueba también que Swagger UI (<code>/documentacion</code>) ha dejado de ser accesible sin autenticarte.</p>
+<p><strong>Captura</strong>: la pantalla de Swagger UI pidiendo credenciales (o el error al intentar cargarlo).</p>
 <hr>
-<h2 id="paso-2-securityconfig-inicial-guiada-al-completo">Paso 2 — <code>SecurityConfig</code> inicial, guiada al completo<a class="headerlink" href="#paso-2-securityconfig-inicial-guiada-al-completo" title="Permanent link">¶</a></h2>
-<p>Crea <code>SecurityConfig</code> en tu paquete <code>seguridad</code>:</p>
+<h2 id="paso-2-securityconfig-inicial-con-dos-huecos-por-rellenar">Paso 2 — <code>SecurityConfig</code> inicial, con dos huecos por rellenar<a class="headerlink" href="#paso-2-securityconfig-inicial-con-dos-huecos-por-rellenar" title="Permanent link">¶</a></h2>
+<p>Crea <code>SecurityConfig</code> en tu paquete <code>seguridad</code>. El usuario <code>user</code> y la ruta pública de <code>videojuegos</code> van dados, como referencia — el usuario <code>admin</code> y la ruta pública de <code>estudios</code> siguen exactamente el mismo patrón, y los completas tú:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-2-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-2-3"> 3</a></span>
@@ -2687,53 +2731,52 @@
 <span class="normal"><a href="#__codelineno-2-39">39</a></span>
 <span class="normal"><a href="#__codelineno-2-40">40</a></span>
 <span class="normal"><a href="#__codelineno-2-41">41</a></span>
-<span class="normal"><a href="#__codelineno-2-42">42</a></span>
-<span class="normal"><a href="#__codelineno-2-43">43</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.tunombre.gamevault.seguridad</span><span class="p">;</span>
+<span class="normal"><a href="#__codelineno-2-42">42</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.tunombre.gamevault.seguridad</span><span class="p">;</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2"></a>
 <a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.context.annotation.Bean</span><span class="p">;</span>
 <a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.context.annotation.Configuration</span><span class="p">;</span>
 <a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.http.HttpMethod</span><span class="p">;</span>
 <a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.security.config.Customizer</span><span class="p">;</span>
 <a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.security.config.annotation.web.builders.HttpSecurity</span><span class="p">;</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.security.core.userdetails.User</span><span class="p">;</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.security.core.userdetails.UserDetails</span><span class="p">;</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.security.core.userdetails.UserDetailsService</span><span class="p">;</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.security.provisioning.InMemoryUserDetailsManager</span><span class="p">;</span>
-<a id="__codelineno-2-12" name="__codelineno-2-12"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.security.web.SecurityFilterChain</span><span class="p">;</span>
-<a id="__codelineno-2-13" name="__codelineno-2-13"></a>
-<a id="__codelineno-2-14" name="__codelineno-2-14"></a><span class="nd">@Configuration</span>
-<a id="__codelineno-2-15" name="__codelineno-2-15"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SecurityConfig</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-2-16" name="__codelineno-2-16"></a>
-<a id="__codelineno-2-17" name="__codelineno-2-17"></a><span class="w">    </span><span class="nd">@Bean</span>
-<a id="__codelineno-2-18" name="__codelineno-2-18"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">UserDetailsService</span><span class="w"> </span><span class="nf">userDetailsService</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-2-19" name="__codelineno-2-19"></a><span class="w">        </span><span class="n">UserDetails</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">User</span><span class="p">.</span><span class="na">withUsername</span><span class="p">(</span><span class="s">"user"</span><span class="p">)</span>
-<a id="__codelineno-2-20" name="__codelineno-2-20"></a><span class="w">                </span><span class="p">.</span><span class="na">password</span><span class="p">(</span><span class="s">"{noop}user123"</span><span class="p">)</span>
-<a id="__codelineno-2-21" name="__codelineno-2-21"></a><span class="w">                </span><span class="p">.</span><span class="na">roles</span><span class="p">(</span><span class="s">"USER"</span><span class="p">)</span>
-<a id="__codelineno-2-22" name="__codelineno-2-22"></a><span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
-<a id="__codelineno-2-23" name="__codelineno-2-23"></a>
-<a id="__codelineno-2-24" name="__codelineno-2-24"></a><span class="w">        </span><span class="n">UserDetails</span><span class="w"> </span><span class="n">admin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">User</span><span class="p">.</span><span class="na">withUsername</span><span class="p">(</span><span class="s">"admin"</span><span class="p">)</span>
-<a id="__codelineno-2-25" name="__codelineno-2-25"></a><span class="w">                </span><span class="p">.</span><span class="na">password</span><span class="p">(</span><span class="s">"{noop}admin123"</span><span class="p">)</span>
-<a id="__codelineno-2-26" name="__codelineno-2-26"></a><span class="w">                </span><span class="p">.</span><span class="na">roles</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
-<a id="__codelineno-2-27" name="__codelineno-2-27"></a><span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
-<a id="__codelineno-2-28" name="__codelineno-2-28"></a>
-<a id="__codelineno-2-29" name="__codelineno-2-29"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">InMemoryUserDetailsManager</span><span class="p">(</span><span class="n">user</span><span class="p">,</span><span class="w"> </span><span class="n">admin</span><span class="p">);</span>
-<a id="__codelineno-2-30" name="__codelineno-2-30"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-2-31" name="__codelineno-2-31"></a>
-<a id="__codelineno-2-32" name="__codelineno-2-32"></a><span class="w">    </span><span class="nd">@Bean</span>
-<a id="__codelineno-2-33" name="__codelineno-2-33"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">SecurityFilterChain</span><span class="w"> </span><span class="nf">securityFilterChain</span><span class="p">(</span><span class="n">HttpSecurity</span><span class="w"> </span><span class="n">http</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-2-34" name="__codelineno-2-34"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">http</span>
-<a id="__codelineno-2-35" name="__codelineno-2-35"></a><span class="w">                </span><span class="p">.</span><span class="na">authorizeHttpRequests</span><span class="p">(</span><span class="n">auth</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">auth</span>
-<a id="__codelineno-2-36" name="__codelineno-2-36"></a><span class="w">                        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
-<a id="__codelineno-2-37" name="__codelineno-2-37"></a><span class="w">                        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/estudios/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
-<a id="__codelineno-2-38" name="__codelineno-2-38"></a><span class="w">                        </span><span class="p">.</span><span class="na">anyRequest</span><span class="p">().</span><span class="na">authenticated</span><span class="p">()</span>
-<a id="__codelineno-2-39" name="__codelineno-2-39"></a><span class="w">                </span><span class="p">)</span>
-<a id="__codelineno-2-40" name="__codelineno-2-40"></a><span class="w">                </span><span class="p">.</span><span class="na">httpBasic</span><span class="p">(</span><span class="n">Customizer</span><span class="p">.</span><span class="na">withDefaults</span><span class="p">())</span>
-<a id="__codelineno-2-41" name="__codelineno-2-41"></a><span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
-<a id="__codelineno-2-42" name="__codelineno-2-42"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-2-43" name="__codelineno-2-43"></a><span class="p">}</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer</span><span class="p">;</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.security.core.userdetails.User</span><span class="p">;</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.security.core.userdetails.UserDetails</span><span class="p">;</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.security.core.userdetails.UserDetailsService</span><span class="p">;</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.security.provisioning.InMemoryUserDetailsManager</span><span class="p">;</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.security.web.SecurityFilterChain</span><span class="p">;</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14"></a>
+<a id="__codelineno-2-15" name="__codelineno-2-15"></a><span class="nd">@Configuration</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SecurityConfig</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17"></a>
+<a id="__codelineno-2-18" name="__codelineno-2-18"></a><span class="w">    </span><span class="nd">@Bean</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">UserDetailsService</span><span class="w"> </span><span class="nf">userDetailsService</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20"></a><span class="w">        </span><span class="n">UserDetails</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">User</span><span class="p">.</span><span class="na">withUsername</span><span class="p">(</span><span class="s">"user"</span><span class="p">)</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21"></a><span class="w">                </span><span class="p">.</span><span class="na">password</span><span class="p">(</span><span class="s">"{noop}user123"</span><span class="p">)</span>
+<a id="__codelineno-2-22" name="__codelineno-2-22"></a><span class="w">                </span><span class="p">.</span><span class="na">roles</span><span class="p">(</span><span class="s">"USER"</span><span class="p">)</span>
+<a id="__codelineno-2-23" name="__codelineno-2-23"></a><span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-2-24" name="__codelineno-2-24"></a>
+<a id="__codelineno-2-25" name="__codelineno-2-25"></a><span class="w">        </span><span class="c1">// TODO: crea aquí el usuario "admin", contraseña "admin123", rol "ADMIN" — mismo patrón que "user"</span>
+<a id="__codelineno-2-26" name="__codelineno-2-26"></a>
+<a id="__codelineno-2-27" name="__codelineno-2-27"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">InMemoryUserDetailsManager</span><span class="p">(</span><span class="n">user</span><span class="p">,</span><span class="w"> </span><span class="n">admin</span><span class="p">);</span>
+<a id="__codelineno-2-28" name="__codelineno-2-28"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-2-29" name="__codelineno-2-29"></a>
+<a id="__codelineno-2-30" name="__codelineno-2-30"></a><span class="w">    </span><span class="nd">@Bean</span>
+<a id="__codelineno-2-31" name="__codelineno-2-31"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">SecurityFilterChain</span><span class="w"> </span><span class="nf">securityFilterChain</span><span class="p">(</span><span class="n">HttpSecurity</span><span class="w"> </span><span class="n">http</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-32" name="__codelineno-2-32"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">http</span>
+<a id="__codelineno-2-33" name="__codelineno-2-33"></a><span class="w">                </span><span class="p">.</span><span class="na">authorizeHttpRequests</span><span class="p">(</span><span class="n">auth</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">auth</span>
+<a id="__codelineno-2-34" name="__codelineno-2-34"></a><span class="w">                        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+<a id="__codelineno-2-35" name="__codelineno-2-35"></a><span class="w">                        </span><span class="c1">// TODO: añade aquí la misma regla, pero para los GET de estudio</span>
+<a id="__codelineno-2-36" name="__codelineno-2-36"></a><span class="w">                        </span><span class="p">.</span><span class="na">anyRequest</span><span class="p">().</span><span class="na">authenticated</span><span class="p">()</span>
+<a id="__codelineno-2-37" name="__codelineno-2-37"></a><span class="w">                </span><span class="p">)</span>
+<a id="__codelineno-2-38" name="__codelineno-2-38"></a><span class="w">                </span><span class="p">.</span><span class="na">csrf</span><span class="p">(</span><span class="n">AbstractHttpConfigurer</span><span class="p">::</span><span class="n">disable</span><span class="p">)</span>
+<a id="__codelineno-2-39" name="__codelineno-2-39"></a><span class="w">                </span><span class="p">.</span><span class="na">httpBasic</span><span class="p">(</span><span class="n">Customizer</span><span class="p">.</span><span class="na">withDefaults</span><span class="p">())</span>
+<a id="__codelineno-2-40" name="__codelineno-2-40"></a><span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-2-41" name="__codelineno-2-41"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-2-42" name="__codelineno-2-42"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p>Dos usuarios en memoria (<code>user</code>/<code>user123</code> con rol <code>USER</code>, <code>admin</code>/<code>admin123</code> con rol <code>ADMIN</code>), <code>GET</code> del catálogo público, el resto exige estar autenticado, y <code>httpBasic(Customizer.withDefaults())</code> activa HTTP Basic como mecanismo de autenticación.</p>
+<p><code>{noop}</code> le dice a Spring Security que la contraseña no está cifrada (la contraseña se compara tal cual, sin BCrypt); <code>permitAll()</code> deja esa ruta abierta a peticiones sin autenticar; <code>anyRequest().authenticated()</code> exige estar autenticado para todo lo que no tenga ya una regla propia; <code>csrf(AbstractHttpConfigurer::disable)</code> desactiva la protección CSRF, ya explicada en la teoría; <code>httpBasic(Customizer.withDefaults())</code> activa HTTP Basic.</p>
 <p>Reinicia y comprueba de nuevo el <code>GET</code> del Paso 1 — debería volver a funcionar sin credenciales, porque ahora está explícitamente marcado como público.</p>
+<p><strong>Captura</strong>: la respuesta de ese <code>GET</code>, ya en <code>200</code> otra vez sin mandar ninguna credencial.</p>
 <hr>
 <h2 id="paso-3-probar-con-curl-y-decodificar-la-cabecera">Paso 3 — Probar con curl y decodificar la cabecera<a class="headerlink" href="#paso-3-probar-con-curl-y-decodificar-la-cabecera" title="Permanent link">¶</a></h2>
 <p>Sin credenciales, sobre una ruta protegida:</p>
@@ -2742,6 +2785,7 @@
 <a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{}'</span>
 </code></pre></div></td></tr></table></div>
 <p><strong>Comprueba</strong>: <code>401</code>.</p>
+<p><strong>Captura</strong>: esta respuesta, sin credenciales, sobre una ruta protegida.</p>
 <p>Con credenciales:</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a>curl<span class="w"> </span>-i<span class="w"> </span>-u<span class="w"> </span>user:user123<span class="w"> </span>http://localhost:8080/api/v1/videojuegos
 </code></pre></div></td></tr></table></div>
@@ -2749,25 +2793,149 @@
 <div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">"dXNlcjp1c2VyMTIz"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>base64<span class="w"> </span>-d
 </code></pre></div></td></tr></table></div>
 <p>(sustituye esa cadena por la que veas realmente en tu propia petición, tras <code>Basic</code>).</p>
-<p><strong>Comprueba</strong>: que el resultado es tu usuario y contraseña en texto legible — exactamente lo que viste en la teoría.</p>
+<p><strong>Comprueba</strong>: que el resultado es tu usuario y contraseña en texto legible — exactamente lo que has visto en la teoría.</p>
+<p><strong>Captura</strong>: la salida de <code>curl -v</code> con la cabecera <code>Authorization</code>, junto a la contraseña ya decodificada en tu terminal.</p>
 <hr>
-<h2 id="mini-reto-proteger-la-creacion-de-videojuegos-por-rol">Mini-reto — proteger la creación de videojuegos por rol<a class="headerlink" href="#mini-reto-proteger-la-creacion-de-videojuegos-por-rol" title="Permanent link">¶</a></h2>
+<h2 id="paso-4-proteger-la-creacion-de-videojuegos-por-rol">Paso 4 — proteger la creación de videojuegos por rol<a class="headerlink" href="#paso-4-proteger-la-creacion-de-videojuegos-por-rol" title="Permanent link">¶</a></h2>
 <p>Repite el patrón de <code>requestMatchers(...)</code> ya mostrado en el Paso 2 para añadir una regla nueva: el <code>POST /api/v1/videojuegos</code> debe exigir el rol <code>ADMIN</code> específicamente (no basta con estar autenticado con cualquier usuario).</p>
-<p><strong>Pista de sintaxis</strong> (ya la has visto en el <code>requestMatchers</code> del catálogo, solo cambia el final):</p>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
+<p><strong>Pista</strong>: no uses <code>permitAll()</code> ni <code>authenticated()</code> esta vez — hace falta un método distinto, pensado para exigir un rol concreto: <code>hasRole("ADMIN")</code>. Tú construyes el <code>requestMatchers(...)</code> completo, con el verbo y la ruta correctos.</p>
 <p>Prueba con los dos usuarios:</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span>
-<span class="normal"><a href="#__codelineno-7-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a>curl<span class="w"> </span>-i<span class="w"> </span>-u<span class="w"> </span>user:user123<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/videojuegos<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"titulo":"Test","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2"></a>curl<span class="w"> </span>-i<span class="w"> </span>-u<span class="w"> </span>admin:admin123<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/videojuegos<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"titulo":"Test","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'</span>
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1">1</a></span>
+<span class="normal"><a href="#__codelineno-6-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1"></a>curl<span class="w"> </span>-i<span class="w"> </span>-u<span class="w"> </span>user:user123<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/videojuegos<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"titulo":"Test","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2"></a>curl<span class="w"> </span>-i<span class="w"> </span>-u<span class="w"> </span>admin:admin123<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/videojuegos<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"titulo":"Test","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'</span>
 </code></pre></div></td></tr></table></div>
 <p><strong>Comprueba</strong>: <code>403</code> con <code>user</code>, <code>201</code> con <code>admin</code>.</p>
+<p><strong>Captura</strong>: las dos respuestas, una junto a la otra.</p>
+<p><strong>Fíjate</strong>: el <code>403</code> tampoco tiene el formato de tu <code>ErrorResponse</code> — es la misma grieta que el <code>401</code>, y por el mismo motivo (lo genera Spring Security, no un <code>@ExceptionHandler</code>). En el Paso 5 la cierras para el <code>401</code>; la pieza equivalente para el <code>403</code> se llama <code>AccessDeniedHandler</code>, y la dejas pendiente para más adelante en el tema — no hace falta que la construyas todavía.</p>
+<hr>
+<h2 id="paso-5-cerrando-la-grieta-un-authenticationentrypoint-a-medida">Paso 5 — cerrando la grieta: un <code>AuthenticationEntryPoint</code> a medida<a class="headerlink" href="#paso-5-cerrando-la-grieta-un-authenticationentrypoint-a-medida" title="Permanent link">¶</a></h2>
+<p>En la teoría has visto que el <code>401</code> de HTTP Basic no pasa por tu <code>GlobalExceptionHandler</code> — lo genera un filtro de seguridad, antes de que la petición llegue al <code>DispatcherServlet</code>, así que tu <code>@RestControllerAdvice</code> nunca llega a intervenir. Repite el <code>curl</code> del Paso 3 sin credenciales (el <code>POST</code> sobre una ruta protegida, no el <code>GET</code> del Paso 1 — ese ya es público desde el Paso 2) y compara el cuerpo de esa respuesta con el de cualquier error que ya gestiona tu <code>GlobalExceptionHandler</code> (por ejemplo, el <code>404</code> de un <code>id</code> inexistente): no se parecen en nada.</p>
+<p>Un <code>@ExceptionHandler</code> no puede arreglar esto —nunca llega a ejecutarse—, pero Spring Security tiene su propia pieza para el mismo trabajo: un <code>AuthenticationEntryPoint</code>, que decide qué responder cuando una petición no autenticada llega a una ruta protegida. En tu paquete <code>seguridad</code>:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-7-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-7-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-7-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-7-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-7-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-7-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-7-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-7-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-7-10">10</a></span>
+<span class="normal"><a href="#__codelineno-7-11">11</a></span>
+<span class="normal"><a href="#__codelineno-7-12">12</a></span>
+<span class="normal"><a href="#__codelineno-7-13">13</a></span>
+<span class="normal"><a href="#__codelineno-7-14">14</a></span>
+<span class="normal"><a href="#__codelineno-7-15">15</a></span>
+<span class="normal"><a href="#__codelineno-7-16">16</a></span>
+<span class="normal"><a href="#__codelineno-7-17">17</a></span>
+<span class="normal"><a href="#__codelineno-7-18">18</a></span>
+<span class="normal"><a href="#__codelineno-7-19">19</a></span>
+<span class="normal"><a href="#__codelineno-7-20">20</a></span>
+<span class="normal"><a href="#__codelineno-7-21">21</a></span>
+<span class="normal"><a href="#__codelineno-7-22">22</a></span>
+<span class="normal"><a href="#__codelineno-7-23">23</a></span>
+<span class="normal"><a href="#__codelineno-7-24">24</a></span>
+<span class="normal"><a href="#__codelineno-7-25">25</a></span>
+<span class="normal"><a href="#__codelineno-7-26">26</a></span>
+<span class="normal"><a href="#__codelineno-7-27">27</a></span>
+<span class="normal"><a href="#__codelineno-7-28">28</a></span>
+<span class="normal"><a href="#__codelineno-7-29">29</a></span>
+<span class="normal"><a href="#__codelineno-7-30">30</a></span>
+<span class="normal"><a href="#__codelineno-7-31">31</a></span>
+<span class="normal"><a href="#__codelineno-7-32">32</a></span>
+<span class="normal"><a href="#__codelineno-7-33">33</a></span>
+<span class="normal"><a href="#__codelineno-7-34">34</a></span>
+<span class="normal"><a href="#__codelineno-7-35">35</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.tunombre.gamevault.seguridad</span><span class="p">;</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2"></a>
+<a id="__codelineno-7-3" name="__codelineno-7-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.fasterxml.jackson.databind.ObjectMapper</span><span class="p">;</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.tunombre.gamevault.exception.ErrorResponse</span><span class="p">;</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">jakarta.servlet.http.HttpServletRequest</span><span class="p">;</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6"></a><span class="kn">import</span><span class="w"> </span><span class="nn">jakarta.servlet.http.HttpServletResponse</span><span class="p">;</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.http.HttpStatus</span><span class="p">;</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.http.MediaType</span><span class="p">;</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.security.core.AuthenticationException</span><span class="p">;</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.security.web.AuthenticationEntryPoint</span><span class="p">;</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.stereotype.Component</span><span class="p">;</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12"></a>
+<a id="__codelineno-7-13" name="__codelineno-7-13"></a><span class="kn">import</span><span class="w"> </span><span class="nn">java.io.IOException</span><span class="p">;</span>
+<a id="__codelineno-7-14" name="__codelineno-7-14"></a><span class="kn">import</span><span class="w"> </span><span class="nn">java.time.LocalDateTime</span><span class="p">;</span>
+<a id="__codelineno-7-15" name="__codelineno-7-15"></a>
+<a id="__codelineno-7-16" name="__codelineno-7-16"></a><span class="nd">@Component</span>
+<a id="__codelineno-7-17" name="__codelineno-7-17"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ErrorResponseAuthenticationEntryPoint</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">AuthenticationEntryPoint</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-18" name="__codelineno-7-18"></a>
+<a id="__codelineno-7-19" name="__codelineno-7-19"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ObjectMapper</span><span class="w"> </span><span class="n">objectMapper</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ObjectMapper</span><span class="p">();</span>
+<a id="__codelineno-7-20" name="__codelineno-7-20"></a>
+<a id="__codelineno-7-21" name="__codelineno-7-21"></a><span class="w">    </span><span class="nd">@Override</span>
+<a id="__codelineno-7-22" name="__codelineno-7-22"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">commence</span><span class="p">(</span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletResponse</span><span class="w"> </span><span class="n">response</span><span class="p">,</span>
+<a id="__codelineno-7-23" name="__codelineno-7-23"></a><span class="w">                          </span><span class="n">AuthenticationException</span><span class="w"> </span><span class="n">authException</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-24" name="__codelineno-7-24"></a>
+<a id="__codelineno-7-25" name="__codelineno-7-25"></a><span class="w">        </span><span class="n">ErrorResponse</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ErrorResponse</span><span class="p">(</span>
+<a id="__codelineno-7-26" name="__codelineno-7-26"></a><span class="w">                </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">(),</span><span class="w"> </span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">UNAUTHORIZED</span><span class="p">.</span><span class="na">value</span><span class="p">(),</span>
+<a id="__codelineno-7-27" name="__codelineno-7-27"></a><span class="w">                </span><span class="s">"No autenticado"</span><span class="p">,</span><span class="w"> </span><span class="s">"Se requieren credenciales válidas para acceder a este recurso"</span><span class="p">,</span>
+<a id="__codelineno-7-28" name="__codelineno-7-28"></a><span class="w">                </span><span class="n">request</span><span class="p">.</span><span class="na">getRequestURI</span><span class="p">()</span>
+<a id="__codelineno-7-29" name="__codelineno-7-29"></a><span class="w">        </span><span class="p">);</span>
+<a id="__codelineno-7-30" name="__codelineno-7-30"></a>
+<a id="__codelineno-7-31" name="__codelineno-7-31"></a><span class="w">        </span><span class="n">response</span><span class="p">.</span><span class="na">setStatus</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">UNAUTHORIZED</span><span class="p">.</span><span class="na">value</span><span class="p">());</span>
+<a id="__codelineno-7-32" name="__codelineno-7-32"></a><span class="w">        </span><span class="n">response</span><span class="p">.</span><span class="na">setContentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON_VALUE</span><span class="p">);</span>
+<a id="__codelineno-7-33" name="__codelineno-7-33"></a><span class="w">        </span><span class="n">response</span><span class="p">.</span><span class="na">getWriter</span><span class="p">().</span><span class="na">write</span><span class="p">(</span><span class="n">objectMapper</span><span class="p">.</span><span class="na">writeValueAsString</span><span class="p">(</span><span class="n">error</span><span class="p">));</span>
+<a id="__codelineno-7-34" name="__codelineno-7-34"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-7-35" name="__codelineno-7-35"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Reutiliza tu propio <code>ErrorResponse</code> de la Actividad 2.1 — el mismo formato de siempre, solo que construido a mano, porque aquí no hay ningún <code>@ExceptionHandler</code> que lo haga por ti.</p>
+<p>Conéctalo en <code>securityFilterChain</code>, añadiendo el nuevo bean como parámetro (Spring lo inyecta solo, por tipo) y registrándolo en <code>exceptionHandling(...)</code>:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-8-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-8-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-8-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-8-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-8-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-8-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-8-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-8-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-8-10">10</a></span>
+<span class="normal"><a href="#__codelineno-8-11">11</a></span>
+<span class="normal"><a href="#__codelineno-8-12">12</a></span>
+<span class="normal"><a href="#__codelineno-8-13">13</a></span>
+<span class="normal"><a href="#__codelineno-8-14">14</a></span>
+<span class="normal"><a href="#__codelineno-8-15">15</a></span>
+<span class="normal"><a href="#__codelineno-8-16">16</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="nd">@Bean</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">SecurityFilterChain</span><span class="w"> </span><span class="nf">securityFilterChain</span><span class="p">(</span><span class="n">HttpSecurity</span><span class="w"> </span><span class="n">http</span><span class="p">,</span><span class="w"> </span><span class="n">AuthenticationEntryPoint</span><span class="w"> </span><span class="n">authenticationEntryPoint</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">http</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4"></a><span class="w">            </span><span class="p">.</span><span class="na">authorizeHttpRequests</span><span class="p">(</span><span class="n">auth</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">auth</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5"></a><span class="w">                    </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6"></a><span class="w">                    </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/estudios/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7"></a><span class="w">                    </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8"></a><span class="w">                    </span><span class="p">.</span><span class="na">anyRequest</span><span class="p">().</span><span class="na">authenticated</span><span class="p">()</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9"></a><span class="w">            </span><span class="p">)</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10"></a><span class="w">            </span><span class="p">.</span><span class="na">exceptionHandling</span><span class="p">(</span><span class="n">exceptions</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">exceptions</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11"></a><span class="w">                    </span><span class="p">.</span><span class="na">authenticationEntryPoint</span><span class="p">(</span><span class="n">authenticationEntryPoint</span><span class="p">)</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12"></a><span class="w">            </span><span class="p">)</span>
+<a id="__codelineno-8-13" name="__codelineno-8-13"></a><span class="w">            </span><span class="p">.</span><span class="na">csrf</span><span class="p">(</span><span class="n">AbstractHttpConfigurer</span><span class="p">::</span><span class="n">disable</span><span class="p">)</span>
+<a id="__codelineno-8-14" name="__codelineno-8-14"></a><span class="w">            </span><span class="p">.</span><span class="na">httpBasic</span><span class="p">(</span><span class="n">Customizer</span><span class="p">.</span><span class="na">withDefaults</span><span class="p">())</span>
+<a id="__codelineno-8-15" name="__codelineno-8-15"></a><span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-8-16" name="__codelineno-8-16"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<div class="admonition tip">
+<p class="admonition-title">Por qué <code>.exceptionHandling(...)</code> y no <code>.httpBasic(basic -&gt; basic.authenticationEntryPoint(...))</code></p>
+<p>Las dos formas funcionan hoy. Pero registrarlo dentro de <code>.httpBasic(...)</code> lo ataría a HTTP Basic — y en la Actividad 2.4 sustituyes <code>.httpBasic(...)</code> por JWT, con lo que esa línea desaparecería con él. <code>.exceptionHandling(...)</code> es un bloque aparte, independiente del mecanismo de autenticación activo: tu <code>ErrorResponseAuthenticationEntryPoint</code> sigue funcionando sin tocar una sola línea cuando cambies de Basic a JWT.</p>
+</div>
+<p>Repite el mismo <code>POST</code> sin credenciales del Paso 3 una vez más.</p>
+<p><strong>Captura</strong>: la respuesta del <code>401</code>, ya con el mismo formato que el resto de errores de tu API.</p>
+<p><strong>Pregunta</strong>: ¿por qué esta pieza tiene que implementarse como un <code>AuthenticationEntryPoint</code> de Spring Security, y no como un sexto <code>@ExceptionHandler</code> en tu <code>GlobalExceptionHandler</code>? Relaciónalo con el diagrama de la teoría que muestra dónde actúa el filtro respecto al <code>DispatcherServlet</code>.</p>
 <hr>
 <h2 id="pregunta-final">Pregunta final<a class="headerlink" href="#pregunta-final" title="Permanent link">¶</a></h2>
 <p>Esta configuración tiene dos problemas serios para un proyecto real. Nómbralos con tus propias palabras, relacionando cada uno con algo concreto que hayas visto en esta actividad (uno tiene que ver con dónde viven <code>user</code>/<code>admin</code> en tu código; el otro con lo que has visto al decodificar la cabecera <code>Authorization</code>). ¿Qué actividad crees que resolverá cada uno, según lo que se ha adelantado en la teoría?</p>
 <hr>
 <h2 id="cierre">✅ Cierre<a class="headerlink" href="#cierre" title="Permanent link">¶</a></h2>
-<p>Tu API ya distingue quién puede hacer qué — pero con usuarios que se pierden al reiniciar y contraseñas casi en claro en cada petición. En la próxima actividad resuelves el primero: usuarios reales en PostgreSQL, con contraseñas protegidas por BCrypt.</p></div>
+<p>Tu API ya distingue quién puede hacer qué — pero con usuarios que se pierden al reiniciar y contraseñas casi en claro en cada petición. En la próxima actividad resuelves el primero: usuarios reales en PostgreSQL, con contraseñas protegidas por BCrypt.</p>
+<hr>
+<h2 id="extra-opcional-swagger-ui-tras-el-authenticationentrypoint">🧭 Extra opcional — Swagger UI, tras el <code>AuthenticationEntryPoint</code><a class="headerlink" href="#extra-opcional-swagger-ui-tras-el-authenticationentrypoint" title="Permanent link">¶</a></h2>
+<div class="admonition tip">
+<p class="admonition-title">No se entrega</p>
+<p>Esta parte es solo para que lo veas con tus propios ojos. No hay captura ni pregunta que entregar — no forma parte de la plantilla.</p>
+</div>
+<p>Ahora que has completado el Paso 5, abre <code>/documentacion</code> en el navegador. Ya no te aparece ningún formulario de login: en su lugar ves directamente el JSON del <code>401</code> que devuelve tu <code>ErrorResponseAuthenticationEntryPoint</code>.</p>
+<p>Es una consecuencia directa de lo que acabas de construir: tu clase no manda la cabecera <code>WWW-Authenticate</code> que hacía aparecer el cuadro de login nativo del navegador, así que el navegador ya no tiene ninguna pista para pedirte credenciales — ni aquí, ni en ninguna otra ruta protegida. De momento no hay forma cómoda de entrar a Swagger ni de autenticarte desde dentro; se resuelve más adelante en el tema, cuando Swagger tenga su propio botón "Authorize".</p></div>
 
 
 
