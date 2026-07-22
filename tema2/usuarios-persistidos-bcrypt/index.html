@@ -1466,6 +1466,33 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#el-registro-authcontroller" class="md-nav__link">
+    <span class="md-ellipsis">
+      El registro: AuthController
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#el-primer-admin-un-applicationrunner" class="md-nav__link">
+    <span class="md-ellipsis">
+      El primer ADMIN: un ApplicationRunner
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#esa-contrasena-tampoco-deberia-estar-en-tu-repositorio" class="md-nav__link">
+    <span class="md-ellipsis">
+      Esa contraseña tampoco debería estar en tu repositorio
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2622,6 +2649,33 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#el-registro-authcontroller" class="md-nav__link">
+    <span class="md-ellipsis">
+      El registro: AuthController
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#el-primer-admin-un-applicationrunner" class="md-nav__link">
+    <span class="md-ellipsis">
+      El primer ADMIN: un ApplicationRunner
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#esa-contrasena-tampoco-deberia-estar-en-tu-repositorio" class="md-nav__link">
+    <span class="md-ellipsis">
+      Esa contraseña tampoco debería estar en tu repositorio
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2697,12 +2751,63 @@
 <p>Una contraseña no necesitas nunca "leerla de vuelta" — solo necesitas comprobar si la que te acaban de dar coincide con la que el usuario registró. Por eso las contraseñas se <strong>hashean</strong>, no se cifran: ni siquiera tú, con acceso total a la base de datos, deberías poder recuperar la contraseña original a partir del hash guardado.</p>
 <hr>
 <h2 id="hash-con-sal">🧂 Hash con sal<a class="headerlink" href="#hash-con-sal" title="Permanent link">¶</a></h2>
-<p>Si simplemente aplicaras una función hash (<code>hash("miPassword123")</code>) a cada contraseña, dos usuarios con la misma contraseña tendrían <strong>el mismo hash guardado</strong> — y eso es un problema: cualquiera que vea la base de datos sabría que comparten contraseña, y un atacante podría precalcular hashes de contraseñas comunes (una "tabla arcoíris") y buscar coincidencias directas.</p>
+<p>Si simplemente aplicaras una función hash (<code>hash("miPassword123")</code>) a cada contraseña, dos usuarios con la misma contraseña tendrían <strong>el mismo hash guardado</strong> — y eso es un problema: cualquiera que vea la base de datos sabría que comparten contraseña, y un atacante podría precalcular por adelantado los hashes de las contraseñas más habituales en una <strong>tabla arcoíris</strong>* y buscar coincidencias directas contra cualquier base de datos robada.</p>
 <p>La <strong>sal</strong> (<em>salt</em>) resuelve esto: un valor aleatorio distinto para cada usuario, que se combina con la contraseña antes de hashear. Así, dos usuarios con la misma contraseña obtienen hashes completamente distintos — la sal rompe la comparación directa.</p>
+<p>Con datos concretos, dos usuarios que eligen exactamente la misma contraseña:</p>
+<table>
+<thead>
+<tr>
+<th>Usuario</th>
+<th>Contraseña</th>
+<th>Sal</th>
+<th>Hash guardado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ana</code></td>
+<td><code>miPassword123</code></td>
+<td>aleatoria, propia de <code>ana</code></td>
+<td><code>{bcrypt}$2a$10$x7Ff…9kLp</code></td>
+</tr>
+<tr>
+<td><code>luis</code></td>
+<td><code>miPassword123</code></td>
+<td>aleatoria, propia de <code>luis</code></td>
+<td><code>{bcrypt}$2a$10$q2Rt…3mWx</code></td>
+</tr>
+</tbody>
+</table>
+<p>Nadie que mire la tabla <code>usuarios</code> puede saber que <code>ana</code> y <code>luis</code> comparten contraseña, y una tabla arcoíris precalculada para <code>miPassword123</code> no sirve de nada aquí: habría que precalcularla de nuevo para cada sal distinta, una por usuario.</p>
+<p><small>* Una tabla arcoíris es un diccionario gigante, calculado una sola vez por adelantado, que empareja contraseñas comunes con el hash que producirían. El atacante no calcula nada en el momento del ataque: roba una tabla de hashes y busca cada uno directamente en su diccionario ya hecho. Por eso la sal la inutiliza — necesitaría una tabla distinta para cada sal.</small></p>
 <hr>
 <h2 id="por-que-bcrypt-y-no-un-hash-rapido">🐌 Por qué BCrypt y no un hash rápido<a class="headerlink" href="#por-que-bcrypt-y-no-un-hash-rapido" title="Permanent link">¶</a></h2>
-<p>Podrías pensar en usar SHA-256 directamente. El problema es justo su virtud en otros contextos: <strong>es rápido</strong>. Un atacante con acceso a una tabla de hashes robada puede probar miles de millones de contraseñas por segundo contra un hash SHA-256, por fuerza bruta.</p>
+<p>Podrías pensar en usar <strong>SHA-256</strong> directamente — otra función hash, de propósito general, muy usada para comprobar que un fichero descargado no se ha corrompido o alterado. El problema es justo su virtud en ese otro contexto: <strong>es rápido</strong>, pensado para calcularse millones de veces por segundo sin apenas coste. Aplicado a contraseñas, eso juega en tu contra: un atacante con acceso a una tabla de hashes robada puede probar miles de millones de contraseñas por segundo contra un hash SHA-256, por fuerza bruta.</p>
 <p><strong>BCrypt</strong> está diseñado deliberadamente para ser <strong>lento</strong>, con un coste computacional configurable (el llamado <em>factor de coste</em>): cuanto mayor el coste, más tiempo (y recursos) hace falta para calcular un solo hash — insignificante para un login legítimo (una fracción de segundo), pero devastador para un atacante que necesita probar millones de combinaciones. BCrypt incluye además la sal automáticamente, como parte del propio hash resultante.</p>
+<p>Una idea de cuánto pesa ese coste en la práctica (tiempos aproximados, en hardware normal):</p>
+<table>
+<thead>
+<tr>
+<th>Factor de coste</th>
+<th>Tiempo aprox. por hash</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4</td>
+<td>~1 ms</td>
+</tr>
+<tr>
+<td>10 (el valor por defecto)</td>
+<td>~60-100 ms</td>
+</tr>
+<tr>
+<td>12</td>
+<td>~250-400 ms</td>
+</tr>
+</tbody>
+</table>
+<p>Cien milisegundos son imperceptibles para un usuario que hace login una vez. Pero multiplicados por los millones de intentos que necesitaría un ataque de fuerza bruta, la diferencia entre "factible" e "inviable" se cuenta en años de cómputo.</p>
 <div class="admonition tip">
 <p class="admonition-title">Un apunte sobre criptografía de clave pública/privada</p>
 <p>Existe otra familia de criptografía, la de <strong>clave pública/privada</strong>: un par de claves matemáticamente relacionadas donde lo que cifra una (o firma) solo lo puede verificar la otra. No la necesitas todavía — la retomarás en el próximo apartado, cuando veas cómo se firma un JWT.</p>
@@ -2749,58 +2854,219 @@
 <a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>Territorio ya conocido de Acceso a Datos: una entidad JPA más, con su repositorio (<code>UsuarioRepository extends JpaRepository&lt;Usuario, Long&gt;</code>, con un <code>findByUsername</code> añadido). La única novedad real es el campo <code>password</code>: nunca va a contener texto legible, solo el hash BCrypt.</p>
-<h3 id="el-passwordencoder">El <code>PasswordEncoder</code><a class="headerlink" href="#el-passwordencoder" title="Permanent link">¶</a></h3>
+<p>El campo <code>rol</code> usa el enum que ya se adelantó en el apartado anterior — solo dos valores, sin más complicación:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
 <span class="normal"><a href="#__codelineno-1-2">2</a></span>
 <span class="normal"><a href="#__codelineno-1-3">3</a></span>
-<span class="normal"><a href="#__codelineno-1-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nd">@Bean</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">PasswordEncoder</span><span class="w"> </span><span class="nf">passwordEncoder</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">PasswordEncoderFactories</span><span class="p">.</span><span class="na">createDelegatingPasswordEncoder</span><span class="p">();</span>
+<span class="normal"><a href="#__codelineno-1-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">enum</span><span class="w"> </span><span class="n">RolUsuario</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="w">    </span><span class="n">ADMIN</span><span class="p">,</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">    </span><span class="n">USER</span>
 <a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Y el campo <code>activo</code> es una baja lógica, no física: en vez de borrar la fila de un usuario al que le retiras el acceso, lo marcas como <code>activo = false</code> y lo conservas — así no pierdes el histórico de qué creó o modificó ese usuario mientras tuvo cuenta. Lo usarás en el siguiente paso.</p>
+<h3 id="el-passwordencoder">El <code>PasswordEncoder</code><a class="headerlink" href="#el-passwordencoder" title="Permanent link">¶</a></h3>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
+<span class="normal"><a href="#__codelineno-2-2">2</a></span>
+<span class="normal"><a href="#__codelineno-2-3">3</a></span>
+<span class="normal"><a href="#__codelineno-2-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nd">@Bean</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">PasswordEncoder</span><span class="w"> </span><span class="nf">passwordEncoder</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">PasswordEncoderFactories</span><span class="p">.</span><span class="na">createDelegatingPasswordEncoder</span><span class="p">();</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p><code>createDelegatingPasswordEncoder()</code> construye un <code>DelegatingPasswordEncoder</code>: un encoder que antepone un prefijo al hash almacenado (por ejemplo, <code>{bcrypt}</code>) indicando qué algoritmo se usó — así, si en el futuro cambiaras de algoritmo, los hashes antiguos con prefijos distintos seguirían siendo reconocibles y verificables, sin migrar toda la tabla de golpe. Este mismo bean se usa tanto para <strong>codificar</strong> una contraseña al crear un usuario como para <strong>verificar</strong> una contraseña al hacer login (BCrypt no "descifra" el hash — vuelve a calcularlo con la contraseña recibida y compara).</p>
 <p>Un hash BCrypt real tiene esta forma:</p>
-<div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a>{bcrypt}$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy
+<div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a>{bcrypt}$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy
 </code></pre></div></td></tr></table></div>
 <p>Diseccionado: <code>{bcrypt}</code> (el prefijo del <code>DelegatingPasswordEncoder</code>), <code>$2a$</code> (la versión del algoritmo), <code>10$</code> (el factor de coste — aquí, 2¹⁰ iteraciones), y el resto combina la sal y el hash resultante, ambos codificados en la misma cadena — no hace falta guardar la sal en una columna aparte, viaja incluida.</p>
 <h3 id="un-userdetailsservice-propio-el-sustituto-del-inmemoryuserdetailsmanager">Un <code>UserDetailsService</code> propio: el sustituto del <code>InMemoryUserDetailsManager</code><a class="headerlink" href="#un-userdetailsservice-propio-el-sustituto-del-inmemoryuserdetailsmanager" title="Permanent link">¶</a></h3>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-3-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-3-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-3-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-3-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-3-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-3-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-3-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-3-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-3-10">10</a></span>
-<span class="normal"><a href="#__codelineno-3-11">11</a></span>
-<span class="normal"><a href="#__codelineno-3-12">12</a></span>
-<span class="normal"><a href="#__codelineno-3-13">13</a></span>
-<span class="normal"><a href="#__codelineno-3-14">14</a></span>
-<span class="normal"><a href="#__codelineno-3-15">15</a></span>
-<span class="normal"><a href="#__codelineno-3-16">16</a></span>
-<span class="normal"><a href="#__codelineno-3-17">17</a></span>
-<span class="normal"><a href="#__codelineno-3-18">18</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nd">@Service</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="nd">@RequiredArgsConstructor</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">BdUserDetailsService</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">UserDetailsService</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4"></a>
-<a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">UsuarioRepository</span><span class="w"> </span><span class="n">usuarioRepository</span><span class="p">;</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6"></a>
-<a id="__codelineno-3-7" name="__codelineno-3-7"></a><span class="w">    </span><span class="nd">@Override</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">UserDetails</span><span class="w"> </span><span class="nf">loadUserByUsername</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">username</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">UsernameNotFoundException</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-3-9" name="__codelineno-3-9"></a><span class="w">        </span><span class="n">Usuario</span><span class="w"> </span><span class="n">usuario</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">usuarioRepository</span><span class="p">.</span><span class="na">findByUsername</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
-<a id="__codelineno-3-10" name="__codelineno-3-10"></a><span class="w">                </span><span class="p">.</span><span class="na">orElseThrow</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UsernameNotFoundException</span><span class="p">(</span><span class="s">"Usuario no encontrado: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">username</span><span class="p">));</span>
-<a id="__codelineno-3-11" name="__codelineno-3-11"></a>
-<a id="__codelineno-3-12" name="__codelineno-3-12"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">User</span><span class="p">.</span><span class="na">withUsername</span><span class="p">(</span><span class="n">usuario</span><span class="p">.</span><span class="na">getUsername</span><span class="p">())</span>
-<a id="__codelineno-3-13" name="__codelineno-3-13"></a><span class="w">                </span><span class="p">.</span><span class="na">password</span><span class="p">(</span><span class="n">usuario</span><span class="p">.</span><span class="na">getPassword</span><span class="p">())</span>
-<a id="__codelineno-3-14" name="__codelineno-3-14"></a><span class="w">                </span><span class="p">.</span><span class="na">roles</span><span class="p">(</span><span class="n">usuario</span><span class="p">.</span><span class="na">getRol</span><span class="p">().</span><span class="na">name</span><span class="p">())</span>
-<a id="__codelineno-3-15" name="__codelineno-3-15"></a><span class="w">                </span><span class="p">.</span><span class="na">disabled</span><span class="p">(</span><span class="o">!</span><span class="n">usuario</span><span class="p">.</span><span class="na">isActivo</span><span class="p">())</span>
-<a id="__codelineno-3-16" name="__codelineno-3-16"></a><span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
-<a id="__codelineno-3-17" name="__codelineno-3-17"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-3-18" name="__codelineno-3-18"></a><span class="p">}</span>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-4-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-4-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-4-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-4-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-4-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-4-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-4-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-4-10">10</a></span>
+<span class="normal"><a href="#__codelineno-4-11">11</a></span>
+<span class="normal"><a href="#__codelineno-4-12">12</a></span>
+<span class="normal"><a href="#__codelineno-4-13">13</a></span>
+<span class="normal"><a href="#__codelineno-4-14">14</a></span>
+<span class="normal"><a href="#__codelineno-4-15">15</a></span>
+<span class="normal"><a href="#__codelineno-4-16">16</a></span>
+<span class="normal"><a href="#__codelineno-4-17">17</a></span>
+<span class="normal"><a href="#__codelineno-4-18">18</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="nd">@Service</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="nd">@RequiredArgsConstructor</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">BdUserDetailsService</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">UserDetailsService</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4"></a>
+<a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">UsuarioRepository</span><span class="w"> </span><span class="n">usuarioRepository</span><span class="p">;</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6"></a>
+<a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="w">    </span><span class="nd">@Override</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">UserDetails</span><span class="w"> </span><span class="nf">loadUserByUsername</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">username</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">UsernameNotFoundException</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="w">        </span><span class="n">Usuario</span><span class="w"> </span><span class="n">usuario</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">usuarioRepository</span><span class="p">.</span><span class="na">findByUsername</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="w">                </span><span class="p">.</span><span class="na">orElseThrow</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UsernameNotFoundException</span><span class="p">(</span><span class="s">"Usuario no encontrado: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">username</span><span class="p">));</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11"></a>
+<a id="__codelineno-4-12" name="__codelineno-4-12"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">User</span><span class="p">.</span><span class="na">withUsername</span><span class="p">(</span><span class="n">usuario</span><span class="p">.</span><span class="na">getUsername</span><span class="p">())</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13"></a><span class="w">                </span><span class="p">.</span><span class="na">password</span><span class="p">(</span><span class="n">usuario</span><span class="p">.</span><span class="na">getPassword</span><span class="p">())</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14"></a><span class="w">                </span><span class="p">.</span><span class="na">roles</span><span class="p">(</span><span class="n">usuario</span><span class="p">.</span><span class="na">getRol</span><span class="p">().</span><span class="na">name</span><span class="p">())</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15"></a><span class="w">                </span><span class="p">.</span><span class="na">disabled</span><span class="p">(</span><span class="o">!</span><span class="n">usuario</span><span class="p">.</span><span class="na">isActivo</span><span class="p">())</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16"></a><span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-4-18" name="__codelineno-4-18"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p>Es el reemplazo directo del <code>InMemoryUserDetailsManager</code> del apartado anterior: implementa <code>UserDetailsService</code>, y en vez de buscar en una lista fija en memoria, busca en <code>UsuarioRepository</code> — la misma base de datos que usas para todo lo demás. Spring Security llama a <code>loadUserByUsername(...)</code> automáticamente cuando alguien intenta autenticarse; tú solo tienes que decirle dónde encontrar al usuario.</p>
+<p>Es el reemplazo directo del <code>InMemoryUserDetailsManager</code> del apartado anterior: implementa <code>UserDetailsService</code>, y en vez de buscar en una lista fija en memoria, busca en <code>UsuarioRepository</code> — la misma base de datos que usas para todo lo demás. Spring Security llama a <code>loadUserByUsername(...)</code> automáticamente cuando alguien intenta autenticarse; tú solo tienes que decirle dónde encontrar al usuario. El <code>.disabled(!usuario.isActivo())</code> es justo lo que usa el <code>activo</code> que has visto al definir la entidad: un usuario con <code>activo = false</code> sigue existiendo en la tabla, pero Spring Security lo trata como deshabilitado y rechaza sus intentos de login.</p>
+<div class="admonition tip">
+<p class="admonition-title"><code>securityFilterChain</code> no cambia ni una línea</p>
+<p>Podría parecer que, al sustituir una pieza tan central, tendrías que volver a tocar <code>.authorizeHttpRequests(...)</code>, <code>.csrf(...)</code>, <code>.exceptionHandling(...)</code> o <code>.httpBasic(...)</code> — pero no hace falta tocar nada de eso. Spring Security detecta automáticamente el único bean <code>UserDetailsService</code> que hay en el contexto (antes era <code>InMemoryUserDetailsManager</code>; ahora es <code>BdUserDetailsService</code>) y lo conecta solo con el <code>PasswordEncoder</code> que acabas de declarar, usándolos internamente para comparar la contraseña recibida contra el hash guardado. Todo lo que construiste en el apartado anterior —rutas públicas, CSRF desactivado, tu <code>AuthenticationEntryPoint</code> a medida— sigue funcionando exactamente igual, sin que toques <code>securityFilterChain</code> para nada.</p>
+</div>
+<h3 id="el-registro-authcontroller">El registro: <code>AuthController</code><a class="headerlink" href="#el-registro-authcontroller" title="Permanent link">¶</a></h3>
+<p>Todo lo de arriba explica cómo se <strong>verifica</strong> un usuario que ya existe — pero no cómo llega a existir el primero. Para eso hace falta un endpoint público que reciba usuario y contraseña, codifique la contraseña con el mismo <code>PasswordEncoder</code> de antes, y guarde el <code>Usuario</code> resultante:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span>
+<span class="normal"><a href="#__codelineno-5-2">2</a></span>
+<span class="normal"><a href="#__codelineno-5-3">3</a></span>
+<span class="normal"><a href="#__codelineno-5-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">record</span> <span class="nc">RegisterRequestDTO</span><span class="p">(</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="w">        </span><span class="nd">@NotBlank</span><span class="p">(</span><span class="n">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"El nombre de usuario no puede estar vacío"</span><span class="p">)</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">username</span><span class="p">,</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="w">        </span><span class="nd">@NotBlank</span><span class="p">(</span><span class="n">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"La contraseña no puede estar vacía"</span><span class="p">)</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">password</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4"></a><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+</code></pre></div></td></tr></table></div>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-6-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-6-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-6-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-6-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-6-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-6-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-6-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-6-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-6-10">10</a></span>
+<span class="normal"><a href="#__codelineno-6-11">11</a></span>
+<span class="normal"><a href="#__codelineno-6-12">12</a></span>
+<span class="normal"><a href="#__codelineno-6-13">13</a></span>
+<span class="normal"><a href="#__codelineno-6-14">14</a></span>
+<span class="normal"><a href="#__codelineno-6-15">15</a></span>
+<span class="normal"><a href="#__codelineno-6-16">16</a></span>
+<span class="normal"><a href="#__codelineno-6-17">17</a></span>
+<span class="normal"><a href="#__codelineno-6-18">18</a></span>
+<span class="normal"><a href="#__codelineno-6-19">19</a></span>
+<span class="normal"><a href="#__codelineno-6-20">20</a></span>
+<span class="normal"><a href="#__codelineno-6-21">21</a></span>
+<span class="normal"><a href="#__codelineno-6-22">22</a></span>
+<span class="normal"><a href="#__codelineno-6-23">23</a></span>
+<span class="normal"><a href="#__codelineno-6-24">24</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="nd">@RestController</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2"></a><span class="nd">@RequestMapping</span><span class="p">(</span><span class="s">"/api/v1/auth"</span><span class="p">)</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3"></a><span class="nd">@RequiredArgsConstructor</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">AuthController</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5"></a>
+<a id="__codelineno-6-6" name="__codelineno-6-6"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">UsuarioRepository</span><span class="w"> </span><span class="n">usuarioRepository</span><span class="p">;</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">PasswordEncoder</span><span class="w"> </span><span class="n">passwordEncoder</span><span class="p">;</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8"></a>
+<a id="__codelineno-6-9" name="__codelineno-6-9"></a><span class="w">    </span><span class="nd">@Operation</span><span class="p">(</span><span class="n">summary</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Registrar un nuevo usuario"</span><span class="p">)</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10"></a><span class="w">    </span><span class="nd">@ApiResponses</span><span class="p">({</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11"></a><span class="w">            </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"201"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Usuario creado correctamente"</span><span class="p">),</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12"></a><span class="w">            </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"400"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"El cuerpo de la petición no supera las validaciones"</span><span class="p">),</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13"></a><span class="w">            </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"409"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Ya existe un usuario con ese nombre"</span><span class="p">)</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14"></a><span class="w">    </span><span class="p">})</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15"></a><span class="w">    </span><span class="nd">@PostMapping</span><span class="p">(</span><span class="s">"/register"</span><span class="p">)</span>
+<a id="__codelineno-6-16" name="__codelineno-6-16"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">Void</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="nd">@Valid</span><span class="w"> </span><span class="nd">@RequestBody</span><span class="w"> </span><span class="n">RegisterRequestDTO</span><span class="w"> </span><span class="n">dto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-17" name="__codelineno-6-17"></a><span class="w">        </span><span class="n">Usuario</span><span class="w"> </span><span class="n">usuario</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Usuario</span><span class="p">();</span>
+<a id="__codelineno-6-18" name="__codelineno-6-18"></a><span class="w">        </span><span class="n">usuario</span><span class="p">.</span><span class="na">setUsername</span><span class="p">(</span><span class="n">dto</span><span class="p">.</span><span class="na">username</span><span class="p">());</span>
+<a id="__codelineno-6-19" name="__codelineno-6-19"></a><span class="w">        </span><span class="n">usuario</span><span class="p">.</span><span class="na">setPassword</span><span class="p">(</span><span class="n">passwordEncoder</span><span class="p">.</span><span class="na">encode</span><span class="p">(</span><span class="n">dto</span><span class="p">.</span><span class="na">password</span><span class="p">()));</span>
+<a id="__codelineno-6-20" name="__codelineno-6-20"></a><span class="w">        </span><span class="n">usuario</span><span class="p">.</span><span class="na">setRol</span><span class="p">(</span><span class="n">RolUsuario</span><span class="p">.</span><span class="na">USER</span><span class="p">);</span>
+<a id="__codelineno-6-21" name="__codelineno-6-21"></a><span class="w">        </span><span class="n">usuarioRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">usuario</span><span class="p">);</span>
+<a id="__codelineno-6-22" name="__codelineno-6-22"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">CREATED</span><span class="p">).</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-6-23" name="__codelineno-6-23"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-6-24" name="__codelineno-6-24"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><code>passwordEncoder.encode(...)</code> es la otra mitad del mismo bean que ya conoces: aquí <strong>codifica</strong>, en <code>BdUserDetailsService</code> de arriba se <strong>verificaba</strong> — el mismo <code>PasswordEncoder</code>, las dos operaciones opuestas que necesita todo el ciclo de vida de una contraseña. Si alguien intentara registrar un <code>username</code> que ya existe, la restricción <code>unique = true</code> de la entidad lo bloquea en la base de datos — y ese error ya sabes gestionarlo, es el mismo <code>DataIntegrityViolationException</code> que tu <code>GlobalExceptionHandler</code> convierte en un <code>409</code> desde el primer apartado del tema.</p>
+<div class="admonition warning">
+<p class="admonition-title">El rol nunca lo decide quien se registra</p>
+<p>Fíjate en que <code>RolUsuario.USER</code> está fijado aquí mismo, en el servidor — no viene del DTO que manda el cliente. Si <code>RegisterRequestDTO</code> incluyera un campo <code>rol</code> y lo guardaras tal cual, cualquiera podría registrarse a sí mismo como <code>ADMIN</code> con solo añadirlo al JSON. La regla es simple: nunca dejes que el cliente decida sus propios privilegios.</p>
+</div>
+<p>Como cualquier otra ruta nueva, hay que abrirla explícitamente en tu política de acceso — nadie tiene todavía una cuenta con la que autenticarse para registrarse:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/auth/register"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+<p>Pero ese mismo aviso deja una pregunta abierta: si nadie puede auto-asignarse <code>ADMIN</code>, ¿de dónde sale el primero? Ese usuario tiene que venir de fuera del propio flujo de registro.</p>
+<h3 id="el-primer-admin-un-applicationrunner">El primer <code>ADMIN</code>: un <code>ApplicationRunner</code><a class="headerlink" href="#el-primer-admin-un-applicationrunner" title="Permanent link">¶</a></h3>
+<p>La pieza que hace falta es un <code>ApplicationRunner</code>: una interfaz de Spring Boot con un único método, <code>run(...)</code>, que el propio framework ejecuta automáticamente <strong>una sola vez</strong>, justo después de que la aplicación termine de arrancar — antes de que llegue ninguna petición. Es el sitio natural para insertar datos que tienen que existir desde el primer momento:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-8-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-8-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-8-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-8-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-8-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-8-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-8-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-8-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-8-10">10</a></span>
+<span class="normal"><a href="#__codelineno-8-11">11</a></span>
+<span class="normal"><a href="#__codelineno-8-12">12</a></span>
+<span class="normal"><a href="#__codelineno-8-13">13</a></span>
+<span class="normal"><a href="#__codelineno-8-14">14</a></span>
+<span class="normal"><a href="#__codelineno-8-15">15</a></span>
+<span class="normal"><a href="#__codelineno-8-16">16</a></span>
+<span class="normal"><a href="#__codelineno-8-17">17</a></span>
+<span class="normal"><a href="#__codelineno-8-18">18</a></span>
+<span class="normal"><a href="#__codelineno-8-19">19</a></span>
+<span class="normal"><a href="#__codelineno-8-20">20</a></span>
+<span class="normal"><a href="#__codelineno-8-21">21</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="nd">@Component</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2"></a><span class="nd">@RequiredArgsConstructor</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">UsuariosSeed</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">ApplicationRunner</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4"></a>
+<a id="__codelineno-8-5" name="__codelineno-8-5"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">UsuarioRepository</span><span class="w"> </span><span class="n">usuarioRepository</span><span class="p">;</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">PasswordEncoder</span><span class="w"> </span><span class="n">passwordEncoder</span><span class="p">;</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7"></a>
+<a id="__codelineno-8-8" name="__codelineno-8-8"></a><span class="w">    </span><span class="nd">@Value</span><span class="p">(</span><span class="s">"${gamevault.admin.password}"</span><span class="p">)</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">adminPassword</span><span class="p">;</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10"></a>
+<a id="__codelineno-8-11" name="__codelineno-8-11"></a><span class="w">    </span><span class="nd">@Override</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="n">ApplicationArguments</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-8-13" name="__codelineno-8-13"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">usuarioRepository</span><span class="p">.</span><span class="na">findByUsername</span><span class="p">(</span><span class="s">"admin"</span><span class="p">).</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-8-14" name="__codelineno-8-14"></a><span class="w">            </span><span class="n">Usuario</span><span class="w"> </span><span class="n">admin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Usuario</span><span class="p">();</span>
+<a id="__codelineno-8-15" name="__codelineno-8-15"></a><span class="w">            </span><span class="n">admin</span><span class="p">.</span><span class="na">setUsername</span><span class="p">(</span><span class="s">"admin"</span><span class="p">);</span>
+<a id="__codelineno-8-16" name="__codelineno-8-16"></a><span class="w">            </span><span class="n">admin</span><span class="p">.</span><span class="na">setPassword</span><span class="p">(</span><span class="n">passwordEncoder</span><span class="p">.</span><span class="na">encode</span><span class="p">(</span><span class="n">adminPassword</span><span class="p">));</span>
+<a id="__codelineno-8-17" name="__codelineno-8-17"></a><span class="w">            </span><span class="n">admin</span><span class="p">.</span><span class="na">setRol</span><span class="p">(</span><span class="n">RolUsuario</span><span class="p">.</span><span class="na">ADMIN</span><span class="p">);</span>
+<a id="__codelineno-8-18" name="__codelineno-8-18"></a><span class="w">            </span><span class="n">usuarioRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">admin</span><span class="p">);</span>
+<a id="__codelineno-8-19" name="__codelineno-8-19"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-8-20" name="__codelineno-8-20"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-8-21" name="__codelineno-8-21"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Igual que con <code>UserDetailsService</code>, no hace falta registrar nada a mano: basta con anotar la clase <code>@Component</code> e implementar <code>ApplicationRunner</code>, y Spring Boot la detecta y la ejecuta sola en cada arranque. El <code>if (...isEmpty())</code> es imprescindible por eso mismo —<code>run(...)</code> se ejecuta en <strong>cada</strong> arranque, no solo la primera vez—: sin esa comprobación, intentarías insertar el mismo <code>admin</code> cada vez que reinicies, y chocarías con la restricción <code>unique = true</code> del <code>username</code>.</p>
+<p>Fíjate en que la contraseña ya no está escrita directamente en el código: viene de <code>${gamevault.admin.password}</code>, una propiedad externa. El motivo lo ves en la siguiente sección.</p>
+<h3 id="esa-contrasena-tampoco-deberia-estar-en-tu-repositorio">Esa contraseña tampoco debería estar en tu repositorio<a class="headerlink" href="#esa-contrasena-tampoco-deberia-estar-en-tu-repositorio" title="Permanent link">¶</a></h3>
+<p>Aunque <code>admin123</code> ya no viva en ningún <code>.java</code>, si la escribieras tal cual en <code>application-dev.yaml</code> seguirías teniendo el mismo problema: ese fichero se sube a Git, así que cualquiera con acceso al repositorio la vería igual. La solución es un fichero de propiedades <strong>aparte, que nunca se versiona</strong>:</p>
+<div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1">1</a></span>
+<span class="normal"><a href="#__codelineno-9-2">2</a></span>
+<span class="normal"><a href="#__codelineno-9-3">3</a></span>
+<span class="normal"><a href="#__codelineno-9-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="c1"># application-dev.yaml (SÍ se sube a Git)</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2"></a><span class="nt">spring</span><span class="p">:</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3"></a><span class="w">  </span><span class="nt">config</span><span class="p">:</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4"></a><span class="w">    </span><span class="nt">import</span><span class="p">:</span><span class="w"> </span><span class="s">"optional:application-dev-local.yaml"</span>
+</code></pre></div></td></tr></table></div>
+<div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-10-1">1</a></span>
+<span class="normal"><a href="#__codelineno-10-2">2</a></span>
+<span class="normal"><a href="#__codelineno-10-3">3</a></span>
+<span class="normal"><a href="#__codelineno-10-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1"></a><span class="c1"># application-dev-local.yaml (en .gitignore, NO se sube a Git)</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2"></a><span class="nt">gamevault</span><span class="p">:</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3"></a><span class="w">  </span><span class="nt">admin</span><span class="p">:</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4"></a><span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admin123</span>
+</code></pre></div></td></tr></table></div>
+<p>El prefijo <code>optional:</code> le dice a Spring Boot que, si ese fichero no existe (por ejemplo, en la máquina de un compañero que acaba de clonar el repositorio), arranque igualmente en vez de fallar. Y como <code>@Value("${gamevault.admin.password}")</code> no lleva ningún valor por defecto, si de verdad falta la propiedad, la aplicación <strong>no arranca</strong> — con un error claro señalando qué falta, en vez de arrancar silenciosamente con una contraseña vacía o adivinada.</p>
+<p>Para que cualquiera sepa qué tiene que rellenar sin tener que adivinarlo, se acompaña de una plantilla que sí se sube a Git:</p>
+<div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-11-1">1</a></span>
+<span class="normal"><a href="#__codelineno-11-2">2</a></span>
+<span class="normal"><a href="#__codelineno-11-3">3</a></span>
+<span class="normal"><a href="#__codelineno-11-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1"></a><span class="c1"># application-dev-local.yaml.example (SÍ se sube a Git — sin valores reales)</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2"></a><span class="nt">gamevault</span><span class="p">:</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3"></a><span class="w">  </span><span class="nt">admin</span><span class="p">:</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4"></a><span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pon-aqui-tu-propia-contraseña</span>
+</code></pre></div></td></tr></table></div>
+<p>Cada persona que clona el repositorio copia ese <code>.example</code> a <code>application-dev-local.yaml</code>, rellena sus propios valores, y ese fichero final se queda solo en su máquina. Es el mismo patrón, exactamente, que vas a reutilizar para el secreto de JWT más adelante en el tema.</p>
+<div class="admonition note">
+<p class="admonition-title">¿No es esto lo mismo que la contraseña de Postgres, que dejaste en el fichero versionado?</p>
+<p>Buena pregunta, y la respuesta es matizada. Tal y como está tu proyecto <strong>hoy</strong> —corriendo solo en tu Dev Container, sin desplegar en ningún sitio—, el riesgo real de que <code>admin123</code> se filtre por GitHub es prácticamente el mismo que el de la contraseña de Postgres del primer apartado del tema: nadie fuera de tu máquina puede usarla ahora mismo, porque no hay ningún servidor público al que dirigirla.</p>
+<p>La diferencia no está en el peligro de hoy, sino en lo fácil que es que este secreto concreto sobreviva sin querer hasta un despliegue real. La contraseña de Postgres solo importaría si algún día reconfiguraras a propósito tu aplicación contra una base de datos en la nube — un paso consciente. Pero es muy típico coger un proyecto que ya funciona como base para algo real y desplegarlo copiando la configuración tal cual, sin darte cuenta de que ese <code>admin123</code> o ese secreto de JWT siguen siendo los mismos del primer commit. Protegerlo ahora, cuando no cuesta nada y no urge, es más barato que aprender por qué hacía falta el día que sí urja.</p>
+</div>
 <hr>
 <h2 id="lo-que-aun-falta">🧭 Lo que aún falta<a class="headerlink" href="#lo-que-aun-falta" title="Permanent link">¶</a></h2>
 <p>Ya no hay usuarios hardcodeados que desaparezcan al reiniciar — están en PostgreSQL, con contraseñas que ni tú mismo puedes leer. Pero sigue quedando el segundo problema del apartado anterior: las credenciales viajan en <strong>cada</strong> petición, aunque sea con HTTP Basic. En el próximo apartado lo resuelve JWT: autenticarte una vez, y presentar un token en las peticiones siguientes.</p>
@@ -2814,6 +3080,9 @@
 <li><strong>BCrypt</strong> es deliberadamente lento (factor de coste configurable), lo que lo hace resistente a fuerza bruta frente a un hash rápido como SHA-256 a secas.</li>
 <li><code>DelegatingPasswordEncoder</code> antepone un prefijo (<code>{bcrypt}</code>) al hash, indicando el algoritmo usado — el mismo bean codifica y verifica.</li>
 <li>Un <code>UserDetailsService</code> propio sustituye al <code>InMemoryUserDetailsManager</code>: busca los usuarios en la base de datos real.</li>
+<li>Spring Security detecta solo el <code>UserDetailsService</code> y el <code>PasswordEncoder</code> del contexto y los conecta por su cuenta — <code>securityFilterChain</code> no cambia ni una línea.</li>
+<li>Un endpoint de registro público crea usuarios reales, siempre con rol <code>USER</code> fijado en el servidor — nunca confíes en que el cliente decida sus propios privilegios. El primer <code>ADMIN</code> no puede salir de ahí: hace falta un <em>seed</em> aparte.</li>
+<li>Ese <em>seed</em> no debe llevar la contraseña escrita en el código ni en un fichero versionado: va en <code>application-dev-local.yaml</code> (en <code>.gitignore</code>), importado con <code>spring.config.import: optional:...</code>, acompañado de un <code>.example</code> sin valores reales que sí se sube a Git.</li>
 </ul>
 </details></div>
 
