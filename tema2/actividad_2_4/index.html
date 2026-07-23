@@ -9,7 +9,7 @@
       
       
       
-        <link rel="prev" href="../autenticacion-jwt/">
+        <link rel="prev" href="../anexo-https/">
       
       
         <link rel="next" href="../roles-y-rutas-protegidas/">
@@ -1456,6 +1456,29 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../anexo-https/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Anexo opcional - HTTPS en desarrollo
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -1572,9 +1595,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#mini-reto-get-apiv1authme" class="md-nav__link">
+  <a href="#paso-6-get-apiv1authme" class="md-nav__link">
     <span class="md-ellipsis">
-      Mini-reto — GET /api/v1/auth/me
+      Paso 6 — GET /api/v1/auth/me
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-7-un-boton-authorize-de-verdad-en-swagger" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 7 — Un botón "Authorize" de verdad en Swagger
     </span>
   </a>
   
@@ -2607,9 +2639,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#mini-reto-get-apiv1authme" class="md-nav__link">
+  <a href="#paso-6-get-apiv1authme" class="md-nav__link">
     <span class="md-ellipsis">
-      Mini-reto — GET /api/v1/auth/me
+      Paso 6 — GET /api/v1/auth/me
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-7-un-boton-authorize-de-verdad-en-swagger" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 7 — Un botón "Authorize" de verdad en Swagger
     </span>
   </a>
   
@@ -2652,7 +2693,7 @@
 <div><h1 id="actividad-24-login-con-jwt">🧪 Actividad 2.4: Login con JWT<a class="headerlink" href="#actividad-24-login-con-jwt" title="Permanent link">¶</a></h1>
 <div class="admonition warning">
 <p class="admonition-title">Descarga la plantilla</p>
-<p>📄 <a href="plantillas/Actividad_2_4_PSP_Plantilla.docx" rel="noopener" target="_blank">Plantilla 2.4 — Login con JWT</a></p>
+<p>📄 <a href="../plantillas/Actividad_2_4_PSP_Plantilla.docx" rel="noopener" target="_blank">Plantilla 2.4 — Login con JWT</a></p>
 </div>
 <div class="admonition info">
 <p class="admonition-title">Práctica guiada</p>
@@ -2663,198 +2704,108 @@
 <li>Configurar el secreto JWT y los beans de codificación/decodificación.</li>
 <li>Generar un token con claims propios en el login.</li>
 <li>Cambiar la configuración de seguridad de HTTP Basic a JWT.</li>
+<li>Cerrar la grieta del <code>401</code> de login sin formato, con un sexto handler en tu <code>GlobalExceptionHandler</code>.</li>
+<li>Añadir un endpoint <code>GET /api/v1/auth/me</code> que exponga tu identidad actual a partir del token.</li>
+<li>Darle a Swagger un botón "Authorize" de verdad, con un <code>SecurityScheme</code>.</li>
 </ul>
 <hr>
 <h2 id="requisitos-previos">Requisitos previos<a class="headerlink" href="#requisitos-previos" title="Permanent link">¶</a></h2>
 <p>Tus usuarios reales en PostgreSQL con BCrypt (Actividad 2.3).</p>
 <hr>
 <h2 id="paso-1-el-secreto-y-los-beans-jwt">Paso 1 — El secreto y los beans JWT<a class="headerlink" href="#paso-1-el-secreto-y-los-beans-jwt" title="Permanent link">¶</a></h2>
-<p>Ya tienes preparado, desde la Actividad 2.3, <code>application-dev-local.yml</code> (fuera de Git) y su plantilla <code>application-dev-local.yml.example</code>. Añade el secreto ahí, no en <code>application-dev.yml</code>:</p>
-<div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
+<p>Antes de nada, añade la dependencia que trae <code>JwtEncoder</code>, <code>JwtDecoder</code> y todo lo relacionado con JWT — no viene incluida en <code>spring-boot-starter-security</code>, es un starter aparte:</p>
+<div class="language-xml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">XML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
 <span class="normal"><a href="#__codelineno-0-2">2</a></span>
 <span class="normal"><a href="#__codelineno-0-3">3</a></span>
-<span class="normal"><a href="#__codelineno-0-4">4</a></span>
-<span class="normal"><a href="#__codelineno-0-5">5</a></span>
-<span class="normal"><a href="#__codelineno-0-6">6</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="c1"># application-dev-local.yml (NO se sube a Git)</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="nt">gamevault</span><span class="p">:</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="w">  </span><span class="nt">admin</span><span class="p">:</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admin123</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="w">  </span><span class="nt">jwt</span><span class="p">:</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="w">    </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">un-secreto-largo-y-aleatorio-tuyo-para-desarrollo</span>
+<span class="normal"><a href="#__codelineno-0-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nt">&lt;dependency&gt;</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-oauth2-resource-server<span class="nt">&lt;/artifactId&gt;</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div></td></tr></table></div>
+<p>Sin esta dependencia, ninguna de las clases de este apartado (<code>JwtEncoder</code>, <code>JwtDecoder</code>, <code>JwtAuthenticationConverter</code>...) existe en tu classpath, y el proyecto no compila. Actualiza el proyecto Maven tras añadirla (en tu IDE, o <code>mvn compile</code> desde terminal).</p>
+<p>Ya tienes preparado, desde la Actividad 2.3, <code>application-dev-local.yml</code> (fuera de Git) y su plantilla <code>application-dev-local.yml.example</code>. Añade el secreto ahí, no en <code>application-dev.yml</code>:</p>
 <div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
 <span class="normal"><a href="#__codelineno-1-2">2</a></span>
 <span class="normal"><a href="#__codelineno-1-3">3</a></span>
 <span class="normal"><a href="#__codelineno-1-4">4</a></span>
 <span class="normal"><a href="#__codelineno-1-5">5</a></span>
-<span class="normal"><a href="#__codelineno-1-6">6</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="c1"># application-dev-local.yml.example (SÍ se sube a Git — sin valores reales)</span>
+<span class="normal"><a href="#__codelineno-1-6">6</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="c1"># application-dev-local.yml (NO se sube a Git)</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="nt">gamevault</span><span class="p">:</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">  </span><span class="nt">admin</span><span class="p">:</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pon-aqui-tu-propia-contraseña</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admin123</span>
 <a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="w">  </span><span class="nt">jwt</span><span class="p">:</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="w">    </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pon-aqui-tu-propio-secreto</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="w">    </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">un-secreto-largo-y-aleatorio-tuyo-para-desarrollo</span>
 </code></pre></div></td></tr></table></div>
-<p>En <code>application-dev.yml</code> (este sí se sube a Git) solo va lo que no es sensible:</p>
 <div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
 <span class="normal"><a href="#__codelineno-2-2">2</a></span>
-<span class="normal"><a href="#__codelineno-2-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nt">gamevault</span><span class="p">:</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">  </span><span class="nt">jwt</span><span class="p">:</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">    </span><span class="nt">expiration-minutes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
+<span class="normal"><a href="#__codelineno-2-3">3</a></span>
+<span class="normal"><a href="#__codelineno-2-4">4</a></span>
+<span class="normal"><a href="#__codelineno-2-5">5</a></span>
+<span class="normal"><a href="#__codelineno-2-6">6</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="c1"># application-dev-local.yml.example (SÍ se sube a Git — sin valores reales)</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="nt">gamevault</span><span class="p">:</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">  </span><span class="nt">admin</span><span class="p">:</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pon-aqui-tu-propia-contraseña</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">  </span><span class="nt">jwt</span><span class="p">:</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">    </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pon-aqui-tu-propio-secreto</span>
 </code></pre></div></td></tr></table></div>
+<p>En <code>application-dev.yml</code> (este sí se sube a Git) solo va lo que no es sensible:</p>
+<div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
+<span class="normal"><a href="#__codelineno-3-2">2</a></span>
+<span class="normal"><a href="#__codelineno-3-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nt">gamevault</span><span class="p">:</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">  </span><span class="nt">jwt</span><span class="p">:</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">    </span><span class="nt">expiration-minutes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
+</code></pre></div></td></tr></table></div>
+<div class="admonition warning">
+<p class="admonition-title">El secreto necesita al menos 32 caracteres</p>
+<p>HS256 exige una clave de al menos 256 bits (32 caracteres) — con menos, Spring lanza una excepción al arrancar la aplicación. El del ejemplo de arriba ya cumple de sobra, pero si escribes el tuyo a mano, cuenta los caracteres. Una forma rápida de generar uno válido:
+</p><div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a>openssl<span class="w"> </span>rand<span class="w"> </span>-base64<span class="w"> </span><span class="m">32</span>
+</code></pre></div></td></tr></table></div>
+Esto te da una cadena aleatoria de más de 32 caracteres, lista para pegar en <code>jwt.secret</code> — no hace falta que "signifique" nada, solo que sea larga e impredecible.
+</div>
 <div class="admonition warning">
 <p class="admonition-title">Nunca subas un secreto real a un repositorio</p>
 <p>Un secreto de JWT filtrado permite falsificar tokens válidos para cualquier usuario — es un riesgo real, no una formalidad. Por eso vive en <code>application-dev-local.yml</code>, no en <code>application-dev.yml</code>: el mismo mecanismo que ya usaste para la contraseña del <code>admin</code> en la Actividad 2.3.</p>
 </div>
 <p>En tu <code>SecurityConfig</code>:</p>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-3-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-3-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-3-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-3-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-3-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-3-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-3-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-3-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-3-10">10</a></span>
-<span class="normal"><a href="#__codelineno-3-11">11</a></span>
-<span class="normal"><a href="#__codelineno-3-12">12</a></span>
-<span class="normal"><a href="#__codelineno-3-13">13</a></span>
-<span class="normal"><a href="#__codelineno-3-14">14</a></span>
-<span class="normal"><a href="#__codelineno-3-15">15</a></span>
-<span class="normal"><a href="#__codelineno-3-16">16</a></span>
-<span class="normal"><a href="#__codelineno-3-17">17</a></span>
-<span class="normal"><a href="#__codelineno-3-18">18</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nd">@Value</span><span class="p">(</span><span class="s">"${gamevault.jwt.secret}"</span><span class="p">)</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">jwtSecret</span><span class="p">;</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3"></a>
-<a id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="nd">@Bean</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="kd">public</span><span class="w"> </span><span class="n">JwtEncoder</span><span class="w"> </span><span class="nf">jwtEncoder</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">NimbusJwtEncoder</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">ImmutableSecret</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">jwtSecret</span><span class="p">.</span><span class="na">getBytes</span><span class="p">(</span><span class="n">StandardCharsets</span><span class="p">.</span><span class="na">UTF_8</span><span class="p">)));</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7"></a><span class="p">}</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8"></a>
-<a id="__codelineno-3-9" name="__codelineno-3-9"></a><span class="nd">@Bean</span>
-<a id="__codelineno-3-10" name="__codelineno-3-10"></a><span class="kd">public</span><span class="w"> </span><span class="n">JwtDecoder</span><span class="w"> </span><span class="nf">jwtDecoder</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-3-11" name="__codelineno-3-11"></a><span class="w">    </span><span class="n">SecretKeySpec</span><span class="w"> </span><span class="n">secretKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SecretKeySpec</span><span class="p">(</span><span class="n">jwtSecret</span><span class="p">.</span><span class="na">getBytes</span><span class="p">(</span><span class="n">StandardCharsets</span><span class="p">.</span><span class="na">UTF_8</span><span class="p">),</span><span class="w"> </span><span class="s">"HmacSHA256"</span><span class="p">);</span>
-<a id="__codelineno-3-12" name="__codelineno-3-12"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">NimbusJwtDecoder</span><span class="p">.</span><span class="na">withSecretKey</span><span class="p">(</span><span class="n">secretKey</span><span class="p">).</span><span class="na">macAlgorithm</span><span class="p">(</span><span class="n">MacAlgorithm</span><span class="p">.</span><span class="na">HS256</span><span class="p">).</span><span class="na">build</span><span class="p">();</span>
-<a id="__codelineno-3-13" name="__codelineno-3-13"></a><span class="p">}</span>
-<a id="__codelineno-3-14" name="__codelineno-3-14"></a>
-<a id="__codelineno-3-15" name="__codelineno-3-15"></a><span class="nd">@Bean</span>
-<a id="__codelineno-3-16" name="__codelineno-3-16"></a><span class="kd">public</span><span class="w"> </span><span class="n">AuthenticationManager</span><span class="w"> </span><span class="nf">authenticationManager</span><span class="p">(</span><span class="n">AuthenticationConfiguration</span><span class="w"> </span><span class="n">configuration</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-3-17" name="__codelineno-3-17"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">configuration</span><span class="p">.</span><span class="na">getAuthenticationManager</span><span class="p">();</span>
-<a id="__codelineno-3-18" name="__codelineno-3-18"></a><span class="p">}</span>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-5-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-5-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-5-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-5-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-5-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-5-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-5-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-5-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-5-10">10</a></span>
+<span class="normal"><a href="#__codelineno-5-11">11</a></span>
+<span class="normal"><a href="#__codelineno-5-12">12</a></span>
+<span class="normal"><a href="#__codelineno-5-13">13</a></span>
+<span class="normal"><a href="#__codelineno-5-14">14</a></span>
+<span class="normal"><a href="#__codelineno-5-15">15</a></span>
+<span class="normal"><a href="#__codelineno-5-16">16</a></span>
+<span class="normal"><a href="#__codelineno-5-17">17</a></span>
+<span class="normal"><a href="#__codelineno-5-18">18</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="nd">@Value</span><span class="p">(</span><span class="s">"${gamevault.jwt.secret}"</span><span class="p">)</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">jwtSecret</span><span class="p">;</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3"></a>
+<a id="__codelineno-5-4" name="__codelineno-5-4"></a><span class="nd">@Bean</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5"></a><span class="kd">public</span><span class="w"> </span><span class="n">JwtEncoder</span><span class="w"> </span><span class="nf">jwtEncoder</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">NimbusJwtEncoder</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">ImmutableSecret</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">jwtSecret</span><span class="p">.</span><span class="na">getBytes</span><span class="p">(</span><span class="n">StandardCharsets</span><span class="p">.</span><span class="na">UTF_8</span><span class="p">)));</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7"></a><span class="p">}</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8"></a>
+<a id="__codelineno-5-9" name="__codelineno-5-9"></a><span class="nd">@Bean</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10"></a><span class="kd">public</span><span class="w"> </span><span class="n">JwtDecoder</span><span class="w"> </span><span class="nf">jwtDecoder</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11"></a><span class="w">    </span><span class="n">SecretKeySpec</span><span class="w"> </span><span class="n">secretKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SecretKeySpec</span><span class="p">(</span><span class="n">jwtSecret</span><span class="p">.</span><span class="na">getBytes</span><span class="p">(</span><span class="n">StandardCharsets</span><span class="p">.</span><span class="na">UTF_8</span><span class="p">),</span><span class="w"> </span><span class="s">"HmacSHA256"</span><span class="p">);</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">NimbusJwtDecoder</span><span class="p">.</span><span class="na">withSecretKey</span><span class="p">(</span><span class="n">secretKey</span><span class="p">).</span><span class="na">macAlgorithm</span><span class="p">(</span><span class="n">MacAlgorithm</span><span class="p">.</span><span class="na">HS256</span><span class="p">).</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13"></a><span class="p">}</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14"></a>
+<a id="__codelineno-5-15" name="__codelineno-5-15"></a><span class="nd">@Bean</span>
+<a id="__codelineno-5-16" name="__codelineno-5-16"></a><span class="kd">public</span><span class="w"> </span><span class="n">AuthenticationManager</span><span class="w"> </span><span class="nf">authenticationManager</span><span class="p">(</span><span class="n">AuthenticationConfiguration</span><span class="w"> </span><span class="n">configuration</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">configuration</span><span class="p">.</span><span class="na">getAuthenticationManager</span><span class="p">();</span>
+<a id="__codelineno-5-18" name="__codelineno-5-18"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p><code>JwtEncoder</code> firma tokens nuevos; <code>JwtDecoder</code> verifica los que llegan en cada petición — ambos usan el mismo secreto compartido. El <code>AuthenticationManager</code> es el bean que de verdad comprueba usuario/contraseña contra tu <code>BdUserDetailsService</code>.</p>
 <hr>
 <h2 id="paso-2-jwtservice-guiado-al-completo">Paso 2 — <code>JwtService</code>, guiado al completo<a class="headerlink" href="#paso-2-jwtservice-guiado-al-completo" title="Permanent link">¶</a></h2>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-4-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-4-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-4-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-4-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-4-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-4-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-4-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-4-10">10</a></span>
-<span class="normal"><a href="#__codelineno-4-11">11</a></span>
-<span class="normal"><a href="#__codelineno-4-12">12</a></span>
-<span class="normal"><a href="#__codelineno-4-13">13</a></span>
-<span class="normal"><a href="#__codelineno-4-14">14</a></span>
-<span class="normal"><a href="#__codelineno-4-15">15</a></span>
-<span class="normal"><a href="#__codelineno-4-16">16</a></span>
-<span class="normal"><a href="#__codelineno-4-17">17</a></span>
-<span class="normal"><a href="#__codelineno-4-18">18</a></span>
-<span class="normal"><a href="#__codelineno-4-19">19</a></span>
-<span class="normal"><a href="#__codelineno-4-20">20</a></span>
-<span class="normal"><a href="#__codelineno-4-21">21</a></span>
-<span class="normal"><a href="#__codelineno-4-22">22</a></span>
-<span class="normal"><a href="#__codelineno-4-23">23</a></span>
-<span class="normal"><a href="#__codelineno-4-24">24</a></span>
-<span class="normal"><a href="#__codelineno-4-25">25</a></span>
-<span class="normal"><a href="#__codelineno-4-26">26</a></span>
-<span class="normal"><a href="#__codelineno-4-27">27</a></span>
-<span class="normal"><a href="#__codelineno-4-28">28</a></span>
-<span class="normal"><a href="#__codelineno-4-29">29</a></span>
-<span class="normal"><a href="#__codelineno-4-30">30</a></span>
-<span class="normal"><a href="#__codelineno-4-31">31</a></span>
-<span class="normal"><a href="#__codelineno-4-32">32</a></span>
-<span class="normal"><a href="#__codelineno-4-33">33</a></span>
-<span class="normal"><a href="#__codelineno-4-34">34</a></span>
-<span class="normal"><a href="#__codelineno-4-35">35</a></span>
-<span class="normal"><a href="#__codelineno-4-36">36</a></span>
-<span class="normal"><a href="#__codelineno-4-37">37</a></span>
-<span class="normal"><a href="#__codelineno-4-38">38</a></span>
-<span class="normal"><a href="#__codelineno-4-39">39</a></span>
-<span class="normal"><a href="#__codelineno-4-40">40</a></span>
-<span class="normal"><a href="#__codelineno-4-41">41</a></span>
-<span class="normal"><a href="#__codelineno-4-42">42</a></span>
-<span class="normal"><a href="#__codelineno-4-43">43</a></span>
-<span class="normal"><a href="#__codelineno-4-44">44</a></span>
-<span class="normal"><a href="#__codelineno-4-45">45</a></span>
-<span class="normal"><a href="#__codelineno-4-46">46</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.tunombre.gamevault.seguridad</span><span class="p">;</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2"></a>
-<a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">lombok.RequiredArgsConstructor</span><span class="p">;</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.beans.factory.annotation.Value</span><span class="p">;</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.security.core.Authentication</span><span class="p">;</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.security.core.GrantedAuthority</span><span class="p">;</span>
-<a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.security.oauth2.jose.jws.MacAlgorithm</span><span class="p">;</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.security.oauth2.jwt.*</span><span class="p">;</span>
-<a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.stereotype.Service</span><span class="p">;</span>
-<a id="__codelineno-4-10" name="__codelineno-4-10"></a>
-<a id="__codelineno-4-11" name="__codelineno-4-11"></a><span class="kn">import</span><span class="w"> </span><span class="nn">java.time.Instant</span><span class="p">;</span>
-<a id="__codelineno-4-12" name="__codelineno-4-12"></a><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span>
-<a id="__codelineno-4-13" name="__codelineno-4-13"></a>
-<a id="__codelineno-4-14" name="__codelineno-4-14"></a><span class="nd">@Service</span>
-<a id="__codelineno-4-15" name="__codelineno-4-15"></a><span class="nd">@RequiredArgsConstructor</span>
-<a id="__codelineno-4-16" name="__codelineno-4-16"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">JwtService</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-4-17" name="__codelineno-4-17"></a>
-<a id="__codelineno-4-18" name="__codelineno-4-18"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">JwtEncoder</span><span class="w"> </span><span class="n">jwtEncoder</span><span class="p">;</span>
-<a id="__codelineno-4-19" name="__codelineno-4-19"></a>
-<a id="__codelineno-4-20" name="__codelineno-4-20"></a><span class="w">    </span><span class="nd">@Value</span><span class="p">(</span><span class="s">"${gamevault.jwt.expiration-minutes}"</span><span class="p">)</span>
-<a id="__codelineno-4-21" name="__codelineno-4-21"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">expirationMinutes</span><span class="p">;</span>
-<a id="__codelineno-4-22" name="__codelineno-4-22"></a>
-<a id="__codelineno-4-23" name="__codelineno-4-23"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">generarToken</span><span class="p">(</span><span class="n">Authentication</span><span class="w"> </span><span class="n">authentication</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-4-24" name="__codelineno-4-24"></a><span class="w">        </span><span class="n">Instant</span><span class="w"> </span><span class="n">ahora</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">();</span>
-<a id="__codelineno-4-25" name="__codelineno-4-25"></a><span class="w">        </span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">roles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">authentication</span><span class="p">.</span><span class="na">getAuthorities</span><span class="p">().</span><span class="na">stream</span><span class="p">()</span>
-<a id="__codelineno-4-26" name="__codelineno-4-26"></a><span class="w">                </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">GrantedAuthority</span><span class="p">::</span><span class="n">getAuthority</span><span class="p">)</span>
-<a id="__codelineno-4-27" name="__codelineno-4-27"></a><span class="w">                </span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="na">startsWith</span><span class="p">(</span><span class="s">"ROLE_"</span><span class="p">))</span>
-<a id="__codelineno-4-28" name="__codelineno-4-28"></a><span class="w">                </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="na">replace</span><span class="p">(</span><span class="s">"ROLE_"</span><span class="p">,</span><span class="w"> </span><span class="s">""</span><span class="p">))</span>
-<a id="__codelineno-4-29" name="__codelineno-4-29"></a><span class="w">                </span><span class="p">.</span><span class="na">toList</span><span class="p">();</span>
-<a id="__codelineno-4-30" name="__codelineno-4-30"></a>
-<a id="__codelineno-4-31" name="__codelineno-4-31"></a><span class="w">        </span><span class="n">JwtClaimsSet</span><span class="w"> </span><span class="n">claims</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JwtClaimsSet</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
-<a id="__codelineno-4-32" name="__codelineno-4-32"></a><span class="w">                </span><span class="p">.</span><span class="na">issuer</span><span class="p">(</span><span class="s">"gamevault"</span><span class="p">)</span>
-<a id="__codelineno-4-33" name="__codelineno-4-33"></a><span class="w">                </span><span class="p">.</span><span class="na">issuedAt</span><span class="p">(</span><span class="n">ahora</span><span class="p">)</span>
-<a id="__codelineno-4-34" name="__codelineno-4-34"></a><span class="w">                </span><span class="p">.</span><span class="na">expiresAt</span><span class="p">(</span><span class="n">ahora</span><span class="p">.</span><span class="na">plusSeconds</span><span class="p">(</span><span class="n">expirationMinutes</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">60</span><span class="p">))</span>
-<a id="__codelineno-4-35" name="__codelineno-4-35"></a><span class="w">                </span><span class="p">.</span><span class="na">subject</span><span class="p">(</span><span class="n">authentication</span><span class="p">.</span><span class="na">getName</span><span class="p">())</span>
-<a id="__codelineno-4-36" name="__codelineno-4-36"></a><span class="w">                </span><span class="p">.</span><span class="na">claim</span><span class="p">(</span><span class="s">"roles"</span><span class="p">,</span><span class="w"> </span><span class="n">roles</span><span class="p">)</span>
-<a id="__codelineno-4-37" name="__codelineno-4-37"></a><span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
-<a id="__codelineno-4-38" name="__codelineno-4-38"></a>
-<a id="__codelineno-4-39" name="__codelineno-4-39"></a><span class="w">        </span><span class="n">JwsHeader</span><span class="w"> </span><span class="n">jwsHeader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JwsHeader</span><span class="p">.</span><span class="na">with</span><span class="p">(</span><span class="n">MacAlgorithm</span><span class="p">.</span><span class="na">HS256</span><span class="p">).</span><span class="na">build</span><span class="p">();</span>
-<a id="__codelineno-4-40" name="__codelineno-4-40"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">jwtEncoder</span><span class="p">.</span><span class="na">encode</span><span class="p">(</span><span class="n">JwtEncoderParameters</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="n">jwsHeader</span><span class="p">,</span><span class="w"> </span><span class="n">claims</span><span class="p">)).</span><span class="na">getTokenValue</span><span class="p">();</span>
-<a id="__codelineno-4-41" name="__codelineno-4-41"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-4-42" name="__codelineno-4-42"></a>
-<a id="__codelineno-4-43" name="__codelineno-4-43"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="nf">getExpiresInSeconds</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-4-44" name="__codelineno-4-44"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">expirationMinutes</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">60</span><span class="p">;</span>
-<a id="__codelineno-4-45" name="__codelineno-4-45"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-4-46" name="__codelineno-4-46"></a><span class="p">}</span>
-</code></pre></div></td></tr></table></div>
-<p>Cada claim tiene un porqué: <code>subject</code> es quién eres (lo que devolvió el login exitoso), <code>roles</code> viene de las autoridades ya calculadas por Spring Security a partir de tu <code>RolUsuario</code>, <code>issuedAt</code>/<code>expiresAt</code> fijan cuándo se emitió y cuándo caduca el token.</p>
-<hr>
-<h2 id="paso-3-el-endpoint-de-login">Paso 3 — El endpoint de login<a class="headerlink" href="#paso-3-el-endpoint-de-login" title="Permanent link">¶</a></h2>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span>
-<span class="normal"><a href="#__codelineno-5-2">2</a></span>
-<span class="normal"><a href="#__codelineno-5-3">3</a></span>
-<span class="normal"><a href="#__codelineno-5-4">4</a></span>
-<span class="normal"><a href="#__codelineno-5-5">5</a></span>
-<span class="normal"><a href="#__codelineno-5-6">6</a></span>
-<span class="normal"><a href="#__codelineno-5-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.tunombre.gamevault.seguridad</span><span class="p">;</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2"></a>
-<a id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="kd">public</span><span class="w"> </span><span class="kd">record</span> <span class="nc">LoginRequestDTO</span><span class="p">(</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4"></a><span class="w">        </span><span class="nd">@NotBlank</span><span class="p">(</span><span class="n">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"El nombre de usuario no puede estar vacío"</span><span class="p">)</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">username</span><span class="p">,</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5"></a><span class="w">        </span><span class="nd">@NotBlank</span><span class="p">(</span><span class="n">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"La contraseña no puede estar vacía"</span><span class="p">)</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">password</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6"></a><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
-<a id="__codelineno-5-7" name="__codelineno-5-7"></a><span class="kd">public</span><span class="w"> </span><span class="kd">record</span> <span class="nc">LoginResponseDTO</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">accessToken</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">tokenType</span><span class="p">,</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">expiresInSeconds</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
-</code></pre></div></td></tr></table></div>
-<p>Tu <code>AuthController</code> ya existe desde la Actividad 2.3, con el endpoint <code>/register</code>. Añádele el login, con las dos dependencias nuevas:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-6-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-6-3"> 3</a></span>
@@ -2886,46 +2837,85 @@
 <span class="normal"><a href="#__codelineno-6-29">29</a></span>
 <span class="normal"><a href="#__codelineno-6-30">30</a></span>
 <span class="normal"><a href="#__codelineno-6-31">31</a></span>
-<span class="normal"><a href="#__codelineno-6-32">32</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.tunombre.gamevault.seguridad</span><span class="p">;</span>
+<span class="normal"><a href="#__codelineno-6-32">32</a></span>
+<span class="normal"><a href="#__codelineno-6-33">33</a></span>
+<span class="normal"><a href="#__codelineno-6-34">34</a></span>
+<span class="normal"><a href="#__codelineno-6-35">35</a></span>
+<span class="normal"><a href="#__codelineno-6-36">36</a></span>
+<span class="normal"><a href="#__codelineno-6-37">37</a></span>
+<span class="normal"><a href="#__codelineno-6-38">38</a></span>
+<span class="normal"><a href="#__codelineno-6-39">39</a></span>
+<span class="normal"><a href="#__codelineno-6-40">40</a></span>
+<span class="normal"><a href="#__codelineno-6-41">41</a></span>
+<span class="normal"><a href="#__codelineno-6-42">42</a></span>
+<span class="normal"><a href="#__codelineno-6-43">43</a></span>
+<span class="normal"><a href="#__codelineno-6-44">44</a></span>
+<span class="normal"><a href="#__codelineno-6-45">45</a></span>
+<span class="normal"><a href="#__codelineno-6-46">46</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.tunombre.gamevault.seguridad</span><span class="p">;</span>
 <a id="__codelineno-6-2" name="__codelineno-6-2"></a>
-<a id="__codelineno-6-3" name="__codelineno-6-3"></a><span class="nd">@RestController</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4"></a><span class="nd">@RequestMapping</span><span class="p">(</span><span class="s">"/api/v1/auth"</span><span class="p">)</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5"></a><span class="nd">@RequiredArgsConstructor</span>
-<a id="__codelineno-6-6" name="__codelineno-6-6"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">AuthController</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-6-7" name="__codelineno-6-7"></a>
-<a id="__codelineno-6-8" name="__codelineno-6-8"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">UsuarioRepository</span><span class="w"> </span><span class="n">usuarioRepository</span><span class="p">;</span>
-<a id="__codelineno-6-9" name="__codelineno-6-9"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">PasswordEncoder</span><span class="w"> </span><span class="n">passwordEncoder</span><span class="p">;</span>
-<a id="__codelineno-6-10" name="__codelineno-6-10"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">AuthenticationManager</span><span class="w"> </span><span class="n">authenticationManager</span><span class="p">;</span>
-<a id="__codelineno-6-11" name="__codelineno-6-11"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">JwtService</span><span class="w"> </span><span class="n">jwtService</span><span class="p">;</span>
-<a id="__codelineno-6-12" name="__codelineno-6-12"></a>
-<a id="__codelineno-6-13" name="__codelineno-6-13"></a><span class="w">    </span><span class="nd">@PostMapping</span><span class="p">(</span><span class="s">"/register"</span><span class="p">)</span>
-<a id="__codelineno-6-14" name="__codelineno-6-14"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">Void</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="nd">@Valid</span><span class="w"> </span><span class="nd">@RequestBody</span><span class="w"> </span><span class="n">RegisterRequestDTO</span><span class="w"> </span><span class="n">dto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-6-15" name="__codelineno-6-15"></a><span class="w">        </span><span class="c1">// el mismo método de la Actividad 2.3, sin cambios</span>
-<a id="__codelineno-6-16" name="__codelineno-6-16"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">lombok.RequiredArgsConstructor</span><span class="p">;</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.beans.factory.annotation.Value</span><span class="p">;</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.security.core.Authentication</span><span class="p">;</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.security.core.GrantedAuthority</span><span class="p">;</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.security.oauth2.jose.jws.MacAlgorithm</span><span class="p">;</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.security.oauth2.jwt.*</span><span class="p">;</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.stereotype.Service</span><span class="p">;</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10"></a>
+<a id="__codelineno-6-11" name="__codelineno-6-11"></a><span class="kn">import</span><span class="w"> </span><span class="nn">java.time.Instant</span><span class="p">;</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12"></a><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13"></a>
+<a id="__codelineno-6-14" name="__codelineno-6-14"></a><span class="nd">@Service</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15"></a><span class="nd">@RequiredArgsConstructor</span>
+<a id="__codelineno-6-16" name="__codelineno-6-16"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">JwtService</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-6-17" name="__codelineno-6-17"></a>
-<a id="__codelineno-6-18" name="__codelineno-6-18"></a><span class="w">    </span><span class="nd">@Operation</span><span class="p">(</span><span class="n">summary</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Autenticarse y obtener un token JWT"</span><span class="p">)</span>
-<a id="__codelineno-6-19" name="__codelineno-6-19"></a><span class="w">    </span><span class="nd">@ApiResponses</span><span class="p">({</span>
-<a id="__codelineno-6-20" name="__codelineno-6-20"></a><span class="w">            </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"200"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Login correcto, token generado"</span><span class="p">),</span>
-<a id="__codelineno-6-21" name="__codelineno-6-21"></a><span class="w">            </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"400"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"El cuerpo de la petición no supera las validaciones"</span><span class="p">),</span>
-<a id="__codelineno-6-22" name="__codelineno-6-22"></a><span class="w">            </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"401"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Usuario o contraseña incorrectos"</span><span class="p">)</span>
-<a id="__codelineno-6-23" name="__codelineno-6-23"></a><span class="w">    </span><span class="p">})</span>
-<a id="__codelineno-6-24" name="__codelineno-6-24"></a><span class="w">    </span><span class="nd">@PostMapping</span><span class="p">(</span><span class="s">"/login"</span><span class="p">)</span>
-<a id="__codelineno-6-25" name="__codelineno-6-25"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">LoginResponseDTO</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span><span class="nd">@Valid</span><span class="w"> </span><span class="nd">@RequestBody</span><span class="w"> </span><span class="n">LoginRequestDTO</span><span class="w"> </span><span class="n">dto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-6-26" name="__codelineno-6-26"></a><span class="w">        </span><span class="n">Authentication</span><span class="w"> </span><span class="n">authentication</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">authenticationManager</span><span class="p">.</span><span class="na">authenticate</span><span class="p">(</span>
-<a id="__codelineno-6-27" name="__codelineno-6-27"></a><span class="w">                </span><span class="k">new</span><span class="w"> </span><span class="n">UsernamePasswordAuthenticationToken</span><span class="p">(</span><span class="n">dto</span><span class="p">.</span><span class="na">username</span><span class="p">(),</span><span class="w"> </span><span class="n">dto</span><span class="p">.</span><span class="na">password</span><span class="p">())</span>
-<a id="__codelineno-6-28" name="__codelineno-6-28"></a><span class="w">        </span><span class="p">);</span>
-<a id="__codelineno-6-29" name="__codelineno-6-29"></a><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">token</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">jwtService</span><span class="p">.</span><span class="na">generarToken</span><span class="p">(</span><span class="n">authentication</span><span class="p">);</span>
-<a id="__codelineno-6-30" name="__codelineno-6-30"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">LoginResponseDTO</span><span class="p">(</span><span class="n">token</span><span class="p">,</span><span class="w"> </span><span class="s">"Bearer"</span><span class="p">,</span><span class="w"> </span><span class="n">jwtService</span><span class="p">.</span><span class="na">getExpiresInSeconds</span><span class="p">()));</span>
-<a id="__codelineno-6-31" name="__codelineno-6-31"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-6-32" name="__codelineno-6-32"></a><span class="p">}</span>
+<a id="__codelineno-6-18" name="__codelineno-6-18"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">JwtEncoder</span><span class="w"> </span><span class="n">jwtEncoder</span><span class="p">;</span>
+<a id="__codelineno-6-19" name="__codelineno-6-19"></a>
+<a id="__codelineno-6-20" name="__codelineno-6-20"></a><span class="w">    </span><span class="nd">@Value</span><span class="p">(</span><span class="s">"${gamevault.jwt.expiration-minutes}"</span><span class="p">)</span>
+<a id="__codelineno-6-21" name="__codelineno-6-21"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">expirationMinutes</span><span class="p">;</span>
+<a id="__codelineno-6-22" name="__codelineno-6-22"></a>
+<a id="__codelineno-6-23" name="__codelineno-6-23"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">generarToken</span><span class="p">(</span><span class="n">Authentication</span><span class="w"> </span><span class="n">authentication</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-24" name="__codelineno-6-24"></a><span class="w">        </span><span class="n">Instant</span><span class="w"> </span><span class="n">ahora</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">();</span>
+<a id="__codelineno-6-25" name="__codelineno-6-25"></a><span class="w">        </span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">roles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">authentication</span><span class="p">.</span><span class="na">getAuthorities</span><span class="p">().</span><span class="na">stream</span><span class="p">()</span>
+<a id="__codelineno-6-26" name="__codelineno-6-26"></a><span class="w">                </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">GrantedAuthority</span><span class="p">::</span><span class="n">getAuthority</span><span class="p">)</span>
+<a id="__codelineno-6-27" name="__codelineno-6-27"></a><span class="w">                </span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="na">startsWith</span><span class="p">(</span><span class="s">"ROLE_"</span><span class="p">))</span>
+<a id="__codelineno-6-28" name="__codelineno-6-28"></a><span class="w">                </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="na">replace</span><span class="p">(</span><span class="s">"ROLE_"</span><span class="p">,</span><span class="w"> </span><span class="s">""</span><span class="p">))</span>
+<a id="__codelineno-6-29" name="__codelineno-6-29"></a><span class="w">                </span><span class="p">.</span><span class="na">toList</span><span class="p">();</span>
+<a id="__codelineno-6-30" name="__codelineno-6-30"></a>
+<a id="__codelineno-6-31" name="__codelineno-6-31"></a><span class="w">        </span><span class="n">JwtClaimsSet</span><span class="w"> </span><span class="n">claims</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JwtClaimsSet</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<a id="__codelineno-6-32" name="__codelineno-6-32"></a><span class="w">                </span><span class="p">.</span><span class="na">issuer</span><span class="p">(</span><span class="s">"gamevault"</span><span class="p">)</span>
+<a id="__codelineno-6-33" name="__codelineno-6-33"></a><span class="w">                </span><span class="p">.</span><span class="na">issuedAt</span><span class="p">(</span><span class="n">ahora</span><span class="p">)</span>
+<a id="__codelineno-6-34" name="__codelineno-6-34"></a><span class="w">                </span><span class="p">.</span><span class="na">expiresAt</span><span class="p">(</span><span class="n">ahora</span><span class="p">.</span><span class="na">plusSeconds</span><span class="p">(</span><span class="n">expirationMinutes</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">60</span><span class="p">))</span>
+<a id="__codelineno-6-35" name="__codelineno-6-35"></a><span class="w">                </span><span class="p">.</span><span class="na">subject</span><span class="p">(</span><span class="n">authentication</span><span class="p">.</span><span class="na">getName</span><span class="p">())</span>
+<a id="__codelineno-6-36" name="__codelineno-6-36"></a><span class="w">                </span><span class="p">.</span><span class="na">claim</span><span class="p">(</span><span class="s">"roles"</span><span class="p">,</span><span class="w"> </span><span class="n">roles</span><span class="p">)</span>
+<a id="__codelineno-6-37" name="__codelineno-6-37"></a><span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-6-38" name="__codelineno-6-38"></a>
+<a id="__codelineno-6-39" name="__codelineno-6-39"></a><span class="w">        </span><span class="n">JwsHeader</span><span class="w"> </span><span class="n">jwsHeader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JwsHeader</span><span class="p">.</span><span class="na">with</span><span class="p">(</span><span class="n">MacAlgorithm</span><span class="p">.</span><span class="na">HS256</span><span class="p">).</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-6-40" name="__codelineno-6-40"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">jwtEncoder</span><span class="p">.</span><span class="na">encode</span><span class="p">(</span><span class="n">JwtEncoderParameters</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="n">jwsHeader</span><span class="p">,</span><span class="w"> </span><span class="n">claims</span><span class="p">)).</span><span class="na">getTokenValue</span><span class="p">();</span>
+<a id="__codelineno-6-41" name="__codelineno-6-41"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-6-42" name="__codelineno-6-42"></a>
+<a id="__codelineno-6-43" name="__codelineno-6-43"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="nf">getExpiresInSeconds</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-44" name="__codelineno-6-44"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">expirationMinutes</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">60</span><span class="p">;</span>
+<a id="__codelineno-6-45" name="__codelineno-6-45"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-6-46" name="__codelineno-6-46"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p><strong>No olvides</strong> abrir esta ruta en tu política de seguridad — es la única que debe ser pública sin excepción:</p>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/auth/login"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
-</code></pre></div></td></tr></table></div>
-<p>(la regla de <code>/api/v1/auth/register</code> ya la tenías de la Actividad 2.3 — no hace falta tocarla).</p>
+<p>Cada claim tiene un porqué: <code>subject</code> es quién eres (lo que devolvió el login exitoso), <code>roles</code> viene de las autoridades ya calculadas por Spring Security a partir de tu <code>RolUsuario</code>, <code>issuedAt</code>/<code>expiresAt</code> fijan cuándo se emitió y cuándo caduca el token.</p>
 <hr>
-<h2 id="paso-4-el-cambio-de-modo-completo">Paso 4 — El cambio de modo completo<a class="headerlink" href="#paso-4-el-cambio-de-modo-completo" title="Permanent link">¶</a></h2>
-<p>Sustituye, en tu <code>SecurityConfig</code>, el bloque de HTTP Basic por JWT:</p>
+<h2 id="paso-3-el-endpoint-de-login">Paso 3 — El endpoint de login<a class="headerlink" href="#paso-3-el-endpoint-de-login" title="Permanent link">¶</a></h2>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span>
+<span class="normal"><a href="#__codelineno-7-2">2</a></span>
+<span class="normal"><a href="#__codelineno-7-3">3</a></span>
+<span class="normal"><a href="#__codelineno-7-4">4</a></span>
+<span class="normal"><a href="#__codelineno-7-5">5</a></span>
+<span class="normal"><a href="#__codelineno-7-6">6</a></span>
+<span class="normal"><a href="#__codelineno-7-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.tunombre.gamevault.seguridad</span><span class="p">;</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2"></a>
+<a id="__codelineno-7-3" name="__codelineno-7-3"></a><span class="kd">public</span><span class="w"> </span><span class="kd">record</span> <span class="nc">LoginRequestDTO</span><span class="p">(</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4"></a><span class="w">        </span><span class="nd">@NotBlank</span><span class="p">(</span><span class="n">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"El nombre de usuario no puede estar vacío"</span><span class="p">)</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">username</span><span class="p">,</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5"></a><span class="w">        </span><span class="nd">@NotBlank</span><span class="p">(</span><span class="n">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"La contraseña no puede estar vacía"</span><span class="p">)</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">password</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6"></a><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7"></a><span class="kd">public</span><span class="w"> </span><span class="kd">record</span> <span class="nc">LoginResponseDTO</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">accessToken</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">tokenType</span><span class="p">,</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">expiresInSeconds</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+</code></pre></div></td></tr></table></div>
+<p>Tu <code>AuthController</code> ya existe desde la Actividad 2.3, con el endpoint <code>/register</code>. Añádele el login, con las dos dependencias nuevas:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-8-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-8-3"> 3</a></span>
@@ -2950,81 +2940,297 @@
 <span class="normal"><a href="#__codelineno-8-22">22</a></span>
 <span class="normal"><a href="#__codelineno-8-23">23</a></span>
 <span class="normal"><a href="#__codelineno-8-24">24</a></span>
-<span class="normal"><a href="#__codelineno-8-25">25</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="nd">@Bean</span>
-<a id="__codelineno-8-2" name="__codelineno-8-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">SecurityFilterChain</span><span class="w"> </span><span class="nf">securityFilterChain</span><span class="p">(</span><span class="n">HttpSecurity</span><span class="w"> </span><span class="n">http</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-8-3" name="__codelineno-8-3"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">http</span>
-<a id="__codelineno-8-4" name="__codelineno-8-4"></a><span class="w">            </span><span class="p">.</span><span class="na">sessionManagement</span><span class="p">(</span><span class="n">session</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">session</span><span class="p">.</span><span class="na">sessionCreationPolicy</span><span class="p">(</span><span class="n">SessionCreationPolicy</span><span class="p">.</span><span class="na">STATELESS</span><span class="p">))</span>
-<a id="__codelineno-8-5" name="__codelineno-8-5"></a><span class="w">            </span><span class="p">.</span><span class="na">authorizeHttpRequests</span><span class="p">(</span><span class="n">auth</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">auth</span>
-<a id="__codelineno-8-6" name="__codelineno-8-6"></a><span class="w">                    </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/auth/register"</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/auth/login"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
-<a id="__codelineno-8-7" name="__codelineno-8-7"></a><span class="w">                    </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
-<a id="__codelineno-8-8" name="__codelineno-8-8"></a><span class="w">                    </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
-<a id="__codelineno-8-9" name="__codelineno-8-9"></a><span class="w">                    </span><span class="p">.</span><span class="na">anyRequest</span><span class="p">().</span><span class="na">authenticated</span><span class="p">()</span>
-<a id="__codelineno-8-10" name="__codelineno-8-10"></a><span class="w">            </span><span class="p">)</span>
-<a id="__codelineno-8-11" name="__codelineno-8-11"></a><span class="w">            </span><span class="p">.</span><span class="na">oauth2ResourceServer</span><span class="p">(</span><span class="n">oauth2</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">oauth2</span><span class="p">.</span><span class="na">jwt</span><span class="p">(</span><span class="n">jwt</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">jwt</span><span class="p">.</span><span class="na">jwtAuthenticationConverter</span><span class="p">(</span><span class="n">jwtAuthenticationConverter</span><span class="p">())))</span>
-<a id="__codelineno-8-12" name="__codelineno-8-12"></a><span class="w">            </span><span class="p">.</span><span class="na">httpBasic</span><span class="p">(</span><span class="n">AbstractHttpConfigurer</span><span class="p">::</span><span class="n">disable</span><span class="p">)</span>
-<a id="__codelineno-8-13" name="__codelineno-8-13"></a><span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
-<a id="__codelineno-8-14" name="__codelineno-8-14"></a><span class="p">}</span>
-<a id="__codelineno-8-15" name="__codelineno-8-15"></a>
-<a id="__codelineno-8-16" name="__codelineno-8-16"></a><span class="nd">@Bean</span>
-<a id="__codelineno-8-17" name="__codelineno-8-17"></a><span class="kd">public</span><span class="w"> </span><span class="n">JwtAuthenticationConverter</span><span class="w"> </span><span class="nf">jwtAuthenticationConverter</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-8-18" name="__codelineno-8-18"></a><span class="w">    </span><span class="n">JwtGrantedAuthoritiesConverter</span><span class="w"> </span><span class="n">authoritiesConverter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JwtGrantedAuthoritiesConverter</span><span class="p">();</span>
-<a id="__codelineno-8-19" name="__codelineno-8-19"></a><span class="w">    </span><span class="n">authoritiesConverter</span><span class="p">.</span><span class="na">setAuthoritiesClaimName</span><span class="p">(</span><span class="s">"roles"</span><span class="p">);</span>
-<a id="__codelineno-8-20" name="__codelineno-8-20"></a><span class="w">    </span><span class="n">authoritiesConverter</span><span class="p">.</span><span class="na">setAuthorityPrefix</span><span class="p">(</span><span class="s">"ROLE_"</span><span class="p">);</span>
-<a id="__codelineno-8-21" name="__codelineno-8-21"></a>
-<a id="__codelineno-8-22" name="__codelineno-8-22"></a><span class="w">    </span><span class="n">JwtAuthenticationConverter</span><span class="w"> </span><span class="n">authenticationConverter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JwtAuthenticationConverter</span><span class="p">();</span>
-<a id="__codelineno-8-23" name="__codelineno-8-23"></a><span class="w">    </span><span class="n">authenticationConverter</span><span class="p">.</span><span class="na">setJwtGrantedAuthoritiesConverter</span><span class="p">(</span><span class="n">authoritiesConverter</span><span class="p">);</span>
-<a id="__codelineno-8-24" name="__codelineno-8-24"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">authenticationConverter</span><span class="p">;</span>
-<a id="__codelineno-8-25" name="__codelineno-8-25"></a><span class="p">}</span>
+<span class="normal"><a href="#__codelineno-8-25">25</a></span>
+<span class="normal"><a href="#__codelineno-8-26">26</a></span>
+<span class="normal"><a href="#__codelineno-8-27">27</a></span>
+<span class="normal"><a href="#__codelineno-8-28">28</a></span>
+<span class="normal"><a href="#__codelineno-8-29">29</a></span>
+<span class="normal"><a href="#__codelineno-8-30">30</a></span>
+<span class="normal"><a href="#__codelineno-8-31">31</a></span>
+<span class="normal"><a href="#__codelineno-8-32">32</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.tunombre.gamevault.seguridad</span><span class="p">;</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2"></a>
+<a id="__codelineno-8-3" name="__codelineno-8-3"></a><span class="nd">@RestController</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4"></a><span class="nd">@RequestMapping</span><span class="p">(</span><span class="s">"/api/v1/auth"</span><span class="p">)</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5"></a><span class="nd">@RequiredArgsConstructor</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">AuthController</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7"></a>
+<a id="__codelineno-8-8" name="__codelineno-8-8"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">UsuarioRepository</span><span class="w"> </span><span class="n">usuarioRepository</span><span class="p">;</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">PasswordEncoder</span><span class="w"> </span><span class="n">passwordEncoder</span><span class="p">;</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">AuthenticationManager</span><span class="w"> </span><span class="n">authenticationManager</span><span class="p">;</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">JwtService</span><span class="w"> </span><span class="n">jwtService</span><span class="p">;</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12"></a>
+<a id="__codelineno-8-13" name="__codelineno-8-13"></a><span class="w">    </span><span class="nd">@PostMapping</span><span class="p">(</span><span class="s">"/register"</span><span class="p">)</span>
+<a id="__codelineno-8-14" name="__codelineno-8-14"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">Void</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="nd">@Valid</span><span class="w"> </span><span class="nd">@RequestBody</span><span class="w"> </span><span class="n">RegisterRequestDTO</span><span class="w"> </span><span class="n">dto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-8-15" name="__codelineno-8-15"></a><span class="w">        </span><span class="c1">// el mismo método de la Actividad 2.3, sin cambios</span>
+<a id="__codelineno-8-16" name="__codelineno-8-16"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-8-17" name="__codelineno-8-17"></a>
+<a id="__codelineno-8-18" name="__codelineno-8-18"></a><span class="w">    </span><span class="nd">@Operation</span><span class="p">(</span><span class="n">summary</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Autenticarse y obtener un token JWT"</span><span class="p">)</span>
+<a id="__codelineno-8-19" name="__codelineno-8-19"></a><span class="w">    </span><span class="nd">@ApiResponses</span><span class="p">({</span>
+<a id="__codelineno-8-20" name="__codelineno-8-20"></a><span class="w">            </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"200"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Login correcto, token generado"</span><span class="p">),</span>
+<a id="__codelineno-8-21" name="__codelineno-8-21"></a><span class="w">            </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"400"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"El cuerpo de la petición no supera las validaciones"</span><span class="p">),</span>
+<a id="__codelineno-8-22" name="__codelineno-8-22"></a><span class="w">            </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"401"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Usuario o contraseña incorrectos"</span><span class="p">)</span>
+<a id="__codelineno-8-23" name="__codelineno-8-23"></a><span class="w">    </span><span class="p">})</span>
+<a id="__codelineno-8-24" name="__codelineno-8-24"></a><span class="w">    </span><span class="nd">@PostMapping</span><span class="p">(</span><span class="s">"/login"</span><span class="p">)</span>
+<a id="__codelineno-8-25" name="__codelineno-8-25"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">LoginResponseDTO</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span><span class="nd">@Valid</span><span class="w"> </span><span class="nd">@RequestBody</span><span class="w"> </span><span class="n">LoginRequestDTO</span><span class="w"> </span><span class="n">dto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-8-26" name="__codelineno-8-26"></a><span class="w">        </span><span class="n">Authentication</span><span class="w"> </span><span class="n">authentication</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">authenticationManager</span><span class="p">.</span><span class="na">authenticate</span><span class="p">(</span>
+<a id="__codelineno-8-27" name="__codelineno-8-27"></a><span class="w">                </span><span class="k">new</span><span class="w"> </span><span class="n">UsernamePasswordAuthenticationToken</span><span class="p">(</span><span class="n">dto</span><span class="p">.</span><span class="na">username</span><span class="p">(),</span><span class="w"> </span><span class="n">dto</span><span class="p">.</span><span class="na">password</span><span class="p">())</span>
+<a id="__codelineno-8-28" name="__codelineno-8-28"></a><span class="w">        </span><span class="p">);</span>
+<a id="__codelineno-8-29" name="__codelineno-8-29"></a><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">token</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">jwtService</span><span class="p">.</span><span class="na">generarToken</span><span class="p">(</span><span class="n">authentication</span><span class="p">);</span>
+<a id="__codelineno-8-30" name="__codelineno-8-30"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">LoginResponseDTO</span><span class="p">(</span><span class="n">token</span><span class="p">,</span><span class="w"> </span><span class="s">"Bearer"</span><span class="p">,</span><span class="w"> </span><span class="n">jwtService</span><span class="p">.</span><span class="na">getExpiresInSeconds</span><span class="p">()));</span>
+<a id="__codelineno-8-31" name="__codelineno-8-31"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-8-32" name="__codelineno-8-32"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>No olvides</strong> abrir esta ruta en tu política de seguridad — es la única que debe ser pública sin excepción:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/auth/login"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+<p>(la regla de <code>/api/v1/auth/register</code> ya la tenías de la Actividad 2.3 — no hace falta tocarla).</p>
+<p>Añade también un sexto handler a tu <code>GlobalExceptionHandler</code> (Actividad 2.1), junto a los otros cinco — es la primera vez en el proyecto que una excepción de autenticación se lanza dentro de un controller, así que hasta ahora no hacía falta:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-10-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-10-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-10-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-10-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-10-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-10-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-10-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-10-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-10-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-10-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1"></a><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">AuthenticationException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">ErrorResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">handleAuthenticationException</span><span class="p">(</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3"></a><span class="w">        </span><span class="n">AuthenticationException</span><span class="w"> </span><span class="n">ex</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4"></a>
+<a id="__codelineno-10-5" name="__codelineno-10-5"></a><span class="w">    </span><span class="n">ErrorResponse</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ErrorResponse</span><span class="p">(</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6"></a><span class="w">            </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">(),</span><span class="w"> </span><span class="mi">401</span><span class="p">,</span><span class="w"> </span><span class="s">"No autenticado"</span><span class="p">,</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7"></a><span class="w">            </span><span class="s">"Usuario o contraseña incorrectos"</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getRequestURI</span><span class="p">()</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8"></a><span class="w">    </span><span class="p">);</span>
+<a id="__codelineno-10-9" name="__codelineno-10-9"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">UNAUTHORIZED</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
+<a id="__codelineno-10-10" name="__codelineno-10-10"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Pruébalo con una contraseña incorrecta:</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-11-1">1</a></span>
+<span class="normal"><a href="#__codelineno-11-2">2</a></span>
+<span class="normal"><a href="#__codelineno-11-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1"></a>curl<span class="w"> </span>-i<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/auth/login<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"username":"admin","password":"contraseña-mala"}'</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Comprueba</strong>: <code>401</code>, con el mismo formato <code>ErrorResponse</code> que el resto de tu API — no la traza de Spring por defecto.</p>
+<p><strong>Captura</strong>: esta respuesta.</p>
+<hr>
+<h2 id="paso-4-el-cambio-de-modo-completo">Paso 4 — El cambio de modo completo<a class="headerlink" href="#paso-4-el-cambio-de-modo-completo" title="Permanent link">¶</a></h2>
+<p>Sustituye tu método <code>securityFilterChain</code> completo por este —incluye todo lo que ya tenías desde la Actividad 2.2 (rutas, <code>exceptionHandling</code> con tu <code>AuthenticationEntryPoint</code>, <code>csrf</code> desactivado) más lo nuevo de hoy; si tu proyecto tiene alguna regla más, propia tuya, consérvala igual—:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-12-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-12-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-12-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-12-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-12-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-12-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-12-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-12-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-12-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-12-10">10</a></span>
+<span class="normal"><a href="#__codelineno-12-11">11</a></span>
+<span class="normal"><a href="#__codelineno-12-12">12</a></span>
+<span class="normal"><a href="#__codelineno-12-13">13</a></span>
+<span class="normal"><a href="#__codelineno-12-14">14</a></span>
+<span class="normal"><a href="#__codelineno-12-15">15</a></span>
+<span class="normal"><a href="#__codelineno-12-16">16</a></span>
+<span class="normal"><a href="#__codelineno-12-17">17</a></span>
+<span class="normal"><a href="#__codelineno-12-18">18</a></span>
+<span class="normal"><a href="#__codelineno-12-19">19</a></span>
+<span class="normal"><a href="#__codelineno-12-20">20</a></span>
+<span class="normal"><a href="#__codelineno-12-21">21</a></span>
+<span class="normal"><a href="#__codelineno-12-22">22</a></span>
+<span class="normal"><a href="#__codelineno-12-23">23</a></span>
+<span class="normal"><a href="#__codelineno-12-24">24</a></span>
+<span class="normal"><a href="#__codelineno-12-25">25</a></span>
+<span class="normal"><a href="#__codelineno-12-26">26</a></span>
+<span class="normal"><a href="#__codelineno-12-27">27</a></span>
+<span class="normal"><a href="#__codelineno-12-28">28</a></span>
+<span class="normal"><a href="#__codelineno-12-29">29</a></span>
+<span class="normal"><a href="#__codelineno-12-30">30</a></span>
+<span class="normal"><a href="#__codelineno-12-31">31</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1"></a><span class="nd">@Bean</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">SecurityFilterChain</span><span class="w"> </span><span class="nf">securityFilterChain</span><span class="p">(</span><span class="n">HttpSecurity</span><span class="w"> </span><span class="n">http</span><span class="p">,</span><span class="w"> </span><span class="n">AuthenticationEntryPoint</span><span class="w"> </span><span class="n">authenticationEntryPoint</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">http</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4"></a><span class="w">            </span><span class="p">.</span><span class="na">sessionManagement</span><span class="p">(</span><span class="n">session</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">session</span><span class="p">.</span><span class="na">sessionCreationPolicy</span><span class="p">(</span><span class="n">SessionCreationPolicy</span><span class="p">.</span><span class="na">STATELESS</span><span class="p">))</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5"></a><span class="w">            </span><span class="p">.</span><span class="na">authorizeHttpRequests</span><span class="p">(</span><span class="n">auth</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">auth</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6"></a><span class="w">                    </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/auth/register"</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/auth/login"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7"></a><span class="w">                    </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8"></a><span class="w">                    </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/estudios/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9"></a><span class="w">                    </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
+<a id="__codelineno-12-10" name="__codelineno-12-10"></a><span class="w">                    </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="s">"/v3/api-docs/**"</span><span class="p">,</span><span class="w"> </span><span class="s">"/swagger-ui/**"</span><span class="p">,</span><span class="w"> </span><span class="s">"/documentacion"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+<a id="__codelineno-12-11" name="__codelineno-12-11"></a><span class="w">                    </span><span class="p">.</span><span class="na">anyRequest</span><span class="p">().</span><span class="na">authenticated</span><span class="p">()</span>
+<a id="__codelineno-12-12" name="__codelineno-12-12"></a><span class="w">            </span><span class="p">)</span>
+<a id="__codelineno-12-13" name="__codelineno-12-13"></a><span class="w">            </span><span class="p">.</span><span class="na">exceptionHandling</span><span class="p">(</span><span class="n">exceptions</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">exceptions</span>
+<a id="__codelineno-12-14" name="__codelineno-12-14"></a><span class="w">                    </span><span class="p">.</span><span class="na">authenticationEntryPoint</span><span class="p">(</span><span class="n">authenticationEntryPoint</span><span class="p">)</span>
+<a id="__codelineno-12-15" name="__codelineno-12-15"></a><span class="w">            </span><span class="p">)</span>
+<a id="__codelineno-12-16" name="__codelineno-12-16"></a><span class="w">            </span><span class="p">.</span><span class="na">csrf</span><span class="p">(</span><span class="n">AbstractHttpConfigurer</span><span class="p">::</span><span class="n">disable</span><span class="p">)</span>
+<a id="__codelineno-12-17" name="__codelineno-12-17"></a><span class="w">            </span><span class="p">.</span><span class="na">oauth2ResourceServer</span><span class="p">(</span><span class="n">oauth2</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">oauth2</span><span class="p">.</span><span class="na">jwt</span><span class="p">(</span><span class="n">jwt</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">jwt</span><span class="p">.</span><span class="na">jwtAuthenticationConverter</span><span class="p">(</span><span class="n">jwtAuthenticationConverter</span><span class="p">())))</span>
+<a id="__codelineno-12-18" name="__codelineno-12-18"></a><span class="w">            </span><span class="p">.</span><span class="na">httpBasic</span><span class="p">(</span><span class="n">AbstractHttpConfigurer</span><span class="p">::</span><span class="n">disable</span><span class="p">)</span>
+<a id="__codelineno-12-19" name="__codelineno-12-19"></a><span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-12-20" name="__codelineno-12-20"></a><span class="p">}</span>
+<a id="__codelineno-12-21" name="__codelineno-12-21"></a>
+<a id="__codelineno-12-22" name="__codelineno-12-22"></a><span class="nd">@Bean</span>
+<a id="__codelineno-12-23" name="__codelineno-12-23"></a><span class="kd">public</span><span class="w"> </span><span class="n">JwtAuthenticationConverter</span><span class="w"> </span><span class="nf">jwtAuthenticationConverter</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-24" name="__codelineno-12-24"></a><span class="w">    </span><span class="n">JwtGrantedAuthoritiesConverter</span><span class="w"> </span><span class="n">authoritiesConverter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JwtGrantedAuthoritiesConverter</span><span class="p">();</span>
+<a id="__codelineno-12-25" name="__codelineno-12-25"></a><span class="w">    </span><span class="n">authoritiesConverter</span><span class="p">.</span><span class="na">setAuthoritiesClaimName</span><span class="p">(</span><span class="s">"roles"</span><span class="p">);</span>
+<a id="__codelineno-12-26" name="__codelineno-12-26"></a><span class="w">    </span><span class="n">authoritiesConverter</span><span class="p">.</span><span class="na">setAuthorityPrefix</span><span class="p">(</span><span class="s">"ROLE_"</span><span class="p">);</span>
+<a id="__codelineno-12-27" name="__codelineno-12-27"></a>
+<a id="__codelineno-12-28" name="__codelineno-12-28"></a><span class="w">    </span><span class="n">JwtAuthenticationConverter</span><span class="w"> </span><span class="n">authenticationConverter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JwtAuthenticationConverter</span><span class="p">();</span>
+<a id="__codelineno-12-29" name="__codelineno-12-29"></a><span class="w">    </span><span class="n">authenticationConverter</span><span class="p">.</span><span class="na">setJwtGrantedAuthoritiesConverter</span><span class="p">(</span><span class="n">authoritiesConverter</span><span class="p">);</span>
+<a id="__codelineno-12-30" name="__codelineno-12-30"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">authenticationConverter</span><span class="p">;</span>
+<a id="__codelineno-12-31" name="__codelineno-12-31"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p><code>jwtAuthenticationConverter()</code> es la pieza que traduce el claim <code>"roles"</code> de tu token (una lista de strings como <code>["ADMIN"]</code>) en autoridades de Spring Security con el prefijo <code>ROLE_</code> — el mismo formato que ya usaban tus reglas <code>hasRole("ADMIN")</code> con HTTP Basic, así que no tienes que tocar esas reglas.</p>
+<p>Fíjate en la regla nueva de <code>/v3/api-docs/**</code>, <code>/swagger-ui/**</code> y <code>/documentacion</code>: desde la Actividad 2.2, Swagger ha estado bloqueado detrás de autenticación, igual que el resto de la API. Sin esta regla, el navegador no podría ni cargar <code>/documentacion</code> —STATELESS no manda ningún token solo por navegar a una URL—, y el Paso 7 (el botón "Authorize") no sería alcanzable. La añades ahora porque es la primera vez que necesitas Swagger accesible sin login previo.</p>
 <p><strong>Pregunta</strong>: ¿qué pieza de tu configuración de la Actividad 2.2 desaparece exactamente en este paso, y qué la reemplaza?</p>
 <hr>
 <h2 id="paso-5-prueba-del-flujo-completo">Paso 5 — Prueba del flujo completo<a class="headerlink" href="#paso-5-prueba-del-flujo-completo" title="Permanent link">¶</a></h2>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-9-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-9-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-9-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-9-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-9-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-9-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-9-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-9-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-9-10">10</a></span>
-<span class="normal"><a href="#__codelineno-9-11">11</a></span>
-<span class="normal"><a href="#__codelineno-9-12">12</a></span>
-<span class="normal"><a href="#__codelineno-9-13">13</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="c1"># 1. Login</span>
-<a id="__codelineno-9-2" name="__codelineno-9-2"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/auth/login<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-9-3" name="__codelineno-9-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-9-4" name="__codelineno-9-4"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"username":"admin","password":"admin123"}'</span>
-<a id="__codelineno-9-5" name="__codelineno-9-5"></a>
-<a id="__codelineno-9-6" name="__codelineno-9-6"></a><span class="c1"># 2. Copia el "accessToken" de la respuesta y guárdalo</span>
-<a id="__codelineno-9-7" name="__codelineno-9-7"></a><span class="nv">TOKEN</span><span class="o">=</span><span class="s2">"pega-aqui-el-token"</span>
-<a id="__codelineno-9-8" name="__codelineno-9-8"></a>
-<a id="__codelineno-9-9" name="__codelineno-9-9"></a><span class="c1"># 3. Petición autenticada</span>
-<a id="__codelineno-9-10" name="__codelineno-9-10"></a>curl<span class="w"> </span>-i<span class="w"> </span>http://localhost:8080/api/v1/videojuegos<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN</span><span class="s2">"</span>
-<a id="__codelineno-9-11" name="__codelineno-9-11"></a>
-<a id="__codelineno-9-12" name="__codelineno-9-12"></a><span class="c1"># 4. La misma petición, sin token</span>
-<a id="__codelineno-9-13" name="__codelineno-9-13"></a>curl<span class="w"> </span>-i<span class="w"> </span>http://localhost:8080/api/v1/videojuegos
+<p><code>GET /api/v1/videojuegos</code> es pública (<code>permitAll()</code>) — con o sin token, siempre da <code>200</code>, así que no sirve para comprobar que la autenticación funciona de verdad. Usa en su lugar <code>POST /api/v1/videojuegos</code>, que exige rol <code>ADMIN</code>, y compara tres situaciones: con el token correcto, sin ningún token, y con el token de un usuario sin ese rol.</p>
+<div class="admonition tip">
+<p class="admonition-title">¿Ya no existe el usuario <code>user</code> de la Actividad 2.3?</p>
+<p>Si has reiniciado la base de datos entre medias, vuelve a crearlo antes de seguir:
+</p><div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-13-1">1</a></span>
+<span class="normal"><a href="#__codelineno-13-2">2</a></span>
+<span class="normal"><a href="#__codelineno-13-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1"></a>curl<span class="w"> </span>-i<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/auth/register<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"username":"user","password":"user123"}'</span>
 </code></pre></div></td></tr></table></div>
-<p><strong>Comprueba</strong>: <code>200</code> con el token, y compara con el resultado sin él sobre una ruta protegida (si tienes alguna que exija autenticación siempre, pruébala en vez de <code>GET /videojuegos</code>, que es pública).</p>
-<p><strong>Captura</strong>: la respuesta del login (con el <code>accessToken</code>), y las dos peticiones siguientes, con y sin token, una junto a la otra.</p>
-<p>Decodifica el payload de tu propio token (cópialo, pégalo en <a href="https://jwt.io">jwt.io</a> o decodifica la segunda parte con <code>base64 -d</code>) y <strong>anota</strong> los claims que ves.</p>
+</div>
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-14-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-14-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-14-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-14-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-14-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-14-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-14-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-14-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-14-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-14-10">10</a></span>
+<span class="normal"><a href="#__codelineno-14-11">11</a></span>
+<span class="normal"><a href="#__codelineno-14-12">12</a></span>
+<span class="normal"><a href="#__codelineno-14-13">13</a></span>
+<span class="normal"><a href="#__codelineno-14-14">14</a></span>
+<span class="normal"><a href="#__codelineno-14-15">15</a></span>
+<span class="normal"><a href="#__codelineno-14-16">16</a></span>
+<span class="normal"><a href="#__codelineno-14-17">17</a></span>
+<span class="normal"><a href="#__codelineno-14-18">18</a></span>
+<span class="normal"><a href="#__codelineno-14-19">19</a></span>
+<span class="normal"><a href="#__codelineno-14-20">20</a></span>
+<span class="normal"><a href="#__codelineno-14-21">21</a></span>
+<span class="normal"><a href="#__codelineno-14-22">22</a></span>
+<span class="normal"><a href="#__codelineno-14-23">23</a></span>
+<span class="normal"><a href="#__codelineno-14-24">24</a></span>
+<span class="normal"><a href="#__codelineno-14-25">25</a></span>
+<span class="normal"><a href="#__codelineno-14-26">26</a></span>
+<span class="normal"><a href="#__codelineno-14-27">27</a></span>
+<span class="normal"><a href="#__codelineno-14-28">28</a></span>
+<span class="normal"><a href="#__codelineno-14-29">29</a></span>
+<span class="normal"><a href="#__codelineno-14-30">30</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1"></a><span class="c1"># 1. Login como admin</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/auth/login<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"username":"admin","password":"admin123"}'</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5"></a>
+<a id="__codelineno-14-6" name="__codelineno-14-6"></a><span class="c1"># 2. Copia el "accessToken" de la respuesta y guárdalo</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7"></a><span class="nv">ADMIN_TOKEN</span><span class="o">=</span><span class="s2">"pega-aqui-el-token-de-admin"</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8"></a>
+<a id="__codelineno-14-9" name="__codelineno-14-9"></a><span class="c1"># 3. POST protegido, con el token de admin</span>
+<a id="__codelineno-14-10" name="__codelineno-14-10"></a>curl<span class="w"> </span>-i<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/videojuegos<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-14-11" name="__codelineno-14-11"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$ADMIN_TOKEN</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-14-12" name="__codelineno-14-12"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-14-13" name="__codelineno-14-13"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"titulo":"Celeste","precio":19.99,"fechaLanzamiento":"2018-01-25","estudioId":1}'</span>
+<a id="__codelineno-14-14" name="__codelineno-14-14"></a>
+<a id="__codelineno-14-15" name="__codelineno-14-15"></a><span class="c1"># 4. La misma petición, sin token</span>
+<a id="__codelineno-14-16" name="__codelineno-14-16"></a>curl<span class="w"> </span>-i<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/videojuegos<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-14-17" name="__codelineno-14-17"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-14-18" name="__codelineno-14-18"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"titulo":"Celeste","precio":19.99,"fechaLanzamiento":"2018-01-25","estudioId":1}'</span>
+<a id="__codelineno-14-19" name="__codelineno-14-19"></a>
+<a id="__codelineno-14-20" name="__codelineno-14-20"></a><span class="c1"># 5. Login como user (el que registraste en la Actividad 2.3) y repite la petición con su token</span>
+<a id="__codelineno-14-21" name="__codelineno-14-21"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/auth/login<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-14-22" name="__codelineno-14-22"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-14-23" name="__codelineno-14-23"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"username":"user","password":"user123"}'</span>
+<a id="__codelineno-14-24" name="__codelineno-14-24"></a>
+<a id="__codelineno-14-25" name="__codelineno-14-25"></a><span class="nv">USER_TOKEN</span><span class="o">=</span><span class="s2">"pega-aqui-el-token-de-user"</span>
+<a id="__codelineno-14-26" name="__codelineno-14-26"></a>
+<a id="__codelineno-14-27" name="__codelineno-14-27"></a>curl<span class="w"> </span>-i<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/videojuegos<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-14-28" name="__codelineno-14-28"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$USER_TOKEN</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-14-29" name="__codelineno-14-29"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-14-30" name="__codelineno-14-30"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"titulo":"Celeste","precio":19.99,"fechaLanzamiento":"2018-01-25","estudioId":1}'</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Comprueba</strong>: <code>201</code> con el token de <code>admin</code>; <code>401</code> sin token (el servidor no sabe quién eres); <code>403</code> con el token de <code>user</code> (sabe quién eres, pero no tienes el rol que exige la ruta). Tres respuestas distintas para tres situaciones distintas, con la misma petición y solo las credenciales cambiando.</p>
+<div class="admonition note">
+<p class="admonition-title">El 403 no tiene, todavía, el formato de tu <code>ErrorResponse</code></p>
+<p>A diferencia del <code>401</code>, que ya formatea tu <code>AuthenticationEntryPoint</code>, este <code>403</code> sale con el formato por defecto de Spring Security — es la misma grieta que el <code>401</code> tenía antes de la Actividad 2.2, pero para autorización en vez de autenticación. Se cierra más adelante en el tema, con un <code>AccessDeniedHandler</code> a medida.</p>
+</div>
+<p><strong>Captura</strong>: las tres respuestas (con token de <code>admin</code>, sin token, con token de <code>user</code>), una junto a la otra.</p>
+<p>Decodifica el payload del token de <code>admin</code> (cópialo, pégalo en <a href="https://jwt.io">jwt.io</a> o decodifica la segunda parte con <code>base64 -d</code>) y <strong>anota</strong> los claims que ves.</p>
 <p><strong>Captura</strong>: el payload ya decodificado, con los claims a la vista.</p>
 <hr>
-<h2 id="mini-reto-get-apiv1authme">Mini-reto — <code>GET /api/v1/auth/me</code><a class="headerlink" href="#mini-reto-get-apiv1authme" title="Permanent link">¶</a></h2>
-<p>Añade un endpoint sencillo que devuelva quién eres según tu token actual, documentado con <code>@Operation</code>/<code>@ApiResponses</code> igual que el resto de tu API:</p>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-10-1">1</a></span>
-<span class="normal"><a href="#__codelineno-10-2">2</a></span>
-<span class="normal"><a href="#__codelineno-10-3">3</a></span>
-<span class="normal"><a href="#__codelineno-10-4">4</a></span>
-<span class="normal"><a href="#__codelineno-10-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1"></a><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/me"</span><span class="p">)</span>
-<a id="__codelineno-10-2" name="__codelineno-10-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="nf">me</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-10-3" name="__codelineno-10-3"></a><span class="w">    </span><span class="n">Authentication</span><span class="w"> </span><span class="n">authentication</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SecurityContextHolder</span><span class="p">.</span><span class="na">getContext</span><span class="p">().</span><span class="na">getAuthentication</span><span class="p">();</span>
-<a id="__codelineno-10-4" name="__codelineno-10-4"></a><span class="w">    </span><span class="c1">// construye y devuelve un mapa (o un DTO propio) con el username y los roles</span>
-<a id="__codelineno-10-5" name="__codelineno-10-5"></a><span class="p">}</span>
+<h2 id="paso-6-get-apiv1authme">Paso 6 — <code>GET /api/v1/auth/me</code><a class="headerlink" href="#paso-6-get-apiv1authme" title="Permanent link">¶</a></h2>
+<p>Añade un endpoint sencillo que devuelva quién eres según tu token actual, documentado con <code>@Operation</code>/<code>@ApiResponses</code> igual que el resto de tu API. Define primero el DTO de respuesta, con el mismo patrón <code>record</code> que ya conoces:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-15-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">record</span> <span class="nc">AuthMeResponse</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">username</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">roles</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
 </code></pre></div></td></tr></table></div>
-<p>Pruébalo con tu token del Paso 5 y comprueba que la información coincide con lo que decodificaste a mano.</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-16-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-16-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-16-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-16-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-16-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-16-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-16-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-16-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-16-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-16-10">10</a></span>
+<span class="normal"><a href="#__codelineno-16-11">11</a></span>
+<span class="normal"><a href="#__codelineno-16-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1"></a><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/me"</span><span class="p">)</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">AuthMeResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">me</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-16-3" name="__codelineno-16-3"></a><span class="w">    </span><span class="n">Authentication</span><span class="w"> </span><span class="n">authentication</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SecurityContextHolder</span><span class="p">.</span><span class="na">getContext</span><span class="p">().</span><span class="na">getAuthentication</span><span class="p">();</span>
+<a id="__codelineno-16-4" name="__codelineno-16-4"></a>
+<a id="__codelineno-16-5" name="__codelineno-16-5"></a><span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">roles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">authentication</span><span class="p">.</span><span class="na">getAuthorities</span><span class="p">().</span><span class="na">stream</span><span class="p">()</span>
+<a id="__codelineno-16-6" name="__codelineno-16-6"></a><span class="w">            </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">GrantedAuthority</span><span class="p">::</span><span class="n">getAuthority</span><span class="p">)</span>
+<a id="__codelineno-16-7" name="__codelineno-16-7"></a><span class="w">            </span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="na">startsWith</span><span class="p">(</span><span class="s">"ROLE_"</span><span class="p">))</span>
+<a id="__codelineno-16-8" name="__codelineno-16-8"></a><span class="w">            </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="na">replace</span><span class="p">(</span><span class="s">"ROLE_"</span><span class="p">,</span><span class="w"> </span><span class="s">""</span><span class="p">))</span>
+<a id="__codelineno-16-9" name="__codelineno-16-9"></a><span class="w">            </span><span class="p">.</span><span class="na">toList</span><span class="p">();</span>
+<a id="__codelineno-16-10" name="__codelineno-16-10"></a>
+<a id="__codelineno-16-11" name="__codelineno-16-11"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">AuthMeResponse</span><span class="p">(</span><span class="n">authentication</span><span class="p">.</span><span class="na">getName</span><span class="p">(),</span><span class="w"> </span><span class="n">roles</span><span class="p">));</span>
+<a id="__codelineno-16-12" name="__codelineno-16-12"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>El <code>.filter()</code>/<code>.map()</code> para quitar el prefijo <code>ROLE_</code> es el mismo que ya usaste en <code>JwtService</code> (Paso 2) — hace falta repetirlo aquí para que los roles que ves en <code>/me</code> coincidan exactamente con los que decodificaste del JWT (que tampoco llevan el prefijo).</p>
+<p>Pruébalo con el token de <code>admin</code> del Paso 5 y comprueba que la información coincide con lo que decodificaste a mano.</p>
 <p><strong>Captura</strong>: la respuesta de <code>GET /api/v1/auth/me</code>.</p>
+<hr>
+<h2 id="paso-7-un-boton-authorize-de-verdad-en-swagger">Paso 7 — Un botón "Authorize" de verdad en Swagger<a class="headerlink" href="#paso-7-un-boton-authorize-de-verdad-en-swagger" title="Permanent link">¶</a></h2>
+<p>Añade el esquema de seguridad a tu <code>OpenApiConfig</code> (Actividad 1.2 de PSP):</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-17-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-17-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-17-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-17-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-17-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-17-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-17-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-17-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-17-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-17-10">10</a></span>
+<span class="normal"><a href="#__codelineno-17-11">11</a></span>
+<span class="normal"><a href="#__codelineno-17-12">12</a></span>
+<span class="normal"><a href="#__codelineno-17-13">13</a></span>
+<span class="normal"><a href="#__codelineno-17-14">14</a></span>
+<span class="normal"><a href="#__codelineno-17-15">15</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1"></a><span class="nd">@Bean</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">OpenAPI</span><span class="w"> </span><span class="nf">gamevaultOpenAPI</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-17-3" name="__codelineno-17-3"></a><span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">esquema</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"bearerAuth"</span><span class="p">;</span>
+<a id="__codelineno-17-4" name="__codelineno-17-4"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">OpenAPI</span><span class="p">()</span>
+<a id="__codelineno-17-5" name="__codelineno-17-5"></a><span class="w">            </span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Info</span><span class="p">()</span>
+<a id="__codelineno-17-6" name="__codelineno-17-6"></a><span class="w">                    </span><span class="p">.</span><span class="na">title</span><span class="p">(</span><span class="s">"Mi GameVault"</span><span class="p">)</span>
+<a id="__codelineno-17-7" name="__codelineno-17-7"></a><span class="w">                    </span><span class="p">.</span><span class="na">version</span><span class="p">(</span><span class="s">"v1"</span><span class="p">)</span>
+<a id="__codelineno-17-8" name="__codelineno-17-8"></a><span class="w">                    </span><span class="p">.</span><span class="na">description</span><span class="p">(</span><span class="s">"API de mi propio GameVault, curso 2026/2027."</span><span class="p">))</span>
+<a id="__codelineno-17-9" name="__codelineno-17-9"></a><span class="w">            </span><span class="p">.</span><span class="na">components</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Components</span><span class="p">()</span>
+<a id="__codelineno-17-10" name="__codelineno-17-10"></a><span class="w">                    </span><span class="p">.</span><span class="na">addSecuritySchemes</span><span class="p">(</span><span class="n">esquema</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SecurityScheme</span><span class="p">()</span>
+<a id="__codelineno-17-11" name="__codelineno-17-11"></a><span class="w">                            </span><span class="p">.</span><span class="na">type</span><span class="p">(</span><span class="n">SecurityScheme</span><span class="p">.</span><span class="na">Type</span><span class="p">.</span><span class="na">HTTP</span><span class="p">)</span>
+<a id="__codelineno-17-12" name="__codelineno-17-12"></a><span class="w">                            </span><span class="p">.</span><span class="na">scheme</span><span class="p">(</span><span class="s">"bearer"</span><span class="p">)</span>
+<a id="__codelineno-17-13" name="__codelineno-17-13"></a><span class="w">                            </span><span class="p">.</span><span class="na">bearerFormat</span><span class="p">(</span><span class="s">"JWT"</span><span class="p">)))</span>
+<a id="__codelineno-17-14" name="__codelineno-17-14"></a><span class="w">            </span><span class="p">.</span><span class="na">addSecurityItem</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">SecurityRequirement</span><span class="p">().</span><span class="na">addList</span><span class="p">(</span><span class="n">esquema</span><span class="p">));</span>
+<a id="__codelineno-17-15" name="__codelineno-17-15"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Reinicia, entra en <code>/documentacion</code> y pulsa el botón "Authorize" (ahora sí debería aparecer). Pega el token de <code>admin</code> del Paso 5 —sin escribir <code>Bearer</code> delante, Swagger lo añade solo— y prueba algún endpoint protegido con "Try it out".</p>
+<p><strong>Comprueba</strong>: que ya no hace falta pegar la cabecera <code>Authorization</code> a mano en cada petición — Swagger la añade sola a partir de ahora.</p>
+<p><strong>Captura</strong>: el diálogo de "Authorize" con tu token ya pegado, y la respuesta de un "Try it out" sobre un endpoint protegido.</p>
 <hr>
 <h2 id="pregunta-final">Pregunta final<a class="headerlink" href="#pregunta-final" title="Permanent link">¶</a></h2>
 <p>El payload de un JWT se puede decodificar sin conocer el secreto (lo acabas de hacer en jwt.io). ¿Por qué, entonces, el servidor confía en el token? Si alguien modificara a mano el claim <code>"roles"</code> de un token robado, cambiando <code>["USER"]</code> por <code>["ADMIN"]</code>, y volviera a mandarlo, ¿qué detectaría tu servidor?</p>
@@ -3066,7 +3272,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Pie" >
         
           
-          <a href="../autenticacion-jwt/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Autenticación con JWT">
+          <a href="../anexo-https/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Anexo opcional - HTTPS en desarrollo">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -3076,7 +3282,7 @@
                 Anterior
               </span>
               <div class="md-ellipsis">
-                Autenticación con JWT
+                Anexo opcional - HTTPS en desarrollo
               </div>
             </div>
           </a>

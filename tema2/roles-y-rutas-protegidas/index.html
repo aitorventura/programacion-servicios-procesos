@@ -1457,6 +1457,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../anexo-https/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Anexo opcional - HTTPS en desarrollo
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../actividad_2_4/" class="md-nav__link">
         
   
@@ -1587,9 +1610,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#401-vs-403-con-criterio" class="md-nav__link">
+  <a href="#401-vs-403-vs-404-con-criterio" class="md-nav__link">
     <span class="md-ellipsis">
-      🚦 401 vs. 403, con criterio
+      🚦 401 vs. 403 vs. 404, con criterio
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚦 401 vs. 403 vs. 404, con criterio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cuando-el-404-no-es-un-404-noresourcefoundexception" class="md-nav__link">
+    <span class="md-ellipsis">
+      🐛 Cuando el 404 no es un 404: NoResourceFoundException
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cerrando-la-ultima-grieta-accessdeniedhandler" class="md-nav__link">
+    <span class="md-ellipsis">
+      🩹 Cerrando la última grieta: AccessDeniedHandler
     </span>
   </a>
   
@@ -2508,9 +2555,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#401-vs-403-con-criterio" class="md-nav__link">
+  <a href="#401-vs-403-vs-404-con-criterio" class="md-nav__link">
     <span class="md-ellipsis">
-      🚦 401 vs. 403, con criterio
+      🚦 401 vs. 403 vs. 404, con criterio
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚦 401 vs. 403 vs. 404, con criterio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cuando-el-404-no-es-un-404-noresourcefoundexception" class="md-nav__link">
+    <span class="md-ellipsis">
+      🐛 Cuando el 404 no es un 404: NoResourceFoundException
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cerrando-la-ultima-grieta-accessdeniedhandler" class="md-nav__link">
+    <span class="md-ellipsis">
+      🩹 Cerrando la última grieta: AccessDeniedHandler
     </span>
   </a>
   
@@ -2561,7 +2632,7 @@
 
 <div><p><a id="roles-y-rutas-protegidas"></a></p>
 <h1 id="5-roles-rutas-protegidas-y-tests-de-seguridad">🧩 5. Roles, rutas protegidas y tests de seguridad<a class="headerlink" href="#5-roles-rutas-protegidas-y-tests-de-seguridad" title="Permanent link">¶</a></h1>
-<p>Completas la política de acceso ruta a ruta, y aprendes a probar automáticamente que esa política hace exactamente lo que dice.</p>
+<p>Completas la política de acceso ruta a ruta, cierras las últimas grietas de formato que quedaban abiertas desde apartados anteriores (<code>403</code> y <code>404</code> sin el formato de tu <code>ErrorResponse</code>), y aprendes a probar automáticamente que esa política hace exactamente lo que dice.</p>
 <hr>
 <h2 id="la-politica-de-autorizacion-leida-como-tabla">🗺️ La política de autorización, leída como tabla<a class="headerlink" href="#la-politica-de-autorizacion-leida-como-tabla" title="Permanent link">¶</a></h2>
 <p>El bloque <code>authorizeHttpRequests</code> de tu <code>SecurityConfig.java</code> define <strong>toda</strong> la política de acceso de la aplicación. Léelo como una tabla, no como código:</p>
@@ -2638,8 +2709,8 @@
 <p>Si has ido añadiendo rutas propias durante el curso (el <code>PUT</code>/<code>DELETE</code> del Tema 1, el ranking de Acceso a Datos...) y no tienen una regla explícita en este bloque, <code>denyAll()</code> las bloqueará — aunque el endpoint en sí funcione perfectamente. Este es un error típico y real: "he probado mi endpoint nuevo y me da 403/401 sin motivo aparente" casi siempre significa "se me ha olvidado añadir su regla aquí".</p>
 </div>
 <hr>
-<h2 id="401-vs-403-con-criterio">🚦 401 vs. 403, con criterio<a class="headerlink" href="#401-vs-403-con-criterio" title="Permanent link">¶</a></h2>
-<p>Dos códigos que se confunden con frecuencia, pero responden a preguntas distintas:</p>
+<h2 id="401-vs-403-vs-404-con-criterio">🚦 401 vs. 403 vs. 404, con criterio<a class="headerlink" href="#401-vs-403-vs-404-con-criterio" title="Permanent link">¶</a></h2>
+<p>Tres códigos que se confunden con frecuencia, pero responden a preguntas distintas:</p>
 <table>
 <thead>
 <tr>
@@ -2659,14 +2730,18 @@
 <td>Sabemos quién eres, pero no puedes hacer esto (no autorizado)</td>
 <td>Token válido, pero rol insuficiente para esa regla concreta.</td>
 </tr>
+<tr>
+<td><code>404 Not Found</code></td>
+<td>La ruta pedida no corresponde a ningún endpoint real</td>
+<td>La petición pasa tu política de seguridad (coincide con una regla que la permite), pero no hay ningún controller que la atienda.</td>
+</tr>
 </tbody>
 </table>
-<p>Con la tabla de arriba: un <code>POST /api/v1/libros</code> sin token da <code>401</code>; el mismo <code>POST</code> con el token de un usuario <code>USER</code> (no <code>ADMIN</code>) da <code>403</code>.</p>
-<!-- NOTA PARA DESARROLLO FUTURO: Este 403 tiene el mismo problema de formato que ya se resolvió para el 401 en "Seguridad básica: usuarios en memoria y HTTP Basic" (Actividad 2.2, AuthenticationEntryPoint a medida que reutiliza ErrorResponse). El 403 lo genera Spring Security por su cuenta (vía AccessDeniedHandler por defecto), fuera de GlobalExceptionHandler, por la misma razón: es un filtro/pieza de seguridad, no pasa por el DispatcherServlet ni por @RestControllerAdvice. Cuando se desarrolle este apartado a fondo, añadir una explicación teórica de AccessDeniedHandler (mismo patrón que AuthenticationEntryPoint, pero para peticiones YA autenticadas sin el rol necesario) y su implementación correspondiente en la actividad emparejada, registrándolo en exceptionHandling(...).accessDeniedHandler(...) del SecurityConfig. Borrar este comentario cuando se implemente. -->
-
-<hr>
-<h2 id="tests-de-seguridad-con-mockmvc">🧪 Tests de seguridad con MockMvc<a class="headerlink" href="#tests-de-seguridad-con-mockmvc" title="Permanent link">¶</a></h2>
-<p>Ya sabes construir tests MockMvc desde el Tema 1. Probar seguridad añade un matiz: necesitas un token real para las peticiones autenticadas. El patrón habitual es hacer un <strong>login real</strong> dentro del propio test, y reutilizar el token obtenido:</p>
+<p>Con la tabla de arriba: un <code>POST /api/v1/libros</code> sin token da <code>401</code>; el mismo <code>POST</code> con el token de un usuario <code>USER</code> (no <code>ADMIN</code>) da <code>403</code>. El <code>404</code> es distinto a los otros dos: no depende de quién eres, sino de si ese endpoint existe de verdad.</p>
+<h3 id="cuando-el-404-no-es-un-404-noresourcefoundexception">🐛 Cuando el 404 no es un 404: <code>NoResourceFoundException</code><a class="headerlink" href="#cuando-el-404-no-es-un-404-noresourcefoundexception" title="Permanent link">¶</a></h3>
+<p>Pruébalo tú mismo: con un token válido, pide una ruta que no existe pero que sí coincide con una regla que la permite —por ejemplo, <code>GET /api/v1/libros/esto-no-existe</code> (coincide con <code>/api/v1/libros/**</code>, que es pública). Deberías ver un <code>404</code>... pero lo que sale es un <code>500 Error interno</code>, generado por tu propio <code>GlobalExceptionHandler</code>.</p>
+<p>La causa: cuando ninguna ruta de tu aplicación coincide con la petición, Spring lanza <code>NoResourceFoundException</code> — y como también es una <code>Exception</code>, el Handler 5 que construiste en el primer apartado del tema (<code>@ExceptionHandler(Exception.class)</code>, la "red de seguridad final") la atrapa antes de que Spring pueda darle su tratamiento por defecto, que sería un <code>404</code> correcto. Es exactamente el mismo problema que ese handler evitaba —una excepción sin capturar, filtrando un código erróneo— aplicado a un caso que nunca se había probado: una ruta que sencillamente no existe.</p>
+<p>La solución es la misma de siempre: un handler más específico, que Spring prioriza automáticamente sobre el genérico, sin que tengas que tocar el orden de nada:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-1-3"> 3</a></span>
@@ -2676,50 +2751,128 @@
 <span class="normal"><a href="#__codelineno-1-7"> 7</a></span>
 <span class="normal"><a href="#__codelineno-1-8"> 8</a></span>
 <span class="normal"><a href="#__codelineno-1-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-1-10">10</a></span>
-<span class="normal"><a href="#__codelineno-1-11">11</a></span>
-<span class="normal"><a href="#__codelineno-1-12">12</a></span>
-<span class="normal"><a href="#__codelineno-1-13">13</a></span>
-<span class="normal"><a href="#__codelineno-1-14">14</a></span>
-<span class="normal"><a href="#__codelineno-1-15">15</a></span>
-<span class="normal"><a href="#__codelineno-1-16">16</a></span>
-<span class="normal"><a href="#__codelineno-1-17">17</a></span>
-<span class="normal"><a href="#__codelineno-1-18">18</a></span>
-<span class="normal"><a href="#__codelineno-1-19">19</a></span>
-<span class="normal"><a href="#__codelineno-1-20">20</a></span>
-<span class="normal"><a href="#__codelineno-1-21">21</a></span>
-<span class="normal"><a href="#__codelineno-1-22">22</a></span>
-<span class="normal"><a href="#__codelineno-1-23">23</a></span>
-<span class="normal"><a href="#__codelineno-1-24">24</a></span>
-<span class="normal"><a href="#__codelineno-1-25">25</a></span>
-<span class="normal"><a href="#__codelineno-1-26">26</a></span>
-<span class="normal"><a href="#__codelineno-1-27">27</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">username</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">password</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/auth/login"</span><span class="p">)</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">                    </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">                    </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="s">"""</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="s">                            {"username": "%s", "password": "%s"}</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="s">                            """</span><span class="p">.</span><span class="na">formatted</span><span class="p">(</span><span class="n">username</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="p">)))</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7"></a><span class="w">            </span><span class="p">.</span><span class="na">andReturn</span><span class="p">().</span><span class="na">getResponse</span><span class="p">().</span><span class="na">getContentAsString</span><span class="p">();</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8"></a>
-<a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">JsonPath</span><span class="p">.</span><span class="na">read</span><span class="p">(</span><span class="n">response</span><span class="p">,</span><span class="w"> </span><span class="s">"$.accessToken"</span><span class="p">);</span>
+<span class="normal"><a href="#__codelineno-1-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">NoResourceFoundException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">ErrorResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">handleNoResourceFoundException</span><span class="p">(</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">        </span><span class="n">NoResourceFoundException</span><span class="w"> </span><span class="n">ex</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4"></a>
+<a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="w">    </span><span class="n">ErrorResponse</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ErrorResponse</span><span class="p">(</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="w">            </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">(),</span><span class="w"> </span><span class="mi">404</span><span class="p">,</span><span class="w"> </span><span class="s">"Not Found"</span><span class="p">,</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7"></a><span class="w">            </span><span class="s">"El recurso solicitado no existe"</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getRequestURI</span><span class="p">()</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="w">    </span><span class="p">);</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">NOT_FOUND</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
 <a id="__codelineno-1-10" name="__codelineno-1-10"></a><span class="p">}</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11"></a>
-<a id="__codelineno-1-12" name="__codelineno-1-12"></a><span class="nd">@Test</span>
-<a id="__codelineno-1-13" name="__codelineno-1-13"></a><span class="kt">void</span><span class="w"> </span><span class="nf">crearLibro_DebeDevolver403_CuandoElRolNoEsSuficiente</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14"></a><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">userToken</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">login</span><span class="p">(</span><span class="s">"user"</span><span class="p">,</span><span class="w"> </span><span class="s">"user123"</span><span class="p">);</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15"></a>
-<a id="__codelineno-1-16" name="__codelineno-1-16"></a><span class="w">    </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/libros"</span><span class="p">)</span>
-<a id="__codelineno-1-17" name="__codelineno-1-17"></a><span class="w">                    </span><span class="p">.</span><span class="na">header</span><span class="p">(</span><span class="s">"Authorization"</span><span class="p">,</span><span class="w"> </span><span class="s">"Bearer "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">userToken</span><span class="p">)</span>
-<a id="__codelineno-1-18" name="__codelineno-1-18"></a><span class="w">                    </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
-<a id="__codelineno-1-19" name="__codelineno-1-19"></a><span class="w">                    </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="s">"{}"</span><span class="p">))</span>
-<a id="__codelineno-1-20" name="__codelineno-1-20"></a><span class="w">            </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isForbidden</span><span class="p">());</span>
-<a id="__codelineno-1-21" name="__codelineno-1-21"></a><span class="p">}</span>
-<a id="__codelineno-1-22" name="__codelineno-1-22"></a>
-<a id="__codelineno-1-23" name="__codelineno-1-23"></a><span class="nd">@Test</span>
-<a id="__codelineno-1-24" name="__codelineno-1-24"></a><span class="kt">void</span><span class="w"> </span><span class="nf">authMe_DebeDevolver401_CuandoNoHayToken</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-1-25" name="__codelineno-1-25"></a><span class="w">    </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">"/api/v1/auth/me"</span><span class="p">))</span>
-<a id="__codelineno-1-26" name="__codelineno-1-26"></a><span class="w">            </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isUnauthorized</span><span class="p">());</span>
-<a id="__codelineno-1-27" name="__codelineno-1-27"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Añádelo a tu <code>GlobalExceptionHandler</code> de siempre, junto a los que ya tenías. Spring elige automáticamente el handler más específico para cada excepción —no el primero que encuentra ni el último—, así que este nuevo handler se antepone al genérico solo para <code>NoResourceFoundException</code>, sin afectar a ningún otro caso ya construido.</p>
+<hr>
+<h2 id="cerrando-la-ultima-grieta-accessdeniedhandler">🩹 Cerrando la última grieta: <code>AccessDeniedHandler</code><a class="headerlink" href="#cerrando-la-ultima-grieta-accessdeniedhandler" title="Permanent link">¶</a></h2>
+<p>Queda una grieta más, del mismo tipo que ya cerraste con <code>AuthenticationEntryPoint</code> en la seguridad básica, pero para el otro lado de la moneda: el <code>403</code> de la tabla de arriba tampoco pasa por tu <code>GlobalExceptionHandler</code> —lo genera un filtro de seguridad, igual que el <code>401</code>—, así que sale con el formato por defecto de Spring, no con tu <code>ErrorResponse</code>.</p>
+<p>Spring Security tiene, otra vez, su propia pieza para este trabajo: un <strong><code>AccessDeniedHandler</code></strong>, la contraparte exacta de <code>AuthenticationEntryPoint</code> —mismo patrón, mismo momento del ciclo de la petición, pero para "sí sé quién eres, no puedes hacer esto" en vez de "no sé quién eres":</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-2-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-2-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-2-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-2-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-2-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-2-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-2-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-2-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-2-10">10</a></span>
+<span class="normal"><a href="#__codelineno-2-11">11</a></span>
+<span class="normal"><a href="#__codelineno-2-12">12</a></span>
+<span class="normal"><a href="#__codelineno-2-13">13</a></span>
+<span class="normal"><a href="#__codelineno-2-14">14</a></span>
+<span class="normal"><a href="#__codelineno-2-15">15</a></span>
+<span class="normal"><a href="#__codelineno-2-16">16</a></span>
+<span class="normal"><a href="#__codelineno-2-17">17</a></span>
+<span class="normal"><a href="#__codelineno-2-18">18</a></span>
+<span class="normal"><a href="#__codelineno-2-19">19</a></span>
+<span class="normal"><a href="#__codelineno-2-20">20</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nd">@Component</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ErrorResponseAccessDeniedHandler</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">AccessDeniedHandler</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ObjectMapper</span><span class="w"> </span><span class="n">objectMapper</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ObjectMapper</span><span class="p">();</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">    </span><span class="nd">@Override</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletResponse</span><span class="w"> </span><span class="n">response</span><span class="p">,</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="w">                        </span><span class="n">AccessDeniedException</span><span class="w"> </span><span class="n">accessDeniedException</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9"></a>
+<a id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="w">        </span><span class="n">ErrorResponse</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ErrorResponse</span><span class="p">(</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11"></a><span class="w">                </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">(),</span><span class="w"> </span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">FORBIDDEN</span><span class="p">.</span><span class="na">value</span><span class="p">(),</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12"></a><span class="w">                </span><span class="s">"No autorizado"</span><span class="p">,</span><span class="w"> </span><span class="s">"No tienes permisos suficientes para acceder a este recurso"</span><span class="p">,</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13"></a><span class="w">                </span><span class="n">request</span><span class="p">.</span><span class="na">getRequestURI</span><span class="p">()</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14"></a><span class="w">        </span><span class="p">);</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15"></a>
+<a id="__codelineno-2-16" name="__codelineno-2-16"></a><span class="w">        </span><span class="n">response</span><span class="p">.</span><span class="na">setStatus</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">FORBIDDEN</span><span class="p">.</span><span class="na">value</span><span class="p">());</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17"></a><span class="w">        </span><span class="n">response</span><span class="p">.</span><span class="na">setContentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON_VALUE</span><span class="p">);</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18"></a><span class="w">        </span><span class="n">response</span><span class="p">.</span><span class="na">getWriter</span><span class="p">().</span><span class="na">write</span><span class="p">(</span><span class="n">objectMapper</span><span class="p">.</span><span class="na">writeValueAsString</span><span class="p">(</span><span class="n">error</span><span class="p">));</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Se registra en el mismo <code>.exceptionHandling(...)</code> donde ya tenías el <code>AuthenticationEntryPoint</code> — los dos conviven en el mismo bloque, cada uno resolviendo su propio caso:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
+<span class="normal"><a href="#__codelineno-3-2">2</a></span>
+<span class="normal"><a href="#__codelineno-3-3">3</a></span>
+<span class="normal"><a href="#__codelineno-3-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="p">.</span><span class="na">exceptionHandling</span><span class="p">(</span><span class="n">exceptions</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">exceptions</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">        </span><span class="p">.</span><span class="na">authenticationEntryPoint</span><span class="p">(</span><span class="n">customAuthenticationEntryPoint</span><span class="p">)</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">        </span><span class="p">.</span><span class="na">accessDeniedHandler</span><span class="p">(</span><span class="n">customAccessDeniedHandler</span><span class="p">)</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p>Con esto, los tres códigos de la tabla de arriba —<code>401</code>, <code>403</code> y <code>404</code>— tienen ya el mismo formato <code>ErrorResponse</code> que el resto de tu API, sin excepciones sueltas por ningún sitio.</p>
+<hr>
+<h2 id="tests-de-seguridad-con-mockmvc">🧪 Tests de seguridad con MockMvc<a class="headerlink" href="#tests-de-seguridad-con-mockmvc" title="Permanent link">¶</a></h2>
+<p>Ya sabes construir tests MockMvc desde el Tema 1. Probar seguridad añade un matiz: necesitas un token real para las peticiones autenticadas. El patrón habitual es hacer un <strong>login real</strong> dentro del propio test, y reutilizar el token obtenido:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-4-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-4-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-4-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-4-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-4-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-4-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-4-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-4-10">10</a></span>
+<span class="normal"><a href="#__codelineno-4-11">11</a></span>
+<span class="normal"><a href="#__codelineno-4-12">12</a></span>
+<span class="normal"><a href="#__codelineno-4-13">13</a></span>
+<span class="normal"><a href="#__codelineno-4-14">14</a></span>
+<span class="normal"><a href="#__codelineno-4-15">15</a></span>
+<span class="normal"><a href="#__codelineno-4-16">16</a></span>
+<span class="normal"><a href="#__codelineno-4-17">17</a></span>
+<span class="normal"><a href="#__codelineno-4-18">18</a></span>
+<span class="normal"><a href="#__codelineno-4-19">19</a></span>
+<span class="normal"><a href="#__codelineno-4-20">20</a></span>
+<span class="normal"><a href="#__codelineno-4-21">21</a></span>
+<span class="normal"><a href="#__codelineno-4-22">22</a></span>
+<span class="normal"><a href="#__codelineno-4-23">23</a></span>
+<span class="normal"><a href="#__codelineno-4-24">24</a></span>
+<span class="normal"><a href="#__codelineno-4-25">25</a></span>
+<span class="normal"><a href="#__codelineno-4-26">26</a></span>
+<span class="normal"><a href="#__codelineno-4-27">27</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">username</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">password</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/auth/login"</span><span class="p">)</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="w">                    </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="w">                    </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="s">"""</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="s">                            {"username": "%s", "password": "%s"}</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="s">                            """</span><span class="p">.</span><span class="na">formatted</span><span class="p">(</span><span class="n">username</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="p">)))</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="w">            </span><span class="p">.</span><span class="na">andReturn</span><span class="p">().</span><span class="na">getResponse</span><span class="p">().</span><span class="na">getContentAsString</span><span class="p">();</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8"></a>
+<a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">JsonPath</span><span class="p">.</span><span class="na">read</span><span class="p">(</span><span class="n">response</span><span class="p">,</span><span class="w"> </span><span class="s">"$.accessToken"</span><span class="p">);</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="p">}</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11"></a>
+<a id="__codelineno-4-12" name="__codelineno-4-12"></a><span class="nd">@Test</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13"></a><span class="kt">void</span><span class="w"> </span><span class="nf">crearLibro_DebeDevolver403_CuandoElRolNoEsSuficiente</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14"></a><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">userToken</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">login</span><span class="p">(</span><span class="s">"user"</span><span class="p">,</span><span class="w"> </span><span class="s">"user123"</span><span class="p">);</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15"></a>
+<a id="__codelineno-4-16" name="__codelineno-4-16"></a><span class="w">    </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/libros"</span><span class="p">)</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17"></a><span class="w">                    </span><span class="p">.</span><span class="na">header</span><span class="p">(</span><span class="s">"Authorization"</span><span class="p">,</span><span class="w"> </span><span class="s">"Bearer "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">userToken</span><span class="p">)</span>
+<a id="__codelineno-4-18" name="__codelineno-4-18"></a><span class="w">                    </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19"></a><span class="w">                    </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="s">"{}"</span><span class="p">))</span>
+<a id="__codelineno-4-20" name="__codelineno-4-20"></a><span class="w">            </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isForbidden</span><span class="p">());</span>
+<a id="__codelineno-4-21" name="__codelineno-4-21"></a><span class="p">}</span>
+<a id="__codelineno-4-22" name="__codelineno-4-22"></a>
+<a id="__codelineno-4-23" name="__codelineno-4-23"></a><span class="nd">@Test</span>
+<a id="__codelineno-4-24" name="__codelineno-4-24"></a><span class="kt">void</span><span class="w"> </span><span class="nf">authMe_DebeDevolver401_CuandoNoHayToken</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-25" name="__codelineno-4-25"></a><span class="w">    </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">"/api/v1/auth/me"</span><span class="p">))</span>
+<a id="__codelineno-4-26" name="__codelineno-4-26"></a><span class="w">            </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isUnauthorized</span><span class="p">());</span>
+<a id="__codelineno-4-27" name="__codelineno-4-27"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>El método <code>login(...)</code> hace una petición real de login dentro del test, extrae el <code>accessToken</code> de la respuesta, y ese token se reutiliza en las peticiones siguientes con <code>.header("Authorization", "Bearer " + token)</code> — es exactamente el mismo flujo manual que ya practicaste con <code>curl</code>, pero automatizado y repetible.</p>
 <hr>
@@ -2732,7 +2885,9 @@
 <ul>
 <li>La política de autorización se lee mejor como <strong>tabla</strong> (ruta × verbo × quién puede) que como código suelto.</li>
 <li><code>anyRequest().denyAll()</code> cierra por defecto cualquier ruta sin regla explícita — cada ruta nueva necesita su propia regla o queda bloqueada.</li>
-<li><strong>401</strong> = no sabemos quién eres; <strong>403</strong> = sabemos quién eres, pero no tienes permiso.</li>
+<li><strong>401</strong> = no sabemos quién eres; <strong>403</strong> = sabemos quién eres, pero no tienes permiso; <strong>404</strong> = la ruta no existe, y eso no depende de quién eres.</li>
+<li><code>NoResourceFoundException</code> (ruta inexistente) caía en el Handler 5 genérico del primer apartado del tema, dando <code>500</code> en vez de <code>404</code> — un handler específico lo arregla, sin tocar nada más: Spring prioriza el más concreto automáticamente.</li>
+<li><code>AccessDeniedHandler</code> es la contraparte de <code>AuthenticationEntryPoint</code> para el <code>403</code>: mismo patrón, registrado en el mismo <code>.exceptionHandling(...)</code>, para que autenticación y autorización tengan ambas el formato <code>ErrorResponse</code>.</li>
 <li>Los tests de seguridad hacen un login real dentro del test y reutilizan el token obtenido en las peticiones siguientes.</li>
 <li>La tabla de política de rutas es, en sí misma, esa documentación.</li>
 </ul>
