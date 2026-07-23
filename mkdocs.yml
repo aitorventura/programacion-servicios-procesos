@@ -65,6 +65,7 @@ nav:
           - Actividad 2.3 - Usuarios reales con BCrypt: tema2/actividad_2_3.md
       - Autenticación con JWT:
           - Autenticación con JWT: tema2/autenticacion-jwt.md
+          - Anexo opcional - HTTPS en desarrollo: tema2/anexo-https.md
           - Actividad 2.4 - Login con JWT: tema2/actividad_2_4.md
       - Roles, rutas protegidas y tests:
           - Roles, rutas protegidas y tests: tema2/roles-y-rutas-protegidas.md

@@ -11,6 +11,9 @@
 - Configurar el secreto JWT y los beans de codificación/decodificación.
 - Generar un token con claims propios en el login.
 - Cambiar la configuración de seguridad de HTTP Basic a JWT.
+- Cerrar la grieta del `401` de login sin formato, con un sexto handler en tu `GlobalExceptionHandler`.
+- Añadir un endpoint `GET /api/v1/auth/me` que exponga tu identidad actual a partir del token.
+- Darle a Swagger un botón "Authorize" de verdad, con un `SecurityScheme`.
 
 ---
 
@@ -21,6 +24,17 @@ Tus usuarios reales en PostgreSQL con BCrypt (Actividad 2.3).
 ---
 
 ## Paso 1 — El secreto y los beans JWT
+
+Antes de nada, añade la dependencia que trae `JwtEncoder`, `JwtDecoder` y todo lo relacionado con JWT — no viene incluida en `spring-boot-starter-security`, es un starter aparte:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+</dependency>
+```
+
+Sin esta dependencia, ninguna de las clases de este apartado (`JwtEncoder`, `JwtDecoder`, `JwtAuthenticationConverter`...) existe en tu classpath, y el proyecto no compila. Actualiza el proyecto Maven tras añadirla (en tu IDE, o `mvn compile` desde terminal).
 
 Ya tienes preparado, desde la Actividad 2.3, `application-dev-local.yml` (fuera de Git) y su plantilla `application-dev-local.yml.example`. Añade el secreto ahí, no en `application-dev.yml`:
 
@@ -49,6 +63,13 @@ gamevault:
   jwt:
     expiration-minutes: 60
 ```
+
+!!! warning "El secreto necesita al menos 32 caracteres"
+    HS256 exige una clave de al menos 256 bits (32 caracteres) — con menos, Spring lanza una excepción al arrancar la aplicación. El del ejemplo de arriba ya cumple de sobra, pero si escribes el tuyo a mano, cuenta los caracteres. Una forma rápida de generar uno válido:
+    ```bash
+    openssl rand -base64 32
+    ```
+    Esto te da una cadena aleatoria de más de 32 caracteres, lista para pegar en `jwt.secret` — no hace falta que "signifique" nada, solo que sea larga e impredecible.
 
 !!! warning "Nunca subas un secreto real a un repositorio"
     Un secreto de JWT filtrado permite falsificar tokens válidos para cualquier usuario — es un riesgo real, no una formalidad. Por eso vive en `application-dev-local.yml`, no en `application-dev.yml`: el mismo mecanismo que ya usaste para la contraseña del `admin` en la Actividad 2.3.
@@ -193,23 +214,56 @@ public class AuthController {
 
 (la regla de `/api/v1/auth/register` ya la tenías de la Actividad 2.3 — no hace falta tocarla).
 
+Añade también un sexto handler a tu `GlobalExceptionHandler` (Actividad 2.1), junto a los otros cinco — es la primera vez en el proyecto que una excepción de autenticación se lanza dentro de un controller, así que hasta ahora no hacía falta:
+
+```java
+@ExceptionHandler(AuthenticationException.class)
+public ResponseEntity<ErrorResponse> handleAuthenticationException(
+        AuthenticationException ex, HttpServletRequest request) {
+
+    ErrorResponse response = new ErrorResponse(
+            LocalDateTime.now().toString(), 401, "No autenticado",
+            "Usuario o contraseña incorrectos", request.getRequestURI()
+    );
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+}
+```
+
+Pruébalo con una contraseña incorrecta:
+
+```bash
+curl -i -X POST http://localhost:8080/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"contraseña-mala"}'
+```
+
+**Comprueba**: `401`, con el mismo formato `ErrorResponse` que el resto de tu API — no la traza de Spring por defecto.
+
+**Captura**: esta respuesta.
+
 ---
 
 ## Paso 4 — El cambio de modo completo
 
-Sustituye, en tu `SecurityConfig`, el bloque de HTTP Basic por JWT:
+Sustituye tu método `securityFilterChain` completo por este —incluye todo lo que ya tenías desde la Actividad 2.2 (rutas, `exceptionHandling` con tu `AuthenticationEntryPoint`, `csrf` desactivado) más lo nuevo de hoy; si tu proyecto tiene alguna regla más, propia tuya, consérvala igual—:
 
 ```java
 @Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationEntryPoint authenticationEntryPoint) throws Exception {
     return http
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers(HttpMethod.POST, "/api/v1/auth/register", "/api/v1/auth/login").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/videojuegos/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/estudios/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/v1/videojuegos").hasRole("ADMIN")
+                    .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/documentacion").permitAll()
                     .anyRequest().authenticated()
             )
+            .exceptionHandling(exceptions -> exceptions
+                    .authenticationEntryPoint(authenticationEntryPoint)
+            )
+            .csrf(AbstractHttpConfigurer::disable)
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
             .httpBasic(AbstractHttpConfigurer::disable)
             .build();
@@ -229,53 +283,128 @@ public JwtAuthenticationConverter jwtAuthenticationConverter() {
 
 `jwtAuthenticationConverter()` es la pieza que traduce el claim `"roles"` de tu token (una lista de strings como `["ADMIN"]`) en autoridades de Spring Security con el prefijo `ROLE_` — el mismo formato que ya usaban tus reglas `hasRole("ADMIN")` con HTTP Basic, así que no tienes que tocar esas reglas.
 
+Fíjate en la regla nueva de `/v3/api-docs/**`, `/swagger-ui/**` y `/documentacion`: desde la Actividad 2.2, Swagger ha estado bloqueado detrás de autenticación, igual que el resto de la API. Sin esta regla, el navegador no podría ni cargar `/documentacion` —STATELESS no manda ningún token solo por navegar a una URL—, y el Paso 7 (el botón "Authorize") no sería alcanzable. La añades ahora porque es la primera vez que necesitas Swagger accesible sin login previo.
+
 **Pregunta**: ¿qué pieza de tu configuración de la Actividad 2.2 desaparece exactamente en este paso, y qué la reemplaza?
 
 ---
 
 ## Paso 5 — Prueba del flujo completo
 
+`GET /api/v1/videojuegos` es pública (`permitAll()`) — con o sin token, siempre da `200`, así que no sirve para comprobar que la autenticación funciona de verdad. Usa en su lugar `POST /api/v1/videojuegos`, que exige rol `ADMIN`, y compara tres situaciones: con el token correcto, sin ningún token, y con el token de un usuario sin ese rol.
+
+!!! tip "¿Ya no existe el usuario `user` de la Actividad 2.3?"
+    Si has reiniciado la base de datos entre medias, vuelve a crearlo antes de seguir:
+    ```bash
+    curl -i -X POST http://localhost:8080/api/v1/auth/register \
+      -H "Content-Type: application/json" \
+      -d '{"username":"user","password":"user123"}'
+    ```
+
 ```bash
-# 1. Login
+# 1. Login como admin
 curl -s -X POST http://localhost:8080/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"admin123"}'
 
 # 2. Copia el "accessToken" de la respuesta y guárdalo
-TOKEN="pega-aqui-el-token"
+ADMIN_TOKEN="pega-aqui-el-token-de-admin"
 
-# 3. Petición autenticada
-curl -i http://localhost:8080/api/v1/videojuegos -H "Authorization: Bearer $TOKEN"
+# 3. POST protegido, con el token de admin
+curl -i -X POST http://localhost:8080/api/v1/videojuegos \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"titulo":"Celeste","precio":19.99,"fechaLanzamiento":"2018-01-25","estudioId":1}'
 
 # 4. La misma petición, sin token
-curl -i http://localhost:8080/api/v1/videojuegos
+curl -i -X POST http://localhost:8080/api/v1/videojuegos \
+  -H "Content-Type: application/json" \
+  -d '{"titulo":"Celeste","precio":19.99,"fechaLanzamiento":"2018-01-25","estudioId":1}'
+
+# 5. Login como user (el que registraste en la Actividad 2.3) y repite la petición con su token
+curl -s -X POST http://localhost:8080/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"user","password":"user123"}'
+
+USER_TOKEN="pega-aqui-el-token-de-user"
+
+curl -i -X POST http://localhost:8080/api/v1/videojuegos \
+  -H "Authorization: Bearer $USER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"titulo":"Celeste","precio":19.99,"fechaLanzamiento":"2018-01-25","estudioId":1}'
 ```
 
-**Comprueba**: `200` con el token, y compara con el resultado sin él sobre una ruta protegida (si tienes alguna que exija autenticación siempre, pruébala en vez de `GET /videojuegos`, que es pública).
+**Comprueba**: `201` con el token de `admin`; `401` sin token (el servidor no sabe quién eres); `403` con el token de `user` (sabe quién eres, pero no tienes el rol que exige la ruta). Tres respuestas distintas para tres situaciones distintas, con la misma petición y solo las credenciales cambiando.
 
-**Captura**: la respuesta del login (con el `accessToken`), y las dos peticiones siguientes, con y sin token, una junto a la otra.
+!!! note "El 403 no tiene, todavía, el formato de tu `ErrorResponse`"
+    A diferencia del `401`, que ya formatea tu `AuthenticationEntryPoint`, este `403` sale con el formato por defecto de Spring Security — es la misma grieta que el `401` tenía antes de la Actividad 2.2, pero para autorización en vez de autenticación. Se cierra más adelante en el tema, con un `AccessDeniedHandler` a medida.
 
-Decodifica el payload de tu propio token (cópialo, pégalo en [jwt.io](https://jwt.io) o decodifica la segunda parte con `base64 -d`) y **anota** los claims que ves.
+**Captura**: las tres respuestas (con token de `admin`, sin token, con token de `user`), una junto a la otra.
+
+Decodifica el payload del token de `admin` (cópialo, pégalo en [jwt.io](https://jwt.io) o decodifica la segunda parte con `base64 -d`) y **anota** los claims que ves.
 
 **Captura**: el payload ya decodificado, con los claims a la vista.
 
 ---
 
-## Mini-reto — `GET /api/v1/auth/me`
+## Paso 6 — `GET /api/v1/auth/me`
 
-Añade un endpoint sencillo que devuelva quién eres según tu token actual, documentado con `@Operation`/`@ApiResponses` igual que el resto de tu API:
+Añade un endpoint sencillo que devuelva quién eres según tu token actual, documentado con `@Operation`/`@ApiResponses` igual que el resto de tu API. Define primero el DTO de respuesta, con el mismo patrón `record` que ya conoces:
+
+```java
+public record AuthMeResponse(String username, List<String> roles) {}
+```
 
 ```java
 @GetMapping("/me")
-public ResponseEntity<Map<String, Object>> me() {
+public ResponseEntity<AuthMeResponse> me() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    // construye y devuelve un mapa (o un DTO propio) con el username y los roles
+
+    List<String> roles = authentication.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .filter(a -> a.startsWith("ROLE_"))
+            .map(a -> a.replace("ROLE_", ""))
+            .toList();
+
+    return ResponseEntity.ok(new AuthMeResponse(authentication.getName(), roles));
 }
 ```
 
-Pruébalo con tu token del Paso 5 y comprueba que la información coincide con lo que decodificaste a mano.
+El `.filter()`/`.map()` para quitar el prefijo `ROLE_` es el mismo que ya usaste en `JwtService` (Paso 2) — hace falta repetirlo aquí para que los roles que ves en `/me` coincidan exactamente con los que decodificaste del JWT (que tampoco llevan el prefijo).
+
+Pruébalo con el token de `admin` del Paso 5 y comprueba que la información coincide con lo que decodificaste a mano.
 
 **Captura**: la respuesta de `GET /api/v1/auth/me`.
+
+---
+
+## Paso 7 — Un botón "Authorize" de verdad en Swagger
+
+Añade el esquema de seguridad a tu `OpenApiConfig` (Actividad 1.2 de PSP):
+
+```java
+@Bean
+public OpenAPI gamevaultOpenAPI() {
+    final String esquema = "bearerAuth";
+    return new OpenAPI()
+            .info(new Info()
+                    .title("Mi GameVault")
+                    .version("v1")
+                    .description("API de mi propio GameVault, curso 2026/2027."))
+            .components(new Components()
+                    .addSecuritySchemes(esquema, new SecurityScheme()
+                            .type(SecurityScheme.Type.HTTP)
+                            .scheme("bearer")
+                            .bearerFormat("JWT")))
+            .addSecurityItem(new SecurityRequirement().addList(esquema));
+}
+```
+
+Reinicia, entra en `/documentacion` y pulsa el botón "Authorize" (ahora sí debería aparecer). Pega el token de `admin` del Paso 5 —sin escribir `Bearer ` delante, Swagger lo añade solo— y prueba algún endpoint protegido con "Try it out".
+
+**Comprueba**: que ya no hace falta pegar la cabecera `Authorization` a mano en cada petición — Swagger la añade sola a partir de ahora.
+
+**Captura**: el diálogo de "Authorize" con tu token ya pegado, y la respuesta de un "Try it out" sobre un endpoint protegido.
 
 ---
 

@@ -62,7 +62,7 @@ Una idea de cuánto pesa ese coste en la práctica (tiempos aproximados, en hard
 Cien milisegundos son imperceptibles para un usuario que hace login una vez. Pero multiplicados por los millones de intentos que necesitaría un ataque de fuerza bruta, la diferencia entre "factible" e "inviable" se cuenta en años de cómputo.
 
 !!! tip "Un apunte sobre criptografía de clave pública/privada"
-    Existe otra familia de criptografía, la de **clave pública/privada**: un par de claves matemáticamente relacionadas donde lo que cifra una (o firma) solo lo puede verificar la otra. No la necesitas todavía — la retomarás en el próximo apartado, cuando veas cómo se firma un JWT.
+    Existe otra familia de criptografía, la de **clave pública/privada**: un par de claves matemáticamente relacionadas donde lo que cifra una (o firma) solo lo puede verificar la otra. No es la que vas a usar en el próximo apartado —ahí firmarás el JWT con HMAC, un algoritmo distinto que usa una única clave compartida entre quien firma y quien verifica—, pero es la otra gran familia de la criptografía, y la encontrarás si alguna vez trabajas con JWT firmados con RS256 en vez de HS256.
 
 ---
 

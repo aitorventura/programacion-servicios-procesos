@@ -7,6 +7,8 @@
 
 - Completar una política de rutas cerrada por defecto.
 - Depurar un caso real de ruta bloqueada por olvido.
+- Cerrar un `500` mal formado en una ruta inexistente, con un handler específico.
+- Implementar un `AccessDeniedHandler` a medida, para que el `403` tenga el mismo formato que el resto de tu API.
 - Escribir tests de seguridad con login real.
 
 ---
@@ -87,7 +89,90 @@ logging:
 
 ---
 
-## Paso 4 — Test de seguridad, guiado al completo
+## Paso 4 — Una ruta que no existe: por qué da `500`
+
+Con un token de `admin` válido (Actividad 2.4, Paso 5), prueba una ruta que no existe pero que sí coincide con una regla que la permite:
+
+```bash
+curl -i http://localhost:8080/api/v1/videojuegos/esto-no-existe \
+  -H "Authorization: Bearer $ADMIN_TOKEN"
+```
+
+**Comprueba**: en vez de un `404`, ves un `500 Error interno` — el mismo formato que generaría cualquier bug real de tu código, aunque aquí el único "problema" es que la ruta no existe.
+
+**Captura**: esta respuesta, con el `500`.
+
+Añade el handler que falta a tu `GlobalExceptionHandler` (Actividad 2.1), junto a los cinco que ya tenías:
+
+```java
+@ExceptionHandler(NoResourceFoundException.class)
+public ResponseEntity<ErrorResponse> handleNoResourceFoundException(
+        NoResourceFoundException ex, HttpServletRequest request) {
+
+    ErrorResponse response = new ErrorResponse(
+            LocalDateTime.now().toString(), 404, "Not Found",
+            "El recurso solicitado no existe", request.getRequestURI()
+    );
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+}
+```
+
+Repite la misma petición y comprueba que ahora da `404`, con el formato de tu `ErrorResponse`.
+
+**Captura**: la misma petición, ya corregida.
+
+---
+
+## Paso 5 — `AccessDeniedHandler` a medida, para que el `403` tenga formato
+
+Crea la clase, junto a tu `ErrorResponseAuthenticationEntryPoint` de la Actividad 2.2:
+
+```java
+@Component
+public class ErrorResponseAccessDeniedHandler implements AccessDeniedHandler {
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Override
+    public void handle(HttpServletRequest request, HttpServletResponse response,
+                        AccessDeniedException accessDeniedException) throws IOException {
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now().toString(), HttpStatus.FORBIDDEN.value(),
+                "No autorizado", "No tienes permisos suficientes para acceder a este recurso",
+                request.getRequestURI()
+        );
+
+        response.setStatus(HttpStatus.FORBIDDEN.value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.getWriter().write(objectMapper.writeValueAsString(error));
+    }
+}
+```
+
+Añade el parámetro a tu `securityFilterChain` (Actividad 2.4, Paso 4) y regístrala junto al `AuthenticationEntryPoint` que ya tenías, en el mismo `.exceptionHandling(...)` —no toques nada más del método, solo estas dos líneas—:
+
+```java
+public SecurityFilterChain securityFilterChain(HttpSecurity http,
+        AuthenticationEntryPoint authenticationEntryPoint,
+        AccessDeniedHandler accessDeniedHandler) throws Exception {
+    return http
+            // ...
+            .exceptionHandling(exceptions -> exceptions
+                    .authenticationEntryPoint(authenticationEntryPoint)
+                    .accessDeniedHandler(accessDeniedHandler)
+            )
+            // ...
+}
+```
+
+Prueba de nuevo el `POST /api/v1/videojuegos` con el token de `user` (Actividad 2.4, Paso 5) y comprueba que el `403` ya tiene el formato de tu `ErrorResponse`.
+
+**Captura**: esta respuesta.
+
+---
+
+## Paso 6 — Test de seguridad, guiado al completo
 
 ```java
 private String login(String username, String password) throws Exception {
@@ -134,15 +219,21 @@ void crearVideojuego_DebeDevolver201_ConRolAdmin() throws Exception {
                             """))
             .andExpect(status().isCreated());
 }
+
+@Test
+void rutaInexistente_DebeDevolver404() throws Exception {
+    mockMvc.perform(get("/api/v1/videojuegos/esto-no-existe"))
+            .andExpect(status().isNotFound());
+}
 ```
 
-Los tres tests cubren los tres casos de la tabla para una misma ruta: sin token (`401`), con rol insuficiente (`403`), con el rol correcto (éxito).
+Los cuatro tests cubren los tres casos de la tabla para una misma ruta —sin token (`401`), con rol insuficiente (`403`), con el rol correcto (éxito)— más el caso del Paso 4: una ruta que sencillamente no existe (`404`).
 
 ---
 
-## Mini-reto — repite el patrón con `DELETE` de `Estudio`
+## Paso 7 — Repite el patrón con `DELETE` de `Estudio`
 
-Escribe los mismos tres tests (sin token, con rol insuficiente si aplica según tu decisión del Paso 1, con el rol correcto) para el `DELETE` de `Estudio` que construiste en el Tema 1. Solo se indica qué cubrir — la estructura es idéntica a la del Paso 4.
+Escribe los mismos tres tests (sin token, con rol insuficiente si aplica según tu decisión del Paso 1, con el rol correcto) para el `DELETE` de `Estudio` que construiste en el Tema 1. Solo se indica qué cubrir — la estructura es idéntica a la del Paso 6.
 
 ---
 
@@ -155,4 +246,4 @@ Escribe los mismos tres tests (sin token, con rol insuficiente si aplica según 
 
 ## ✅ Cierre
 
-Este JWT que acabas de terminar es el que reutilizarás en Acceso a Datos para el `PUT` de reseñas con control de autoría — el mismo token, el mismo `Principal`, en otro módulo del mismo proyecto.
+Este JWT que acabas de terminar es el que reutilizarás en Acceso a Datos para el `PUT` de reseñas con control de autoría — el mismo token, la misma identidad, en otro módulo del mismo proyecto.
