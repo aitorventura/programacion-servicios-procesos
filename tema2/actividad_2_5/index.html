@@ -1678,27 +1678,36 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#paso-5-accessdeniedhandler-a-medida-para-que-el-403-tenga-formato" class="md-nav__link">
+  <a href="#paso-5-un-id-que-no-es-un-id" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 5 — AccessDeniedHandler a medida, para que el 403 tenga formato
+      Paso 5 — Un id que no es un id
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#paso-6-test-de-seguridad-guiado-al-completo" class="md-nav__link">
+  <a href="#paso-6-accessdeniedhandler-a-medida-para-que-el-403-tenga-formato" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 6 — Test de seguridad, guiado al completo
+      Paso 6 — AccessDeniedHandler a medida, para que el 403 tenga formato
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#paso-7-repite-el-patron-con-delete-de-estudio" class="md-nav__link">
+  <a href="#paso-7-test-de-seguridad-guiado-al-completo" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 7 — Repite el patrón con DELETE de Estudio
+      Paso 7 — Test de seguridad, guiado al completo
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-8-repite-el-patron-con-delete-de-estudio" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 8 — Repite el patrón con DELETE de Estudio
     </span>
   </a>
   
@@ -1708,15 +1717,6 @@
   <a href="#cierre-del-tema" class="md-nav__link">
     <span class="md-ellipsis">
       Cierre del tema
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cierre" class="md-nav__link">
-    <span class="md-ellipsis">
-      ✅ Cierre
     </span>
   </a>
   
@@ -2630,27 +2630,36 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#paso-5-accessdeniedhandler-a-medida-para-que-el-403-tenga-formato" class="md-nav__link">
+  <a href="#paso-5-un-id-que-no-es-un-id" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 5 — AccessDeniedHandler a medida, para que el 403 tenga formato
+      Paso 5 — Un id que no es un id
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#paso-6-test-de-seguridad-guiado-al-completo" class="md-nav__link">
+  <a href="#paso-6-accessdeniedhandler-a-medida-para-que-el-403-tenga-formato" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 6 — Test de seguridad, guiado al completo
+      Paso 6 — AccessDeniedHandler a medida, para que el 403 tenga formato
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#paso-7-repite-el-patron-con-delete-de-estudio" class="md-nav__link">
+  <a href="#paso-7-test-de-seguridad-guiado-al-completo" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 7 — Repite el patrón con DELETE de Estudio
+      Paso 7 — Test de seguridad, guiado al completo
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-8-repite-el-patron-con-delete-de-estudio" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 8 — Repite el patrón con DELETE de Estudio
     </span>
   </a>
   
@@ -2660,15 +2669,6 @@
   <a href="#cierre-del-tema" class="md-nav__link">
     <span class="md-ellipsis">
       Cierre del tema
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cierre" class="md-nav__link">
-    <span class="md-ellipsis">
-      ✅ Cierre
     </span>
   </a>
   
@@ -2691,6 +2691,10 @@
 
 
 <div><h1 id="actividad-25-roles-y-rutas-protegidas">🧪 Actividad 2.5: Roles y rutas protegidas<a class="headerlink" href="#actividad-25-roles-y-rutas-protegidas" title="Permanent link">¶</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Descarga la plantilla</p>
+<p>📄 <a href="../plantillas/Actividad_2_5_PSP_Plantilla.docx" rel="noopener" target="_blank">Plantilla 2.5 — Roles y rutas protegidas</a></p>
+</div>
 <div class="admonition info">
 <p class="admonition-title">Práctica guiada</p>
 <p>Hoy completas la política de autorización de tu GameVault, con las rutas propias que has ido añadiendo durante el curso incluidas, y la verificas con tests automatizados.</p>
@@ -2700,15 +2704,17 @@
 <li>Completar una política de rutas cerrada por defecto.</li>
 <li>Depurar un caso real de ruta bloqueada por olvido.</li>
 <li>Cerrar un <code>500</code> mal formado en una ruta inexistente, con un handler específico.</li>
+<li>Cerrar un segundo <code>500</code> mal formado, esta vez por un id con el tipo equivocado, con otro handler específico.</li>
 <li>Implementar un <code>AccessDeniedHandler</code> a medida, para que el <code>403</code> tenga el mismo formato que el resto de tu API.</li>
 <li>Escribir tests de seguridad con login real.</li>
 </ul>
 <hr>
 <h2 id="requisitos-previos">Requisitos previos<a class="headerlink" href="#requisitos-previos" title="Permanent link">¶</a></h2>
-<p>Tu login con JWT de la Actividad 2.4, y las rutas que has ido construyendo durante el curso: CRUD de <code>Videojuego</code>, <code>PUT</code>/<code>DELETE</code> de <code>Estudio</code> (Tema 1), el ranking de estudios (si ya lo tienes de Acceso a Datos).</p>
+<p>Tu login con JWT de la Actividad 2.4, el CRUD completo de <code>Videojuego</code> y de <code>Estudio</code> (Acceso a Datos, Tema 1), y cualquier ruta propia que hayas ido añadiendo por tu cuenta: filtros, consultas nativas sobre JSONB, el descuento por estudio, el ajuste de precio, el ranking...</p>
 <hr>
 <h2 id="paso-1-construir-la-tabla-de-politica-y-luego-el-codigo">Paso 1 — Construir la tabla de política, y luego el código<a class="headerlink" href="#paso-1-construir-la-tabla-de-politica-y-luego-el-codigo" title="Permanent link">¶</a></h2>
-<p>Esta es la tabla objetivo — incluye tanto las rutas del catálogo base como las que <strong>tú</strong> has ido añadiendo por tu cuenta durante el curso:</p>
+<p>Esta es la tabla objetivo — incluye tanto las rutas del catálogo base como las que <strong>tú</strong> has ido añadiendo por tu cuenta durante el curso. Agrupada por controller, para que sea más fácil de leer y de contrastar con tu propio código:</p>
+<p><strong><code>AuthController</code></strong></p>
 <table>
 <thead>
 <tr>
@@ -2724,30 +2730,86 @@
 <td>Cualquiera</td>
 </tr>
 <tr>
-<td><code>/api/v1/videojuegos</code>, <code>/api/v1/estudios</code> (y sus <code>/{id}</code>)</td>
+<td><code>/api/v1/auth/me</code></td>
+<td>GET</td>
+<td>Cualquiera <strong>autenticado</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong><code>VideojuegoController</code></strong></p>
+<table>
+<thead>
+<tr>
+<th>Ruta</th>
+<th>Verbo</th>
+<th>Quién puede</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/api/v1/videojuegos</code> (y toda subruta <code>GET</code>: filtros, búsquedas, consultas nativas...)</td>
 <td>GET</td>
 <td>Cualquiera</td>
 </tr>
 <tr>
 <td><code>/api/v1/videojuegos</code></td>
-<td>POST/PUT/DELETE</td>
-<td>Solo <code>ADMIN</code></td>
-</tr>
-<tr>
-<td><code>/api/v1/estudios</code></td>
 <td>POST</td>
 <td>Solo <code>ADMIN</code></td>
 </tr>
 <tr>
-<td><code>/api/v1/estudios/{id}</code></td>
+<td><code>/api/v1/videojuegos/{id}</code></td>
 <td>PUT, DELETE</td>
-<td>¿? <em>(decide tú)</em></td>
+<td>Solo <code>ADMIN</code></td>
 </tr>
 <tr>
-<td><code>/api/v1/estudios/ranking</code></td>
-<td>GET</td>
-<td>¿? <em>(decide tú, si ya la tienes)</em></td>
+<td><code>/api/v1/videojuegos/descuento/{estudioId}</code></td>
+<td>POST</td>
+<td>Solo <code>ADMIN</code></td>
 </tr>
+</tbody>
+</table>
+<p><strong><code>EstudioController</code></strong> — <em>esta la decides tú entera, basándote en la lógica que ya has aplicado en <code>VideojuegoController</code></em></p>
+<table>
+<thead>
+<tr>
+<th>Ruta</th>
+<th>Verbo</th>
+<th>Quién puede</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/api/v1/estudios</code> (y toda subruta <code>GET</code>: <code>/{id}</code>, <code>ranking</code>, <code>ranking-con-posicion</code>...)</td>
+<td>GET</td>
+<td>¿?</td>
+</tr>
+<tr>
+<td><code>/api/v1/estudios</code></td>
+<td>POST</td>
+<td>¿?</td>
+</tr>
+<tr>
+<td><code>/api/v1/estudios/{id}</code></td>
+<td>PUT, DELETE</td>
+<td>¿?</td>
+</tr>
+<tr>
+<td><code>/api/v1/estudios/{id}/ajustar-precio</code></td>
+<td>POST</td>
+<td>¿?</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Infraestructura y documentación</strong></p>
+<table>
+<thead>
+<tr>
+<th>Ruta</th>
+<th>Verbo</th>
+<th>Quién puede</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td><code>/actuator/health</code></td>
 <td>GET</td>
@@ -2765,11 +2827,12 @@
 </tr>
 </tbody>
 </table>
-<div class="admonition tip">
-<p class="admonition-title">Las reseñas todavía no existen en tu proyecto</p>
-<p>Si más adelante añades el módulo de reseñas (Acceso a Datos, Tema 3), vas a tener que volver a esta tabla y a <code>SecurityConfig</code> para añadir <code>/api/v1/videojuegos/*/reviews</code> (<code>POST</code>, <code>USER</code> o <code>ADMIN</code>) — hoy no existe todavía, así que no lo incluyas.</p>
+<div class="admonition danger">
+<p class="admonition-title">Revisa tus propios controllers antes de dar la tabla por completa</p>
+<p>Esta tabla recoge las rutas del catálogo base y de <code>/auth</code>, pero <strong>tu proyecto puede tener más</strong> — cualquier endpoint que hayas ido añadiendo por tu cuenta (un buscador, un top de novedades, una acción sobre un recurso concreto...) necesita su propia fila, o <code>denyAll()</code> lo bloqueará sin avisar. Antes de escribir el código, repasa <code>VideojuegoController</code> y <code>EstudioController</code> método a método y comprueba que cada uno tiene un sitio en esta tabla.</p>
+<p>No todos los métodos necesitan una fila <strong>propia</strong>: los filtros, búsquedas y consultas nativas (JSONB incluido) son <code>GET</code> bajo la misma ruta base, así que ya quedan cubiertos por <code>.requestMatchers(HttpMethod.GET, ".../**").permitAll()</code> — no hace falta una regla por cada uno. Presta especial atención, en cambio, a los <code>POST</code> sobre una acción concreta (como <code>descuento</code> o <code>ajustar-precio</code> arriba): esos sí necesitan su propia regla, porque no coinciden con la de la ruta base.</p>
 </div>
-<p><strong>Antes de escribir código</strong>, decide y anota: el <code>PUT</code>/<code>DELETE</code> de <code>Estudio</code> que construiste en el Tema 1, ¿debería tener el mismo nivel de protección que el resto de escrituras del catálogo (<code>ADMIN</code>)? Justifica tu respuesta en una frase.</p>
+<p><strong>Antes de escribir código</strong>, decide y anota las cuatro filas de <code>EstudioController</code>. <code>Estudio</code> ya tiene el CRUD completo desde Acceso a Datos, con la misma forma que <code>Videojuego</code> — así que la pregunta no es "¿qué hace cada endpoint?" (eso ya lo sabes), sino "¿tiene sentido tratarlo igual que su equivalente en <code>Videojuego</code>, o hay una razón real para tratarlo distinto?". No hay una respuesta fija: la lógica de <code>Videojuego</code> es tu punto de partida (mantener el mismo criterio en toda la app, salvo que tengas un motivo concreto para lo contrario, es en sí mismo una buena decisión de diseño), pero la decisión y la justificación son tuyas. Justifica cada fila en una frase — con especial atención a <code>PUT</code>/<code>DELETE</code>, donde de verdad puede haber más de una respuesta razonable.</p>
 <p>Ahora completa tu <code>SecurityConfig</code> regla a regla, siguiendo la tabla ya decidida:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
@@ -2783,255 +2846,619 @@
 <span class="normal"><a href="#__codelineno-0-10">10</a></span>
 <span class="normal"><a href="#__codelineno-0-11">11</a></span>
 <span class="normal"><a href="#__codelineno-0-12">12</a></span>
-<span class="normal"><a href="#__codelineno-0-13">13</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="p">.</span><span class="na">authorizeHttpRequests</span><span class="p">(</span><span class="n">auth</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">auth</span>
+<span class="normal"><a href="#__codelineno-0-13">13</a></span>
+<span class="normal"><a href="#__codelineno-0-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="p">.</span><span class="na">authorizeHttpRequests</span><span class="p">(</span><span class="n">auth</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">auth</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/auth/register"</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/auth/login"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/estudios/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">PUT</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/*"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">DELETE</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/*"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/estudios"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="w">        </span><span class="c1">// añade aquí, siguiendo el mismo patrón, la regla que decidiste para Estudio PUT/DELETE</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="s">"/error"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="s">"/v3/api-docs/**"</span><span class="p">,</span><span class="w"> </span><span class="s">"/swagger-ui/**"</span><span class="p">,</span><span class="w"> </span><span class="s">"/documentacion"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="w">        </span><span class="p">.</span><span class="na">anyRequest</span><span class="p">().</span><span class="na">denyAll</span><span class="p">()</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/auth/me"</span><span class="p">).</span><span class="na">authenticated</span><span class="p">()</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/descuento/*"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">PUT</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/*"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">DELETE</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/videojuegos/*"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="w">        </span><span class="c1">// añade aquí las reglas de EstudioController (GET, POST, PUT, DELETE, ajustar-precio),</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="w">        </span><span class="c1">// siguiendo el mismo patrón que las de VideojuegoController de arriba — la decisión es tuya</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="s">"/error"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="w">        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="s">"/v3/api-docs/**"</span><span class="p">,</span><span class="w"> </span><span class="s">"/swagger-ui/**"</span><span class="p">,</span><span class="w"> </span><span class="s">"/documentacion"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="w">        </span><span class="p">.</span><span class="na">anyRequest</span><span class="p">().</span><span class="na">denyAll</span><span class="p">()</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
+<p>Con la configuración recién escrita, documéntala antes de seguir — mejor ahora, con las decisiones frescas, que al final de la actividad. Crea <code>docs/seguridad.md</code> en tu propio proyecto. Aquí tienes el documento ya hecho para <code>AuthController</code>, <code>VideojuegoController</code> e infraestructura — completa tú la tabla entera de <code>EstudioController</code> (marcada con <code>???</code>) con lo que acabas de decidir y justificar. La fila de <code>/actuator/health</code> todavía queda como <code>???</code>: la resuelves en el Paso 3, y entonces vuelves aquí a rellenarla.</p>
+<div class="language-markdown highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Markdown</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-1-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-1-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-1-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-1-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-1-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-1-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-1-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-1-10">10</a></span>
+<span class="normal"><a href="#__codelineno-1-11">11</a></span>
+<span class="normal"><a href="#__codelineno-1-12">12</a></span>
+<span class="normal"><a href="#__codelineno-1-13">13</a></span>
+<span class="normal"><a href="#__codelineno-1-14">14</a></span>
+<span class="normal"><a href="#__codelineno-1-15">15</a></span>
+<span class="normal"><a href="#__codelineno-1-16">16</a></span>
+<span class="normal"><a href="#__codelineno-1-17">17</a></span>
+<span class="normal"><a href="#__codelineno-1-18">18</a></span>
+<span class="normal"><a href="#__codelineno-1-19">19</a></span>
+<span class="normal"><a href="#__codelineno-1-20">20</a></span>
+<span class="normal"><a href="#__codelineno-1-21">21</a></span>
+<span class="normal"><a href="#__codelineno-1-22">22</a></span>
+<span class="normal"><a href="#__codelineno-1-23">23</a></span>
+<span class="normal"><a href="#__codelineno-1-24">24</a></span>
+<span class="normal"><a href="#__codelineno-1-25">25</a></span>
+<span class="normal"><a href="#__codelineno-1-26">26</a></span>
+<span class="normal"><a href="#__codelineno-1-27">27</a></span>
+<span class="normal"><a href="#__codelineno-1-28">28</a></span>
+<span class="normal"><a href="#__codelineno-1-29">29</a></span>
+<span class="normal"><a href="#__codelineno-1-30">30</a></span>
+<span class="normal"><a href="#__codelineno-1-31">31</a></span>
+<span class="normal"><a href="#__codelineno-1-32">32</a></span>
+<span class="normal"><a href="#__codelineno-1-33">33</a></span>
+<span class="normal"><a href="#__codelineno-1-34">34</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="gh"># Política de seguridad — GameVault</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="gu">## AuthController</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4"></a>
+<a id="__codelineno-1-5" name="__codelineno-1-5"></a>| Ruta | Verbo | Quién puede |
+<a id="__codelineno-1-6" name="__codelineno-1-6"></a>|---|---|---|
+<a id="__codelineno-1-7" name="__codelineno-1-7"></a>| <span class="sb">`/api/v1/auth/register`</span>, <span class="sb">`/api/v1/auth/login`</span> | POST | Cualquiera |
+<a id="__codelineno-1-8" name="__codelineno-1-8"></a>| <span class="sb">`/api/v1/auth/me`</span> | GET | Cualquiera autenticado |
+<a id="__codelineno-1-9" name="__codelineno-1-9"></a>
+<a id="__codelineno-1-10" name="__codelineno-1-10"></a><span class="gu">## VideojuegoController</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11"></a>
+<a id="__codelineno-1-12" name="__codelineno-1-12"></a>| Ruta | Verbo | Quién puede |
+<a id="__codelineno-1-13" name="__codelineno-1-13"></a>|---|---|---|
+<a id="__codelineno-1-14" name="__codelineno-1-14"></a>| <span class="sb">`/api/v1/videojuegos`</span> (y toda subruta GET: filtros, búsquedas, consultas nativas...) | GET | Cualquiera |
+<a id="__codelineno-1-15" name="__codelineno-1-15"></a>| <span class="sb">`/api/v1/videojuegos`</span> | POST | Solo ADMIN |
+<a id="__codelineno-1-16" name="__codelineno-1-16"></a>| <span class="sb">`/api/v1/videojuegos/{id}`</span> | PUT, DELETE | Solo ADMIN |
+<a id="__codelineno-1-17" name="__codelineno-1-17"></a>| <span class="sb">`/api/v1/videojuegos/descuento/{estudioId}`</span> | POST | Solo ADMIN |
+<a id="__codelineno-1-18" name="__codelineno-1-18"></a>
+<a id="__codelineno-1-19" name="__codelineno-1-19"></a><span class="gu">## EstudioController</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20"></a>
+<a id="__codelineno-1-21" name="__codelineno-1-21"></a>| Ruta | Verbo | Quién puede |
+<a id="__codelineno-1-22" name="__codelineno-1-22"></a>|---|---|---|
+<a id="__codelineno-1-23" name="__codelineno-1-23"></a>| <span class="sb">`/api/v1/estudios`</span> (y toda subruta GET: /{id}, ranking, ranking-con-posicion...) | GET | ??? |
+<a id="__codelineno-1-24" name="__codelineno-1-24"></a>| <span class="sb">`/api/v1/estudios`</span> | POST | ??? |
+<a id="__codelineno-1-25" name="__codelineno-1-25"></a>| <span class="sb">`/api/v1/estudios/{id}`</span> | PUT, DELETE | ??? |
+<a id="__codelineno-1-26" name="__codelineno-1-26"></a>| <span class="sb">`/api/v1/estudios/{id}/ajustar-precio`</span> | POST | ??? |
+<a id="__codelineno-1-27" name="__codelineno-1-27"></a>
+<a id="__codelineno-1-28" name="__codelineno-1-28"></a><span class="gu">## Infraestructura y documentación</span>
+<a id="__codelineno-1-29" name="__codelineno-1-29"></a>
+<a id="__codelineno-1-30" name="__codelineno-1-30"></a>| Ruta | Verbo | Quién puede |
+<a id="__codelineno-1-31" name="__codelineno-1-31"></a>|---|---|---|
+<a id="__codelineno-1-32" name="__codelineno-1-32"></a>| <span class="sb">`/actuator/health`</span> | GET | ??? |
+<a id="__codelineno-1-33" name="__codelineno-1-33"></a>| <span class="sb">`/swagger-ui/**`</span>, <span class="sb">`/v3/api-docs/**`</span>, <span class="sb">`/error`</span> | — | Cualquiera |
+<a id="__codelineno-1-34" name="__codelineno-1-34"></a>| Todo lo demás | — | Nadie |
+</code></pre></div></td></tr></table></div>
+<p><strong>Captura</strong>: el fichero, con <code>EstudioController</code> ya rellena (la fila de <code>/actuator/health</code> la completas en el Paso 3).</p>
 <hr>
 <h2 id="paso-2-verificar-denyall">Paso 2 — Verificar <code>denyAll()</code><a class="headerlink" href="#paso-2-verificar-denyall" title="Permanent link">¶</a></h2>
 <p>Prueba una ruta que, a propósito, no está en tu lista (por ejemplo, si tuvieras un <code>GET /api/v1/algo-inventado</code>, o cualquier verbo sobre una ruta real que no hayas cubierto explícitamente):</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a>curl<span class="w"> </span>-i<span class="w"> </span>http://localhost:8080/api/v1/algo-inventado
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a>curl<span class="w"> </span>-i<span class="w"> </span>http://localhost:8080/api/v1/algo-inventado
 </code></pre></div></td></tr></table></div>
-<p><strong>Comprueba</strong>: que la respuesta es un rechazo (no un <code>404</code> amable, sino el resultado de <code>denyAll()</code>). <strong>Pregunta</strong>: ¿por qué "cerrado por defecto" es la opción segura, comparado con "abierto por defecto, cerrado explícitamente donde haga falta"?</p>
+<p><strong>Comprueba</strong>: que la respuesta es un <code>401</code> (no un <code>404</code> amable) — no un <code>403</code>, aunque sea <code>denyAll()</code>: como el <code>curl</code> no lleva ningún token, Spring Security ni siquiera llega a evaluar la regla, y responde con tu <code>AuthenticationEntryPoint</code> de siempre.</p>
+<p><strong>Captura</strong>: esta respuesta, con el <code>401</code>.</p>
+<p><strong>Pregunta</strong>: ¿por qué "cerrado por defecto" es la opción segura, comparado con "abierto por defecto, cerrado explícitamente donde haga falta"?</p>
 <hr>
 <h2 id="paso-3-depurar-un-caso-real">Paso 3 — Depurar un caso real<a class="headerlink" href="#paso-3-depurar-un-caso-real" title="Permanent link">¶</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Este fallo es intencionado — vas a diagnosticarlo tú</p>
-<p>Con <code>denyAll()</code> activo, prueba ahora mismo: <code>GET /actuator/health</code> (el mismo endpoint que activaste en el Tema 1). Es muy probable que, si no lo has incluido explícitamente arriba, te dé un rechazo — aunque el endpoint en sí funcione perfectamente si lo pruebas de otra forma.</p>
+<p>Con <code>denyAll()</code> activo, prueba ahora mismo: <code>GET /actuator/health</code> (el mismo endpoint que has activado en el Tema 1). Es muy probable que, si no lo has incluido explícitamente arriba, te dé un rechazo — aunque el endpoint en sí funcione perfectamente si lo pruebas de otra forma.</p>
 </div>
 <p>Activa el log de Spring Security si quieres ver más detalle de la decisión:</p>
-<div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
-<span class="normal"><a href="#__codelineno-2-2">2</a></span>
-<span class="normal"><a href="#__codelineno-2-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nt">logging</span><span class="p">:</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">  </span><span class="nt">level</span><span class="p">:</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">    </span><span class="nt">org.springframework.security</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DEBUG</span>
+<div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
+<span class="normal"><a href="#__codelineno-3-2">2</a></span>
+<span class="normal"><a href="#__codelineno-3-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nt">logging</span><span class="p">:</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">  </span><span class="nt">level</span><span class="p">:</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">    </span><span class="nt">org.springframework.security</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DEBUG</span>
 </code></pre></div></td></tr></table></div>
 <p><strong>Diagnostica</strong>: ¿por qué esta ruta, que funcionaba bien antes de completar la política, ahora está bloqueada? Añade la regla que falta (¿debería ser pública, como el resto de lecturas del catálogo, o requerir autenticación?) y comprueba que vuelve a funcionar.</p>
+<p><strong>Captura</strong>: la respuesta ya funcionando, con la regla añadida.</p>
+<p>Vuelve ahora a <code>docs/seguridad.md</code> (Paso 1) y rellena la fila de <code>/actuator/health</code> con lo que acabas de decidir — el documento se actualiza en el mismo momento en que cambia el código, no al final.</p>
 <hr>
 <h2 id="paso-4-una-ruta-que-no-existe-por-que-da-500">Paso 4 — Una ruta que no existe: por qué da <code>500</code><a class="headerlink" href="#paso-4-una-ruta-que-no-existe-por-que-da-500" title="Permanent link">¶</a></h2>
-<p>Con un token de <code>admin</code> válido (Actividad 2.4, Paso 5), prueba una ruta que no existe pero que sí coincide con una regla que la permite:</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
-<span class="normal"><a href="#__codelineno-3-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a>curl<span class="w"> </span>-i<span class="w"> </span>http://localhost:8080/api/v1/videojuegos/esto-no-existe<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$ADMIN_TOKEN</span><span class="s2">"</span>
+<p>Necesitas un token de <code>admin</code> válido. Si ya no tienes a mano el de la Actividad 2.4 (Paso 5) —lo normal, si retomas esta actividad otro día—, pide uno nuevo:</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span>
+<span class="normal"><a href="#__codelineno-4-2">2</a></span>
+<span class="normal"><a href="#__codelineno-4-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/auth/login<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"username":"admin","password":"admin123"}'</span>
+</code></pre></div></td></tr></table></div>
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="nv">ADMIN_TOKEN</span><span class="o">=</span><span class="s2">"pega-aqui-el-token-de-admin"</span>
+</code></pre></div></td></tr></table></div>
+<p>Con ese token, prueba una ruta que no existe pero que sí coincide con una regla que la permite — <strong>ojo</strong>: tiene que ser una ruta con dos segmentos tras la base, como en el ejemplo; con uno solo (<code>/api/v1/videojuegos/esto-no-existe</code>) coincidiría con <code>GET /api/v1/videojuegos/{id}</code>, y el error sería otro completamente distinto (una conversión de tipo fallida al intentar convertir el texto a <code>Long</code>, no una ruta inexistente):</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1">1</a></span>
+<span class="normal"><a href="#__codelineno-6-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1"></a>curl<span class="w"> </span>-i<span class="w"> </span>http://localhost:8080/api/v1/videojuegos/999/no-existe<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$ADMIN_TOKEN</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
 <p><strong>Comprueba</strong>: en vez de un <code>404</code>, ves un <code>500 Error interno</code> — el mismo formato que generaría cualquier bug real de tu código, aunque aquí el único "problema" es que la ruta no existe.</p>
 <p><strong>Captura</strong>: esta respuesta, con el <code>500</code>.</p>
-<p>Añade el handler que falta a tu <code>GlobalExceptionHandler</code> (Actividad 2.1), junto a los cinco que ya tenías:</p>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-4-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-4-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-4-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-4-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-4-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-4-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-4-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-4-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">NoResourceFoundException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">ErrorResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">handleNoResourceFoundException</span><span class="p">(</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="w">        </span><span class="n">NoResourceFoundException</span><span class="w"> </span><span class="n">ex</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4"></a>
-<a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="w">    </span><span class="n">ErrorResponse</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ErrorResponse</span><span class="p">(</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="w">            </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">(),</span><span class="w"> </span><span class="mi">404</span><span class="p">,</span><span class="w"> </span><span class="s">"Not Found"</span><span class="p">,</span>
-<a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="w">            </span><span class="s">"El recurso solicitado no existe"</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getRequestURI</span><span class="p">()</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="w">    </span><span class="p">);</span>
-<a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">NOT_FOUND</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
-<a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="p">}</span>
+<p>Añade un séptimo handler a tu <code>GlobalExceptionHandler</code> (Actividad 2.1, con el sexto añadido en la Actividad 2.4 para <code>AuthenticationException</code>), siguiendo exactamente el mismo patrón que los seis que ya tienes:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span>
+<span class="normal"><a href="#__codelineno-7-2">2</a></span>
+<span class="normal"><a href="#__codelineno-7-3">3</a></span>
+<span class="normal"><a href="#__codelineno-7-4">4</a></span>
+<span class="normal"><a href="#__codelineno-7-5">5</a></span>
+<span class="normal"><a href="#__codelineno-7-6">6</a></span>
+<span class="normal"><a href="#__codelineno-7-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="c1">// Handler 7 — una ruta que no coincide con ningún endpoint real</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2"></a><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">NoResourceFoundException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">ErrorResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">handleNoResourceFoundException</span><span class="p">(</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4"></a><span class="w">        </span><span class="n">NoResourceFoundException</span><span class="w"> </span><span class="n">ex</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5"></a><span class="w">    </span><span class="c1">// tu turno: construye el ErrorResponse (404, "Not Found", el mensaje que prefieras)</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6"></a><span class="w">    </span><span class="c1">// y devuélvelo con ResponseEntity.status(...), igual que en los otros seis handlers</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p>Repite la misma petición y comprueba que ahora da <code>404</code>, con el formato de tu <code>ErrorResponse</code>.</p>
+<p>Si te atascas con la firma exacta o el import de <code>NoResourceFoundException</code>, la teoría de este apartado trae el handler completo para consultar. Repite la misma petición y comprueba que ahora da <code>404</code>, con el formato de tu <code>ErrorResponse</code>.</p>
 <p><strong>Captura</strong>: la misma petición, ya corregida.</p>
 <hr>
-<h2 id="paso-5-accessdeniedhandler-a-medida-para-que-el-403-tenga-formato">Paso 5 — <code>AccessDeniedHandler</code> a medida, para que el <code>403</code> tenga formato<a class="headerlink" href="#paso-5-accessdeniedhandler-a-medida-para-que-el-403-tenga-formato" title="Permanent link">¶</a></h2>
-<p>Crea la clase, junto a tu <code>ErrorResponseAuthenticationEntryPoint</code> de la Actividad 2.2:</p>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-5-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-5-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-5-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-5-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-5-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-5-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-5-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-5-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-5-10">10</a></span>
-<span class="normal"><a href="#__codelineno-5-11">11</a></span>
-<span class="normal"><a href="#__codelineno-5-12">12</a></span>
-<span class="normal"><a href="#__codelineno-5-13">13</a></span>
-<span class="normal"><a href="#__codelineno-5-14">14</a></span>
-<span class="normal"><a href="#__codelineno-5-15">15</a></span>
-<span class="normal"><a href="#__codelineno-5-16">16</a></span>
-<span class="normal"><a href="#__codelineno-5-17">17</a></span>
-<span class="normal"><a href="#__codelineno-5-18">18</a></span>
-<span class="normal"><a href="#__codelineno-5-19">19</a></span>
-<span class="normal"><a href="#__codelineno-5-20">20</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="nd">@Component</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ErrorResponseAccessDeniedHandler</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">AccessDeniedHandler</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3"></a>
-<a id="__codelineno-5-4" name="__codelineno-5-4"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ObjectMapper</span><span class="w"> </span><span class="n">objectMapper</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ObjectMapper</span><span class="p">();</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5"></a>
-<a id="__codelineno-5-6" name="__codelineno-5-6"></a><span class="w">    </span><span class="nd">@Override</span>
-<a id="__codelineno-5-7" name="__codelineno-5-7"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletResponse</span><span class="w"> </span><span class="n">response</span><span class="p">,</span>
-<a id="__codelineno-5-8" name="__codelineno-5-8"></a><span class="w">                        </span><span class="n">AccessDeniedException</span><span class="w"> </span><span class="n">accessDeniedException</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-5-9" name="__codelineno-5-9"></a>
-<a id="__codelineno-5-10" name="__codelineno-5-10"></a><span class="w">        </span><span class="n">ErrorResponse</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ErrorResponse</span><span class="p">(</span>
-<a id="__codelineno-5-11" name="__codelineno-5-11"></a><span class="w">                </span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">(),</span><span class="w"> </span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">FORBIDDEN</span><span class="p">.</span><span class="na">value</span><span class="p">(),</span>
-<a id="__codelineno-5-12" name="__codelineno-5-12"></a><span class="w">                </span><span class="s">"No autorizado"</span><span class="p">,</span><span class="w"> </span><span class="s">"No tienes permisos suficientes para acceder a este recurso"</span><span class="p">,</span>
-<a id="__codelineno-5-13" name="__codelineno-5-13"></a><span class="w">                </span><span class="n">request</span><span class="p">.</span><span class="na">getRequestURI</span><span class="p">()</span>
-<a id="__codelineno-5-14" name="__codelineno-5-14"></a><span class="w">        </span><span class="p">);</span>
-<a id="__codelineno-5-15" name="__codelineno-5-15"></a>
-<a id="__codelineno-5-16" name="__codelineno-5-16"></a><span class="w">        </span><span class="n">response</span><span class="p">.</span><span class="na">setStatus</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">FORBIDDEN</span><span class="p">.</span><span class="na">value</span><span class="p">());</span>
-<a id="__codelineno-5-17" name="__codelineno-5-17"></a><span class="w">        </span><span class="n">response</span><span class="p">.</span><span class="na">setContentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON_VALUE</span><span class="p">);</span>
-<a id="__codelineno-5-18" name="__codelineno-5-18"></a><span class="w">        </span><span class="n">response</span><span class="p">.</span><span class="na">getWriter</span><span class="p">().</span><span class="na">write</span><span class="p">(</span><span class="n">objectMapper</span><span class="p">.</span><span class="na">writeValueAsString</span><span class="p">(</span><span class="n">error</span><span class="p">));</span>
-<a id="__codelineno-5-19" name="__codelineno-5-19"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-5-20" name="__codelineno-5-20"></a><span class="p">}</span>
+<h2 id="paso-5-un-id-que-no-es-un-id">Paso 5 — Un id que no es un id<a class="headerlink" href="#paso-5-un-id-que-no-es-un-id" title="Permanent link">¶</a></h2>
+<p>Con el mismo token de admin, prueba ahora una ruta de un solo segmento, con algo que no sea un número:</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1">1</a></span>
+<span class="normal"><a href="#__codelineno-8-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1"></a>curl<span class="w"> </span>-i<span class="w"> </span>http://localhost:8080/api/v1/videojuegos/esto-no-existe<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$ADMIN_TOKEN</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
-<p>Añade el parámetro a tu <code>securityFilterChain</code> (Actividad 2.4, Paso 4) y regístrala junto al <code>AuthenticationEntryPoint</code> que ya tenías, en el mismo <code>.exceptionHandling(...)</code> —no toques nada más del método, solo estas dos líneas—:</p>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-6-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-6-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-6-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-6-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-6-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-6-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-6-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-6-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-6-10">10</a></span>
-<span class="normal"><a href="#__codelineno-6-11">11</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="kd">public</span><span class="w"> </span><span class="n">SecurityFilterChain</span><span class="w"> </span><span class="nf">securityFilterChain</span><span class="p">(</span><span class="n">HttpSecurity</span><span class="w"> </span><span class="n">http</span><span class="p">,</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2"></a><span class="w">        </span><span class="n">AuthenticationEntryPoint</span><span class="w"> </span><span class="n">authenticationEntryPoint</span><span class="p">,</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3"></a><span class="w">        </span><span class="n">AccessDeniedHandler</span><span class="w"> </span><span class="n">accessDeniedHandler</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">http</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5"></a><span class="w">            </span><span class="c1">// ...</span>
-<a id="__codelineno-6-6" name="__codelineno-6-6"></a><span class="w">            </span><span class="p">.</span><span class="na">exceptionHandling</span><span class="p">(</span><span class="n">exceptions</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">exceptions</span>
-<a id="__codelineno-6-7" name="__codelineno-6-7"></a><span class="w">                    </span><span class="p">.</span><span class="na">authenticationEntryPoint</span><span class="p">(</span><span class="n">authenticationEntryPoint</span><span class="p">)</span>
-<a id="__codelineno-6-8" name="__codelineno-6-8"></a><span class="w">                    </span><span class="p">.</span><span class="na">accessDeniedHandler</span><span class="p">(</span><span class="n">accessDeniedHandler</span><span class="p">)</span>
-<a id="__codelineno-6-9" name="__codelineno-6-9"></a><span class="w">            </span><span class="p">)</span>
-<a id="__codelineno-6-10" name="__codelineno-6-10"></a><span class="w">            </span><span class="c1">// ...</span>
-<a id="__codelineno-6-11" name="__codelineno-6-11"></a><span class="p">}</span>
+<p><strong>Comprueba</strong>: en vez de un <code>400</code> (el id no tiene el formato correcto, un problema de la petición), ves otra vez un <code>500 Error interno</code> — por un motivo distinto al del Paso 4: esta ruta sí coincide con <code>GET /api/v1/videojuegos/{id}</code>, pero Spring no puede convertir el texto que has puesto al <code>Long</code> que espera el parámetro.</p>
+<p><strong>Captura</strong>: esta respuesta, con el <code>500</code>.</p>
+<p>Añade un octavo handler, con el mismo patrón de siempre:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1">1</a></span>
+<span class="normal"><a href="#__codelineno-9-2">2</a></span>
+<span class="normal"><a href="#__codelineno-9-3">3</a></span>
+<span class="normal"><a href="#__codelineno-9-4">4</a></span>
+<span class="normal"><a href="#__codelineno-9-5">5</a></span>
+<span class="normal"><a href="#__codelineno-9-6">6</a></span>
+<span class="normal"><a href="#__codelineno-9-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="c1">// Handler 8 — un parámetro de ruta que no se puede convertir al tipo esperado</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2"></a><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">MethodArgumentTypeMismatchException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">ErrorResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">handleMethodArgumentTypeMismatchException</span><span class="p">(</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4"></a><span class="w">        </span><span class="n">MethodArgumentTypeMismatchException</span><span class="w"> </span><span class="n">ex</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5"></a><span class="w">    </span><span class="c1">// tu turno: construye el ErrorResponse (400, "Parámetro inválido", un mensaje que use</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6"></a><span class="w">    </span><span class="c1">// ex.getValue() y ex.getName() para decir exactamente qué ha fallado) y devuélvelo</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Si necesitas repasar el cuerpo exacto o el import, la teoría de este apartado lo tiene completo. Repite la misma petición y comprueba que ahora da <code>400</code>, con el formato de tu <code>ErrorResponse</code> y un mensaje que dice exactamente qué valor no es válido.</p>
+<p><strong>Captura</strong>: la misma petición, ya corregida.</p>
+<hr>
+<h2 id="paso-6-accessdeniedhandler-a-medida-para-que-el-403-tenga-formato">Paso 6 — <code>AccessDeniedHandler</code> a medida, para que el <code>403</code> tenga formato<a class="headerlink" href="#paso-6-accessdeniedhandler-a-medida-para-que-el-403-tenga-formato" title="Permanent link">¶</a></h2>
+<p>Crea la clase, junto a tu <code>ErrorResponseAuthenticationEntryPoint</code> de la Actividad 2.2 — es el mismo patrón exacto, con dos cambios: implementa <code>AccessDeniedHandler</code> en vez de <code>AuthenticationEntryPoint</code> (con su único método, <code>handle(request, response, accessDeniedException)</code>, en vez de <code>commence(...)</code>), y el código es <code>403</code> (<code>"No autorizado"</code>) en vez de <code>401</code>:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-10-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-10-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-10-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-10-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-10-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-10-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-10-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-10-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-10-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-10-10">10</a></span>
+<span class="normal"><a href="#__codelineno-10-11">11</a></span>
+<span class="normal"><a href="#__codelineno-10-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1"></a><span class="nd">@Component</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ErrorResponseAccessDeniedHandler</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">AccessDeniedHandler</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3"></a>
+<a id="__codelineno-10-4" name="__codelineno-10-4"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ObjectMapper</span><span class="w"> </span><span class="n">objectMapper</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ObjectMapper</span><span class="p">();</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5"></a>
+<a id="__codelineno-10-6" name="__codelineno-10-6"></a><span class="w">    </span><span class="nd">@Override</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletResponse</span><span class="w"> </span><span class="n">response</span><span class="p">,</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8"></a><span class="w">                        </span><span class="n">AccessDeniedException</span><span class="w"> </span><span class="n">accessDeniedException</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-10-9" name="__codelineno-10-9"></a><span class="w">        </span><span class="c1">// tu turno: construye el ErrorResponse (403, "No autorizado") y escríbelo en la respuesta,</span>
+<a id="__codelineno-10-10" name="__codelineno-10-10"></a><span class="w">        </span><span class="c1">// igual que ya has hecho en ErrorResponseAuthenticationEntryPoint</span>
+<a id="__codelineno-10-11" name="__codelineno-10-11"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-10-12" name="__codelineno-10-12"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Si necesitas repasar el cuerpo exacto, tu propia clase de la Actividad 2.2 (o la teoría de este apartado) lo tiene completo. Añade el parámetro a tu <code>securityFilterChain</code> (Actividad 2.4, Paso 4) y regístrala junto al <code>AuthenticationEntryPoint</code> que ya tenías, en el mismo <code>.exceptionHandling(...)</code> —no toques nada más del método, solo estas dos líneas—:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-11-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-11-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-11-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-11-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-11-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-11-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-11-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-11-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-11-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-11-10">10</a></span>
+<span class="normal"><a href="#__codelineno-11-11">11</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1"></a><span class="kd">public</span><span class="w"> </span><span class="n">SecurityFilterChain</span><span class="w"> </span><span class="nf">securityFilterChain</span><span class="p">(</span><span class="n">HttpSecurity</span><span class="w"> </span><span class="n">http</span><span class="p">,</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2"></a><span class="w">        </span><span class="n">AuthenticationEntryPoint</span><span class="w"> </span><span class="n">authenticationEntryPoint</span><span class="p">,</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3"></a><span class="w">        </span><span class="n">AccessDeniedHandler</span><span class="w"> </span><span class="n">accessDeniedHandler</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">http</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5"></a><span class="w">            </span><span class="c1">// ...</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6"></a><span class="w">            </span><span class="p">.</span><span class="na">exceptionHandling</span><span class="p">(</span><span class="n">exceptions</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">exceptions</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7"></a><span class="w">                    </span><span class="p">.</span><span class="na">authenticationEntryPoint</span><span class="p">(</span><span class="n">authenticationEntryPoint</span><span class="p">)</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8"></a><span class="w">                    </span><span class="p">.</span><span class="na">accessDeniedHandler</span><span class="p">(</span><span class="n">accessDeniedHandler</span><span class="p">)</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9"></a><span class="w">            </span><span class="p">)</span>
+<a id="__codelineno-11-10" name="__codelineno-11-10"></a><span class="w">            </span><span class="c1">// ...</span>
+<a id="__codelineno-11-11" name="__codelineno-11-11"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>Prueba de nuevo el <code>POST /api/v1/videojuegos</code> con el token de <code>user</code> (Actividad 2.4, Paso 5) y comprueba que el <code>403</code> ya tiene el formato de tu <code>ErrorResponse</code>.</p>
 <p><strong>Captura</strong>: esta respuesta.</p>
 <hr>
-<h2 id="paso-6-test-de-seguridad-guiado-al-completo">Paso 6 — Test de seguridad, guiado al completo<a class="headerlink" href="#paso-6-test-de-seguridad-guiado-al-completo" title="Permanent link">¶</a></h2>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-7-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-7-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-7-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-7-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-7-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-7-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-7-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-7-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-7-10">10</a></span>
-<span class="normal"><a href="#__codelineno-7-11">11</a></span>
-<span class="normal"><a href="#__codelineno-7-12">12</a></span>
-<span class="normal"><a href="#__codelineno-7-13">13</a></span>
-<span class="normal"><a href="#__codelineno-7-14">14</a></span>
-<span class="normal"><a href="#__codelineno-7-15">15</a></span>
-<span class="normal"><a href="#__codelineno-7-16">16</a></span>
-<span class="normal"><a href="#__codelineno-7-17">17</a></span>
-<span class="normal"><a href="#__codelineno-7-18">18</a></span>
-<span class="normal"><a href="#__codelineno-7-19">19</a></span>
-<span class="normal"><a href="#__codelineno-7-20">20</a></span>
-<span class="normal"><a href="#__codelineno-7-21">21</a></span>
-<span class="normal"><a href="#__codelineno-7-22">22</a></span>
-<span class="normal"><a href="#__codelineno-7-23">23</a></span>
-<span class="normal"><a href="#__codelineno-7-24">24</a></span>
-<span class="normal"><a href="#__codelineno-7-25">25</a></span>
-<span class="normal"><a href="#__codelineno-7-26">26</a></span>
-<span class="normal"><a href="#__codelineno-7-27">27</a></span>
-<span class="normal"><a href="#__codelineno-7-28">28</a></span>
-<span class="normal"><a href="#__codelineno-7-29">29</a></span>
-<span class="normal"><a href="#__codelineno-7-30">30</a></span>
-<span class="normal"><a href="#__codelineno-7-31">31</a></span>
-<span class="normal"><a href="#__codelineno-7-32">32</a></span>
-<span class="normal"><a href="#__codelineno-7-33">33</a></span>
-<span class="normal"><a href="#__codelineno-7-34">34</a></span>
-<span class="normal"><a href="#__codelineno-7-35">35</a></span>
-<span class="normal"><a href="#__codelineno-7-36">36</a></span>
-<span class="normal"><a href="#__codelineno-7-37">37</a></span>
-<span class="normal"><a href="#__codelineno-7-38">38</a></span>
-<span class="normal"><a href="#__codelineno-7-39">39</a></span>
-<span class="normal"><a href="#__codelineno-7-40">40</a></span>
-<span class="normal"><a href="#__codelineno-7-41">41</a></span>
-<span class="normal"><a href="#__codelineno-7-42">42</a></span>
-<span class="normal"><a href="#__codelineno-7-43">43</a></span>
-<span class="normal"><a href="#__codelineno-7-44">44</a></span>
-<span class="normal"><a href="#__codelineno-7-45">45</a></span>
-<span class="normal"><a href="#__codelineno-7-46">46</a></span>
-<span class="normal"><a href="#__codelineno-7-47">47</a></span>
-<span class="normal"><a href="#__codelineno-7-48">48</a></span>
-<span class="normal"><a href="#__codelineno-7-49">49</a></span>
-<span class="normal"><a href="#__codelineno-7-50">50</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">username</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">password</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2"></a><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/auth/login"</span><span class="p">)</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3"></a><span class="w">                    </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
-<a id="__codelineno-7-4" name="__codelineno-7-4"></a><span class="w">                    </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="s">"""</span>
-<a id="__codelineno-7-5" name="__codelineno-7-5"></a><span class="s">                            {"username": "%s", "password": "%s"}</span>
-<a id="__codelineno-7-6" name="__codelineno-7-6"></a><span class="s">                            """</span><span class="p">.</span><span class="na">formatted</span><span class="p">(</span><span class="n">username</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="p">)))</span>
-<a id="__codelineno-7-7" name="__codelineno-7-7"></a><span class="w">            </span><span class="p">.</span><span class="na">andReturn</span><span class="p">().</span><span class="na">getResponse</span><span class="p">().</span><span class="na">getContentAsString</span><span class="p">();</span>
-<a id="__codelineno-7-8" name="__codelineno-7-8"></a>
-<a id="__codelineno-7-9" name="__codelineno-7-9"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">JsonPath</span><span class="p">.</span><span class="na">read</span><span class="p">(</span><span class="n">response</span><span class="p">,</span><span class="w"> </span><span class="s">"$.accessToken"</span><span class="p">);</span>
-<a id="__codelineno-7-10" name="__codelineno-7-10"></a><span class="p">}</span>
-<a id="__codelineno-7-11" name="__codelineno-7-11"></a>
-<a id="__codelineno-7-12" name="__codelineno-7-12"></a><span class="nd">@Test</span>
-<a id="__codelineno-7-13" name="__codelineno-7-13"></a><span class="kt">void</span><span class="w"> </span><span class="nf">crearVideojuego_DebeDevolver401_SinToken</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-7-14" name="__codelineno-7-14"></a><span class="w">    </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/videojuegos"</span><span class="p">)</span>
-<a id="__codelineno-7-15" name="__codelineno-7-15"></a><span class="w">                    </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
-<a id="__codelineno-7-16" name="__codelineno-7-16"></a><span class="w">                    </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="s">"{}"</span><span class="p">))</span>
-<a id="__codelineno-7-17" name="__codelineno-7-17"></a><span class="w">            </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isUnauthorized</span><span class="p">());</span>
-<a id="__codelineno-7-18" name="__codelineno-7-18"></a><span class="p">}</span>
-<a id="__codelineno-7-19" name="__codelineno-7-19"></a>
-<a id="__codelineno-7-20" name="__codelineno-7-20"></a><span class="nd">@Test</span>
-<a id="__codelineno-7-21" name="__codelineno-7-21"></a><span class="kt">void</span><span class="w"> </span><span class="nf">crearVideojuego_DebeDevolver403_ConRolUser</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-7-22" name="__codelineno-7-22"></a><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">token</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">login</span><span class="p">(</span><span class="s">"user"</span><span class="p">,</span><span class="w"> </span><span class="s">"user123"</span><span class="p">);</span>
-<a id="__codelineno-7-23" name="__codelineno-7-23"></a>
-<a id="__codelineno-7-24" name="__codelineno-7-24"></a><span class="w">    </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/videojuegos"</span><span class="p">)</span>
-<a id="__codelineno-7-25" name="__codelineno-7-25"></a><span class="w">                    </span><span class="p">.</span><span class="na">header</span><span class="p">(</span><span class="s">"Authorization"</span><span class="p">,</span><span class="w"> </span><span class="s">"Bearer "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">token</span><span class="p">)</span>
-<a id="__codelineno-7-26" name="__codelineno-7-26"></a><span class="w">                    </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
-<a id="__codelineno-7-27" name="__codelineno-7-27"></a><span class="w">                    </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="s">"""</span>
-<a id="__codelineno-7-28" name="__codelineno-7-28"></a><span class="s">                            {"titulo":"Test","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}</span>
-<a id="__codelineno-7-29" name="__codelineno-7-29"></a><span class="s">                            """</span><span class="p">))</span>
-<a id="__codelineno-7-30" name="__codelineno-7-30"></a><span class="w">            </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isForbidden</span><span class="p">());</span>
-<a id="__codelineno-7-31" name="__codelineno-7-31"></a><span class="p">}</span>
-<a id="__codelineno-7-32" name="__codelineno-7-32"></a>
-<a id="__codelineno-7-33" name="__codelineno-7-33"></a><span class="nd">@Test</span>
-<a id="__codelineno-7-34" name="__codelineno-7-34"></a><span class="kt">void</span><span class="w"> </span><span class="nf">crearVideojuego_DebeDevolver201_ConRolAdmin</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-7-35" name="__codelineno-7-35"></a><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">token</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">login</span><span class="p">(</span><span class="s">"admin"</span><span class="p">,</span><span class="w"> </span><span class="s">"admin123"</span><span class="p">);</span>
-<a id="__codelineno-7-36" name="__codelineno-7-36"></a>
-<a id="__codelineno-7-37" name="__codelineno-7-37"></a><span class="w">    </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/videojuegos"</span><span class="p">)</span>
-<a id="__codelineno-7-38" name="__codelineno-7-38"></a><span class="w">                    </span><span class="p">.</span><span class="na">header</span><span class="p">(</span><span class="s">"Authorization"</span><span class="p">,</span><span class="w"> </span><span class="s">"Bearer "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">token</span><span class="p">)</span>
-<a id="__codelineno-7-39" name="__codelineno-7-39"></a><span class="w">                    </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
-<a id="__codelineno-7-40" name="__codelineno-7-40"></a><span class="w">                    </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="s">"""</span>
-<a id="__codelineno-7-41" name="__codelineno-7-41"></a><span class="s">                            {"titulo":"Test","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}</span>
-<a id="__codelineno-7-42" name="__codelineno-7-42"></a><span class="s">                            """</span><span class="p">))</span>
-<a id="__codelineno-7-43" name="__codelineno-7-43"></a><span class="w">            </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isCreated</span><span class="p">());</span>
-<a id="__codelineno-7-44" name="__codelineno-7-44"></a><span class="p">}</span>
-<a id="__codelineno-7-45" name="__codelineno-7-45"></a>
-<a id="__codelineno-7-46" name="__codelineno-7-46"></a><span class="nd">@Test</span>
-<a id="__codelineno-7-47" name="__codelineno-7-47"></a><span class="kt">void</span><span class="w"> </span><span class="nf">rutaInexistente_DebeDevolver404</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-7-48" name="__codelineno-7-48"></a><span class="w">    </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">"/api/v1/videojuegos/esto-no-existe"</span><span class="p">))</span>
-<a id="__codelineno-7-49" name="__codelineno-7-49"></a><span class="w">            </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isNotFound</span><span class="p">());</span>
-<a id="__codelineno-7-50" name="__codelineno-7-50"></a><span class="p">}</span>
+<h2 id="paso-7-test-de-seguridad-guiado-al-completo">Paso 7 — Test de seguridad, guiado al completo<a class="headerlink" href="#paso-7-test-de-seguridad-guiado-al-completo" title="Permanent link">¶</a></h2>
+<p>Esto no puede ir dentro de <code>VideojuegoControllerTest</code>: esa clase lleva <code>@WebMvcTest</code> + <code>addFilters = false</code>, precisamente para que la seguridad no se ejecute. Aquí necesitas justo lo contrario, así que va en una clase nueva — por ejemplo <code>SeguridadEndpointsTest</code>, junto a tus <code>ControllerTest</code> de siempre.</p>
+<div class="admonition danger">
+<p class="admonition-title"><code>@ActiveProfiles(\"dev\")</code> es obligatorio aquí, o el test ni arranca</p>
+<p><code>VideojuegoControllerTest</code> nunca necesitó ningún perfil activo porque <code>@WebMvcTest</code> mockea el <code>service</code> y no toca ninguna base de datos. Esta clase sí levanta la aplicación entera con <code>@SpringBootTest</code>, así que necesita el datasource real de <code>application-dev.yml</code> —y ese fichero solo se aplica con el perfil <code>dev</code> activo—. Si lo lanzas desde el botón de tu IDE sin este <code>@ActiveProfiles</code>, no hay ningún perfil activo por defecto, y Spring Boot falla al arrancar con <code>Failed to configure a DataSource: 'url' attribute is not specified</code> — no es un bug tuyo, es que le falta decirle qué perfil usar.</p>
+</div>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-12-1">  1</a></span>
+<span class="normal"><a href="#__codelineno-12-2">  2</a></span>
+<span class="normal"><a href="#__codelineno-12-3">  3</a></span>
+<span class="normal"><a href="#__codelineno-12-4">  4</a></span>
+<span class="normal"><a href="#__codelineno-12-5">  5</a></span>
+<span class="normal"><a href="#__codelineno-12-6">  6</a></span>
+<span class="normal"><a href="#__codelineno-12-7">  7</a></span>
+<span class="normal"><a href="#__codelineno-12-8">  8</a></span>
+<span class="normal"><a href="#__codelineno-12-9">  9</a></span>
+<span class="normal"><a href="#__codelineno-12-10"> 10</a></span>
+<span class="normal"><a href="#__codelineno-12-11"> 11</a></span>
+<span class="normal"><a href="#__codelineno-12-12"> 12</a></span>
+<span class="normal"><a href="#__codelineno-12-13"> 13</a></span>
+<span class="normal"><a href="#__codelineno-12-14"> 14</a></span>
+<span class="normal"><a href="#__codelineno-12-15"> 15</a></span>
+<span class="normal"><a href="#__codelineno-12-16"> 16</a></span>
+<span class="normal"><a href="#__codelineno-12-17"> 17</a></span>
+<span class="normal"><a href="#__codelineno-12-18"> 18</a></span>
+<span class="normal"><a href="#__codelineno-12-19"> 19</a></span>
+<span class="normal"><a href="#__codelineno-12-20"> 20</a></span>
+<span class="normal"><a href="#__codelineno-12-21"> 21</a></span>
+<span class="normal"><a href="#__codelineno-12-22"> 22</a></span>
+<span class="normal"><a href="#__codelineno-12-23"> 23</a></span>
+<span class="normal"><a href="#__codelineno-12-24"> 24</a></span>
+<span class="normal"><a href="#__codelineno-12-25"> 25</a></span>
+<span class="normal"><a href="#__codelineno-12-26"> 26</a></span>
+<span class="normal"><a href="#__codelineno-12-27"> 27</a></span>
+<span class="normal"><a href="#__codelineno-12-28"> 28</a></span>
+<span class="normal"><a href="#__codelineno-12-29"> 29</a></span>
+<span class="normal"><a href="#__codelineno-12-30"> 30</a></span>
+<span class="normal"><a href="#__codelineno-12-31"> 31</a></span>
+<span class="normal"><a href="#__codelineno-12-32"> 32</a></span>
+<span class="normal"><a href="#__codelineno-12-33"> 33</a></span>
+<span class="normal"><a href="#__codelineno-12-34"> 34</a></span>
+<span class="normal"><a href="#__codelineno-12-35"> 35</a></span>
+<span class="normal"><a href="#__codelineno-12-36"> 36</a></span>
+<span class="normal"><a href="#__codelineno-12-37"> 37</a></span>
+<span class="normal"><a href="#__codelineno-12-38"> 38</a></span>
+<span class="normal"><a href="#__codelineno-12-39"> 39</a></span>
+<span class="normal"><a href="#__codelineno-12-40"> 40</a></span>
+<span class="normal"><a href="#__codelineno-12-41"> 41</a></span>
+<span class="normal"><a href="#__codelineno-12-42"> 42</a></span>
+<span class="normal"><a href="#__codelineno-12-43"> 43</a></span>
+<span class="normal"><a href="#__codelineno-12-44"> 44</a></span>
+<span class="normal"><a href="#__codelineno-12-45"> 45</a></span>
+<span class="normal"><a href="#__codelineno-12-46"> 46</a></span>
+<span class="normal"><a href="#__codelineno-12-47"> 47</a></span>
+<span class="normal"><a href="#__codelineno-12-48"> 48</a></span>
+<span class="normal"><a href="#__codelineno-12-49"> 49</a></span>
+<span class="normal"><a href="#__codelineno-12-50"> 50</a></span>
+<span class="normal"><a href="#__codelineno-12-51"> 51</a></span>
+<span class="normal"><a href="#__codelineno-12-52"> 52</a></span>
+<span class="normal"><a href="#__codelineno-12-53"> 53</a></span>
+<span class="normal"><a href="#__codelineno-12-54"> 54</a></span>
+<span class="normal"><a href="#__codelineno-12-55"> 55</a></span>
+<span class="normal"><a href="#__codelineno-12-56"> 56</a></span>
+<span class="normal"><a href="#__codelineno-12-57"> 57</a></span>
+<span class="normal"><a href="#__codelineno-12-58"> 58</a></span>
+<span class="normal"><a href="#__codelineno-12-59"> 59</a></span>
+<span class="normal"><a href="#__codelineno-12-60"> 60</a></span>
+<span class="normal"><a href="#__codelineno-12-61"> 61</a></span>
+<span class="normal"><a href="#__codelineno-12-62"> 62</a></span>
+<span class="normal"><a href="#__codelineno-12-63"> 63</a></span>
+<span class="normal"><a href="#__codelineno-12-64"> 64</a></span>
+<span class="normal"><a href="#__codelineno-12-65"> 65</a></span>
+<span class="normal"><a href="#__codelineno-12-66"> 66</a></span>
+<span class="normal"><a href="#__codelineno-12-67"> 67</a></span>
+<span class="normal"><a href="#__codelineno-12-68"> 68</a></span>
+<span class="normal"><a href="#__codelineno-12-69"> 69</a></span>
+<span class="normal"><a href="#__codelineno-12-70"> 70</a></span>
+<span class="normal"><a href="#__codelineno-12-71"> 71</a></span>
+<span class="normal"><a href="#__codelineno-12-72"> 72</a></span>
+<span class="normal"><a href="#__codelineno-12-73"> 73</a></span>
+<span class="normal"><a href="#__codelineno-12-74"> 74</a></span>
+<span class="normal"><a href="#__codelineno-12-75"> 75</a></span>
+<span class="normal"><a href="#__codelineno-12-76"> 76</a></span>
+<span class="normal"><a href="#__codelineno-12-77"> 77</a></span>
+<span class="normal"><a href="#__codelineno-12-78"> 78</a></span>
+<span class="normal"><a href="#__codelineno-12-79"> 79</a></span>
+<span class="normal"><a href="#__codelineno-12-80"> 80</a></span>
+<span class="normal"><a href="#__codelineno-12-81"> 81</a></span>
+<span class="normal"><a href="#__codelineno-12-82"> 82</a></span>
+<span class="normal"><a href="#__codelineno-12-83"> 83</a></span>
+<span class="normal"><a href="#__codelineno-12-84"> 84</a></span>
+<span class="normal"><a href="#__codelineno-12-85"> 85</a></span>
+<span class="normal"><a href="#__codelineno-12-86"> 86</a></span>
+<span class="normal"><a href="#__codelineno-12-87"> 87</a></span>
+<span class="normal"><a href="#__codelineno-12-88"> 88</a></span>
+<span class="normal"><a href="#__codelineno-12-89"> 89</a></span>
+<span class="normal"><a href="#__codelineno-12-90"> 90</a></span>
+<span class="normal"><a href="#__codelineno-12-91"> 91</a></span>
+<span class="normal"><a href="#__codelineno-12-92"> 92</a></span>
+<span class="normal"><a href="#__codelineno-12-93"> 93</a></span>
+<span class="normal"><a href="#__codelineno-12-94"> 94</a></span>
+<span class="normal"><a href="#__codelineno-12-95"> 95</a></span>
+<span class="normal"><a href="#__codelineno-12-96"> 96</a></span>
+<span class="normal"><a href="#__codelineno-12-97"> 97</a></span>
+<span class="normal"><a href="#__codelineno-12-98"> 98</a></span>
+<span class="normal"><a href="#__codelineno-12-99"> 99</a></span>
+<span class="normal"><a href="#__codelineno-12-100">100</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.tunombre.gamevault.seguridad</span><span class="p">;</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2"></a>
+<a id="__codelineno-12-3" name="__codelineno-12-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.jayway.jsonpath.JsonPath</span><span class="p">;</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.junit.jupiter.api.BeforeEach</span><span class="p">;</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.junit.jupiter.api.Test</span><span class="p">;</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="p">;</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc</span><span class="p">;</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.boot.test.context.SpringBootTest</span><span class="p">;</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.http.MediaType</span><span class="p">;</span>
+<a id="__codelineno-12-10" name="__codelineno-12-10"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.test.context.ActiveProfiles</span><span class="p">;</span>
+<a id="__codelineno-12-11" name="__codelineno-12-11"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.test.web.servlet.MockMvc</span><span class="p">;</span>
+<a id="__codelineno-12-12" name="__codelineno-12-12"></a>
+<a id="__codelineno-12-13" name="__codelineno-12-13"></a><span class="kn">import static</span><span class="w"> </span><span class="nn">org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*</span><span class="p">;</span>
+<a id="__codelineno-12-14" name="__codelineno-12-14"></a><span class="kn">import static</span><span class="w"> </span><span class="nn">org.springframework.test.web.servlet.result.MockMvcResultMatchers.status</span><span class="p">;</span>
+<a id="__codelineno-12-15" name="__codelineno-12-15"></a>
+<a id="__codelineno-12-16" name="__codelineno-12-16"></a><span class="nd">@SpringBootTest</span>
+<a id="__codelineno-12-17" name="__codelineno-12-17"></a><span class="nd">@AutoConfigureMockMvc</span>
+<a id="__codelineno-12-18" name="__codelineno-12-18"></a><span class="nd">@ActiveProfiles</span><span class="p">(</span><span class="s">"dev"</span><span class="p">)</span>
+<a id="__codelineno-12-19" name="__codelineno-12-19"></a><span class="kd">class</span> <span class="nc">SeguridadEndpointsTest</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-20" name="__codelineno-12-20"></a>
+<a id="__codelineno-12-21" name="__codelineno-12-21"></a><span class="w">    </span><span class="nd">@Autowired</span>
+<a id="__codelineno-12-22" name="__codelineno-12-22"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">MockMvc</span><span class="w"> </span><span class="n">mockMvc</span><span class="p">;</span>
+<a id="__codelineno-12-23" name="__codelineno-12-23"></a>
+<a id="__codelineno-12-24" name="__codelineno-12-24"></a><span class="w">    </span><span class="nd">@BeforeEach</span>
+<a id="__codelineno-12-25" name="__codelineno-12-25"></a><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">asegurarUsuarioDePrueba</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-26" name="__codelineno-12-26"></a><span class="w">        </span><span class="c1">// registra "user" si todavía no existe (p. ej., en una base de datos recién creada) — se ignora</span>
+<a id="__codelineno-12-27" name="__codelineno-12-27"></a><span class="w">        </span><span class="c1">// el resultado a propósito: da igual que sea un 201 o un 409 porque ya existía de antes</span>
+<a id="__codelineno-12-28" name="__codelineno-12-28"></a><span class="w">        </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/auth/register"</span><span class="p">)</span>
+<a id="__codelineno-12-29" name="__codelineno-12-29"></a><span class="w">                </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
+<a id="__codelineno-12-30" name="__codelineno-12-30"></a><span class="w">                </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="s">"""</span>
+<a id="__codelineno-12-31" name="__codelineno-12-31"></a><span class="s">                        {"username": "user", "password": "user123"}</span>
+<a id="__codelineno-12-32" name="__codelineno-12-32"></a><span class="s">                        """</span><span class="p">));</span>
+<a id="__codelineno-12-33" name="__codelineno-12-33"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-12-34" name="__codelineno-12-34"></a>
+<a id="__codelineno-12-35" name="__codelineno-12-35"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">username</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">password</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-36" name="__codelineno-12-36"></a><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/auth/login"</span><span class="p">)</span>
+<a id="__codelineno-12-37" name="__codelineno-12-37"></a><span class="w">                        </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
+<a id="__codelineno-12-38" name="__codelineno-12-38"></a><span class="w">                        </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="s">"""</span>
+<a id="__codelineno-12-39" name="__codelineno-12-39"></a><span class="s">                                {"username": "%s", "password": "%s"}</span>
+<a id="__codelineno-12-40" name="__codelineno-12-40"></a><span class="s">                                """</span><span class="p">.</span><span class="na">formatted</span><span class="p">(</span><span class="n">username</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="p">)))</span>
+<a id="__codelineno-12-41" name="__codelineno-12-41"></a><span class="w">                </span><span class="p">.</span><span class="na">andReturn</span><span class="p">().</span><span class="na">getResponse</span><span class="p">().</span><span class="na">getContentAsString</span><span class="p">();</span>
+<a id="__codelineno-12-42" name="__codelineno-12-42"></a>
+<a id="__codelineno-12-43" name="__codelineno-12-43"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">JsonPath</span><span class="p">.</span><span class="na">read</span><span class="p">(</span><span class="n">response</span><span class="p">,</span><span class="w"> </span><span class="s">"$.accessToken"</span><span class="p">);</span>
+<a id="__codelineno-12-44" name="__codelineno-12-44"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-12-45" name="__codelineno-12-45"></a>
+<a id="__codelineno-12-46" name="__codelineno-12-46"></a><span class="w">    </span><span class="c1">// crea un estudio propio y devuelve su id — para no depender de que data.sql</span>
+<a id="__codelineno-12-47" name="__codelineno-12-47"></a><span class="w">    </span><span class="c1">// haya sembrado ninguno (en la base de datos de CI, recién creada, no hay ninguno)</span>
+<a id="__codelineno-12-48" name="__codelineno-12-48"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="nf">crearEstudio</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">adminToken</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-49" name="__codelineno-12-49"></a><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">respuesta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/estudios"</span><span class="p">)</span>
+<a id="__codelineno-12-50" name="__codelineno-12-50"></a><span class="w">                        </span><span class="p">.</span><span class="na">header</span><span class="p">(</span><span class="s">"Authorization"</span><span class="p">,</span><span class="w"> </span><span class="s">"Bearer "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">adminToken</span><span class="p">)</span>
+<a id="__codelineno-12-51" name="__codelineno-12-51"></a><span class="w">                        </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
+<a id="__codelineno-12-52" name="__codelineno-12-52"></a><span class="w">                        </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="s">"""</span>
+<a id="__codelineno-12-53" name="__codelineno-12-53"></a><span class="s">                                {"nombre":"Estudio de prueba","pais":"España"}</span>
+<a id="__codelineno-12-54" name="__codelineno-12-54"></a><span class="s">                                """</span><span class="p">))</span>
+<a id="__codelineno-12-55" name="__codelineno-12-55"></a><span class="w">                </span><span class="p">.</span><span class="na">andReturn</span><span class="p">().</span><span class="na">getResponse</span><span class="p">().</span><span class="na">getContentAsString</span><span class="p">();</span>
+<a id="__codelineno-12-56" name="__codelineno-12-56"></a>
+<a id="__codelineno-12-57" name="__codelineno-12-57"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Long</span><span class="p">.</span><span class="na">parseLong</span><span class="p">(</span><span class="n">JsonPath</span><span class="p">.</span><span class="na">read</span><span class="p">(</span><span class="n">respuesta</span><span class="p">,</span><span class="w"> </span><span class="s">"$.id"</span><span class="p">).</span><span class="na">toString</span><span class="p">());</span>
+<a id="__codelineno-12-58" name="__codelineno-12-58"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-12-59" name="__codelineno-12-59"></a>
+<a id="__codelineno-12-60" name="__codelineno-12-60"></a><span class="w">    </span><span class="nd">@Test</span>
+<a id="__codelineno-12-61" name="__codelineno-12-61"></a><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">crearVideojuego_DebeDevolver401_SinToken</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-62" name="__codelineno-12-62"></a><span class="w">        </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/videojuegos"</span><span class="p">)</span>
+<a id="__codelineno-12-63" name="__codelineno-12-63"></a><span class="w">                        </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
+<a id="__codelineno-12-64" name="__codelineno-12-64"></a><span class="w">                        </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="s">"{}"</span><span class="p">))</span>
+<a id="__codelineno-12-65" name="__codelineno-12-65"></a><span class="w">                </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isUnauthorized</span><span class="p">());</span>
+<a id="__codelineno-12-66" name="__codelineno-12-66"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-12-67" name="__codelineno-12-67"></a>
+<a id="__codelineno-12-68" name="__codelineno-12-68"></a><span class="w">    </span><span class="nd">@Test</span>
+<a id="__codelineno-12-69" name="__codelineno-12-69"></a><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">crearVideojuego_DebeDevolver403_ConRolUser</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-70" name="__codelineno-12-70"></a><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">token</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">login</span><span class="p">(</span><span class="s">"user"</span><span class="p">,</span><span class="w"> </span><span class="s">"user123"</span><span class="p">);</span>
+<a id="__codelineno-12-71" name="__codelineno-12-71"></a>
+<a id="__codelineno-12-72" name="__codelineno-12-72"></a><span class="w">        </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/videojuegos"</span><span class="p">)</span>
+<a id="__codelineno-12-73" name="__codelineno-12-73"></a><span class="w">                        </span><span class="p">.</span><span class="na">header</span><span class="p">(</span><span class="s">"Authorization"</span><span class="p">,</span><span class="w"> </span><span class="s">"Bearer "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">token</span><span class="p">)</span>
+<a id="__codelineno-12-74" name="__codelineno-12-74"></a><span class="w">                        </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
+<a id="__codelineno-12-75" name="__codelineno-12-75"></a><span class="w">                        </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="s">"""</span>
+<a id="__codelineno-12-76" name="__codelineno-12-76"></a><span class="s">                                {"titulo":"Test","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}</span>
+<a id="__codelineno-12-77" name="__codelineno-12-77"></a><span class="s">                                """</span><span class="p">))</span>
+<a id="__codelineno-12-78" name="__codelineno-12-78"></a><span class="w">                </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isForbidden</span><span class="p">());</span>
+<a id="__codelineno-12-79" name="__codelineno-12-79"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-12-80" name="__codelineno-12-80"></a>
+<a id="__codelineno-12-81" name="__codelineno-12-81"></a><span class="w">    </span><span class="nd">@Test</span>
+<a id="__codelineno-12-82" name="__codelineno-12-82"></a><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">crearVideojuego_DebeDevolver201_ConRolAdmin</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-83" name="__codelineno-12-83"></a><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">token</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">login</span><span class="p">(</span><span class="s">"admin"</span><span class="p">,</span><span class="w"> </span><span class="s">"admin123"</span><span class="p">);</span>
+<a id="__codelineno-12-84" name="__codelineno-12-84"></a><span class="w">        </span><span class="kt">long</span><span class="w"> </span><span class="n">estudioId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">crearEstudio</span><span class="p">(</span><span class="n">token</span><span class="p">);</span>
+<a id="__codelineno-12-85" name="__codelineno-12-85"></a>
+<a id="__codelineno-12-86" name="__codelineno-12-86"></a><span class="w">        </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/videojuegos"</span><span class="p">)</span>
+<a id="__codelineno-12-87" name="__codelineno-12-87"></a><span class="w">                        </span><span class="p">.</span><span class="na">header</span><span class="p">(</span><span class="s">"Authorization"</span><span class="p">,</span><span class="w"> </span><span class="s">"Bearer "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">token</span><span class="p">)</span>
+<a id="__codelineno-12-88" name="__codelineno-12-88"></a><span class="w">                        </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
+<a id="__codelineno-12-89" name="__codelineno-12-89"></a><span class="w">                        </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="s">"""</span>
+<a id="__codelineno-12-90" name="__codelineno-12-90"></a><span class="s">                                {"titulo":"Test","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":%d}</span>
+<a id="__codelineno-12-91" name="__codelineno-12-91"></a><span class="s">                                """</span><span class="p">.</span><span class="na">formatted</span><span class="p">(</span><span class="n">estudioId</span><span class="p">)))</span>
+<a id="__codelineno-12-92" name="__codelineno-12-92"></a><span class="w">                </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isCreated</span><span class="p">());</span>
+<a id="__codelineno-12-93" name="__codelineno-12-93"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-12-94" name="__codelineno-12-94"></a>
+<a id="__codelineno-12-95" name="__codelineno-12-95"></a><span class="w">    </span><span class="nd">@Test</span>
+<a id="__codelineno-12-96" name="__codelineno-12-96"></a><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">rutaInexistente_DebeDevolver404</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-97" name="__codelineno-12-97"></a><span class="w">        </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">"/api/v1/videojuegos/999/no-existe"</span><span class="p">))</span>
+<a id="__codelineno-12-98" name="__codelineno-12-98"></a><span class="w">                </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isNotFound</span><span class="p">());</span>
+<a id="__codelineno-12-99" name="__codelineno-12-99"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-12-100" name="__codelineno-12-100"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>Los cuatro tests cubren los tres casos de la tabla para una misma ruta —sin token (<code>401</code>), con rol insuficiente (<code>403</code>), con el rol correcto (éxito)— más el caso del Paso 4: una ruta que sencillamente no existe (<code>404</code>).</p>
+<div class="admonition tip">
+<p class="admonition-title">Por qué el <code>201</code> crea un estudio antes, en vez de usar <code>estudioId: 1</code></p>
+<p>El test del <code>201</code> no puede dar por hecho que existe un estudio con <code>id</code> 1: crear un videojuego necesita un estudio real al que asociarlo, y en la base de datos de CI —recién creada y vacía, sin <code>data.sql</code>— no hay ninguno. Si pusieras <code>estudioId: 1</code> a secas, en tu máquina pasaría (tienes estudios sembrados) pero en CI daría <code>404 Estudio no encontrado</code>. Es el mismo principio que <code>asegurarUsuarioDePrueba()</code>: <strong>un test no debe depender de datos que quizá no estén ahí</strong> — si necesita un estudio, se lo crea él. Fíjate en que el <code>401</code> y el <code>403</code> sí pueden seguir mandando <code>estudioId: 1</code>, porque su petición se rechaza en la capa de seguridad antes de llegar al <code>service</code> — nunca comprueban si ese estudio existe.</p>
+</div>
+<div class="admonition danger">
+<p class="admonition-title">Si tienes CI (Tema 0), tienes que actualizarlo — o esto no se ejecuta nunca</p>
+<p>Tu <code>ci.yml</code> filtra los tests con <code>-Dtest='*ControllerTest'</code>, así que <code>SeguridadEndpointsTest</code> <strong>no se ejecuta</strong> en GitHub Actions. Pero el nombre no es lo único que falla: esta clase, al llevar <code>@SpringBootTest</code>, arranca la aplicación entera —con una base de datos real detrás—, algo que tus <code>ControllerTest</code> nunca necesitaron porque mockean el <code>service</code>.</p>
+<p>Con <code>@ActiveProfiles("dev")</code> ya puesto en la clase (arriba) y un Postgres real disponible en CI, ya no hace falta filtrar por nombre en absoluto — puedes quitar el <code>-Dtest=...</code> y dejar que se ejecuten todos tus tests sin distinción. Ojo con <code>GamevaultApplicationTests</code> (la clase que ya traía tu proyecto desde el principio): es <code>@SpringBootTest</code> igual que esta, así que tiene el mismo problema si la lanzas sin ningún perfil activo — añádele también <code>@ActiveProfiles("dev")</code>.</p>
+<p>En tu <code>ci.yml</code> necesitas, como mínimo:</p>
+<ul>
+<li>Un servicio de PostgreSQL en el workflow (bloque <code>services:</code>), igual que el de tu <code>docker-compose.yaml</code> pero accesible en <code>localhost</code> para el runner de GitHub Actions.</li>
+<li>
+<p>Las dos propiedades que solo viven en tu <code>application-dev-local.yml</code> — es justo el caso que anticipaba la teoría del apartado 3: un fichero en <code>.gitignore</code> no existe en CI, así que hay que inyectar sus valores por otra vía. Son la contraseña de <code>admin</code> (<code>gamevault.admin.password</code>) <strong>y</strong> el secreto de firma JWT (<code>gamevault.jwt.secret</code>) — sin este segundo, <code>SecurityConfig</code> ni siquiera arranca, porque necesita ese valor para construir el <code>JwtEncoder</code>/<code>JwtDecoder</code> (es el mismo error <code>Could not resolve placeholder 'gamevault.jwt.secret'</code> que verías si borraras ese fichero de tu propia máquina). <strong>No las escribas en claro dentro de <code>ci.yml</code></strong> —ese fichero sí se sube al repositorio, así que sería exactamente el mismo problema que <code>.gitignore</code> evita— usa <strong>dos GitHub Secrets</strong>:</p>
+</li>
+<li>
+<p>En tu repositorio de GitHub, ve a <strong>Settings</strong> (la pestaña, no la de tu cuenta — la del repositorio).</p>
+</li>
+<li>En el menú de la izquierda, <strong>Secrets and variables → Actions</strong>.</li>
+<li>Pestaña <strong>Secrets</strong> (no "Variables") → botón <strong>New repository secret</strong>.</li>
+<li>Crea <code>GAMEVAULT_ADMIN_PASSWORD</code> con el mismo valor que ya tienes en <code>application-dev-local.yml</code> (por ejemplo, <code>admin123</code>).</li>
+<li>Repite el proceso para <code>GAMEVAULT_JWT_SECRET</code>, con el valor de <code>gamevault.jwt.secret</code> de ese mismo fichero.</li>
+<li>A partir de ahora, <code>${{ secrets.GAMEVAULT_ADMIN_PASSWORD }}</code> y <code>${{ secrets.GAMEVAULT_JWT_SECRET }}</code> en tu <code>ci.yml</code> se resuelven a esos valores — sin que aparezcan en ningún fichero del repositorio, ni en los logs del workflow (GitHub los enmascara automáticamente).</li>
+</ul>
+<p>Por eso <code>asegurarUsuarioDePrueba()</code> registra a <code>user</code> si no existe: en una base de datos de CI, recién creada en cada ejecución, ese usuario no existe todavía —a diferencia de en tu máquina, donde ya lo has registrado a mano en la Actividad 2.3—, así que el test tiene que poder crearlo él solo.</p>
+<p>Así queda el <code>job</code> completo de tu <code>ci.yml</code> con los cambios ya aplicados — sustituye el tuyo por este:</p>
+<div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-13-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-13-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-13-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-13-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-13-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-13-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-13-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-13-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-13-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-13-10">10</a></span>
+<span class="normal"><a href="#__codelineno-13-11">11</a></span>
+<span class="normal"><a href="#__codelineno-13-12">12</a></span>
+<span class="normal"><a href="#__codelineno-13-13">13</a></span>
+<span class="normal"><a href="#__codelineno-13-14">14</a></span>
+<span class="normal"><a href="#__codelineno-13-15">15</a></span>
+<span class="normal"><a href="#__codelineno-13-16">16</a></span>
+<span class="normal"><a href="#__codelineno-13-17">17</a></span>
+<span class="normal"><a href="#__codelineno-13-18">18</a></span>
+<span class="normal"><a href="#__codelineno-13-19">19</a></span>
+<span class="normal"><a href="#__codelineno-13-20">20</a></span>
+<span class="normal"><a href="#__codelineno-13-21">21</a></span>
+<span class="normal"><a href="#__codelineno-13-22">22</a></span>
+<span class="normal"><a href="#__codelineno-13-23">23</a></span>
+<span class="normal"><a href="#__codelineno-13-24">24</a></span>
+<span class="normal"><a href="#__codelineno-13-25">25</a></span>
+<span class="normal"><a href="#__codelineno-13-26">26</a></span>
+<span class="normal"><a href="#__codelineno-13-27">27</a></span>
+<span class="normal"><a href="#__codelineno-13-28">28</a></span>
+<span class="normal"><a href="#__codelineno-13-29">29</a></span>
+<span class="normal"><a href="#__codelineno-13-30">30</a></span>
+<span class="normal"><a href="#__codelineno-13-31">31</a></span>
+<span class="normal"><a href="#__codelineno-13-32">32</a></span>
+<span class="normal"><a href="#__codelineno-13-33">33</a></span>
+<span class="normal"><a href="#__codelineno-13-34">34</a></span>
+<span class="normal"><a href="#__codelineno-13-35">35</a></span>
+<span class="normal"><a href="#__codelineno-13-36">36</a></span>
+<span class="normal"><a href="#__codelineno-13-37">37</a></span>
+<span class="normal"><a href="#__codelineno-13-38">38</a></span>
+<span class="normal"><a href="#__codelineno-13-39">39</a></span>
+<span class="normal"><a href="#__codelineno-13-40">40</a></span>
+<span class="normal"><a href="#__codelineno-13-41">41</a></span>
+<span class="normal"><a href="#__codelineno-13-42">42</a></span>
+<span class="normal"><a href="#__codelineno-13-43">43</a></span>
+<span class="normal"><a href="#__codelineno-13-44">44</a></span>
+<span class="normal"><a href="#__codelineno-13-45">45</a></span>
+<span class="normal"><a href="#__codelineno-13-46">46</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1"></a><span class="nt">jobs</span><span class="p">:</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2"></a><span class="w">  </span><span class="nt">test</span><span class="p">:</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3"></a><span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4"></a>
+<a id="__codelineno-13-5" name="__codelineno-13-5"></a><span class="w">    </span><span class="nt">services</span><span class="p">:</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6"></a><span class="w">      </span><span class="nt">postgres</span><span class="p">:</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7"></a><span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres:16-alpine</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8"></a><span class="w">        </span><span class="nt">env</span><span class="p">:</span>
+<a id="__codelineno-13-9" name="__codelineno-13-9"></a><span class="w">          </span><span class="nt">POSTGRES_DB</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gamevault_db</span>
+<a id="__codelineno-13-10" name="__codelineno-13-10"></a><span class="w">          </span><span class="nt">POSTGRES_USER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gamevault_user</span>
+<a id="__codelineno-13-11" name="__codelineno-13-11"></a><span class="w">          </span><span class="nt">POSTGRES_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">password123</span>
+<a id="__codelineno-13-12" name="__codelineno-13-12"></a><span class="w">        </span><span class="nt">ports</span><span class="p">:</span>
+<a id="__codelineno-13-13" name="__codelineno-13-13"></a><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5432:5432</span>
+<a id="__codelineno-13-14" name="__codelineno-13-14"></a><span class="w">        </span><span class="nt">options</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span>
+<a id="__codelineno-13-15" name="__codelineno-13-15"></a><span class="w">          </span><span class="no">--health-cmd pg_isready</span>
+<a id="__codelineno-13-16" name="__codelineno-13-16"></a><span class="w">          </span><span class="no">--health-interval 10s</span>
+<a id="__codelineno-13-17" name="__codelineno-13-17"></a><span class="w">          </span><span class="no">--health-timeout 5s</span>
+<a id="__codelineno-13-18" name="__codelineno-13-18"></a><span class="w">          </span><span class="no">--health-retries 5</span>
+<a id="__codelineno-13-19" name="__codelineno-13-19"></a>
+<a id="__codelineno-13-20" name="__codelineno-13-20"></a><span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+<a id="__codelineno-13-21" name="__codelineno-13-21"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Descargar el código fuente</span>
+<a id="__codelineno-13-22" name="__codelineno-13-22"></a><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v4</span>
+<a id="__codelineno-13-23" name="__codelineno-13-23"></a>
+<a id="__codelineno-13-24" name="__codelineno-13-24"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Instalar Java 21</span>
+<a id="__codelineno-13-25" name="__codelineno-13-25"></a><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/setup-java@v4</span>
+<a id="__codelineno-13-26" name="__codelineno-13-26"></a><span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<a id="__codelineno-13-27" name="__codelineno-13-27"></a><span class="w">          </span><span class="nt">java-version</span><span class="p">:</span><span class="w"> </span><span class="s">'21'</span>
+<a id="__codelineno-13-28" name="__codelineno-13-28"></a><span class="w">          </span><span class="nt">distribution</span><span class="p">:</span><span class="w"> </span><span class="s">'temurin'</span>
+<a id="__codelineno-13-29" name="__codelineno-13-29"></a><span class="w">          </span><span class="nt">cache</span><span class="p">:</span><span class="w"> </span><span class="s">'maven'</span>
+<a id="__codelineno-13-30" name="__codelineno-13-30"></a>
+<a id="__codelineno-13-31" name="__codelineno-13-31"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Dar permiso de ejecución al wrapper</span>
+<a id="__codelineno-13-32" name="__codelineno-13-32"></a><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chmod +x mvnw</span>
+<a id="__codelineno-13-33" name="__codelineno-13-33"></a>
+<a id="__codelineno-13-34" name="__codelineno-13-34"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ejecutar los tests</span>
+<a id="__codelineno-13-35" name="__codelineno-13-35"></a><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span>
+<a id="__codelineno-13-36" name="__codelineno-13-36"></a><span class="w">          </span><span class="no">./mvnw test -B</span>
+<a id="__codelineno-13-37" name="__codelineno-13-37"></a><span class="w">          </span><span class="no">-Dspring.datasource.url=jdbc:postgresql://localhost:5432/gamevault_db</span>
+<a id="__codelineno-13-38" name="__codelineno-13-38"></a><span class="w">          </span><span class="no">-Dgamevault.admin.password=${{ secrets.GAMEVAULT_ADMIN_PASSWORD }}</span>
+<a id="__codelineno-13-39" name="__codelineno-13-39"></a><span class="w">          </span><span class="no">-Dgamevault.jwt.secret=${{ secrets.GAMEVAULT_JWT_SECRET }}</span>
+<a id="__codelineno-13-40" name="__codelineno-13-40"></a>
+<a id="__codelineno-13-41" name="__codelineno-13-41"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Guardar el informe de tests</span>
+<a id="__codelineno-13-42" name="__codelineno-13-42"></a><span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always()</span>
+<a id="__codelineno-13-43" name="__codelineno-13-43"></a><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/upload-artifact@v4</span>
+<a id="__codelineno-13-44" name="__codelineno-13-44"></a><span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<a id="__codelineno-13-45" name="__codelineno-13-45"></a><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">informe-tests</span>
+<a id="__codelineno-13-46" name="__codelineno-13-46"></a><span class="w">          </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">target/surefire-reports/</span>
+</code></pre></div></td></tr></table></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Esto, en realidad, habría que repetirlo para cada ruta protegida</p>
+<p>Lo ideal en un proyecto real es escribir este mismo patrón para todas y cada una de las rutas protegidas, no solo para <code>crearVideojuego</code> — es la única forma de tener la certeza de que la política completa hace lo que dice. Aquí solo se pide para esta ruta y, en el Paso 8, para el <code>DELETE</code> de <code>Estudio</code>, para no alargar la actividad — pero el patrón ya lo tienes: aplícalo al resto de tu proyecto por tu cuenta si quieres una cobertura real.</p>
+</div>
 <hr>
-<h2 id="paso-7-repite-el-patron-con-delete-de-estudio">Paso 7 — Repite el patrón con <code>DELETE</code> de <code>Estudio</code><a class="headerlink" href="#paso-7-repite-el-patron-con-delete-de-estudio" title="Permanent link">¶</a></h2>
-<p>Escribe los mismos tres tests (sin token, con rol insuficiente si aplica según tu decisión del Paso 1, con el rol correcto) para el <code>DELETE</code> de <code>Estudio</code> que construiste en el Tema 1. Solo se indica qué cubrir — la estructura es idéntica a la del Paso 6.</p>
+<h2 id="paso-8-repite-el-patron-con-delete-de-estudio">Paso 8 — Repite el patrón con <code>DELETE</code> de <code>Estudio</code><a class="headerlink" href="#paso-8-repite-el-patron-con-delete-de-estudio" title="Permanent link">¶</a></h2>
+<p>Escribe los mismos tres tests (sin token, con rol insuficiente si aplica según tu decisión del Paso 1, con el rol correcto) para el <code>DELETE</code> de <code>Estudio</code>, en la misma clase <code>SeguridadEndpointsTest</code> del Paso 7. Los dos primeros son un hueco para que los rellenes tú, siguiendo el mismo patrón del Paso 7; el tercero es algo más largo —necesita crear un estudio de prueba antes de poder borrarlo—, así que ya lo tienes resuelto:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-14-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-14-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-14-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-14-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-14-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-14-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-14-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-14-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-14-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-14-10">10</a></span>
+<span class="normal"><a href="#__codelineno-14-11">11</a></span>
+<span class="normal"><a href="#__codelineno-14-12">12</a></span>
+<span class="normal"><a href="#__codelineno-14-13">13</a></span>
+<span class="normal"><a href="#__codelineno-14-14">14</a></span>
+<span class="normal"><a href="#__codelineno-14-15">15</a></span>
+<span class="normal"><a href="#__codelineno-14-16">16</a></span>
+<span class="normal"><a href="#__codelineno-14-17">17</a></span>
+<span class="normal"><a href="#__codelineno-14-18">18</a></span>
+<span class="normal"><a href="#__codelineno-14-19">19</a></span>
+<span class="normal"><a href="#__codelineno-14-20">20</a></span>
+<span class="normal"><a href="#__codelineno-14-21">21</a></span>
+<span class="normal"><a href="#__codelineno-14-22">22</a></span>
+<span class="normal"><a href="#__codelineno-14-23">23</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1"></a><span class="nd">@Test</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2"></a><span class="kt">void</span><span class="w"> </span><span class="nf">borrarEstudio_DebeDevolver401_SinToken</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3"></a><span class="w">    </span><span class="c1">// tu turno: DELETE /api/v1/estudios/{id} sin token, comprueba que da 401</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4"></a><span class="p">}</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5"></a>
+<a id="__codelineno-14-6" name="__codelineno-14-6"></a><span class="nd">@Test</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7"></a><span class="kt">void</span><span class="w"> </span><span class="nf">borrarEstudio_DebeDevolver403_ConRolUser</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8"></a><span class="w">    </span><span class="c1">// tu turno: login como "user", DELETE con ese token, comprueba que da 403</span>
+<a id="__codelineno-14-9" name="__codelineno-14-9"></a><span class="w">    </span><span class="c1">// (o ajusta el rol según lo que hayas decidido en el Paso 1 para Estudio)</span>
+<a id="__codelineno-14-10" name="__codelineno-14-10"></a><span class="p">}</span>
+<a id="__codelineno-14-11" name="__codelineno-14-11"></a>
+<a id="__codelineno-14-12" name="__codelineno-14-12"></a><span class="nd">@Test</span>
+<a id="__codelineno-14-13" name="__codelineno-14-13"></a><span class="kt">void</span><span class="w"> </span><span class="nf">borrarEstudio_DebeDevolver204_ConRolAdmin</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-14-14" name="__codelineno-14-14"></a><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">adminToken</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">login</span><span class="p">(</span><span class="s">"admin"</span><span class="p">,</span><span class="w"> </span><span class="s">"admin123"</span><span class="p">);</span>
+<a id="__codelineno-14-15" name="__codelineno-14-15"></a>
+<a id="__codelineno-14-16" name="__codelineno-14-16"></a><span class="w">    </span><span class="c1">// reutiliza el mismo helper del Paso 7: crea un estudio propio en vez de borrar</span>
+<a id="__codelineno-14-17" name="__codelineno-14-17"></a><span class="w">    </span><span class="c1">// uno de data.sql (que en CI no existe, y en local podría tener videojuegos asociados)</span>
+<a id="__codelineno-14-18" name="__codelineno-14-18"></a><span class="w">    </span><span class="kt">long</span><span class="w"> </span><span class="n">estudioId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">crearEstudio</span><span class="p">(</span><span class="n">adminToken</span><span class="p">);</span>
+<a id="__codelineno-14-19" name="__codelineno-14-19"></a>
+<a id="__codelineno-14-20" name="__codelineno-14-20"></a><span class="w">    </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">delete</span><span class="p">(</span><span class="s">"/api/v1/estudios/"</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">estudioId</span><span class="p">)</span>
+<a id="__codelineno-14-21" name="__codelineno-14-21"></a><span class="w">                    </span><span class="p">.</span><span class="na">header</span><span class="p">(</span><span class="s">"Authorization"</span><span class="p">,</span><span class="w"> </span><span class="s">"Bearer "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">adminToken</span><span class="p">))</span>
+<a id="__codelineno-14-22" name="__codelineno-14-22"></a><span class="w">            </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isNoContent</span><span class="p">());</span>
+<a id="__codelineno-14-23" name="__codelineno-14-23"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Captura</strong>: la ejecución de todos tus tests de seguridad (Paso 7 y Paso 8), todos en verde.</p>
 <hr>
 <h2 id="cierre-del-tema">Cierre del tema<a class="headerlink" href="#cierre-del-tema" title="Permanent link">¶</a></h2>
 <ol>
-<li>Deja tu tabla de política del Paso 1 como documento final, actualizada con las decisiones reales que tomaste (incluida la de <code>Estudio</code>).</li>
+<li>Repasa <code>docs/seguridad.md</code> (lo has ido completando desde el Paso 1): ¿tiene ya todas las filas rellenas, <code>EstudioController</code> y <code>/actuator/health</code> incluidos? ¿Falta alguna ruta propia que hayas añadido y que todavía no esté documentada?</li>
 <li>Escribe un repaso propio (4-5 frases) de la evolución completa de este tema: validación y errores → HTTP Basic provisional → usuarios BCrypt en PostgreSQL → JWT → roles y política completa con tests. ¿Qué parte te parece, mirando atrás, la decisión de diseño más importante de todo el recorrido, y por qué?</li>
-</ol>
-<hr>
-<h2 id="cierre">✅ Cierre<a class="headerlink" href="#cierre" title="Permanent link">¶</a></h2>
-<p>Este JWT que acabas de terminar es el que reutilizarás en Acceso a Datos para el <code>PUT</code> de reseñas con control de autoría — el mismo token, la misma identidad, en otro módulo del mismo proyecto.</p></div>
+<li>
+<p>Si tienes CI, haz <code>push</code> de tus cambios (<code>ci.yml</code> incluido) y comprueba, en la pestaña <strong>Actions</strong> de tu repositorio, que el workflow se ejecuta y termina en verde, con <code>SeguridadEndpointsTest</code> entre los tests pasados.</p>
+<p><strong>Captura</strong>: el resultado en verde del workflow, con los tests pasados.</p>
+</li>
+</ol></div>
 
 
 

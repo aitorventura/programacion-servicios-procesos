@@ -2806,6 +2806,7 @@
 <a id="__codelineno-1-12" name="__codelineno-1-12"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>Con solo esa dependencia y esa clase, springdoc escanea todos los <code>@RestController</code> del proyecto y genera, sin más trabajo por tu parte, la especificación OpenAPI en <code>/v3/api-docs</code> y la interfaz visual en <code>/swagger-ui.html</code> — los mismos endpoints que el controller ya tenía quedan documentados, y puedes ejecutarlos de verdad desde el navegador con "Try it out", tal como acabas de ver.</p>
+<p><code>/v3/api-docs</code> es la especificación en sí: el JSON (el <code>3</code> es por OpenAPI 3, la versión del estándar) que describe tus rutas, generado automáticamente por springdoc. Swagger UI no es más que una página que <strong>lee</strong> ese JSON y lo pinta como interfaz interactiva — no tiene información propia. Por eso las dos rutas van siempre juntas: si Swagger UI no puede llegar a <code>/v3/api-docs</code>, la página carga pero se queda vacía, sin nada que mostrar.</p>
 <div class="admonition tip">
 <p class="admonition-title">Cambiar la ruta de Swagger UI</p>
 <p>En tu <code>application-dev.yaml</code> puedes mover la documentación a otra ruta:
@@ -2815,7 +2816,7 @@
 <a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">  </span><span class="nt">swagger-ui</span><span class="p">:</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/documentacion</span>
 </code></pre></div></td></tr></table></div>
-Con esto, entrar en <code>/documentacion</code> te lleva a Swagger UI — pero fíjate en que el navegador acaba redirigido a <code>/swagger-ui/index.html</code>: esa es la página real donde vive la interfaz (el propio recurso estático del <em>webjar</em>), y <code>/documentacion</code> es solo un punto de entrada más cómodo de recordar hacia ella. Por eso, si más adelante proteges tu API con Spring Security, tendrás que dejar pasar <strong>las dos rutas</strong>, no solo la que tú has elegido — lo verás en el Tema 2.
+Con esto, entrar en <code>/documentacion</code> te lleva a Swagger UI — pero fíjate en que el navegador acaba redirigido a <code>/swagger-ui/index.html</code>: esa es la página real donde vive la interfaz (el propio recurso estático del <em>webjar</em>), y <code>/documentacion</code> es solo un punto de entrada más cómodo de recordar hacia ella. Por eso, si más adelante proteges tu API con Spring Security, tendrás que dejar pasar <strong>las tres rutas</strong> —<code>/documentacion</code>, <code>/swagger-ui/**</code> y <code>/v3/api-docs/**</code>—, no solo la que tú has elegido — lo verás en el Tema 2.
 </div>
 <div class="admonition warning">
 <p class="admonition-title"><code>operations-sorter: method</code> no hace lo que parece</p>
