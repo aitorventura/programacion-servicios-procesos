@@ -6,7 +6,7 @@ Al terminar el apartado anterior, tus usuarios ya eran reales —persistidos en 
 
 De paso, hoy también cierras algo pendiente desde antes: Swagger nunca ha tenido una forma cómoda de autenticarte desde su propia interfaz — hoy consigue, por fin, un botón "Authorize" de verdad.
 
-HTTP es un protocolo **sin estado**: cada petición llega sola, sin memoria de la anterior. El servidor no "recuerda" que hace un segundo te autenticaste — por eso, hasta ahora, cada petición ha tenido que volver a mandar usuario y contraseña. Hoy sustituyes eso por algo mejor.
+HTTP es un protocolo **sin estado**: cada petición llega sola, sin memoria de la anterior. El servidor no "recuerda" que hace un segundo te has autenticado — por eso, hasta ahora, cada petición ha tenido que volver a mandar usuario y contraseña. Hoy sustituyes eso por algo mejor.
 
 ---
 
@@ -60,7 +60,7 @@ Retoma la criptografía del apartado anterior: **firmar no es lo mismo que cifra
 
 El algoritmo concreto que vas a usar se llama **HMAC** (*Hash-based Message Authentication Code*): parte de la misma idea de función hash que ya conoces de BCrypt —una función que reduce unos datos de entrada, aquí el header y el payload del JWT, a una huella de longitud fija—, pero le añade un segundo ingrediente: un secreto compartido, sin el cual es imposible calcular esa huella.
 
-`HS256`, el nombre que verás en el código, es HMAC combinado con **SHA-256**, la misma función hash rápida que descartaste para contraseñas en el apartado anterior por ser demasiado rápida ante la fuerza bruta. Aquí sí es la elección correcta: no estás protegiendo una contraseña de un atacante que prueba millones de combinaciones, sino verificando que un mensaje no se ha tocado, con una clave que solo tiene el servidor.
+`HS256`, el nombre que verás en el código, es HMAC combinado con **SHA-256**, la misma función hash rápida que has descartado para contraseñas en el apartado anterior por ser demasiado rápida ante la fuerza bruta. Aquí sí es la elección correcta: no estás protegiendo una contraseña de un atacante que prueba millones de combinaciones, sino verificando que un mensaje no se ha tocado, con una clave que solo tiene el servidor.
 
 ---
 
@@ -94,7 +94,7 @@ Tres de estos campos son estándar de JWT (los define la propia especificación,
 | `roles` | Qué puedes hacer — tus roles | Personalizado: lo añades tú, con el nombre que quieras |
 
 !!! danger "El contenido NO va cifrado — y eso tiene dos consecuencias distintas"
-    Cualquiera que capture un JWT puede leer su payload completo, sin necesitar ninguna clave — igual que decodificaste HTTP Basic en la Actividad 2.2. De ahí salen dos escenarios que conviene no mezclar:
+    Cualquiera que capture un JWT puede leer su payload completo, sin necesitar ninguna clave — igual que has decodificado HTTP Basic en la Actividad 2.2. De ahí salen dos escenarios que conviene no mezclar:
 
     **Si alguien roba un token válido y lo reenvía tal cual**, sin tocarlo, el servidor lo acepta sin más — para el servidor es indistinguible de una petición tuya de verdad. La firma no protege de esto: el token sigue siendo perfectamente válido, solo que en manos equivocadas. (Es justo lo que resuelve HTTPS, más abajo: que nadie pueda interceptarlo por el camino.)
 
@@ -170,9 +170,9 @@ Todas las clases de este apartado —`JwtEncoder`, `JwtDecoder`, `JwtAuthenticat
 
 `JwtEncoder` firma tokens nuevos; `JwtDecoder` verifica los que llegan en cada petición. Pero ninguno de los dos hace nada por sí solo: ambos necesitan la misma clave, el **secreto** con el que se calcula la firma HMAC — es el mismo secreto en los dos lados, porque HMAC usa una única clave tanto para firmar como para verificar (a diferencia de la criptografía de clave pública/privada, que usa dos distintas).
 
-Todo lo que ves en esta pieza va en tu misma `SecurityConfig` de siempre, junto a lo que ya construiste en los apartados anteriores.
+Todo lo que ves en esta pieza va en tu misma `SecurityConfig` de siempre, junto a lo que ya has construido en los apartados anteriores.
 
-Ese secreto sigue el mismo patrón que ya usaste para la contraseña del primer `ADMIN`, en el apartado anterior: vive en tu fichero de propiedades excluido de Git, nunca en el código ni en la configuración que sí subes.
+Ese secreto sigue el mismo patrón que ya has usado para la contraseña del primer `ADMIN`, en el apartado anterior: vive en tu fichero de propiedades excluido de Git, nunca en el código ni en la configuración que sí subes.
 
 ```java
 @Value("${libreria.jwt.secret}")
@@ -191,11 +191,11 @@ public JwtDecoder jwtDecoder() {
 ```
 
 !!! warning "El secreto tiene que ser largo, no solo secreto"
-    HS256 exige una clave de al menos 256 bits (32 caracteres). Si usas algo corto, tipo `"clave123"`, Spring lanza una excepción al arrancar la aplicación — no es un capricho de seguridad, es un requisito matemático del propio algoritmo: una clave corta es más fácil de adivinar por fuerza bruta, así que HMAC-SHA256 se niega a trabajar con una. Una cadena aleatoria larga, como la que ya generaste para `application-dev-local.yml`, cumple de sobra.
+    HS256 exige una clave de al menos 256 bits (32 caracteres). Si usas algo corto, tipo `"clave123"`, Spring lanza una excepción al arrancar la aplicación — no es un capricho de seguridad, es un requisito matemático del propio algoritmo: una clave corta es más fácil de adivinar por fuerza bruta, así que HMAC-SHA256 se niega a trabajar con una. Una cadena aleatoria larga, como la que ya has generado para `application-dev-local.yaml`, cumple de sobra.
 
 Aprovecha esta misma clase para exponer una pieza más, que no tiene que ver con el secreto pero sí hace falta para el login: el `AuthenticationManager`. Es la interfaz de Spring Security con un único trabajo: recibir unas credenciales todavía sin comprobar y, si son correctas, devolver un `Authentication` ya validado —o lanzar una excepción si no lo son—. Es justo lo que necesitas en tu endpoint de login para verificar `usuario`/`contraseña`.
 
-Por debajo, el `AuthenticationManager` usa dos piezas que ya tienes en tu contexto desde el apartado anterior: tu `UserDetailsService` (busca al usuario) y tu `PasswordEncoder` (compara la contraseña con el hash BCrypt guardado). No conectas nada de esto a mano — es el mismo mecanismo que ya viste entonces: como en tu contexto de Spring solo existe **un** bean de cada tipo (tu única clase `BdUserDetailsService`, tu único `@Bean PasswordEncoder`), no hay ambigüedad que resolver, y Spring Boot los detecta y los usa sin que se lo indiques por nombre.
+Por debajo, el `AuthenticationManager` usa dos piezas que ya tienes en tu contexto desde el apartado anterior: tu `UserDetailsService` (busca al usuario) y tu `PasswordEncoder` (compara la contraseña con el hash BCrypt guardado). No conectas nada de esto a mano — es el mismo mecanismo que ya has visto entonces: como en tu contexto de Spring solo existe **un** bean de cada tipo (tu única clase `BdUserDetailsService`, tu único `@Bean PasswordEncoder`), no hay ambigüedad que resolver, y Spring Boot los detecta y los usa sin que se lo indiques por nombre.
 
 ```mermaid
 flowchart LR
@@ -251,7 +251,7 @@ public class JwtService {
 }
 ```
 
-Ese `Authentication` es el mismo que viste en el diagrama de arriba: te lo entrega `authenticationManager.authenticate(...)`, en el endpoint de login que ves justo después de esta pieza. `generarToken` no lo construye, solo lo lee.
+Ese `Authentication` es el mismo que has visto en el diagrama de arriba: te lo entrega `authenticationManager.authenticate(...)`, en el endpoint de login que ves justo después de esta pieza. `generarToken` no lo construye, solo lo lee.
 
 Los **claims** son los datos que viajan dentro del token: `subject` (quién eres), `roles` (qué puedes hacer, extraído de las autoridades que ya tenía la `Authentication` tras el login), `issuedAt`/`expiresAt` (cuándo se emitió y cuándo caduca). `jwtEncoder.encode(...)` firma todo esto con el algoritmo `HS256` (HMAC-SHA256) y el secreto configurado.
 
@@ -307,11 +307,11 @@ public class AuthController {
 }
 ```
 
-`authenticationManager.authenticate(...)` dispara la verificación que viste en la pieza anterior (tu `UserDetailsService` + tu `PasswordEncoder`). Si las credenciales son correctas, te devuelve el `Authentication` con el que generas el token; si no, lanza una `AuthenticationException` (en la práctica, casi siempre `BadCredentialsException`, que hereda de ella).
+`authenticationManager.authenticate(...)` dispara la verificación que has visto en la pieza anterior (tu `UserDetailsService` + tu `PasswordEncoder`). Si las credenciales son correctas, te devuelve el `Authentication` con el que generas el token; si no, lanza una `AuthenticationException` (en la práctica, casi siempre `BadCredentialsException`, que hereda de ella).
 
 Aquí hay una diferencia importante con el `401` de HTTP Basic, que nunca llegaba a tu `GlobalExceptionHandler` —lo generaba un filtro de seguridad, antes de que la petición llegara al `DispatcherServlet`—. Esta excepción es distinta: `authenticate(...)` se llama aquí dentro de tu propio método de controller, no en ningún filtro, así que sí pasa por el ciclo normal de Spring MVC.
 
-Un sexto `@ExceptionHandler`, en el mismo `GlobalExceptionHandler` que construiste en el primer apartado del tema, la atrapa sin problema:
+Un sexto `@ExceptionHandler`, en el mismo `GlobalExceptionHandler` que has construido en el primer apartado del tema, la atrapa sin problema:
 
 ```java
 @ExceptionHandler(AuthenticationException.class)
@@ -326,7 +326,7 @@ public ResponseEntity<ErrorResponse> handleAuthenticationException(
 }
 ```
 
-Añádelo a la misma clase de siempre, junto a los otros cinco. Es un caso distinto al `AuthenticationEntryPoint` que construiste en la Actividad 2.2, aunque los dos acaben resolviendo un `401`. La diferencia está en **quién llama a `authenticate(...)`**:
+Añádelo a la misma clase de siempre, junto a los otros cinco. Es un caso distinto al `AuthenticationEntryPoint` que has construido en la Actividad 2.2, aunque los dos acaben resolviendo un `401`. La diferencia está en **quién llama a `authenticate(...)`**:
 
 | | `AuthenticationEntryPoint` (Actividad 2.2) | Este `@ExceptionHandler` (hoy) |
 |---|---|---|
@@ -340,7 +340,7 @@ Misma herramienta de siempre, `@ExceptionHandler`, aplicada a un caso que hasta 
 
 ### El cambio de modo en `SecurityConfig`
 
-Este es el mismo bean `securityFilterChain(...)` que ya construiste en la seguridad básica —el `SecurityFilterChain` que acabas de ver como protagonista del segundo diagrama—, con el método completo. Las rutas, `exceptionHandling` (tu `AuthenticationEntryPoint`) y `csrf` son exactamente lo que ya tenías; lo nuevo de hoy es `sessionManagement`, `oauth2ResourceServer` y el cambio en `httpBasic`:
+Este es el mismo bean `securityFilterChain(...)` que ya has construido en la seguridad básica —el `SecurityFilterChain` que acabas de ver como protagonista del segundo diagrama—, con el método completo. Las rutas, `exceptionHandling` (tu `AuthenticationEntryPoint`) y `csrf` son exactamente lo que ya tenías; lo nuevo de hoy es `sessionManagement`, `oauth2ResourceServer` y el cambio en `httpBasic`:
 
 ```java
 @Bean
@@ -363,7 +363,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http, Authentication
 }
 ```
 
-`SessionCreationPolicy.STATELESS` es la consecuencia directa de usar tokens autocontenidos: con JWT no hace falta que el servidor guarde ninguna sesión, así que se lo dices explícitamente a Spring Security. `oauth2ResourceServer(oauth2 -> oauth2.jwt(...))` activa la validación de JWT en cada petición protegida — Spring verifica la firma automáticamente, usando el `JwtDecoder` que ya viste más arriba. `httpBasic(AbstractHttpConfigurer::disable)` retira oficialmente el mecanismo provisional de los apartados anteriores: JWT es ahora el único mecanismo de autenticación.
+`SessionCreationPolicy.STATELESS` es la consecuencia directa de usar tokens autocontenidos: con JWT no hace falta que el servidor guarde ninguna sesión, así que se lo dices explícitamente a Spring Security. `oauth2ResourceServer(oauth2 -> oauth2.jwt(...))` activa la validación de JWT en cada petición protegida — Spring verifica la firma automáticamente, usando el `JwtDecoder` que ya has visto más arriba. `httpBasic(AbstractHttpConfigurer::disable)` retira oficialmente el mecanismo provisional de los apartados anteriores: JWT es ahora el único mecanismo de autenticación.
 
 La regla de `/v3/api-docs/**`, `/swagger-ui/**` y `/documentacion` también es nueva: desde la seguridad básica, Swagger ha estado bloqueado detrás de autenticación, igual que el resto de la API. Sin ella, el navegador no podría ni cargar `/documentacion` —`STATELESS` no manda ningún token solo por navegar a una URL—, y el botón "Authorize" que ves un poco más abajo no sería alcanzable.
 
@@ -402,7 +402,7 @@ Un endpoint sencillo para verificar qué información viaja dentro de tu propio 
 
 ### Por fin, un botón "Authorize" de verdad en Swagger
 
-En "Seguridad básica" viste que Swagger no sabía pedirte credenciales por su cuenta —con HTTP Basic, o lo hacía el propio navegador, o no había forma cómoda de autenticarte desde la interfaz—. Con JWT eso se resuelve de raíz: le declaras a Swagger que tu API usa un esquema de seguridad `bearer`, y a cambio te da un botón "Authorize" real, donde pegas tu token una sola vez.
+En "Seguridad básica" has visto que Swagger no sabía pedirte credenciales por su cuenta —con HTTP Basic, o lo hacía el propio navegador, o no había forma cómoda de autenticarte desde la interfaz—. Con JWT eso se resuelve de raíz: le declaras a Swagger que tu API usa un esquema de seguridad `bearer`, y a cambio te da un botón "Authorize" real, donde pegas tu token una sola vez.
 
 Se declara en el mismo `OpenApiConfig` que ya tienes, añadiendo un `SecurityScheme`:
 

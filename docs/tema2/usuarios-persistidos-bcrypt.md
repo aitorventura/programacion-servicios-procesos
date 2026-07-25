@@ -150,7 +150,7 @@ public class BdUserDetailsService implements UserDetailsService {
 Es el reemplazo directo del `InMemoryUserDetailsManager` del apartado anterior: implementa `UserDetailsService`, y en vez de buscar en una lista fija en memoria, busca en `UsuarioRepository` — la misma base de datos que usas para todo lo demás. Spring Security llama a `loadUserByUsername(...)` automáticamente cuando alguien intenta autenticarse; tú solo tienes que decirle dónde encontrar al usuario. El `.disabled(!usuario.isActivo())` es justo lo que usa el `activo` que has visto al definir la entidad: un usuario con `activo = false` sigue existiendo en la tabla, pero Spring Security lo trata como deshabilitado y rechaza sus intentos de login.
 
 !!! tip "`securityFilterChain` no cambia ni una línea"
-    Podría parecer que, al sustituir una pieza tan central, tendrías que volver a tocar `.authorizeHttpRequests(...)`, `.csrf(...)`, `.exceptionHandling(...)` o `.httpBasic(...)` — pero no hace falta tocar nada de eso. Spring Security detecta automáticamente el único bean `UserDetailsService` que hay en el contexto (antes era `InMemoryUserDetailsManager`; ahora es `BdUserDetailsService`) y lo conecta solo con el `PasswordEncoder` que acabas de declarar, usándolos internamente para comparar la contraseña recibida contra el hash guardado. Todo lo que construiste en el apartado anterior —rutas públicas, CSRF desactivado, tu `AuthenticationEntryPoint` a medida— sigue funcionando exactamente igual, sin que toques `securityFilterChain` para nada.
+    Podría parecer que, al sustituir una pieza tan central, tendrías que volver a tocar `.authorizeHttpRequests(...)`, `.csrf(...)`, `.exceptionHandling(...)` o `.httpBasic(...)` — pero no hace falta tocar nada de eso. Spring Security detecta automáticamente el único bean `UserDetailsService` que hay en el contexto (antes era `InMemoryUserDetailsManager`; ahora es `BdUserDetailsService`) y lo conecta solo con el `PasswordEncoder` que acabas de declarar, usándolos internamente para comparar la contraseña recibida contra el hash guardado. Todo lo que has construido en el apartado anterior —rutas públicas, CSRF desactivado, tu `AuthenticationEntryPoint` a medida— sigue funcionando exactamente igual, sin que toques `securityFilterChain` para nada.
 
 ### El registro: `AuthController`
 
@@ -215,7 +215,7 @@ public class UsuariosSeed implements ApplicationRunner {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${gamevault.admin.password}")
+    @Value("${libreria.admin.password}")
     private String adminPassword;
 
     @Override
@@ -233,7 +233,7 @@ public class UsuariosSeed implements ApplicationRunner {
 
 Igual que con `UserDetailsService`, no hace falta registrar nada a mano: basta con anotar la clase `@Component` e implementar `ApplicationRunner`, y Spring Boot la detecta y la ejecuta sola en cada arranque. El `if (...isEmpty())` es imprescindible por eso mismo —`run(...)` se ejecuta en **cada** arranque, no solo la primera vez—: sin esa comprobación, intentarías insertar el mismo `admin` cada vez que reinicies, y chocarías con la restricción `unique = true` del `username`.
 
-Fíjate en que la contraseña ya no está escrita directamente en el código: viene de `${gamevault.admin.password}`, una propiedad externa. El motivo lo ves en la siguiente sección.
+Fíjate en que la contraseña ya no está escrita directamente en el código: viene de `${libreria.admin.password}`, una propiedad externa. El motivo lo ves en la siguiente sección.
 
 ### Esa contraseña tampoco debería estar en tu repositorio
 
@@ -248,18 +248,18 @@ spring:
 
 ```yaml
 # application-dev-local.yaml (en .gitignore, NO se sube a Git)
-gamevault:
+libreria:
   admin:
     password: admin123
 ```
 
-El prefijo `optional:` le dice a Spring Boot que, si ese fichero no existe (por ejemplo, en la máquina de un compañero que acaba de clonar el repositorio), arranque igualmente en vez de fallar. Y como `@Value("${gamevault.admin.password}")` no lleva ningún valor por defecto, si de verdad falta la propiedad, la aplicación **no arranca** — con un error claro señalando qué falta, en vez de arrancar silenciosamente con una contraseña vacía o adivinada.
+El prefijo `optional:` le dice a Spring Boot que, si ese fichero no existe (por ejemplo, en la máquina de un compañero que acaba de clonar el repositorio), arranque igualmente en vez de fallar. Y como `@Value("${libreria.admin.password}")` no lleva ningún valor por defecto, si de verdad falta la propiedad, la aplicación **no arranca** — con un error claro señalando qué falta, en vez de arrancar silenciosamente con una contraseña vacía o adivinada.
 
 Para que cualquiera sepa qué tiene que rellenar sin tener que adivinarlo, se acompaña de una plantilla que sí se sube a Git:
 
 ```yaml
 # application-dev-local.yaml.example (SÍ se sube a Git — sin valores reales)
-gamevault:
+libreria:
   admin:
     password: pon-aqui-tu-propia-contraseña
 ```
@@ -269,7 +269,7 @@ Cada persona que clona el repositorio copia ese `.example` a `application-dev-lo
 !!! warning "Ese fichero no existe fuera de tu máquina — piénsalo cuando montes CI o un despliegue"
     Poner un valor en `.gitignore` es la otra cara de una moneda: si no se sube a Git, **no llega a ningún sitio por Git**. Tu máquina lo tiene porque lo has rellenado a mano, pero cualquier entorno que arranque tu aplicación desde el repositorio limpio —un pipeline de integración continua, un servidor de despliegue, el ordenador de un compañero— no tiene ese fichero, y con él ausente la aplicación no arranca (por el `@Value` sin valor por defecto que acabas de ver). En esos entornos tienes que **inyectar** cada uno de esos valores por otra vía: una variable de entorno, un parámetro del comando, o un "secreto" del propio sistema de CI. No es un caso raro: es lo primero con lo que te vas a topar la primera vez que uno de estos secretos tenga que existir en algún sitio que no sea tu portátil. Lo verás en concreto en la última actividad del tema, al hacer que tus tests de seguridad corran en GitHub Actions.
 
-!!! note "¿No es esto lo mismo que la contraseña de Postgres, que dejaste en el fichero versionado?"
+!!! note "¿No es esto lo mismo que la contraseña de Postgres, que has dejado en el fichero versionado?"
     Buena pregunta, y la respuesta es matizada. Tal y como está tu proyecto **hoy** —corriendo solo en tu Dev Container, sin desplegar en ningún sitio—, el riesgo real de que `admin123` se filtre por GitHub es prácticamente el mismo que el de la contraseña de Postgres del primer apartado del tema: nadie fuera de tu máquina puede usarla ahora mismo, porque no hay ningún servidor público al que dirigirla.
 
     La diferencia no está en el peligro de hoy, sino en lo fácil que es que este secreto concreto sobreviva sin querer hasta un despliegue real. La contraseña de Postgres solo importaría si algún día reconfiguraras a propósito tu aplicación contra una base de datos en la nube — un paso consciente. Pero es muy típico coger un proyecto que ya funciona como base para algo real y desplegarlo copiando la configuración tal cual, sin darte cuenta de que ese `admin123` o ese secreto de JWT siguen siendo los mismos del primer commit. Protegerlo ahora, cuando no cuesta nada y no urge, es más barato que aprender por qué hacía falta el día que sí urja.
