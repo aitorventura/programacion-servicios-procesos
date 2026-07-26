@@ -23,7 +23,7 @@ Tu CRUD de `Videojuego` y de `Estudio` funcionando, con validación y `@Valid` (
 
 ## Paso 1 — Mensajes de error personalizados en `VideojuegoCreateDTO` y `EstudioCreateDTO`
 
-Tu DTO ya tiene validación — la has construido en Acceso a Datos (Tema 1), con `@Valid` ya puesto en el controller. Pero cada anotación usa el mensaje por defecto de Bean Validation, genérico y en inglés (`"must not be blank"`, por ejemplo). Añade tú mismo un mensaje propio a cada anotación, con el atributo `message`:
+Tu DTO ya tiene validación — la construiste en Acceso a Datos (Tema 1), con `@Valid` ya puesto en el controller. Pero cada anotación usa el mensaje por defecto de Bean Validation, genérico y en inglés (`"must not be blank"`, por ejemplo). Añade tú mismo un mensaje propio a cada anotación, con el atributo `message`:
 
 ```java
 public record VideojuegoCreateDTO(
@@ -73,7 +73,7 @@ En el formulario de `POST /videojuegos`, manda un cuerpo inválido:
 
 En el formulario de `GET /videojuegos/{id}`, pide un `id` que sepas que no existe (por ejemplo, `999999`).
 
-**Captura**: la respuesta. Ya es un `404` razonable —lo has construido en Acceso a Datos, Tema 1, con `ResponseStatusException`—, pero fíjate en su formato: ¿se parece en algo al que acabas de capturar en el paso anterior?
+**Captura**: la respuesta. Ya es un `404` razonable —lo construiste en Acceso a Datos, Tema 1, con `ResponseStatusException`—, pero fíjate en su formato: ¿se parece en algo al que acabas de capturar en el paso anterior?
 
 ### 3. Un parámetro de consulta que Spring Data no entiende
 
@@ -243,7 +243,7 @@ public class GlobalExceptionHandler {
 
 ## Paso 4 — Repite los cinco errores y compara
 
-Con el `GlobalExceptionHandler` ya en marcha, repite exactamente las mismas cinco peticiones del Paso 2, en el mismo orden, y compara cada respuesta nueva con la que capturaste entonces.
+Con el `GlobalExceptionHandler` ya en marcha, repite exactamente las mismas cinco peticiones del Paso 2, en el mismo orden, y compara cada respuesta nueva con la que has capturado entonces.
 
 ### 1. El DTO que no pasa la validación
 

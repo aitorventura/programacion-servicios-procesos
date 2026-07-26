@@ -155,7 +155,7 @@ public ResponseEntity<ErrorResponse> handleValidationExceptions(
 
 #### Handler 2: los errores que ya lanzas tú explícitamente
 
-Este atrapa `ResponseStatusException`, la misma excepción que usas en el service al escribir `orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "..."))`. El resultado ya te suena: es el mismo `404` que has visto en el Tema 1 al pedir un `id` que no existe — solo que ahora pasa por este único punto, en vez de construirse "a mano" en cada sitio donde podría lanzarse.
+Este atrapa `ResponseStatusException`, la misma excepción que usas en el service al escribir `orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "..."))`. El resultado ya te suena: es el mismo `404` que viste en el Tema 1 al pedir un `id` que no existe — solo que ahora pasa por este único punto, en vez de construirse "a mano" en cada sitio donde podría lanzarse.
 
 ```java
 @ExceptionHandler(ResponseStatusException.class)

@@ -167,7 +167,7 @@ Anotación a anotación, mirando solo la parte de HTTP (qué hace cada cosa con 
 | `@RequestMapping("/api/v1/libros")` | La ruta base del recurso — todo lo que hay dentro de esta clase cuelga de `/api/v1/libros`. El `/v1` es el **versionado** de la API: si el día de mañana cambia el contrato, se puede publicar un `/v2` sin romper a los clientes que siguen usando la v1. |
 | `@GetMapping` / `@GetMapping("/{id}")` | Verbo (`GET`) + ruta = una operación concreta. Los dos métodos cuelgan de la misma ruta base (`/api/v1/libros`), pero Spring solo ejecuta uno de los dos según cómo termine esa combinación: si la petición es exactamente `/api/v1/libros`, entra `getAll`; si trae algo más detrás (`/3`, `/57`...), entra `getById`. `{id}` es esa parte variable de la ruta. |
 | `@PathVariable Long id` | Extrae ese trozo variable de la URL y lo entrega como parámetro Java — el `3` de `/api/v1/libros/3` llega aquí convertido ya en un `Long`, listo para usar. |
-| `ResponseEntity.ok(...)` | Construye la respuesta con el código de estado `200` explícito y el cuerpo indicado — es tu código Java decidiendo, a propósito, la primera línea de la respuesta HTTP que viste más arriba. |
+| `ResponseEntity.ok(...)` | Construye la respuesta con el código de estado `200` explícito y el cuerpo indicado — es tu código Java decidiendo, a propósito, la primera línea de la respuesta HTTP que has visto más arriba. |
 
 Vuelve un momento a la petición en texto plano de antes: `GET /api/v1/libros/3 HTTP/1.1`. Ese `GET`, esa ruta y ese `3` son exactamente lo que decide Spring para escoger `getById` y rellenar su parámetro `id` — nada de lo que hace el controlador es magia añadida, es la traducción directa de esas tres piezas del texto plano a una llamada Java.
 

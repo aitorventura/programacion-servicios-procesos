@@ -50,7 +50,7 @@ when(mockService.findAll()).thenReturn(List.of());
 
 `mock(LibroService.class)` crea el objeto falso — por defecto, no sabe hacer nada por sí solo. `when(...).thenReturn(...)` es el "guion": le dices qué debe devolver cuando lo llamen de una forma concreta. Dentro de un test de Spring, en vez de crear el mock a mano con `mock(...)`, se usa la anotación `@MockitoBean` sobre el campo — Spring se encarga de crearlo e inyectarlo él solo, pero por debajo es exactamente el mismo mecanismo.
 
-¿Por qué usar un objeto falso en vez del real? Porque aísla lo que quieres probar. Si tu test dependiera del `LibroService` real, dependería a su vez de una base de datos real conectada, con datos reales dentro — y el resultado de tu test cambiaría según qué datos hubiera en ese momento en esa base de datos, algo que ni controlas ni te interesa cuando lo único que quieres saber es "¿mi controller responde bien a lo que le da el service?". Con un mock, el service siempre se comporta exactamente como tú decidiste, esté la base de datos levantada o no, sea la hora que sea.
+¿Por qué usar un objeto falso en vez del real? Porque aísla lo que quieres probar. Si tu test dependiera del `LibroService` real, dependería a su vez de una base de datos real conectada, con datos reales dentro — y el resultado de tu test cambiaría según qué datos hubiera en ese momento en esa base de datos, algo que ni controlas ni te interesa cuando lo único que quieres saber es "¿mi controller responde bien a lo que le da el service?". Con un mock, el service siempre se comporta exactamente como tú has decidido, esté la base de datos levantada o no, sea la hora que sea.
 
 !!! tip "Material de apoyo: JUnit y mocks desde cero"
     Si quieres repasar JUnit y los mocks con más calma —antes de verlos aplicados aquí a un controller REST—, tienes material dedicado en [Entornos de Desarrollo, Tema 3: Pruebas unitarias](https://aitorventura.github.io/entornos-de-desarrollo/tema3/unitarias/).
@@ -111,12 +111,12 @@ sequenceDiagram
     Test->>MockMvc: perform(get("/api/v1/libros"))
     MockMvc->>Controller: simula GET /api/v1/libros
     Controller->>Mock: findAll()
-    Mock-->>Controller: List.of(dto) — lo que tú preparaste con when(...)
+    Mock-->>Controller: List.of(dto) — lo que tú has preparado con when(...)
     Controller-->>MockMvc: ResponseEntity(200, JSON)
     MockMvc-->>Test: andExpect(...) compara contra la respuesta real
 ```
 
-`MockMvc` simula la parte de Tomcat (recibir la petición, encaminarla al método correcto) sin arrancar ningún servidor de verdad; `LibroController` es exactamente el mismo código que corre en producción, sin cambiar una línea; y `LibroService`, al estar mockeado, responde con el valor que tú preparaste en el test — no con nada calculado de verdad.
+`MockMvc` simula la parte de Tomcat (recibir la petición, encaminarla al método correcto) sin arrancar ningún servidor de verdad; `LibroController` es exactamente el mismo código que corre en producción, sin cambiar una línea; y `LibroService`, al estar mockeado, responde con el valor que tú has preparado en el test — no con nada calculado de verdad.
 
 ---
 
@@ -212,7 +212,7 @@ Existe otro tipo de test, con `@Testcontainers`, que levanta bases de datos **re
 
 ## 🎯 Lo que viene
 
-Tu propio proyecto ya tiene el CRUD completo de `Videojuego` y de `Estudio`, documentado además con `@ApiResponses` (Actividad 1.2) — en la Actividad 1.3 no construyes ningún endpoint nuevo, escribes los tests MockMvc que comprueban con código que esos mismos códigos que documentaste (`200`, `201`, `400`, `404`...) son, de verdad, los que tu API devuelve. La Actividad 1.4 cierra el tema con dos piezas más: cuánto tarda tu API en atender varias peticiones a la vez, y Actuator.
+Tu propio proyecto ya tiene el CRUD completo de `Videojuego` y de `Estudio`, documentado además con `@ApiResponses` (Actividad 1.2) — en la Actividad 1.3 no construyes ningún endpoint nuevo, escribes los tests MockMvc que comprueban con código que esos mismos códigos que has documentado (`200`, `201`, `400`, `404`...) son, de verdad, los que tu API devuelve. La Actividad 1.4 cierra el tema con dos piezas más: cuánto tarda tu API en atender varias peticiones a la vez, y Actuator.
 
 ---
 

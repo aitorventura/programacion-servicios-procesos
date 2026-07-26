@@ -147,7 +147,7 @@ curl -i http://localhost:8080/api/v1/algo-inventado
 ## Paso 3 — Depurar un caso real
 
 !!! warning "Este fallo es intencionado — vas a diagnosticarlo tú"
-    Con `denyAll()` activo, prueba ahora mismo: `GET /actuator/health` (el mismo endpoint que has activado en el Tema 1). Es muy probable que, si no lo has incluido explícitamente arriba, te dé un rechazo — aunque el endpoint en sí funcione perfectamente si lo pruebas de otra forma.
+    Con `denyAll()` activo, prueba ahora mismo: `GET /actuator/health` (el mismo endpoint que activaste en el Tema 1). Es muy probable que, si no lo has incluido explícitamente arriba, te dé un rechazo — aunque el endpoint en sí funcione perfectamente si lo pruebas de otra forma.
 
 Activa el log de Spring Security si quieres ver más detalle de la decisión:
 

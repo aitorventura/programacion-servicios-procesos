@@ -72,7 +72,7 @@ gamevault:
     Esto te da una cadena aleatoria de más de 32 caracteres, lista para pegar en `jwt.secret` — no hace falta que "signifique" nada, solo que sea larga e impredecible.
 
 !!! warning "Nunca subas un secreto real a un repositorio"
-    Un secreto de JWT filtrado permite falsificar tokens válidos para cualquier usuario — es un riesgo real, no una formalidad. Por eso vive en `application-dev-local.yml`, no en `application-dev.yml`: el mismo mecanismo que ya usaste para la contraseña del `admin` en la Actividad 2.3.
+    Un secreto de JWT filtrado permite falsificar tokens válidos para cualquier usuario — es un riesgo real, no una formalidad. Por eso vive en `application-dev-local.yml`, no en `application-dev.yml`: el mismo mecanismo que ya has usado para la contraseña del `admin` en la Actividad 2.3.
 
 
 En tu `SecurityConfig`:
@@ -321,7 +321,7 @@ curl -i -X POST http://localhost:8080/api/v1/videojuegos \
   -H "Content-Type: application/json" \
   -d '{"titulo":"Celeste","precio":19.99,"fechaLanzamiento":"2018-01-25","estudioId":1}'
 
-# 5. Login como user (el que registraste en la Actividad 2.3) y repite la petición con su token
+# 5. Login como user (el que has registrado en la Actividad 2.3) y repite la petición con su token
 curl -s -X POST http://localhost:8080/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"user","password":"user123"}'
@@ -370,9 +370,9 @@ public ResponseEntity<AuthMeResponse> me() {
 }
 ```
 
-El `.filter()`/`.map()` para quitar el prefijo `ROLE_` es el mismo que ya usaste en `JwtService` (Paso 2) — hace falta repetirlo aquí para que los roles que ves en `/me` coincidan exactamente con los que decodificaste del JWT (que tampoco llevan el prefijo).
+El `.filter()`/`.map()` para quitar el prefijo `ROLE_` es el mismo que ya has usado en `JwtService` (Paso 2) — hace falta repetirlo aquí para que los roles que ves en `/me` coincidan exactamente con los que has decodificado del JWT (que tampoco llevan el prefijo).
 
-Pruébalo con el token de `admin` del Paso 5 y comprueba que la información coincide con lo que decodificaste a mano.
+Pruébalo con el token de `admin` del Paso 5 y comprueba que la información coincide con lo que has decodificado a mano.
 
 **Captura**: la respuesta de `GET /api/v1/auth/me`.
 

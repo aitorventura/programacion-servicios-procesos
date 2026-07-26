@@ -296,7 +296,7 @@ Ahora **retira** el bean `userDetailsService()` con `InMemoryUserDetailsManager`
 
 ## Paso 6 — Probar el login con los usuarios reales
 
-`GET /api/v1/videojuegos` no sirve para esta prueba: es `permitAll()`, así que respondería `200` con `user:user123`, con una contraseña inventada, o sin ninguna credencial — el código no distingue si se ha validado algo de verdad. La prueba que sí demuestra una autenticación real es la misma que ya usaste en la Actividad 2.2: el `POST` protegido con `hasRole("ADMIN")`, donde un `403` (no un `401`) solo puede darse si las credenciales eran correctas y el rol insuficiente:
+`GET /api/v1/videojuegos` no sirve para esta prueba: es `permitAll()`, así que respondería `200` con `user:user123`, con una contraseña inventada, o sin ninguna credencial — el código no distingue si se ha validado algo de verdad. La prueba que sí demuestra una autenticación real es la misma que ya has usado en la Actividad 2.2: el `POST` protegido con `hasRole("ADMIN")`, donde un `403` (no un `401`) solo puede darse si las credenciales eran correctas y el rol insuficiente:
 
 ```bash
 curl -i -u user:user123 -X POST http://localhost:8080/api/v1/videojuegos \

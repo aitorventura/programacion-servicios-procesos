@@ -69,7 +69,7 @@ Segunda captura:
 **Responde**:
 
 1. ¿Por qué crees que el servidor ha respondido `404` en vez de `200`?
-2. En el diagrama y el código de "¿Y si el libro no existe?" que viste en la teoría, ¿qué línea exacta es responsable de que la respuesta sea `404` en vez de `200`? Justifica tu respuesta señalando esa línea.
+2. En el diagrama y el código de "¿Y si el libro no existe?" que has visto en la teoría, ¿qué línea exacta es responsable de que la respuesta sea `404` en vez de `200`? Justifica tu respuesta señalando esa línea.
 3. ¿Este `404` lo genera Tomcat automáticamente, o nace de una decisión explícita del código de la aplicación? Justifica tu respuesta con la línea de código concreta.
 
 ---
@@ -105,7 +105,7 @@ En otra terminal:
 curl -v http://localhost:8000/datos.json
 ```
 
-**Comprueba**: verbo, código de estado y `Content-Type` de la respuesta real que acabas de recibir. Compáralos con los que anotaste en el Paso 1 — ¿tienen la misma forma general, aunque el servidor sea completamente distinto?
+**Comprueba**: verbo, código de estado y `Content-Type` de la respuesta real que acabas de recibir. Compáralos con los que has anotado en el Paso 1 — ¿tienen la misma forma general, aunque el servidor sea completamente distinto?
 
 **Captura**: la salida completa de `curl -v http://localhost:8000/datos.json` en tu terminal.
 

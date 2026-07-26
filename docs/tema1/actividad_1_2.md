@@ -187,7 +187,7 @@ Prueba `PUT /api/v1/videojuegos/{id}` sobre el `id` que te ha devuelto el `POST`
 
 ### `DELETE` — borrar
 
-Prueba `DELETE /api/v1/videojuegos/{id}` sobre ese mismo videojuego, y comprueba el código de estado. A continuación, un `GET /api/v1/videojuegos/{id}` sobre ese mismo `id`: comprueba qué código obtienes ahora, y relaciónalo con lo que aprendiste sobre el `404` en la Actividad 1.1.
+Prueba `DELETE /api/v1/videojuegos/{id}` sobre ese mismo videojuego, y comprueba el código de estado. A continuación, un `GET /api/v1/videojuegos/{id}` sobre ese mismo `id`: comprueba qué código obtienes ahora, y relaciónalo con lo que has aprendido sobre el `404` en la Actividad 1.1.
 
 **Captura**: las dos respuestas (`DELETE` y el `GET` posterior) con el código de estado visible.
 
@@ -202,7 +202,7 @@ Repite exactamente el mismo patrón del Bloque A — `GET`, `POST`, `PUT`, `DELE
 - `@ApiResponses` sobre los cuatro métodos de `EstudioController` (no solo `create()`), con los códigos que de verdad puede devolver cada uno. Aquí no hay ningún estudio relacionado que pueda no existir — piensa qué códigos tienen sentido en cada método y cuáles no aplican, comparado con `Videojuego`.
 - La misma comprobación final: borra el estudio que has creado y verifica con un `GET` posterior que ya no existe.
 
-**Captura**: la sección "Responses" de `POST /api/v1/estudios` desplegada, mostrando los códigos que has documentado tú — igual que hiciste en el Bloque A.
+**Captura**: la sección "Responses" de `POST /api/v1/estudios` desplegada, mostrando los códigos que has documentado tú — igual que has hecho en el Bloque A.
 
 **Captura**: una por cada una de las cuatro operaciones (petición + respuesta visibles), igual que en el Bloque A.
 

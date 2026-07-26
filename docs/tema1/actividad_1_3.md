@@ -94,7 +94,7 @@ Aquí el mock, en vez de devolver un valor, **lanza una excepción** — así re
 
 Repite el mismo patrón (preparar el mock con `when(...).thenReturn(...)`, actuar con `mockMvc.perform(post(...).contentType(...).content(...))`, afirmar con `.andExpect(status().isCreated())`) para probar:
 
-- Que un `POST /api/v1/videojuegos` válido devuelve `201`. Guíate por el test de `create` que ya viste en la teoría para el cuerpo JSON de la petición.
+- Que un `POST /api/v1/videojuegos` válido devuelve `201`. Guíate por el test de `create` que ya has visto en la teoría para el cuerpo JSON de la petición.
 - Que un `PUT /api/v1/videojuegos/{id}` válido devuelve `200`.
 - Que un `DELETE /api/v1/videojuegos/{id}` devuelve `204`.
 
