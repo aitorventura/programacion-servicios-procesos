@@ -20,7 +20,7 @@
     
     
       
-        <title>Roles, rutas protegidas y tests - Programación de Servicios y Procesos</title>
+        <title>Roles y rutas protegidas - Programación de Servicios y Procesos</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#5-roles-rutas-protegidas-y-tests-de-seguridad" class="md-skip">
+        <a href="#5-roles-y-rutas-protegidas" class="md-skip">
           Saltar a contenido
         </a>
       
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Roles, rutas protegidas y tests
+              Roles y rutas protegidas
             
           </span>
         </div>
@@ -1529,7 +1529,7 @@
   
   
   <span class="md-ellipsis">
-    Roles, rutas protegidas y tests
+    Roles y rutas protegidas
     
   </span>
   
@@ -1540,7 +1540,7 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4_6">
             <span class="md-nav__icon md-icon"></span>
-            Roles, rutas protegidas y tests
+            Roles y rutas protegidas
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1565,7 +1565,7 @@
   
   
   <span class="md-ellipsis">
-    Roles, rutas protegidas y tests
+    Roles y rutas protegidas
     
   </span>
   
@@ -1578,7 +1578,7 @@
   
   
   <span class="md-ellipsis">
-    Roles, rutas protegidas y tests
+    Roles y rutas protegidas
     
   </span>
   
@@ -1646,15 +1646,6 @@
   <a href="#cerrando-la-ultima-grieta-accessdeniedhandler" class="md-nav__link">
     <span class="md-ellipsis">
       🩹 Cerrando la última grieta: AccessDeniedHandler
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tests-de-seguridad-con-mockmvc" class="md-nav__link">
-    <span class="md-ellipsis">
-      🧪 Tests de seguridad con MockMvc
     </span>
   </a>
   
@@ -2606,15 +2597,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tests-de-seguridad-con-mockmvc" class="md-nav__link">
-    <span class="md-ellipsis">
-      🧪 Tests de seguridad con MockMvc
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#documentacion-como-buena-practica" class="md-nav__link">
     <span class="md-ellipsis">
       📝 Documentación como buena práctica
@@ -2649,8 +2631,8 @@
 
 
 <div><p><a id="roles-y-rutas-protegidas"></a></p>
-<h1 id="5-roles-rutas-protegidas-y-tests-de-seguridad">🧩 5. Roles, rutas protegidas y tests de seguridad<a class="headerlink" href="#5-roles-rutas-protegidas-y-tests-de-seguridad" title="Permanent link">¶</a></h1>
-<p>Al terminar el apartado anterior, tu API ya distinguía quién eres (JWT) de qué puedes hacer (roles) — pero solo lo habías comprobado sobre una ruta suelta, <code>POST /videojuegos</code>, y ese <code>403</code> seguía saliendo con el formato por defecto de Spring, no con tu <code>ErrorResponse</code>. Hoy conviertes esa comprobación puntual en una política completa, ruta a ruta y cerrada por defecto; cierras ese formato pendiente —y el de un <code>404</code> que en realidad sale disfrazado de <code>500</code>—; y aprendes a verificar con tests automatizados que la política hace exactamente lo que dice.</p>
+<h1 id="5-roles-y-rutas-protegidas">🧩 5. Roles y rutas protegidas<a class="headerlink" href="#5-roles-y-rutas-protegidas" title="Permanent link">¶</a></h1>
+<p>Al terminar el apartado anterior, tu API ya distinguía quién eres (JWT) de qué puedes hacer (roles) — pero solo lo habías comprobado sobre una ruta suelta, <code>POST /videojuegos</code>, y ese <code>403</code> seguía saliendo con el formato por defecto de Spring, no con tu <code>ErrorResponse</code>. Hoy conviertes esa comprobación puntual en una política completa, ruta a ruta y cerrada por defecto, y cierras ese formato pendiente —y el de un <code>404</code> que en realidad sale disfrazado de <code>500</code>—.</p>
 <hr>
 <h2 id="la-politica-de-autorizacion-leida-como-tabla">🗺️ La política de autorización, leída como tabla<a class="headerlink" href="#la-politica-de-autorizacion-leida-como-tabla" title="Permanent link">¶</a></h2>
 <p>El bloque <code>authorizeHttpRequests</code> de tu <code>SecurityConfig.java</code> define <strong>toda</strong> la política de acceso de la aplicación. Léelo como una tabla, no como código:</p>
@@ -2877,101 +2859,6 @@
 </code></pre></div></td></tr></table></div>
 <p>Con esto, los tres códigos de la tabla de arriba —<code>401</code>, <code>403</code> y <code>404</code>— tienen ya el mismo formato <code>ErrorResponse</code> que el resto de tu API, sin excepciones sueltas por ningún sitio.</p>
 <hr>
-<h2 id="tests-de-seguridad-con-mockmvc">🧪 Tests de seguridad con MockMvc<a class="headerlink" href="#tests-de-seguridad-con-mockmvc" title="Permanent link">¶</a></h2>
-<p>Ya sabes construir tests MockMvc desde el Tema 1. Probar seguridad añade un matiz: necesitas un token real para las peticiones autenticadas. El patrón habitual es hacer un <strong>login real</strong> dentro del propio test, y reutilizar el token obtenido:</p>
-<div class="admonition tip">
-<p class="admonition-title">Aquí no vale el <code>addFilters = false</code> que ya conoces</p>
-<p>Tus <code>ControllerTest</code> del Tema 1 llevan <code>@WebMvcTest</code> + <code>@AutoConfigureMockMvc(addFilters = false)</code> — a propósito, para que la lógica del controller se pruebe aislada, sin depender de ningún login. Estos tests de seguridad necesitan justo lo contrario: la cadena de filtros <strong>activa de verdad</strong>, JWT incluido, para que <code>401</code>/<code>403</code>/<code>201</code> salgan de la política real. Por eso van con <code>@SpringBootTest</code> + <code>@AutoConfigureMockMvc</code> (sin el <code>addFilters = false</code>), y sin mockear el service: el <code>login(...)</code> de abajo necesita usuarios que existan de verdad en la base de datos, no un doble de prueba.</p>
-<p>Esa diferencia tiene un precio: <code>@WebMvcTest</code> nunca necesita base de datos, así que da igual qué perfil esté activo cuando lo lanzas. <code>@SpringBootTest</code> sí arranca el <code>datasource</code> real —el de tu perfil <code>dev</code>—, y si lo lanzas sin ningún perfil activo (por ejemplo, con el botón de "run" de tu IDE), Spring Boot no encuentra ninguna URL de conexión y falla al arrancar, antes incluso de llegar a tus tests. Añade <code>@ActiveProfiles("dev")</code> a la clase para que siempre arranque con el perfil correcto, la lances como la lances.</p>
-</div>
-<p>El objetivo es recorrer en código la misma escalera de la tabla <code>401</code>/<code>403</code>/<code>404</code> de más arriba, para una sola ruta: sin token, con el rol equivocado, con el rol correcto. Tres tests, uno junto a otro, prueban de verdad que la regla de esa ruta hace lo que la tabla dice — no basta con probarlo a mano una vez con <code>curl</code> y darlo por sentado para siempre.</p>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-5-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-5-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-5-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-5-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-5-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-5-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-5-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-5-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-5-10">10</a></span>
-<span class="normal"><a href="#__codelineno-5-11">11</a></span>
-<span class="normal"><a href="#__codelineno-5-12">12</a></span>
-<span class="normal"><a href="#__codelineno-5-13">13</a></span>
-<span class="normal"><a href="#__codelineno-5-14">14</a></span>
-<span class="normal"><a href="#__codelineno-5-15">15</a></span>
-<span class="normal"><a href="#__codelineno-5-16">16</a></span>
-<span class="normal"><a href="#__codelineno-5-17">17</a></span>
-<span class="normal"><a href="#__codelineno-5-18">18</a></span>
-<span class="normal"><a href="#__codelineno-5-19">19</a></span>
-<span class="normal"><a href="#__codelineno-5-20">20</a></span>
-<span class="normal"><a href="#__codelineno-5-21">21</a></span>
-<span class="normal"><a href="#__codelineno-5-22">22</a></span>
-<span class="normal"><a href="#__codelineno-5-23">23</a></span>
-<span class="normal"><a href="#__codelineno-5-24">24</a></span>
-<span class="normal"><a href="#__codelineno-5-25">25</a></span>
-<span class="normal"><a href="#__codelineno-5-26">26</a></span>
-<span class="normal"><a href="#__codelineno-5-27">27</a></span>
-<span class="normal"><a href="#__codelineno-5-28">28</a></span>
-<span class="normal"><a href="#__codelineno-5-29">29</a></span>
-<span class="normal"><a href="#__codelineno-5-30">30</a></span>
-<span class="normal"><a href="#__codelineno-5-31">31</a></span>
-<span class="normal"><a href="#__codelineno-5-32">32</a></span>
-<span class="normal"><a href="#__codelineno-5-33">33</a></span>
-<span class="normal"><a href="#__codelineno-5-34">34</a></span>
-<span class="normal"><a href="#__codelineno-5-35">35</a></span>
-<span class="normal"><a href="#__codelineno-5-36">36</a></span>
-<span class="normal"><a href="#__codelineno-5-37">37</a></span>
-<span class="normal"><a href="#__codelineno-5-38">38</a></span>
-<span class="normal"><a href="#__codelineno-5-39">39</a></span>
-<span class="normal"><a href="#__codelineno-5-40">40</a></span>
-<span class="normal"><a href="#__codelineno-5-41">41</a></span>
-<span class="normal"><a href="#__codelineno-5-42">42</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">username</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">password</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/auth/login"</span><span class="p">)</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="w">                    </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4"></a><span class="w">                    </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="s">"""</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5"></a><span class="s">                            {"username": "%s", "password": "%s"}</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6"></a><span class="s">                            """</span><span class="p">.</span><span class="na">formatted</span><span class="p">(</span><span class="n">username</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="p">)))</span>
-<a id="__codelineno-5-7" name="__codelineno-5-7"></a><span class="w">            </span><span class="p">.</span><span class="na">andReturn</span><span class="p">().</span><span class="na">getResponse</span><span class="p">().</span><span class="na">getContentAsString</span><span class="p">();</span>
-<a id="__codelineno-5-8" name="__codelineno-5-8"></a>
-<a id="__codelineno-5-9" name="__codelineno-5-9"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">JsonPath</span><span class="p">.</span><span class="na">read</span><span class="p">(</span><span class="n">response</span><span class="p">,</span><span class="w"> </span><span class="s">"$.accessToken"</span><span class="p">);</span>
-<a id="__codelineno-5-10" name="__codelineno-5-10"></a><span class="p">}</span>
-<a id="__codelineno-5-11" name="__codelineno-5-11"></a>
-<a id="__codelineno-5-12" name="__codelineno-5-12"></a><span class="nd">@Test</span>
-<a id="__codelineno-5-13" name="__codelineno-5-13"></a><span class="kt">void</span><span class="w"> </span><span class="nf">crearLibro_DebeDevolver401_SinToken</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-5-14" name="__codelineno-5-14"></a><span class="w">    </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/libros"</span><span class="p">)</span>
-<a id="__codelineno-5-15" name="__codelineno-5-15"></a><span class="w">                    </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
-<a id="__codelineno-5-16" name="__codelineno-5-16"></a><span class="w">                    </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="s">"{}"</span><span class="p">))</span>
-<a id="__codelineno-5-17" name="__codelineno-5-17"></a><span class="w">            </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isUnauthorized</span><span class="p">());</span>
-<a id="__codelineno-5-18" name="__codelineno-5-18"></a><span class="p">}</span>
-<a id="__codelineno-5-19" name="__codelineno-5-19"></a>
-<a id="__codelineno-5-20" name="__codelineno-5-20"></a><span class="nd">@Test</span>
-<a id="__codelineno-5-21" name="__codelineno-5-21"></a><span class="kt">void</span><span class="w"> </span><span class="nf">crearLibro_DebeDevolver403_CuandoElRolNoEsSuficiente</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-5-22" name="__codelineno-5-22"></a><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">userToken</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">login</span><span class="p">(</span><span class="s">"user"</span><span class="p">,</span><span class="w"> </span><span class="s">"user123"</span><span class="p">);</span>
-<a id="__codelineno-5-23" name="__codelineno-5-23"></a>
-<a id="__codelineno-5-24" name="__codelineno-5-24"></a><span class="w">    </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/libros"</span><span class="p">)</span>
-<a id="__codelineno-5-25" name="__codelineno-5-25"></a><span class="w">                    </span><span class="p">.</span><span class="na">header</span><span class="p">(</span><span class="s">"Authorization"</span><span class="p">,</span><span class="w"> </span><span class="s">"Bearer "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">userToken</span><span class="p">)</span>
-<a id="__codelineno-5-26" name="__codelineno-5-26"></a><span class="w">                    </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
-<a id="__codelineno-5-27" name="__codelineno-5-27"></a><span class="w">                    </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="s">"{}"</span><span class="p">))</span>
-<a id="__codelineno-5-28" name="__codelineno-5-28"></a><span class="w">            </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isForbidden</span><span class="p">());</span>
-<a id="__codelineno-5-29" name="__codelineno-5-29"></a><span class="p">}</span>
-<a id="__codelineno-5-30" name="__codelineno-5-30"></a>
-<a id="__codelineno-5-31" name="__codelineno-5-31"></a><span class="nd">@Test</span>
-<a id="__codelineno-5-32" name="__codelineno-5-32"></a><span class="kt">void</span><span class="w"> </span><span class="nf">crearLibro_DebeDevolver201_ConRolAdmin</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-5-33" name="__codelineno-5-33"></a><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">adminToken</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">login</span><span class="p">(</span><span class="s">"admin"</span><span class="p">,</span><span class="w"> </span><span class="s">"admin123"</span><span class="p">);</span>
-<a id="__codelineno-5-34" name="__codelineno-5-34"></a>
-<a id="__codelineno-5-35" name="__codelineno-5-35"></a><span class="w">    </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/libros"</span><span class="p">)</span>
-<a id="__codelineno-5-36" name="__codelineno-5-36"></a><span class="w">                    </span><span class="p">.</span><span class="na">header</span><span class="p">(</span><span class="s">"Authorization"</span><span class="p">,</span><span class="w"> </span><span class="s">"Bearer "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">adminToken</span><span class="p">)</span>
-<a id="__codelineno-5-37" name="__codelineno-5-37"></a><span class="w">                    </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
-<a id="__codelineno-5-38" name="__codelineno-5-38"></a><span class="w">                    </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="s">"""</span>
-<a id="__codelineno-5-39" name="__codelineno-5-39"></a><span class="s">                            {"titulo":"Test","precio":9.99,"fechaPublicacion":"2020-01-01","editorialId":1}</span>
-<a id="__codelineno-5-40" name="__codelineno-5-40"></a><span class="s">                            """</span><span class="p">))</span>
-<a id="__codelineno-5-41" name="__codelineno-5-41"></a><span class="w">            </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isCreated</span><span class="p">());</span>
-<a id="__codelineno-5-42" name="__codelineno-5-42"></a><span class="p">}</span>
-</code></pre></div></td></tr></table></div>
-<p>Fíjate en el matiz entre el segundo test y el tercero: en el <code>403</code> el cuerpo es <code>{}</code> porque da igual —la petición ni siquiera llega al controller, la rechaza la seguridad antes—, pero en el <code>201</code> el cuerpo tiene que ser un JSON válido de verdad, porque esa petición sí llega hasta el <code>service</code> y tiene que superar la validación (<code>@Valid</code>) para crearse. El mismo patrón de tres tests sirve para cualquier otra ruta protegida de tu proyecto (<code>PUT</code>/<code>DELETE</code> de <code>Estudio</code>, por ejemplo) — solo cambian la ruta y el cuerpo.</p>
-<p>El método <code>login(...)</code> hace una petición real de login dentro del test, y extrae el <code>accessToken</code> de la respuesta con <code>JsonPath.read(response, "$.accessToken")</code>. Ojo, no lo confundas con el <code>jsonPath(...)</code> que ya conoces del Tema 1 (el que usas dentro de <code>.andExpect(jsonPath("$.titulo").value(...))</code>): ese es un <em>matcher</em> de MockMvc, que afirma algo sobre la respuesta; <code>JsonPath.read(...)</code> es la librería subyacente usada directamente, para <strong>leer y devolver</strong> un valor del JSON —aquí, el token— y poder reutilizarlo después. Ese token se reutiliza en las peticiones siguientes con <code>.header("Authorization", "Bearer " + token)</code> — es exactamente el mismo flujo manual que ya has practicado con <code>curl</code>, pero automatizado y repetible.</p>
-<hr>
 <h2 id="documentacion-como-buena-practica">📝 Documentación como buena práctica<a class="headerlink" href="#documentacion-como-buena-practica" title="Permanent link">¶</a></h2>
 <p>Depurar <strong>y documentar</strong> van de la mano. La propia tabla de política de rutas que has visto al principio de este apartado ya es esa documentación — un documento vivo que cualquiera (tú dentro de seis meses, un compañero de equipo) puede consultar para saber exactamente qué puede hacer cada rol, sin tener que leer el código Java línea a línea. Mantener esa tabla al día, en un fichero aparte de tu propio proyecto (por ejemplo <code>docs/seguridad.md</code>), es exactamente el tipo de documentación que se espera de ti.</p>
 <hr>
@@ -2985,7 +2872,6 @@
 <li><strong>401</strong> = no sabemos quién eres; <strong>403</strong> = sabemos quién eres, pero no tienes permiso; <strong>404</strong> = la ruta no existe, y eso no depende de quién eres. Ojo: <code>denyAll()</code> sin ningún token también da <code>401</code>, no <code>403</code> — el <code>403</code> solo aparece cuando ya hay un token válido de por medio.</li>
 <li><code>NoResourceFoundException</code> (ruta inexistente) caía en el Handler 5 genérico del primer apartado del tema, dando <code>500</code> en vez de <code>404</code> — un handler específico lo arregla, sin tocar nada más: Spring prioriza el más concreto automáticamente. <code>MethodArgumentTypeMismatchException</code> (un id con el tipo equivocado, como <code>/libros/no-es-un-numero</code>) es el mismo problema con otro disparador — mismo patrón, <code>400</code> en vez de <code>500</code>.</li>
 <li><code>AccessDeniedHandler</code> es la contraparte de <code>AuthenticationEntryPoint</code> para el <code>403</code>: mismo patrón, registrado en el mismo <code>.exceptionHandling(...)</code>, para que autenticación y autorización tengan ambas el formato <code>ErrorResponse</code>.</li>
-<li>Los tests de seguridad hacen un login real dentro del test y reutilizan el token obtenido en las peticiones siguientes.</li>
 <li>La tabla de política de rutas es, en sí misma, esa documentación.</li>
 </ul>
 </details></div>

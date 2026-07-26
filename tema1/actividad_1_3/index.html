@@ -1682,7 +1682,7 @@
   
   
   <span class="md-ellipsis">
-    Roles, rutas protegidas y tests
+    Roles y rutas protegidas
     
   </span>
   
@@ -1693,7 +1693,7 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_6">
             <span class="md-nav__icon md-icon"></span>
-            Roles, rutas protegidas y tests
+            Roles y rutas protegidas
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1709,7 +1709,7 @@
   
   
   <span class="md-ellipsis">
-    Roles, rutas protegidas y tests
+    Roles y rutas protegidas
     
   </span>
   
@@ -2941,6 +2941,29 @@
 <div class="admonition warning">
 <p class="admonition-title"><code>GamevaultApplicationTests.contextLoads</code> falla con <code>Failed to load ApplicationContext</code></p>
 <p><code>mvn test</code>, sin más, ejecuta <strong>todos</strong> los tests del proyecto — incluido <code>GamevaultApplicationTests</code>, el test que Spring Initializr generó automáticamente cuando creaste el proyecto (Actividad 1.1). Ese test arranca la aplicación <strong>completa</strong>, con <code>DataSource</code> incluido, y necesita una PostgreSQL real corriendo — algo que este runner no tiene (recuerda el aviso de arriba: los tests MockMvc de hoy no la necesitan, pero ese test de arranque sí). <code>-Dtest='*ControllerTest'</code> le dice a Maven que ejecute solo las clases cuyo nombre termine en <code>ControllerTest</code> — exactamente <code>VideojuegoControllerTest</code> y <code>EstudioControllerTest</code>, los tests MockMvc que has escrito hoy, sin tocar el test de arranque completo. Levantar una PostgreSQL real dentro del propio workflow (con un servicio de GitHub Actions) es posible, pero es una pieza más compleja que queda fuera del alcance de esta actividad.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Para que <code>mvn test</code> sin filtro también pase en tu propio Dev Container</p>
+<p>En CI el filtro de arriba sigue haciendo falta — ahí no hay ninguna PostgreSQL real a la que conectarse, así que <code>GamevaultApplicationTests</code> no puede pasar de ninguna manera sin levantar una (fuera del alcance de hoy). Pero en tu propio Dev Container sí la tienes, la misma <code>postgres</code> de la Actividad 1.1. Si alguna vez ejecutas la suite completa en local (<code>mvn test</code>, sin <code>-Dtest</code>) y quieres que también pase ahí, añade <code>@ActiveProfiles("dev")</code> a la clase:
+</p><div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
+<span class="normal"><a href="#__codelineno-3-2">2</a></span>
+<span class="normal"><a href="#__codelineno-3-3">3</a></span>
+<span class="normal"><a href="#__codelineno-3-4">4</a></span>
+<span class="normal"><a href="#__codelineno-3-5">5</a></span>
+<span class="normal"><a href="#__codelineno-3-6">6</a></span>
+<span class="normal"><a href="#__codelineno-3-7">7</a></span>
+<span class="normal"><a href="#__codelineno-3-8">8</a></span>
+<span class="normal"><a href="#__codelineno-3-9">9</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nd">@SpringBootTest</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="nd">@ActiveProfiles</span><span class="p">(</span><span class="s">"dev"</span><span class="p">)</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="kd">class</span> <span class="nc">GamevaultApplicationTests</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="w">    </span><span class="nd">@Test</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">contextLoads</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8"></a>
+<a id="__codelineno-3-9" name="__codelineno-3-9"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+Sin esta anotación, ese test falla en local con el mismo error de arriba en cuanto quites el filtro — no porque te falte una PostgreSQL real (la tienes corriendo), sino porque sin ningún perfil activo Spring Boot ni siquiera llega a leer <code>application-dev.yaml</code>, así que no encuentra el <code>DataSource</code>.
 </div>
 <p><strong>Pregunta</strong>: tu <code>pom.xml</code> de GameVault viene con un <em>wrapper</em> (<code>mvnw</code>/<code>mvnw.cmd</code>), generado automáticamente por Spring Initializr — a diferencia de <code>validador-dni-ci</code>, donde no había ninguno. El workflow de arriba usa <code>./mvnw test</code>, no <code>mvn test</code>. ¿Qué garantiza usar el <em>wrapper</em> en vez del <code>mvn</code> que esté instalado en el runner de GitHub? Relaciónalo con por qué el Dev Container fija siempre las mismas versiones (Actividad 1.1).</p>
 <p><strong>Predicción</strong>: antes de hacer push, ¿cuántos tests esperas que se ejecuten en total, sumando <code>VideojuegoControllerTest</code> y <code>EstudioControllerTest</code>?</p>
