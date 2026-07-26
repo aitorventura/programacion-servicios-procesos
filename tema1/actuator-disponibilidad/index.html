@@ -2640,10 +2640,12 @@
 <a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div></td></tr></table></div>
 <div class="admonition tip">
-<p class="admonition-title">No vas a verlos en Swagger UI, y es lo esperado</p>
-<p>Los endpoints de Actuator no aparecen en tu documentación de Swagger UI, aunque ya la tengas configurada desde el apartado anterior. No es un descuido: springdoc solo documenta los <code>@RestController</code> de tu propia API, y Actuator expone sus endpoints por un mecanismo completamente distinto, al margen de ese escaneo. Tiene sentido — <code>/actuator/health</code> no es un recurso de tu API pensado para los clientes de GameVault, es información operativa para quien vigila que el servicio esté vivo.</p>
+<p class="admonition-title">No aparecen en Swagger UI con la configuración actual</p>
+<p>De forma predeterminada, springdoc no añade los endpoints de Actuator a Swagger UI. Por eso verás los endpoints de tu API, pero no <code>/actuator/health</code>.</p>
+<p>Tiene sentido mantenerlos separados: <code>/actuator/health</code> no es un recurso del catálogo pensado para sus usuarios, sino información operativa para comprobar el estado de la aplicación.</p>
+<p>Springdoc permite incluir también los endpoints de Actuator mediante una propiedad de configuración, pero no la necesitas en esta actividad. Consultarás <code>/actuator/health</code> directamente desde el navegador o mediante <code>curl</code>.</p>
 </div>
-<p>Con solo esa dependencia, Spring Boot expone automáticamente <code>/actuator/health</code>. Para ver el detalle de cada dependencia (y no solo un <code>UP</code>/<code>DOWN</code> genérico), hace falta una línea de configuración:</p>
+<p>Con solo esa dependencia, Spring Boot expone automáticamente <code>/actuator/health</code>. Para ver durante el desarrollo el detalle de cada dependencia —y no solo un <code>UP</code> o <code>DOWN</code> general— añade esta configuración en <code>application-dev.yaml</code>:</p>
 <div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
 <span class="normal"><a href="#__codelineno-2-2">2</a></span>
 <span class="normal"><a href="#__codelineno-2-3">3</a></span>
@@ -2652,6 +2654,11 @@
 <a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">    </span><span class="nt">health</span><span class="p">:</span>
 <a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">      </span><span class="nt">show-details</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always</span>
 </code></pre></div></td></tr></table></div>
+<div class="admonition warning">
+<p class="admonition-title">Configuración para desarrollo</p>
+<p><code>show-details: always</code> permite que cualquiera que pueda acceder a <code>/actuator/health</code> vea el detalle de los componentes comprobados.</p>
+</div>
+<p>En estas prácticas resulta útil porque trabajarás en local y podrás identificar rápidamente si ha fallado PostgreSQL, MongoDB u otra dependencia. En producción, estos detalles normalmente se ocultan o se muestran únicamente a usuarios autorizados.</p>
 <hr>
 <h2 id="el-endpoint-actuatorhealth">🟢 El endpoint <code>/actuator/health</code><a class="headerlink" href="#el-endpoint-actuatorhealth" title="Permanent link">¶</a></h2>
 <p>Con los detalles activados, <code>/actuator/health</code> no solo dice si tu aplicación responde — agrega el estado de <strong>cada dependencia real</strong> que Spring Boot detecta en el classpath. En una aplicación con varias piezas de infraestructura (por ejemplo, tu propio GameVault más adelante, cuando tenga PostgreSQL y MongoDB a la vez), eso se ve así:</p>
@@ -2683,7 +2690,7 @@
 <li>Cada petición HTTP la atiende un hilo distinto del <em>pool</em> de Tomcat — por eso dos peticiones lentas simultáneas no tardan el doble, sino aproximadamente lo mismo que una sola.</li>
 <li>La <strong>disponibilidad</strong> de un servicio tiene varios niveles: proceso vivo, responde peticiones, dependencias funcionando — no son lo mismo.</li>
 <li>Un <strong>health check</strong> es una comprobación automática, pensada para que la consulte una máquina (un programa de monitorización, un sistema de despliegue, el propio CI), no una persona.</li>
-<li><strong>Spring Boot Actuator</strong> expone <code>/actuator/health</code> con la dependencia <code>spring-boot-starter-actuator</code>; <code>management.endpoint.health.show-details: always</code> muestra el detalle de cada dependencia.</li>
+<li><strong>Spring Boot Actuator</strong> expone <code>/actuator/health</code> con la dependencia <code>spring-boot-starter-actuator</code>; <code>management.endpoint.health.show-details: always</code> durante el desarrollo, permite ver el detalle de los componentes comprobados por Actuator.</li>
 <li><code>/actuator/health</code> agrega el estado de cada dependencia real (PostgreSQL, MongoDB...) — si una cae, el estado general pasa a <code>DOWN</code> aunque el resto siga funcionando.</li>
 <li>Los endpoints de Actuator no aparecen en Swagger UI: springdoc solo escanea tus propios <code>@RestController</code>, no el mecanismo aparte que usa Actuator.</li>
 </ul>

@@ -2700,30 +2700,30 @@
 <a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p><code>getAll</code> y <code>getById</code> responden con <code>200</code>. Los otros tres, con el mismo criterio — qué código de estado espera cada uno y si repetirlo cambia algo:</p>
+<p><code>getAll</code> y <code>getById</code> responden con <code>200 OK</code>. Los tres endpoints de escritura utilizan un código distinto según el resultado que producen:</p>
 <table>
 <thead>
 <tr>
 <th>Verbo</th>
 <th>Código habitual de éxito</th>
-<th>¿Repetirlo cambia algo?</th>
+<th>Qué indica</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>POST</code></td>
 <td><code>201 Created</code></td>
-<td>Sí — crea un recurso nuevo cada vez</td>
+<td>Se ha creado un recurso nuevo.</td>
 </tr>
 <tr>
 <td><code>PUT</code></td>
 <td><code>200 OK</code></td>
-<td>No</td>
+<td>El recurso se ha reemplazado correctamente y se devuelve su estado actualizado.</td>
 </tr>
 <tr>
 <td><code>DELETE</code></td>
 <td><code>204 No Content</code></td>
-<td>No</td>
+<td>El recurso se ha eliminado y no hay ningún cuerpo que devolver.</td>
 </tr>
 </tbody>
 </table>
@@ -2766,7 +2766,9 @@
 <pre class="mermaid"><code>flowchart LR
     A["📝 Anotaciones en tu código&lt;br/&gt;(@RestController, @GetMapping...)"] -- "genera" --&gt; B["📄 Contrato OpenAPI&lt;br/&gt;(/v3/api-docs)"]
     B -- "se visualiza en" --&gt; C["🖥️ Swagger UI&lt;br/&gt;(/swagger-ui.html)"]</code></pre>
-<p>Lo importante: tú no escribes el documento OpenAPI a mano. Una librería lo genera automáticamente, leyendo las mismas anotaciones (<code>@RestController</code>, <code>@GetMapping</code>, los DTOs...) que ya usas para construir la API — el contrato y el código nunca se desincronizan porque son la misma fuente.</p>
+<p>Lo importante: tú no escribes el documento OpenAPI completo a mano. Una librería genera automáticamente gran parte del contrato leyendo las mismas anotaciones (<code>@RestController</code>, <code>@GetMapping</code>, los DTOs...) que ya utilizas para construir la API.</p>
+<p>Así, las rutas, los verbos y los esquemas básicos se mantienen vinculados al código. Más adelante añadirás algunas anotaciones de OpenAPI para completar información que springdoc no puede deducir por sí solo, como la descripción de cada operación o los distintos códigos de respuesta posibles.</p>
+<p>Esto evita duplicar mucha información: si añades un nuevo endpoint o cambias los campos de un DTO, la documentación generada refleja esos cambios automáticamente. Algunos detalles, como las descripciones o los códigos de respuesta posibles, sí tendrás que indicarlos mediante anotaciones específicas.</p>
 <h3 id="asi-se-ve-swagger-ui-paso-a-paso">🖥️ Así se ve Swagger UI, paso a paso<a class="headerlink" href="#asi-se-ve-swagger-ui-paso-a-paso" title="Permanent link">¶</a></h3>
 <p>Esto es exactamente lo que vas a tener delante en tu propia pantalla, sobre tu propio <code>LibroController</code> (o el equivalente en tu proyecto):</p>
 <ol>
@@ -2777,7 +2779,9 @@
 </ol>
 <div class="admonition info">
 <p class="admonition-title">Swagger UI no es solo documentación: manda peticiones HTTP reales</p>
-<p>Ese último clic, <strong>Execute</strong>, no es una simulación. Swagger UI construye y envía una petición HTTP de verdad contra tu aplicación, corriendo en <code>localhost:8080</code> — la misma petición que mandarías con <code>curl</code>, byte a byte. La respuesta que aparece justo debajo (código de estado, cabeceras, cuerpo) es la respuesta real de tu servidor, no una previsualización. Si el <code>POST</code> crea un libro, ese libro queda guardado en tu base de datos exactamente igual que si lo hubieras creado con <code>curl</code>.</p>
+<p>Al pulsar <strong>Execute</strong>, Swagger UI construye y envía una petición HTTP real contra tu aplicación.</p>
+<p>Es una petición equivalente a la que podrías enviar mediante <code>curl</code>, Postman o cualquier otro cliente HTTP: llega al mismo endpoint y ejecuta el mismo código del controller.</p>
+<p>La respuesta que aparece debajo —código de estado, cabeceras y cuerpo— es la respuesta real del servidor. Si ejecutas un <code>POST</code> y se crea un libro, quedará guardado en la base de datos.</p>
 </div>
 <h3 id="documentando-con-openapi">Documentando con OpenAPI<a class="headerlink" href="#documentando-con-openapi" title="Permanent link">¶</a></h3>
 <p>La documentación se genera con la dependencia <code>springdoc-openapi-starter-webmvc-ui</code> y una clase de configuración mínima:</p>
@@ -2858,7 +2862,7 @@ Con esto, entrar en <code>/documentacion</code> te lleva a Swagger UI — pero f
 <details class="tip">
 <summary>Abrir resumen</summary>
 <ul>
-<li>El <strong>contrato</strong> de una API describe formalmente sus rutas, verbos y datos; <strong>OpenAPI</strong> es el formato estándar de ese contrato, generado automáticamente a partir de las anotaciones del código (no se escribe a mano).</li>
+<li>El <strong>contrato</strong> de una API describe sus rutas, verbos y datos; <strong>OpenAPI</strong> es un formato estándar para representarlo. Springdoc genera automáticamente gran parte de ese contrato a partir de los controllers, los DTOs y sus anotaciones.</li>
 <li><strong>Swagger UI</strong> agrupa tus endpoints por controller; al desplegar uno ves su esquema, y con "Try it out" + "Execute" mandas una petición HTTP real contra tu aplicación, sin escribir código — la misma petición que mandarías con <code>curl</code>.</li>
 <li><code>@RequestBody</code> mapea el cuerpo JSON a un objeto Java; <code>@Valid</code> activa su validación.</li>
 <li><code>@ApiResponses</code>/<code>@ApiResponse</code> documentan explícitamente qué códigos puede devolver un endpoint (más allá del <code>200</code> genérico por defecto); <code>springdoc.swagger-ui.path</code> mueve la ruta de entrada a Swagger UI, aunque por debajo siempre redirige a <code>/swagger-ui/index.html</code>.</li>

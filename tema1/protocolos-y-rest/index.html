@@ -2724,33 +2724,52 @@
 <tr>
 <th>Verbo</th>
 <th>Qué expresa</th>
-<th>¿Repetirla cambia algo?</th>
+<th>¿Repetirla produce el mismo efecto final?</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>GET</code></td>
 <td>Leer un recurso, sin modificarlo.</td>
-<td>No — pedir el mismo libro 5 veces da 5 veces la misma respuesta.</td>
+<td>Sí — la petición no cambia los datos del servidor.</td>
 </tr>
 <tr>
 <td><code>POST</code></td>
 <td>Crear un recurso nuevo.</td>
-<td>Sí — repetirla crea un recurso nuevo cada vez.</td>
+<td>No — repetirla puede crear otro recurso.</td>
 </tr>
 <tr>
 <td><code>PUT</code></td>
-<td>Reemplazar un recurso existente.</td>
-<td>No — reemplazar por el mismo valor 5 veces deja el recurso igual que la primera.</td>
+<td>Reemplazar por completo un recurso existente.</td>
+<td>Sí — reemplazarlo varias veces por los mismos datos deja el mismo resultado final.</td>
+</tr>
+<tr>
+<td><code>PATCH</code></td>
+<td>Modificar solo algunos campos de un recurso existente.</td>
+<td>Depende de cómo se haya definido la modificación.</td>
 </tr>
 <tr>
 <td><code>DELETE</code></td>
 <td>Eliminar un recurso.</td>
-<td>No — borrarlo dos veces deja el mismo resultado que borrarlo una (la segunda ya no encuentra nada que borrar).</td>
+<td>Sí — después de ejecutarla, el recurso queda eliminado.</td>
 </tr>
 </tbody>
 </table>
-<p>Esa última columna importa más de lo que parece. Piensa en el botón de llamada de un ascensor: pulsarlo una vez o pulsarlo nerviosamente diez veces seguidas hace exactamente lo mismo — el ascensor viene una sola vez. <code>GET</code>, <code>PUT</code> y <code>DELETE</code> funcionan igual: si tu conexión falla justo después de mandarlos y no sabes si han llegado, puedes repetirlos sin miedo, el resultado final es el mismo. <code>POST</code> es distinto, más parecido a pulsar el botón de "pedir" en una máquina expendedora: cada pulsación te cobra y te da un producto nuevo — repetirlo a ciegas puede dejarte con el mismo libro duplicado dos veces.</p>
+<p>Esa última columna importa más de lo que parece. A esta propiedad se la llama <strong>idempotencia</strong>: una petición es idempotente cuando repetirla varias veces produce el mismo efecto final sobre los datos que ejecutarla una sola vez.</p>
+<p>Piensa en el botón de llamada de un ascensor: pulsarlo una vez o pulsarlo nerviosamente diez veces no hace que lleguen diez ascensores. El efecto final es el mismo — el ascensor queda avisado de que tiene que ir a tu planta.</p>
+<p><code>PUT</code> funciona de esa manera: reemplazar cinco veces un libro por los mismos datos deja el recurso exactamente igual que reemplazarlo una sola vez. <code>DELETE</code> también es idempotente: la primera petición elimina el libro y las siguientes lo dejan igualmente eliminado.</p>
+<p>Eso no significa que todas las respuestas tengan que ser idénticas. El primer <code>DELETE</code> podría responder <code>204 No Content</code> y el segundo <code>404 Not Found</code>, porque el libro ya no existe. Las respuestas son distintas, pero el efecto final sobre los datos es el mismo: el recurso sigue eliminado.</p>
+<p><code>POST</code>, en cambio, normalmente no es idempotente. Es más parecido a pulsar varias veces el botón de compra de una máquina expendedora: cada pulsación puede crear un pedido nuevo, cobrarte otra vez o insertar otro recurso.</p>
+<p>En el caso de <code>PATCH</code>, depende de la modificación concreta:</p>
+<ul>
+<li>«Pon el precio en 19,95 €» es idempotente: repetirlo deja siempre el mismo precio.</li>
+<li>«Aumenta el precio en 5 €» no lo es: cada repetición vuelve a sumar otros 5 €.</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">Una novedad del estándar: el método <code>QUERY</code></p>
+<p>En junio de 2026 se incorporó al estándar HTTP el método <code>QUERY</code>, pensado para búsquedas cuyos criterios son demasiado complejos o extensos para expresarlos cómodamente mediante parámetros en la URL. En esos casos, el cliente puede describir la consulta mediante un cuerpo, normalmente en formato JSON.</p>
+<p>Sin embargo, Spring todavía no incorpora una anotación <code>@QueryMapping</code> ni permite seleccionar <code>QUERY</code> mediante <code>RequestMethod.QUERY</code>. Por ese motivo, en este curso conocerás para qué sirve, pero las consultas se implementarán mediante <code>GET</code> y parámetros en la URL, que Spring sí soporta directamente.</p>
+</div>
 <p>El servidor responde siempre con un <strong>código de estado</strong> de tres cifras que resume qué ha pasado, agrupado por familias:</p>
 <table>
 <thead>
@@ -2922,7 +2941,7 @@
 <p>El puerto <code>8080</code> y el servidor <strong>Tomcat</strong> que escucha en él no son magia: los trae la dependencia <code>spring-boot-starter-webmvc</code> del <code>pom.xml</code> — es la "librería que implementa el servicio en red" de la que habla el currículo. Tú no arrancas ningún servidor a mano: Spring Boot lo hace por ti al ejecutar la clase anotada con <code>@SpringBootApplication</code>.</p>
 <hr>
 <h2 id="y-si-el-libro-no-existe">❌ ¿Y si el libro no existe?<a class="headerlink" href="#y-si-el-libro-no-existe" title="Permanent link">¶</a></h2>
-<p>Todo lo de arriba asume que el libro con ese <code>id</code> existe. Cuando no es así, el viaje de la petición es el mismo hasta <code>LibroService</code> — solo cambia lo que pasa a partir de ahí:</p>
+<p>Todo lo anterior supone que existe un libro con el <code>id</code> solicitado. Cuando no existe, el recorrido de la petición es casi el mismo:</p>
 <pre class="mermaid"><code>sequenceDiagram
     participant Cliente as 🌐 Cliente
     participant Tomcat as 🐱 Tomcat
@@ -2932,28 +2951,40 @@
     Cliente-&gt;&gt;Tomcat: GET /api/v1/libros/9999
     Tomcat-&gt;&gt;Controller: getById(9999)
     Controller-&gt;&gt;Service: findById(9999)
-    Service--xController: no existe → error 404
-    Controller--&gt;&gt;Tomcat: ResponseEntity(404, error)
+    Service--&gt;&gt;Controller: null
+    Controller--&gt;&gt;Tomcat: ResponseEntity(404)
     Tomcat--&gt;&gt;Cliente: HTTP/1.1 404 Not Found</code></pre>
-<p><code>LibroService</code> es quien comprueba si el libro existe de verdad, y quien decide, en ese punto exacto, que la respuesta tiene que ser un error con código <code>404</code> en vez de un <code>200</code> con el libro dentro. El código de estado que acaba viendo el cliente nace ahí, no en Tomcat.</p>
-<p>En el controller, esa decisión se traduce en algo así — una versión sencilla de lo que verás en detalle más adelante:</p>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span>
-<span class="normal"><a href="#__codelineno-5-2">2</a></span>
-<span class="normal"><a href="#__codelineno-5-3">3</a></span>
-<span class="normal"><a href="#__codelineno-5-4">4</a></span>
-<span class="normal"><a href="#__codelineno-5-5">5</a></span>
-<span class="normal"><a href="#__codelineno-5-6">6</a></span>
-<span class="normal"><a href="#__codelineno-5-7">7</a></span>
-<span class="normal"><a href="#__codelineno-5-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
+<p>En esta primera versión, el service intenta localizar el libro y devuelve <code>null</code> cuando no lo encuentra. El controller comprueba ese resultado y lo traduce al lenguaje HTTP:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-5-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-5-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-5-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-5-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-5-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-5-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-5-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-5-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-5-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
 <a id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">LibroResponseDTO</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">getById</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="w">    </span><span class="n">LibroResponseDTO</span><span class="w"> </span><span class="n">libro</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">libroService</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">libro</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">notFound</span><span class="p">().</span><span class="na">build</span><span class="p">();</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-5-7" name="__codelineno-5-7"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="n">libro</span><span class="p">);</span>
-<a id="__codelineno-5-8" name="__codelineno-5-8"></a><span class="p">}</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4"></a>
+<a id="__codelineno-5-5" name="__codelineno-5-5"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">libro</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">notFound</span><span class="p">().</span><span class="na">build</span><span class="p">();</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8"></a>
+<a id="__codelineno-5-9" name="__codelineno-5-9"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="n">libro</span><span class="p">);</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p><code>ResponseEntity.notFound().build()</code> es el mismo tipo de objeto que <code>ResponseEntity.ok(...)</code>, solo que con el código <code>404</code> en vez del <code>200</code> y sin cuerpo. Esta versión con <code>if</code> es la más fácil de leer con lo que sabes hoy; más adelante en el curso verás una forma más limpia de expresar lo mismo, sin tener que repetir ese <code>if</code> en cada método.</p>
+<p>El controller construye una respuesta distinta según el resultado recibido:</p>
+<ul>
+<li>Si existe el libro, devuelve <code>200 OK</code> con el libro en el cuerpo.</li>
+<li>Si no existe, devuelve <code>404 Not Found</code> sin cuerpo.</li>
+</ul>
+<div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1">1</a></span>
+<span class="normal"><a href="#__codelineno-6-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1"></a>libro encontrado     → ResponseEntity.ok(libro)       → 200
+<a id="__codelineno-6-2" name="__codelineno-6-2"></a>libro no encontrado  → ResponseEntity.notFound()      → 404
+</code></pre></div></td></tr></table></div>
+<p>Esta versión con <code>if</code> permite ver claramente cómo una situación de la aplicación se convierte en un código HTTP. Más adelante utilizarás una forma más limpia: el service lanzará directamente una excepción mediante <code>orElseThrow()</code> , y el controller no necesitará repetir esta comprobación.</p>
 <hr>
 <h2 id="por-que-un-protocolo-estandar">🆚 Por qué un protocolo estándar<a class="headerlink" href="#por-que-un-protocolo-estandar" title="Permanent link">¶</a></h2>
 <p>Podrías diseñar tu propio protocolo casero sobre sockets (lo verás en el Tema 4) en vez de usar HTTP/REST. La diferencia es que HTTP es un protocolo <strong>estándar</strong>: cualquier cliente que exista — un navegador, <code>curl</code>, otra aplicación escrita en otro lenguaje — ya sabe hablarlo, sin que tengas que documentar ni acordar nada a medida. Con un protocolo propio, cada cliente nuevo tendría que aprender tus reglas particulares desde cero.</p>
@@ -2995,11 +3026,12 @@
 <ul>
 <li>Toda comunicación HTTP es petición-respuesta entre un <strong>cliente</strong> y un <strong>servidor</strong>, con la URL como dirección (protocolo, host, puerto, ruta).</li>
 <li>HTTP es texto con una primera línea, cabeceras y cuerpo opcional; <code>Accept</code> es lo que pide el cliente, <code>Content-Type</code> es lo que confirma el que envía el cuerpo.</li>
-<li>Los <strong>verbos</strong> (<code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>DELETE</code>) expresan la intención de la operación; repetir un <code>GET</code>, <code>PUT</code> o <code>DELETE</code> dado no cambia el resultado, repetir un <code>POST</code> sí. Los <strong>códigos de estado</strong> (2xx/4xx/5xx) resumen el resultado sin tener que leer el cuerpo.</li>
+<li>Los <strong>verbos HTTP</strong> expresan la intención: <code>GET</code> lee mediante la URL, <code>POST</code> crea, <code>PUT</code> reemplaza, <code>PATCH</code> modifica parcialmente y <code>DELETE</code> borra.</li>
+<li>Los <strong>códigos de estado</strong> (2xx/4xx/5xx) resumen el resultado sin tener que leer el cuerpo.</li>
 <li><strong>JSON</strong> es el formato habitual del cuerpo de petición/respuesta en las APIs modernas.</li>
 <li><strong>REST</strong> modela los datos como recursos con URL propia, y usa los verbos HTTP para operar sobre ellos — la ruta identifica <em>qué</em>, el verbo identifica <em>qué operación</em>.</li>
 <li><code>@RestController</code> + <code>@RequestMapping</code> + <code>@GetMapping</code> son las anotaciones que traducen "verbo + ruta" en un método Java concreto; <code>ResponseEntity</code> construye la respuesta con su código de estado.</li>
-<li>Un código de error como <code>404</code> no lo decide Tomcat solo: nace de una comprobación en el service, que el controller traduce en <code>ResponseEntity.notFound().build()</code> en vez de <code>ResponseEntity.ok(...)</code>.</li>
+<li>Un código como <code>404</code> no aparece automáticamente: la aplicación detecta que el recurso no existe y lo traduce a una respuesta HTTP. En este primer ejemplo, el controller convierte un resultado <code>null</code> en <code>ResponseEntity.notFound()</code>.</li>
 <li>El servidor embebido (Tomcat) que atiende las peticiones lo trae <code>spring-boot-starter-webmvc</code> — no lo arrancas tú a mano.</li>
 <li>Usar un protocolo estándar como HTTP significa que cualquier cliente existente ya sabe hablar con tu API, sin acordar nada a medida.</li>
 </ul>

@@ -976,9 +976,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#test-unitario-vs-test-de-integracion" class="md-nav__link">
+  <a href="#test-aislado-vs-test-de-integracion" class="md-nav__link">
     <span class="md-ellipsis">
-      🆚 Test unitario vs. test de integración
+      🆚 Test aislado vs. test de integración
     </span>
   </a>
   
@@ -2591,9 +2591,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#test-unitario-vs-test-de-integracion" class="md-nav__link">
+  <a href="#test-aislado-vs-test-de-integracion" class="md-nav__link">
     <span class="md-ellipsis">
-      🆚 Test unitario vs. test de integración
+      🆚 Test aislado vs. test de integración
     </span>
   </a>
   
@@ -2732,26 +2732,31 @@
 </div>
 <p>Pero mockear no es obligatorio: a veces sí quieres saber si las piezas reales (el service de verdad, la base de datos de verdad) funcionan bien juntas, no solo si tu controller reacciona bien a un valor inventado. Esa decisión — mockear o no — es justo lo que separa dos tipos de test distintos.</p>
 <hr>
-<h2 id="test-unitario-vs-test-de-integracion">🆚 Test unitario vs. test de integración<a class="headerlink" href="#test-unitario-vs-test-de-integracion" title="Permanent link">¶</a></h2>
-<p>Según esa decisión, un test cae en uno de estos dos grupos:</p>
+<h2 id="test-aislado-vs-test-de-integracion">🆚 Test aislado vs. test de integración<a class="headerlink" href="#test-aislado-vs-test-de-integracion" title="Permanent link">¶</a></h2>
+<p>Según las piezas que quieras incluir, puedes plantear el test de dos formas:</p>
 <table>
 <thead>
 <tr>
 <th></th>
-<th>Test unitario</th>
+<th>Test aislado</th>
 <th>Test de integración</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><strong>Qué prueba</strong></td>
-<td>Una pieza aislada (una clase, un método)</td>
-<td>Varias piezas reales trabajando juntas</td>
+<td>Una parte concreta de la aplicación</td>
+<td>Varias partes reales trabajando juntas</td>
 </tr>
 <tr>
-<td><strong>Colaboradores</strong></td>
-<td>Simulados (<em>mocks</em>)</td>
-<td>Reales</td>
+<td><strong>Dependencias</strong></td>
+<td>Se sustituyen mediante <em>mocks</em></td>
+<td>Se utilizan las dependencias reales</td>
+</tr>
+<tr>
+<td><strong>Base de datos</strong></td>
+<td>No es necesaria</td>
+<td>Puede utilizarse una base de datos de prueba</td>
 </tr>
 <tr>
 <td><strong>Velocidad</strong></td>
@@ -2760,15 +2765,20 @@
 </tr>
 </tbody>
 </table>
-<p>Visualmente, la diferencia está en dónde se corta la cadena real de piezas — en un test unitario, justo después del controller; en uno de integración, en ningún sitio:</p>
+<p>Visualmente, la diferencia está en hasta dónde llega el test dentro de la aplicación:</p>
 <pre class="mermaid"><code>flowchart LR
-    subgraph U["🧪 Test unitario — @WebMvcTest"]
+    subgraph A["🧪 Test aislado — @WebMvcTest"]
         C1["Controller&lt;br/&gt;(real)"] --&gt; S1["Service&lt;br/&gt;(🎭 mock)"]
     end
+
     subgraph I["🔗 Test de integración — @Testcontainers"]
-        C2["Controller&lt;br/&gt;(real)"] --&gt; S2["Service&lt;br/&gt;(real)"] --&gt; R2["Repository&lt;br/&gt;(real)"] --&gt; DB[("PostgreSQL&lt;br/&gt;(real, en Docker)")]
+        C2["Controller&lt;br/&gt;(real)"] --&gt; S2["Service&lt;br/&gt;(real)"]
+        S2 --&gt; R2["Repository&lt;br/&gt;(real)"]
+        R2 --&gt; DB[("PostgreSQL&lt;br/&gt;(real, en Docker)")]
     end</code></pre>
-<p>El test unitario nunca llega a saber si hay una base de datos detrás siquiera — se detiene en el mock. El de integración recorre la cadena entera, con piezas reales de principio a fin.</p>
+<p>En el test aislado, el controller es real, pero el service se sustituye por un mock. De esta manera puedes comprobar cómo responde el controller sin depender de la lógica de negocio ni de una base de datos.</p>
+<p>En el test de integración, la petición recorre varias piezas reales de la aplicación. Esto permite comprobar que funcionan correctamente en conjunto, aunque el test tarda más en ejecutarse.</p>
+<p>Los <strong>tests unitarios</strong> que ya conoces son un tipo de test aislado: normalmente prueban una clase o un método concreto sustituyendo sus dependencias. En este apartado aplicarás esa misma idea de aislamiento a un controller mediante <code>@WebMvcTest</code>.</p>
 <hr>
 <h2 id="mockmvc-un-cliente-http-programable">🌐 MockMvc: un cliente HTTP programable<a class="headerlink" href="#mockmvc-un-cliente-http-programable" title="Permanent link">¶</a></h2>
 <p><strong>MockMvc</strong> es la herramienta de Spring para probar controllers REST sin necesitar un servidor HTTP real arrancado: simula peticiones HTTP contra tus controladores, dentro del propio test, y te permite comprobar el código de estado y el cuerpo de la respuesta con código Java.</p>
@@ -2809,7 +2819,14 @@
 <span class="normal"><a href="#__codelineno-3-18">18</a></span>
 <span class="normal"><a href="#__codelineno-3-19">19</a></span>
 <span class="normal"><a href="#__codelineno-3-20">20</a></span>
-<span class="normal"><a href="#__codelineno-3-21">21</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nd">@WebMvcTest</span><span class="p">(</span><span class="n">LibroController</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<span class="normal"><a href="#__codelineno-3-21">21</a></span>
+<span class="normal"><a href="#__codelineno-3-22">22</a></span>
+<span class="normal"><a href="#__codelineno-3-23">23</a></span>
+<span class="normal"><a href="#__codelineno-3-24">24</a></span>
+<span class="normal"><a href="#__codelineno-3-25">25</a></span>
+<span class="normal"><a href="#__codelineno-3-26">26</a></span>
+<span class="normal"><a href="#__codelineno-3-27">27</a></span>
+<span class="normal"><a href="#__codelineno-3-28">28</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nd">@WebMvcTest</span><span class="p">(</span><span class="n">LibroController</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="nd">@AutoConfigureMockMvc</span><span class="p">(</span><span class="n">addFilters</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
 <a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="kd">class</span> <span class="nc">LibroControllerTest</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-3-4" name="__codelineno-3-4"></a>
@@ -2821,21 +2838,28 @@
 <a id="__codelineno-3-10" name="__codelineno-3-10"></a>
 <a id="__codelineno-3-11" name="__codelineno-3-11"></a><span class="w">    </span><span class="nd">@Test</span>
 <a id="__codelineno-3-12" name="__codelineno-3-12"></a><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">getAll_DebeDevolverListaDeLibros</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-3-13" name="__codelineno-3-13"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">dto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LibroResponseDTO</span><span class="p">(</span><span class="mi">1L</span><span class="p">,</span><span class="w"> </span><span class="s">"El nombre del viento"</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BigDecimal</span><span class="p">(</span><span class="s">"19.95"</span><span class="p">),</span>
-<a id="__codelineno-3-14" name="__codelineno-3-14"></a><span class="w">                </span><span class="n">LocalDate</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">2007</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">27</span><span class="p">),</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">EditorialDTO</span><span class="p">(</span><span class="s">"Plaza &amp; Janés"</span><span class="p">));</span>
-<a id="__codelineno-3-15" name="__codelineno-3-15"></a><span class="w">        </span><span class="n">when</span><span class="p">(</span><span class="n">libroService</span><span class="p">.</span><span class="na">findAll</span><span class="p">()).</span><span class="na">thenReturn</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">dto</span><span class="p">));</span>
-<a id="__codelineno-3-16" name="__codelineno-3-16"></a>
-<a id="__codelineno-3-17" name="__codelineno-3-17"></a><span class="w">        </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">"/api/v1/libros"</span><span class="p">))</span>
-<a id="__codelineno-3-18" name="__codelineno-3-18"></a><span class="w">                </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isOk</span><span class="p">())</span>
-<a id="__codelineno-3-19" name="__codelineno-3-19"></a><span class="w">                </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">jsonPath</span><span class="p">(</span><span class="s">"$[0].titulo"</span><span class="p">).</span><span class="na">value</span><span class="p">(</span><span class="s">"El nombre del viento"</span><span class="p">));</span>
-<a id="__codelineno-3-20" name="__codelineno-3-20"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-3-21" name="__codelineno-3-21"></a><span class="p">}</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">dto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LibroResponseDTO</span><span class="p">(</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14"></a><span class="w">                </span><span class="mi">1L</span><span class="p">,</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15"></a><span class="w">                </span><span class="s">"El nombre del viento"</span><span class="p">,</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16"></a><span class="w">                </span><span class="k">new</span><span class="w"> </span><span class="n">BigDecimal</span><span class="p">(</span><span class="s">"19.95"</span><span class="p">),</span>
+<a id="__codelineno-3-17" name="__codelineno-3-17"></a><span class="w">                </span><span class="n">LocalDate</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="mi">2007</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">27</span><span class="p">),</span>
+<a id="__codelineno-3-18" name="__codelineno-3-18"></a><span class="w">                </span><span class="k">new</span><span class="w"> </span><span class="n">EditorialDTO</span><span class="p">(</span><span class="mi">1L</span><span class="p">,</span><span class="w"> </span><span class="s">"Plaza &amp; Janés"</span><span class="p">)</span>
+<a id="__codelineno-3-19" name="__codelineno-3-19"></a><span class="w">        </span><span class="p">);</span>
+<a id="__codelineno-3-20" name="__codelineno-3-20"></a>
+<a id="__codelineno-3-21" name="__codelineno-3-21"></a><span class="w">        </span><span class="n">when</span><span class="p">(</span><span class="n">libroService</span><span class="p">.</span><span class="na">findAll</span><span class="p">()).</span><span class="na">thenReturn</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">dto</span><span class="p">));</span>
+<a id="__codelineno-3-22" name="__codelineno-3-22"></a>
+<a id="__codelineno-3-23" name="__codelineno-3-23"></a><span class="w">        </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">"/api/v1/libros"</span><span class="p">))</span>
+<a id="__codelineno-3-24" name="__codelineno-3-24"></a><span class="w">                </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isOk</span><span class="p">())</span>
+<a id="__codelineno-3-25" name="__codelineno-3-25"></a><span class="w">                </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">jsonPath</span><span class="p">(</span><span class="s">"$[0].titulo"</span><span class="p">)</span>
+<a id="__codelineno-3-26" name="__codelineno-3-26"></a><span class="w">                        </span><span class="p">.</span><span class="na">value</span><span class="p">(</span><span class="s">"El nombre del viento"</span><span class="p">));</span>
+<a id="__codelineno-3-27" name="__codelineno-3-27"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-3-28" name="__codelineno-3-28"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>Pieza a pieza:</p>
 <ul>
-<li><code>@WebMvcTest(LibroController.class)</code>: arranca solo la capa web de Spring (el controller y lo relacionado con MVC), sin levantar toda la aplicación ni conectar con una base de datos real — mucho más rápido que un arranque completo.</li>
+<li><code>@WebMvcTest(LibroController.class)</code>: prepara un entorno reducido para probar el controller sin arrancar toda la aplicación ni conectarse a una base de datos real. Spring carga únicamente los elementos necesarios para recibir la petición, dirigirla al método correspondiente y construir la respuesta.</li>
 <li><code>@AutoConfigureMockMvc(addFilters = false)</code>: <code>@WebMvcTest</code> ya te prepara un <code>MockMvc</code> listo para usar; esta anotación te deja ajustar esa configuración. <code>addFilters = false</code> desactiva los filtros de <em>servlet</em> que se aplican a cada petición — en concreto, los que añadirá Spring Security a partir del Tema 2. Sin este flag, en cuanto tu proyecto tenga seguridad configurada, estos mismos tests empezarían a fallar con un <code>401</code> en vez del código que de verdad quieres comprobar, porque la petición simulada quedaría bloqueada por el login antes de llegar al controller. Ponerlo ya, desde ahora, evita ese problema por adelantado.</li>
-<li><code>@MockitoBean private LibroService libroService</code>: sustituye el service real por un mock — el test prueba el controller de forma aislada, sin que la lógica del service (ni la base de datos que hay detrás) entre en juego.</li>
+<li><code>@MockitoBean private LibroService libroService</code>: sustituye el service real por un mock. Así puedes decidir qué devolverá en cada caso y comprobar únicamente cómo reacciona el controller.</li>
 <li><code>when(libroService.findAll()).thenReturn(List.of(dto))</code>: esta es la parte de <strong>preparar</strong>. Le dices al mock, explícitamente, qué debe devolver cuando alguien lo llame con <code>findAll()</code> — no hay ninguna base de datos decidiéndolo, decides tú, a mano, exactamente qué datos ve el controller.</li>
 <li><code>mockMvc.perform(get(...))</code>: construye y envía una petición simulada — el equivalente, en código, al <code>curl</code> que ya conoces.</li>
 <li><code>.andExpect(status().isOk())</code> / <code>.andExpect(jsonPath("$[0].titulo").value(...))</code>: la parte de <strong>afirmar</strong>. <code>jsonPath</code> navega el cuerpo JSON de la respuesta como si fuera un mini-selector — aquí, <code>$[0].titulo</code> es el campo <code>titulo</code> del primer elemento del array que devuelve <code>getAll()</code>.</li>
@@ -2852,20 +2876,29 @@
 <span class="normal"><a href="#__codelineno-4-9"> 9</a></span>
 <span class="normal"><a href="#__codelineno-4-10">10</a></span>
 <span class="normal"><a href="#__codelineno-4-11">11</a></span>
-<span class="normal"><a href="#__codelineno-4-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="nd">@Test</span>
+<span class="normal"><a href="#__codelineno-4-12">12</a></span>
+<span class="normal"><a href="#__codelineno-4-13">13</a></span>
+<span class="normal"><a href="#__codelineno-4-14">14</a></span>
+<span class="normal"><a href="#__codelineno-4-15">15</a></span>
+<span class="normal"><a href="#__codelineno-4-16">16</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="nd">@Test</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="kt">void</span><span class="w"> </span><span class="nf">create_DebeDevolver400_CuandoElDtoNoEsValido</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"""</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="s">            {"titulo": "", "precio": -5, "fechaPublicacion": null, "editorialId": -1}</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="s">            """</span><span class="p">;</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6"></a>
-<a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="w">    </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/libros"</span><span class="p">)</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="w">                    </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
-<a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="w">                    </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="n">body</span><span class="p">))</span>
-<a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="w">            </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isBadRequest</span><span class="p">())</span>
-<a id="__codelineno-4-11" name="__codelineno-4-11"></a><span class="w">            </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">jsonPath</span><span class="p">(</span><span class="s">"$.status"</span><span class="p">).</span><span class="na">value</span><span class="p">(</span><span class="mi">400</span><span class="p">));</span>
-<a id="__codelineno-4-12" name="__codelineno-4-12"></a><span class="p">}</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="s">            {</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="s">              "titulo": "",</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="s">              "precio": -5,</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="s">              "fechaPublicacion": null,</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="s">              "editorialId": -1</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="s">            }</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="s">            """</span><span class="p">;</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11"></a>
+<a id="__codelineno-4-12" name="__codelineno-4-12"></a><span class="w">    </span><span class="n">mockMvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">post</span><span class="p">(</span><span class="s">"/api/v1/libros"</span><span class="p">)</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13"></a><span class="w">                    </span><span class="p">.</span><span class="na">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="na">APPLICATION_JSON</span><span class="p">)</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14"></a><span class="w">                    </span><span class="p">.</span><span class="na">content</span><span class="p">(</span><span class="n">body</span><span class="p">))</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15"></a><span class="w">            </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isBadRequest</span><span class="p">());</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p>Fíjate en que este test <strong>no usa <code>when(...)</code> en ningún momento</strong>. La validación de <code>@Valid</code> ocurre antes de que el controller llegue a llamar a <code>libroService.create(...)</code> — Spring rechaza la petición con un <code>400</code> sin que el service (ni, por tanto, el mock que lo sustituye) entre nunca en juego. Este test concreto es de <strong>capa web</strong>: prueba que el controller valida correctamente el DTO de entrada (gracias a <code>@Valid</code>, que ya viste el apartado anterior) sin necesitar preparar ningún valor de retorno.</p>
+<p>Fíjate en que este test <strong>no utiliza <code>when(...)</code></strong>. La validación de <code>@Valid</code> se ejecuta antes de que el controller llame a <code>libroService.create(...)</code>. Como el cuerpo incumple varias restricciones del DTO, Spring detiene la petición y responde con <code>400 Bad Request</code> sin que el service llegue a intervenir.</p>
+<p>En este momento, el test comprueba únicamente el código de estado porque todavía no has definido un formato propio para el cuerpo de los errores. Más adelante, si la aplicación incorpora un manejador global que devuelva una estructura estable —por ejemplo, con el código, el mensaje y los campos inválidos—, podrás añadir comprobaciones <code>jsonPath(...)</code> sobre esa estructura.</p>
 <h3 id="instruyendo-al-mock-para-que-falle-thenthrow">🎭 Instruyendo al mock para que falle: <code>thenThrow</code><a class="headerlink" href="#instruyendo-al-mock-para-que-falle-thenthrow" title="Permanent link">¶</a></h3>
 <p><code>thenReturn</code> prepara un valor de éxito. Para el caso "no encontrado", preparas una excepción en su lugar:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span>
@@ -2897,7 +2930,7 @@
 <ul>
 <li>Un <strong>test automatizado</strong> comprueba comportamiento sin intervención humana, y se puede repetir en cada cambio; sigue el patrón preparar-actuar-afirmar. <code>assertEquals(esperado, actual)</code>: el orden importa para que el mensaje de error, si falla, se lea bien.</li>
 <li>Un <strong>mock</strong> es un objeto falso que sustituye a una dependencia real, programado por ti (<code>when(...).thenReturn(...)</code>) para aislar lo que quieres probar de todo lo demás — así el resultado del test no depende de que haya una base de datos real conectada, con datos reales dentro.</li>
-<li>Un test <strong>unitario</strong> aísla una pieza con <strong>mocks</strong>; un test de <strong>integración</strong> prueba varias piezas reales juntas.</li>
+<li>Un <strong>test aislado</strong> se centra en una parte concreta de la aplicación y sustituye sus dependencias mediante mocks. Los tests unitarios son el ejemplo más sencillo de este enfoque. Un <strong>test de integración</strong> prueba varias piezas reales funcionando juntas.</li>
 <li><strong>MockMvc</strong> simula peticiones HTTP contra tus controladores sin arrancar un servidor real — un cliente HTTP programable y repetible.</li>
 <li><code>@WebMvcTest</code> arranca solo la capa web; <code>@AutoConfigureMockMvc(addFilters = false)</code> desactiva los filtros de seguridad para que estos tests no dependan de login; <code>@MockitoBean</code> sustituye una dependencia por un mock; <code>mockMvc.perform(...).andExpect(...)</code> construye la petición y afirma el resultado; <code>jsonPath</code> navega el cuerpo JSON.</li>
 <li><code>when(mock.metodo(...)).thenReturn(valor)</code> prepara un valor de éxito; <code>.thenThrow(excepcion)</code> prepara que el mock lance una excepción en su lugar (el mismo camino que seguiría <code>orElseThrow(...)</code> en el service real).</li>
