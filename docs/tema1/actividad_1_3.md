@@ -176,6 +176,21 @@ jobs:
 !!! warning "`GamevaultApplicationTests.contextLoads` falla con `Failed to load ApplicationContext`"
     `mvn test`, sin más, ejecuta **todos** los tests del proyecto — incluido `GamevaultApplicationTests`, el test que Spring Initializr generó automáticamente cuando creaste el proyecto (Actividad 1.1). Ese test arranca la aplicación **completa**, con `DataSource` incluido, y necesita una PostgreSQL real corriendo — algo que este runner no tiene (recuerda el aviso de arriba: los tests MockMvc de hoy no la necesitan, pero ese test de arranque sí). `-Dtest='*ControllerTest'` le dice a Maven que ejecute solo las clases cuyo nombre termine en `ControllerTest` — exactamente `VideojuegoControllerTest` y `EstudioControllerTest`, los tests MockMvc que has escrito hoy, sin tocar el test de arranque completo. Levantar una PostgreSQL real dentro del propio workflow (con un servicio de GitHub Actions) es posible, pero es una pieza más compleja que queda fuera del alcance de esta actividad.
 
+!!! tip "Para que `mvn test` sin filtro también pase en tu propio Dev Container"
+    En CI el filtro de arriba sigue haciendo falta — ahí no hay ninguna PostgreSQL real a la que conectarse, así que `GamevaultApplicationTests` no puede pasar de ninguna manera sin levantar una (fuera del alcance de hoy). Pero en tu propio Dev Container sí la tienes, la misma `postgres` de la Actividad 1.1. Si alguna vez ejecutas la suite completa en local (`mvn test`, sin `-Dtest`) y quieres que también pase ahí, añade `@ActiveProfiles("dev")` a la clase:
+    ```java
+    @SpringBootTest
+    @ActiveProfiles("dev")
+    class GamevaultApplicationTests {
+
+        @Test
+        void contextLoads() {
+        }
+
+    }
+    ```
+    Sin esta anotación, ese test falla en local con el mismo error de arriba en cuanto quites el filtro — no porque te falte una PostgreSQL real (la tienes corriendo), sino porque sin ningún perfil activo Spring Boot ni siquiera llega a leer `application-dev.yaml`, así que no encuentra el `DataSource`.
+
 **Pregunta**: tu `pom.xml` de GameVault viene con un *wrapper* (`mvnw`/`mvnw.cmd`), generado automáticamente por Spring Initializr — a diferencia de `validador-dni-ci`, donde no había ninguno. El workflow de arriba usa `./mvnw test`, no `mvn test`. ¿Qué garantiza usar el *wrapper* en vez del `mvn` que esté instalado en el runner de GitHub? Relaciónalo con por qué el Dev Container fija siempre las mismas versiones (Actividad 1.1).
 
 **Predicción**: antes de hacer push, ¿cuántos tests esperas que se ejecuten en total, sumando `VideojuegoControllerTest` y `EstudioControllerTest`?

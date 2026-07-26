@@ -122,6 +122,8 @@ public class OpenApiConfig {
 
 Con solo esa dependencia y esa clase, springdoc escanea todos los `@RestController` del proyecto y genera, sin más trabajo por tu parte, la especificación OpenAPI en `/v3/api-docs` y la interfaz visual en `/swagger-ui.html` — los mismos endpoints que el controller ya tenía quedan documentados, y puedes ejecutarlos de verdad desde el navegador con "Try it out", tal como acabas de ver.
 
+`/v3/api-docs` es la especificación en sí: el JSON (el `3` es por OpenAPI 3, la versión del estándar) que describe tus rutas, generado automáticamente por springdoc. Swagger UI no es más que una página que **lee** ese JSON y lo pinta como interfaz interactiva — no tiene información propia. Por eso las dos rutas van siempre juntas: si Swagger UI no puede llegar a `/v3/api-docs`, la página carga pero se queda vacía, sin nada que mostrar.
+
 !!! tip "Cambiar la ruta de Swagger UI"
     En tu `application-dev.yaml` puedes mover la documentación a otra ruta:
     ```yaml
@@ -129,7 +131,7 @@ Con solo esa dependencia y esa clase, springdoc escanea todos los `@RestControll
       swagger-ui:
         path: /documentacion
     ```
-    Con esto, entrar en `/documentacion` te lleva a Swagger UI — pero fíjate en que el navegador acaba redirigido a `/swagger-ui/index.html`: esa es la página real donde vive la interfaz (el propio recurso estático del *webjar*), y `/documentacion` es solo un punto de entrada más cómodo de recordar hacia ella. Por eso, si más adelante proteges tu API con Spring Security, tendrás que dejar pasar **las dos rutas**, no solo la que tú has elegido — lo verás en el Tema 2.
+    Con esto, entrar en `/documentacion` te lleva a Swagger UI — pero fíjate en que el navegador acaba redirigido a `/swagger-ui/index.html`: esa es la página real donde vive la interfaz (el propio recurso estático del *webjar*), y `/documentacion` es solo un punto de entrada más cómodo de recordar hacia ella. Por eso, si más adelante proteges tu API con Spring Security, tendrás que dejar pasar **las tres rutas** —`/documentacion`, `/swagger-ui/**` y `/v3/api-docs/**`—, no solo la que tú has elegido — lo verás en el Tema 2.
 
 !!! warning "`operations-sorter: method` no hace lo que parece"
     Existe esta propiedad, pero cuidado con lo que promete: no ordena por un criterio "lógico" (`GET → POST → PUT → DELETE`) — ordena **alfabéticamente por el nombre del verbo**, así que el resultado real es `DELETE, GET, PATCH, POST, PUT` (`D` va antes que `G` en el alfabeto). No hay ninguna propiedad simple en springdoc para conseguir el orden CRUD habitual; si lo necesitas de verdad, hay que sobrescribir la función de ordenación de Swagger UI, algo que queda fuera del alcance de este curso.

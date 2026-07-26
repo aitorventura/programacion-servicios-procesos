@@ -2,7 +2,7 @@
 
 # 📎 Anexo: HTTPS en desarrollo
 
-En [Autenticación con JWT](autenticacion-jwt.md) viste la distinción clave: la firma de un JWT garantiza **integridad** (nadie lo ha modificado), pero no **confidencialidad** — si el canal no está cifrado, cualquiera que intercepte el tráfico puede leer tanto las credenciales del login como el propio token, tal cual viajan. HTTPS es lo que cierra ese hueco, cifrando la conexión completa con TLS. Aquí ves cómo se monta, paso a paso.
+En [Autenticación con JWT](autenticacion-jwt.md) has visto la distinción clave: la firma de un JWT garantiza **integridad** (nadie lo ha modificado), pero no **confidencialidad** — si el canal no está cifrado, cualquiera que intercepte el tráfico puede leer tanto las credenciales del login como el propio token, tal cual viajan. HTTPS es lo que cierra ese hueco, cifrando la conexión completa con TLS. Aquí ves cómo se monta, paso a paso.
 
 ## 🔐 De HTTP a HTTPS: qué cambia
 
@@ -45,7 +45,7 @@ server:
   port: 8443
 ```
 
-`key-store` apunta al fichero (aquí, dentro del classpath, normalmente `src/main/resources/`); `key-store-password` es la misma contraseña que le diste a `keytool`; `key-store-type` tiene que coincidir con el formato que generaste (`PKCS12`). El puerto `8443` es una convención —podrías dejarlo en `8080`—, pero es habitual reservar `8443` para HTTPS y `8080` para HTTP: así el propio número ya indica qué protocolo esperar.
+`key-store` apunta al fichero (aquí, dentro del classpath, normalmente `src/main/resources/`); `key-store-password` es la misma contraseña que le has dado a `keytool`; `key-store-type` tiene que coincidir con el formato que has generado (`PKCS12`). El puerto `8443` es una convención —podrías dejarlo en `8080`—, pero es habitual reservar `8443` para HTTPS y `8080` para HTTP: así el propio número ya indica qué protocolo esperar.
 
 !!! warning "Con esta configuración, el servidor deja de responder por HTTP"
     En cuanto activas `server.ssl`, el único puerto que arranca es el HTTPS: el servidor embebido no sirve HTTP y HTTPS a la vez por defecto, a menos que configures explícitamente un segundo conector (algo más avanzado, fuera de este anexo). Cualquier petición a `http://` deja de tener respuesta desde ese momento; hay que usar `https://` en todas partes.
