@@ -2764,7 +2764,7 @@ Esto te da una cadena aleatoria de más de 32 caracteres, lista para pegar en <c
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Nunca subas un secreto real a un repositorio</p>
-<p>Un secreto de JWT filtrado permite falsificar tokens válidos para cualquier usuario — es un riesgo real, no una formalidad. Por eso vive en <code>application-dev-local.yml</code>, no en <code>application-dev.yml</code>: el mismo mecanismo que ya usaste para la contraseña del <code>admin</code> en la Actividad 2.3.</p>
+<p>Un secreto de JWT filtrado permite falsificar tokens válidos para cualquier usuario — es un riesgo real, no una formalidad. Por eso vive en <code>application-dev-local.yml</code>, no en <code>application-dev.yml</code>: el mismo mecanismo que ya has usado para la contraseña del <code>admin</code> en la Actividad 2.3.</p>
 </div>
 <p>En tu <code>SecurityConfig</code>:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1"> 1</a></span>
@@ -3143,7 +3143,7 @@ Esto te da una cadena aleatoria de más de 32 caracteres, lista para pegar en <c
 <a id="__codelineno-14-17" name="__codelineno-14-17"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-14-18" name="__codelineno-14-18"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"titulo":"Celeste","precio":19.99,"fechaLanzamiento":"2018-01-25","estudioId":1}'</span>
 <a id="__codelineno-14-19" name="__codelineno-14-19"></a>
-<a id="__codelineno-14-20" name="__codelineno-14-20"></a><span class="c1"># 5. Login como user (el que registraste en la Actividad 2.3) y repite la petición con su token</span>
+<a id="__codelineno-14-20" name="__codelineno-14-20"></a><span class="c1"># 5. Login como user (el que has registrado en la Actividad 2.3) y repite la petición con su token</span>
 <a id="__codelineno-14-21" name="__codelineno-14-21"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/auth/login<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-14-22" name="__codelineno-14-22"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-14-23" name="__codelineno-14-23"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"username":"user","password":"user123"}'</span>
@@ -3192,8 +3192,8 @@ Esto te da una cadena aleatoria de más de 32 caracteres, lista para pegar en <c
 <a id="__codelineno-16-11" name="__codelineno-16-11"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">AuthMeResponse</span><span class="p">(</span><span class="n">authentication</span><span class="p">.</span><span class="na">getName</span><span class="p">(),</span><span class="w"> </span><span class="n">roles</span><span class="p">));</span>
 <a id="__codelineno-16-12" name="__codelineno-16-12"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p>El <code>.filter()</code>/<code>.map()</code> para quitar el prefijo <code>ROLE_</code> es el mismo que ya usaste en <code>JwtService</code> (Paso 2) — hace falta repetirlo aquí para que los roles que ves en <code>/me</code> coincidan exactamente con los que decodificaste del JWT (que tampoco llevan el prefijo).</p>
-<p>Pruébalo con el token de <code>admin</code> del Paso 5 y comprueba que la información coincide con lo que decodificaste a mano.</p>
+<p>El <code>.filter()</code>/<code>.map()</code> para quitar el prefijo <code>ROLE_</code> es el mismo que ya has usado en <code>JwtService</code> (Paso 2) — hace falta repetirlo aquí para que los roles que ves en <code>/me</code> coincidan exactamente con los que has decodificado del JWT (que tampoco llevan el prefijo).</p>
+<p>Pruébalo con el token de <code>admin</code> del Paso 5 y comprueba que la información coincide con lo que has decodificado a mano.</p>
 <p><strong>Captura</strong>: la respuesta de <code>GET /api/v1/auth/me</code>.</p>
 <hr>
 <h2 id="paso-7-un-boton-authorize-de-verdad-en-swagger">Paso 7 — Un botón "Authorize" de verdad en Swagger<a class="headerlink" href="#paso-7-un-boton-authorize-de-verdad-en-swagger" title="Permanent link">¶</a></h2>

@@ -2839,7 +2839,7 @@
 <h3 id="paso-3-escritura-post-put-y-delete">Paso 3 — Escritura: <code>POST</code>, <code>PUT</code> y <code>DELETE</code><a class="headerlink" href="#paso-3-escritura-post-put-y-delete" title="Permanent link">¶</a></h3>
 <p>Repite el mismo patrón (preparar el mock con <code>when(...).thenReturn(...)</code>, actuar con <code>mockMvc.perform(post(...).contentType(...).content(...))</code>, afirmar con <code>.andExpect(status().isCreated())</code>) para probar:</p>
 <ul>
-<li>Que un <code>POST /api/v1/videojuegos</code> válido devuelve <code>201</code>. Guíate por el test de <code>create</code> que ya viste en la teoría para el cuerpo JSON de la petición.</li>
+<li>Que un <code>POST /api/v1/videojuegos</code> válido devuelve <code>201</code>. Guíate por el test de <code>create</code> que ya has visto en la teoría para el cuerpo JSON de la petición.</li>
 <li>Que un <code>PUT /api/v1/videojuegos/{id}</code> válido devuelve <code>200</code>.</li>
 <li>Que un <code>DELETE /api/v1/videojuegos/{id}</code> devuelve <code>204</code>.</li>
 </ul>

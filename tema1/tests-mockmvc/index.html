@@ -2725,7 +2725,7 @@
 <a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="n">when</span><span class="p">(</span><span class="n">mockService</span><span class="p">.</span><span class="na">findAll</span><span class="p">()).</span><span class="na">thenReturn</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">());</span>
 </code></pre></div></td></tr></table></div>
 <p><code>mock(LibroService.class)</code> crea el objeto falso — por defecto, no sabe hacer nada por sí solo. <code>when(...).thenReturn(...)</code> es el "guion": le dices qué debe devolver cuando lo llamen de una forma concreta. Dentro de un test de Spring, en vez de crear el mock a mano con <code>mock(...)</code>, se usa la anotación <code>@MockitoBean</code> sobre el campo — Spring se encarga de crearlo e inyectarlo él solo, pero por debajo es exactamente el mismo mecanismo.</p>
-<p>¿Por qué usar un objeto falso en vez del real? Porque aísla lo que quieres probar. Si tu test dependiera del <code>LibroService</code> real, dependería a su vez de una base de datos real conectada, con datos reales dentro — y el resultado de tu test cambiaría según qué datos hubiera en ese momento en esa base de datos, algo que ni controlas ni te interesa cuando lo único que quieres saber es "¿mi controller responde bien a lo que le da el service?". Con un mock, el service siempre se comporta exactamente como tú decidiste, esté la base de datos levantada o no, sea la hora que sea.</p>
+<p>¿Por qué usar un objeto falso en vez del real? Porque aísla lo que quieres probar. Si tu test dependiera del <code>LibroService</code> real, dependería a su vez de una base de datos real conectada, con datos reales dentro — y el resultado de tu test cambiaría según qué datos hubiera en ese momento en esa base de datos, algo que ni controlas ni te interesa cuando lo único que quieres saber es "¿mi controller responde bien a lo que le da el service?". Con un mock, el service siempre se comporta exactamente como tú has decidido, esté la base de datos levantada o no, sea la hora que sea.</p>
 <div class="admonition tip">
 <p class="admonition-title">Material de apoyo: JUnit y mocks desde cero</p>
 <p>Si quieres repasar JUnit y los mocks con más calma —antes de verlos aplicados aquí a un controller REST—, tienes material dedicado en <a href="https://aitorventura.github.io/entornos-de-desarrollo/tema3/unitarias/">Entornos de Desarrollo, Tema 3: Pruebas unitarias</a>.</p>
@@ -2793,10 +2793,10 @@
     Test-&gt;&gt;MockMvc: perform(get("/api/v1/libros"))
     MockMvc-&gt;&gt;Controller: simula GET /api/v1/libros
     Controller-&gt;&gt;Mock: findAll()
-    Mock--&gt;&gt;Controller: List.of(dto) — lo que tú preparaste con when(...)
+    Mock--&gt;&gt;Controller: List.of(dto) — lo que tú has preparado con when(...)
     Controller--&gt;&gt;MockMvc: ResponseEntity(200, JSON)
     MockMvc--&gt;&gt;Test: andExpect(...) compara contra la respuesta real</code></pre>
-<p><code>MockMvc</code> simula la parte de Tomcat (recibir la petición, encaminarla al método correcto) sin arrancar ningún servidor de verdad; <code>LibroController</code> es exactamente el mismo código que corre en producción, sin cambiar una línea; y <code>LibroService</code>, al estar mockeado, responde con el valor que tú preparaste en el test — no con nada calculado de verdad.</p>
+<p><code>MockMvc</code> simula la parte de Tomcat (recibir la petición, encaminarla al método correcto) sin arrancar ningún servidor de verdad; <code>LibroController</code> es exactamente el mismo código que corre en producción, sin cambiar una línea; y <code>LibroService</code>, al estar mockeado, responde con el valor que tú has preparado en el test — no con nada calculado de verdad.</p>
 <hr>
 <h2 id="primer-ejemplo-un-test-que-si-necesita-el-mock">📖 Primer ejemplo: un test que sí necesita el mock<a class="headerlink" href="#primer-ejemplo-un-test-que-si-necesita-el-mock" title="Permanent link">¶</a></h2>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1"> 1</a></span>
@@ -2922,7 +2922,7 @@
 <p>Existe otro tipo de test, con <code>@Testcontainers</code>, que levanta bases de datos <strong>reales</strong> en contenedores Docker solo para la duración del test — no mockea nada. Lo trabajarás a fondo en Acceso a Datos; aquí basta con que sitúes los dos niveles: <code>@WebMvcTest</code> prueba una capa aislada y rápida, un test de integración prueba varias piezas reales trabajando juntas y es más lento pero da más confianza sobre el sistema completo.</p>
 <hr>
 <h2 id="lo-que-viene">🎯 Lo que viene<a class="headerlink" href="#lo-que-viene" title="Permanent link">¶</a></h2>
-<p>Tu propio proyecto ya tiene el CRUD completo de <code>Videojuego</code> y de <code>Estudio</code>, documentado además con <code>@ApiResponses</code> (Actividad 1.2) — en la Actividad 1.3 no construyes ningún endpoint nuevo, escribes los tests MockMvc que comprueban con código que esos mismos códigos que documentaste (<code>200</code>, <code>201</code>, <code>400</code>, <code>404</code>...) son, de verdad, los que tu API devuelve. La Actividad 1.4 cierra el tema con dos piezas más: cuánto tarda tu API en atender varias peticiones a la vez, y Actuator.</p>
+<p>Tu propio proyecto ya tiene el CRUD completo de <code>Videojuego</code> y de <code>Estudio</code>, documentado además con <code>@ApiResponses</code> (Actividad 1.2) — en la Actividad 1.3 no construyes ningún endpoint nuevo, escribes los tests MockMvc que comprueban con código que esos mismos códigos que has documentado (<code>200</code>, <code>201</code>, <code>400</code>, <code>404</code>...) son, de verdad, los que tu API devuelve. La Actividad 1.4 cierra el tema con dos piezas más: cuánto tarda tu API en atender varias peticiones a la vez, y Actuator.</p>
 <hr>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
 <details class="tip">

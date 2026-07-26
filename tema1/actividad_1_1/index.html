@@ -2707,7 +2707,7 @@
 <p><strong>Responde</strong>:</p>
 <ol>
 <li>¿Por qué crees que el servidor ha respondido <code>404</code> en vez de <code>200</code>?</li>
-<li>En el diagrama y el código de "¿Y si el libro no existe?" que viste en la teoría, ¿qué línea exacta es responsable de que la respuesta sea <code>404</code> en vez de <code>200</code>? Justifica tu respuesta señalando esa línea.</li>
+<li>En el diagrama y el código de "¿Y si el libro no existe?" que has visto en la teoría, ¿qué línea exacta es responsable de que la respuesta sea <code>404</code> en vez de <code>200</code>? Justifica tu respuesta señalando esa línea.</li>
 <li>¿Este <code>404</code> lo genera Tomcat automáticamente, o nace de una decisión explícita del código de la aplicación? Justifica tu respuesta con la línea de código concreta.</li>
 </ol>
 <hr>
@@ -2740,7 +2740,7 @@
 <p>En otra terminal:</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a>curl<span class="w"> </span>-v<span class="w"> </span>http://localhost:8000/datos.json
 </code></pre></div></td></tr></table></div>
-<p><strong>Comprueba</strong>: verbo, código de estado y <code>Content-Type</code> de la respuesta real que acabas de recibir. Compáralos con los que anotaste en el Paso 1 — ¿tienen la misma forma general, aunque el servidor sea completamente distinto?</p>
+<p><strong>Comprueba</strong>: verbo, código de estado y <code>Content-Type</code> de la respuesta real que acabas de recibir. Compáralos con los que has anotado en el Paso 1 — ¿tienen la misma forma general, aunque el servidor sea completamente distinto?</p>
 <p><strong>Captura</strong>: la salida completa de <code>curl -v http://localhost:8000/datos.json</code> en tu terminal.</p>
 <p>Prueba también a pedir un fichero que no existe:</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a>curl<span class="w"> </span>-v<span class="w"> </span>http://localhost:8000/no-existe.json

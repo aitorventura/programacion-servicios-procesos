@@ -2861,7 +2861,7 @@
 <p>Tu CRUD de <code>Videojuego</code> y de <code>Estudio</code> funcionando, con validación y <code>@Valid</code> (Acceso a Datos, Tema 1).</p>
 <hr>
 <h2 id="paso-1-mensajes-de-error-personalizados-en-videojuegocreatedto-y-estudiocreatedto">Paso 1 — Mensajes de error personalizados en <code>VideojuegoCreateDTO</code> y <code>EstudioCreateDTO</code><a class="headerlink" href="#paso-1-mensajes-de-error-personalizados-en-videojuegocreatedto-y-estudiocreatedto" title="Permanent link">¶</a></h2>
-<p>Tu DTO ya tiene validación — la has construido en Acceso a Datos (Tema 1), con <code>@Valid</code> ya puesto en el controller. Pero cada anotación usa el mensaje por defecto de Bean Validation, genérico y en inglés (<code>"must not be blank"</code>, por ejemplo). Añade tú mismo un mensaje propio a cada anotación, con el atributo <code>message</code>:</p>
+<p>Tu DTO ya tiene validación — la construiste en Acceso a Datos (Tema 1), con <code>@Valid</code> ya puesto en el controller. Pero cada anotación usa el mensaje por defecto de Bean Validation, genérico y en inglés (<code>"must not be blank"</code>, por ejemplo). Añade tú mismo un mensaje propio a cada anotación, con el atributo <code>message</code>:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
@@ -2910,7 +2910,7 @@
 <p><strong>Captura</strong>: la respuesta completa que muestra Swagger UI. Deberías obtener un <code>400</code>, pero con un cuerpo genérico de Spring.</p>
 <h3 id="2-un-recurso-que-no-existe">2. Un recurso que no existe<a class="headerlink" href="#2-un-recurso-que-no-existe" title="Permanent link">¶</a></h3>
 <p>En el formulario de <code>GET /videojuegos/{id}</code>, pide un <code>id</code> que sepas que no existe (por ejemplo, <code>999999</code>).</p>
-<p><strong>Captura</strong>: la respuesta. Ya es un <code>404</code> razonable —lo has construido en Acceso a Datos, Tema 1, con <code>ResponseStatusException</code>—, pero fíjate en su formato: ¿se parece en algo al que acabas de capturar en el paso anterior?</p>
+<p><strong>Captura</strong>: la respuesta. Ya es un <code>404</code> razonable —lo construiste en Acceso a Datos, Tema 1, con <code>ResponseStatusException</code>—, pero fíjate en su formato: ¿se parece en algo al que acabas de capturar en el paso anterior?</p>
 <h3 id="3-un-parametro-de-consulta-que-spring-data-no-entiende">3. Un parámetro de consulta que Spring Data no entiende<a class="headerlink" href="#3-un-parametro-de-consulta-que-spring-data-no-entiende" title="Permanent link">¶</a></h3>
 <p>En el formulario de <code>GET /videojuegos</code>, escribe <code>noExiste,asc</code> en el campo <code>sort</code> (un campo que no existe en la entidad).</p>
 <p><strong>Captura</strong>: la respuesta. Deberías obtener un <code>500 Internal Server Error</code> con una traza de pila completa.</p>
@@ -3163,7 +3163,7 @@
 <p><code>@RestControllerAdvice</code> hace que esta clase intercepte excepciones de <strong>todos</strong> tus controllers, no solo de uno. Cada <code>@ExceptionHandler</code> decide qué tipo de excepción atrapa y cómo la convierte en un <code>ErrorResponse</code> uniforme — en orden, del más específico (una validación concreta) al más genérico (cualquier excepción no prevista).</p>
 <hr>
 <h2 id="paso-4-repite-los-cinco-errores-y-compara">Paso 4 — Repite los cinco errores y compara<a class="headerlink" href="#paso-4-repite-los-cinco-errores-y-compara" title="Permanent link">¶</a></h2>
-<p>Con el <code>GlobalExceptionHandler</code> ya en marcha, repite exactamente las mismas cinco peticiones del Paso 2, en el mismo orden, y compara cada respuesta nueva con la que capturaste entonces.</p>
+<p>Con el <code>GlobalExceptionHandler</code> ya en marcha, repite exactamente las mismas cinco peticiones del Paso 2, en el mismo orden, y compara cada respuesta nueva con la que has capturado entonces.</p>
 <h3 id="1-el-dto-que-no-pasa-la-validacion">1. El DTO que no pasa la validación<a class="headerlink" href="#1-el-dto-que-no-pasa-la-validacion" title="Permanent link">¶</a></h3>
 <p>Repite la misma petición inválida a <code>POST /videojuegos</code> desde Swagger UI.</p>
 <p><strong>Captura</strong>: la respuesta nueva, junto a la del Paso 2.</p>
