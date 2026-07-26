@@ -267,7 +267,17 @@ libreria:
 Cada persona que clona el repositorio copia ese `.example` a `application-dev-local.yaml`, rellena sus propios valores, y ese fichero final se queda solo en su máquina. Es el mismo patrón, exactamente, que vas a reutilizar para el secreto de JWT más adelante en el tema.
 
 !!! warning "Ese fichero no existe fuera de tu máquina — piénsalo cuando montes CI o un despliegue"
-    Poner un valor en `.gitignore` es la otra cara de una moneda: si no se sube a Git, **no llega a ningún sitio por Git**. Tu máquina lo tiene porque lo has rellenado a mano, pero cualquier entorno que arranque tu aplicación desde el repositorio limpio —un pipeline de integración continua, un servidor de despliegue, el ordenador de un compañero— no tiene ese fichero, y con él ausente la aplicación no arranca (por el `@Value` sin valor por defecto que acabas de ver). En esos entornos tienes que **inyectar** cada uno de esos valores por otra vía: una variable de entorno, un parámetro del comando, o un "secreto" del propio sistema de CI. No es un caso raro: es lo primero con lo que te vas a topar la primera vez que uno de estos secretos tenga que existir en algún sitio que no sea tu portátil. Lo verás en concreto en la última actividad del tema, al hacer que tus tests de seguridad corran en GitHub Actions.
+    Poner un valor en `.gitignore` es la otra cara de una moneda: si no se sube a Git, **no llega a ningún sitio por Git**. Tu máquina lo tiene porque lo has rellenado a mano, pero cualquier entorno que arranque tu aplicación desde el repositorio limpio —un pipeline de integración continua, un servidor de despliegue, el ordenador de un compañero— no tiene ese fichero, y con él ausente la aplicación no arranca (por el `@Value` sin valor por defecto que acabas de ver). En esos entornos tienes que **inyectar** cada uno de esos valores por otra vía: una variable de entorno, un parámetro del comando, o un "secreto" del propio sistema de CI. No es un caso raro: es lo primero con lo que te vas a topar la primera vez que uno de estos secretos tenga que existir en algún sitio que no sea tu portátil.
+
+!!! example "Cómo se vería en GitHub Actions, el día que hiciera falta"
+    Tu CI actual (Actividad 1.3) no necesita este valor: solo ejecuta `*ControllerTest`, que mockean el servicio y nunca arrancan un `DataSource` ni leen `libreria.admin.password`. Pero si algún día un workflow sí lo necesitara —por ejemplo, para arrancar la aplicación completa contra una base de datos real—, el sitio para guardarlo no es el código ni el propio `ci.yml`, sino los secretos del repositorio: en GitHub, **Settings → Secrets and variables → Actions → New repository secret**, con un nombre en mayúsculas como `GAMEVAULT_ADMIN_PASSWORD` y el valor real. Ese secreto no aparece en ningún fichero versionado, y desde el workflow se referencia así:
+
+    ```yaml
+    - name: Ejecutar los tests
+      run: ./mvnw test -Dgamevault.admin.password=${{ secrets.GAMEVAULT_ADMIN_PASSWORD }}
+    ```
+
+    Es solo referencia para el día que haga falta desplegar de verdad — no tienes que tocar nada de esto ahora.
 
 !!! note "¿No es esto lo mismo que la contraseña de Postgres, que has dejado en el fichero versionado?"
     Buena pregunta, y la respuesta es matizada. Tal y como está tu proyecto **hoy** —corriendo solo en tu Dev Container, sin desplegar en ningún sitio—, el riesgo real de que `admin123` se filtre por GitHub es prácticamente el mismo que el de la contraseña de Postgres del primer apartado del tema: nadie fuera de tu máquina puede usarla ahora mismo, porque no hay ningún servidor público al que dirigirla.

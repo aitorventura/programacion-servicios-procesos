@@ -67,8 +67,8 @@ nav:
           - Autenticación con JWT: tema2/autenticacion-jwt.md
           - Anexo opcional - HTTPS en desarrollo: tema2/anexo-https.md
           - Actividad 2.4 - Login con JWT: tema2/actividad_2_4.md
-      - Roles, rutas protegidas y tests:
-          - Roles, rutas protegidas y tests: tema2/roles-y-rutas-protegidas.md
+      - Roles y rutas protegidas:
+          - Roles y rutas protegidas: tema2/roles-y-rutas-protegidas.md
           - Actividad 2.5 - Roles y rutas protegidas: tema2/actividad_2_5.md
   - Tema 3 - Programación multihilo:
       - Tema 3 - Introducción: tema3/index.md

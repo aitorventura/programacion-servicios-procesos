@@ -31,7 +31,7 @@
 3. [Usuarios persistidos y BCrypt](usuarios-persistidos-bcrypt.md)
 4. [Autenticación con JWT](autenticacion-jwt.md)
     - 📎 [Anexo opcional: HTTPS en desarrollo](anexo-https.md)
-5. [Roles, rutas protegidas y tests de seguridad](roles-y-rutas-protegidas.md)
+5. [Roles y rutas protegidas](roles-y-rutas-protegidas.md)
 
 **Actividades:**
 

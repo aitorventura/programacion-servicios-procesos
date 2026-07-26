@@ -1,8 +1,8 @@
 <a id="roles-y-rutas-protegidas"></a>
 
-# 🧩 5. Roles, rutas protegidas y tests de seguridad
+# 🧩 5. Roles y rutas protegidas
 
-Al terminar el apartado anterior, tu API ya distinguía quién eres (JWT) de qué puedes hacer (roles) — pero solo lo habías comprobado sobre una ruta suelta, `POST /videojuegos`, y ese `403` seguía saliendo con el formato por defecto de Spring, no con tu `ErrorResponse`. Hoy conviertes esa comprobación puntual en una política completa, ruta a ruta y cerrada por defecto; cierras ese formato pendiente —y el de un `404` que en realidad sale disfrazado de `500`—; y aprendes a verificar con tests automatizados que la política hace exactamente lo que dice.
+Al terminar el apartado anterior, tu API ya distinguía quién eres (JWT) de qué puedes hacer (roles) — pero solo lo habías comprobado sobre una ruta suelta, `POST /videojuegos`, y ese `403` seguía saliendo con el formato por defecto de Spring, no con tu `ErrorResponse`. Hoy conviertes esa comprobación puntual en una política completa, ruta a ruta y cerrada por defecto, y cierras ese formato pendiente —y el de un `404` que en realidad sale disfrazado de `500`—.
 
 ---
 
@@ -158,68 +158,6 @@ Con esto, los tres códigos de la tabla de arriba —`401`, `403` y `404`— tie
 
 ---
 
-## 🧪 Tests de seguridad con MockMvc
-
-Ya sabes construir tests MockMvc desde el Tema 1. Probar seguridad añade un matiz: necesitas un token real para las peticiones autenticadas. El patrón habitual es hacer un **login real** dentro del propio test, y reutilizar el token obtenido:
-
-!!! tip "Aquí no vale el `addFilters = false` que ya conoces"
-    Tus `ControllerTest` del Tema 1 llevan `@WebMvcTest` + `@AutoConfigureMockMvc(addFilters = false)` — a propósito, para que la lógica del controller se pruebe aislada, sin depender de ningún login. Estos tests de seguridad necesitan justo lo contrario: la cadena de filtros **activa de verdad**, JWT incluido, para que `401`/`403`/`201` salgan de la política real. Por eso van con `@SpringBootTest` + `@AutoConfigureMockMvc` (sin el `addFilters = false`), y sin mockear el service: el `login(...)` de abajo necesita usuarios que existan de verdad en la base de datos, no un doble de prueba.
-
-    Esa diferencia tiene un precio: `@WebMvcTest` nunca necesita base de datos, así que da igual qué perfil esté activo cuando lo lanzas. `@SpringBootTest` sí arranca el `datasource` real —el de tu perfil `dev`—, y si lo lanzas sin ningún perfil activo (por ejemplo, con el botón de "run" de tu IDE), Spring Boot no encuentra ninguna URL de conexión y falla al arrancar, antes incluso de llegar a tus tests. Añade `@ActiveProfiles("dev")` a la clase para que siempre arranque con el perfil correcto, la lances como la lances.
-
-El objetivo es recorrer en código la misma escalera de la tabla `401`/`403`/`404` de más arriba, para una sola ruta: sin token, con el rol equivocado, con el rol correcto. Tres tests, uno junto a otro, prueban de verdad que la regla de esa ruta hace lo que la tabla dice — no basta con probarlo a mano una vez con `curl` y darlo por sentado para siempre.
-
-```java
-private String login(String username, String password) throws Exception {
-    String response = mockMvc.perform(post("/api/v1/auth/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("""
-                            {"username": "%s", "password": "%s"}
-                            """.formatted(username, password)))
-            .andReturn().getResponse().getContentAsString();
-
-    return JsonPath.read(response, "$.accessToken");
-}
-
-@Test
-void crearLibro_DebeDevolver401_SinToken() throws Exception {
-    mockMvc.perform(post("/api/v1/libros")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("{}"))
-            .andExpect(status().isUnauthorized());
-}
-
-@Test
-void crearLibro_DebeDevolver403_CuandoElRolNoEsSuficiente() throws Exception {
-    String userToken = login("user", "user123");
-
-    mockMvc.perform(post("/api/v1/libros")
-                    .header("Authorization", "Bearer " + userToken)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("{}"))
-            .andExpect(status().isForbidden());
-}
-
-@Test
-void crearLibro_DebeDevolver201_ConRolAdmin() throws Exception {
-    String adminToken = login("admin", "admin123");
-
-    mockMvc.perform(post("/api/v1/libros")
-                    .header("Authorization", "Bearer " + adminToken)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("""
-                            {"titulo":"Test","precio":9.99,"fechaPublicacion":"2020-01-01","editorialId":1}
-                            """))
-            .andExpect(status().isCreated());
-}
-```
-
-Fíjate en el matiz entre el segundo test y el tercero: en el `403` el cuerpo es `{}` porque da igual —la petición ni siquiera llega al controller, la rechaza la seguridad antes—, pero en el `201` el cuerpo tiene que ser un JSON válido de verdad, porque esa petición sí llega hasta el `service` y tiene que superar la validación (`@Valid`) para crearse. El mismo patrón de tres tests sirve para cualquier otra ruta protegida de tu proyecto (`PUT`/`DELETE` de `Estudio`, por ejemplo) — solo cambian la ruta y el cuerpo.
-
-El método `login(...)` hace una petición real de login dentro del test, y extrae el `accessToken` de la respuesta con `JsonPath.read(response, "$.accessToken")`. Ojo, no lo confundas con el `jsonPath(...)` que ya conoces del Tema 1 (el que usas dentro de `.andExpect(jsonPath("$.titulo").value(...))`): ese es un *matcher* de MockMvc, que afirma algo sobre la respuesta; `JsonPath.read(...)` es la librería subyacente usada directamente, para **leer y devolver** un valor del JSON —aquí, el token— y poder reutilizarlo después. Ese token se reutiliza en las peticiones siguientes con `.header("Authorization", "Bearer " + token)` — es exactamente el mismo flujo manual que ya has practicado con `curl`, pero automatizado y repetible.
-
----
-
 ## 📝 Documentación como buena práctica
 
 Depurar **y documentar** van de la mano. La propia tabla de política de rutas que has visto al principio de este apartado ya es esa documentación — un documento vivo que cualquiera (tú dentro de seis meses, un compañero de equipo) puede consultar para saber exactamente qué puede hacer cada rol, sin tener que leer el código Java línea a línea. Mantener esa tabla al día, en un fichero aparte de tu propio proyecto (por ejemplo `docs/seguridad.md`), es exactamente el tipo de documentación que se espera de ti.
@@ -236,5 +174,4 @@ Depurar **y documentar** van de la mano. La propia tabla de política de rutas q
     - **401** = no sabemos quién eres; **403** = sabemos quién eres, pero no tienes permiso; **404** = la ruta no existe, y eso no depende de quién eres. Ojo: `denyAll()` sin ningún token también da `401`, no `403` — el `403` solo aparece cuando ya hay un token válido de por medio.
     - `NoResourceFoundException` (ruta inexistente) caía en el Handler 5 genérico del primer apartado del tema, dando `500` en vez de `404` — un handler específico lo arregla, sin tocar nada más: Spring prioriza el más concreto automáticamente. `MethodArgumentTypeMismatchException` (un id con el tipo equivocado, como `/libros/no-es-un-numero`) es el mismo problema con otro disparador — mismo patrón, `400` en vez de `500`.
     - `AccessDeniedHandler` es la contraparte de `AuthenticationEntryPoint` para el `403`: mismo patrón, registrado en el mismo `.exceptionHandling(...)`, para que autenticación y autorización tengan ambas el formato `ErrorResponse`.
-    - Los tests de seguridad hacen un login real dentro del test y reutilizan el token obtenido en las peticiones siguientes.
     - La tabla de política de rutas es, en sí misma, esa documentación.
