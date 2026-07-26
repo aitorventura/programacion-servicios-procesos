@@ -82,10 +82,15 @@ Tu propio proyecto no incluye Actuator todavía (revisa tu `pom.xml`: no está l
 </dependency>
 ```
 
-!!! tip "No vas a verlos en Swagger UI, y es lo esperado"
-    Los endpoints de Actuator no aparecen en tu documentación de Swagger UI, aunque ya la tengas configurada desde el apartado anterior. No es un descuido: springdoc solo documenta los `@RestController` de tu propia API, y Actuator expone sus endpoints por un mecanismo completamente distinto, al margen de ese escaneo. Tiene sentido — `/actuator/health` no es un recurso de tu API pensado para los clientes de GameVault, es información operativa para quien vigila que el servicio esté vivo.
+!!! tip "No aparecen en Swagger UI con la configuración actual"
+    De forma predeterminada, springdoc no añade los endpoints de Actuator a Swagger UI. Por eso verás los endpoints de tu API, pero no `/actuator/health`.
 
-Con solo esa dependencia, Spring Boot expone automáticamente `/actuator/health`. Para ver el detalle de cada dependencia (y no solo un `UP`/`DOWN` genérico), hace falta una línea de configuración:
+    Tiene sentido mantenerlos separados: `/actuator/health` no es un recurso del catálogo pensado para sus usuarios, sino información operativa para comprobar el estado de la aplicación.
+
+    Springdoc permite incluir también los endpoints de Actuator mediante una propiedad de configuración, pero no la necesitas en esta actividad. Consultarás `/actuator/health` directamente desde el navegador o mediante `curl`.
+    
+
+Con solo esa dependencia, Spring Boot expone automáticamente `/actuator/health`. Para ver durante el desarrollo el detalle de cada dependencia —y no solo un `UP` o `DOWN` general— añade esta configuración en `application-dev.yaml`:
 
 ```yaml
 management:
@@ -93,6 +98,10 @@ management:
     health:
       show-details: always
 ```
+!!! warning "Configuración para desarrollo"
+    `show-details: always` permite que cualquiera que pueda acceder a `/actuator/health` vea el detalle de los componentes comprobados.
+
+En estas prácticas resulta útil porque trabajarás en local y podrás identificar rápidamente si ha fallado PostgreSQL, MongoDB u otra dependencia. En producción, estos detalles normalmente se ocultan o se muestran únicamente a usuarios autorizados.
 
 ---
 
@@ -126,6 +135,6 @@ Actuator trae también otros endpoints útiles, como `/actuator/info` (metadatos
     - Cada petición HTTP la atiende un hilo distinto del *pool* de Tomcat — por eso dos peticiones lentas simultáneas no tardan el doble, sino aproximadamente lo mismo que una sola.
     - La **disponibilidad** de un servicio tiene varios niveles: proceso vivo, responde peticiones, dependencias funcionando — no son lo mismo.
     - Un **health check** es una comprobación automática, pensada para que la consulte una máquina (un programa de monitorización, un sistema de despliegue, el propio CI), no una persona.
-    - **Spring Boot Actuator** expone `/actuator/health` con la dependencia `spring-boot-starter-actuator`; `management.endpoint.health.show-details: always` muestra el detalle de cada dependencia.
+    - **Spring Boot Actuator** expone `/actuator/health` con la dependencia `spring-boot-starter-actuator`; `management.endpoint.health.show-details: always` durante el desarrollo, permite ver el detalle de los componentes comprobados por Actuator.
     - `/actuator/health` agrega el estado de cada dependencia real (PostgreSQL, MongoDB...) — si una cae, el estado general pasa a `DOWN` aunque el resto siga funcionando.
     - Los endpoints de Actuator no aparecen en Swagger UI: springdoc solo escanea tus propios `@RestController`, no el mecanismo aparte que usa Actuator.

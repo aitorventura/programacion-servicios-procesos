@@ -55,14 +55,34 @@ Fíjate en las dos cabeceras del ejemplo, porque se confunden fácilmente al pri
 
 Cada petición HTTP declara un **verbo** (o método) que expresa la intención de la operación:
 
-| Verbo | Qué expresa | ¿Repetirla cambia algo? |
-|---|---|---|
-| `GET` | Leer un recurso, sin modificarlo. | No — pedir el mismo libro 5 veces da 5 veces la misma respuesta. |
-| `POST` | Crear un recurso nuevo. | Sí — repetirla crea un recurso nuevo cada vez. |
-| `PUT` | Reemplazar un recurso existente. | No — reemplazar por el mismo valor 5 veces deja el recurso igual que la primera. |
-| `DELETE` | Eliminar un recurso. | No — borrarlo dos veces deja el mismo resultado que borrarlo una (la segunda ya no encuentra nada que borrar). |
+| Verbo    | Qué expresa                                            | ¿Repetirla produce el mismo efecto final?                                          |
+| -------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| `GET`    | Leer un recurso, sin modificarlo.                      | Sí — la petición no cambia los datos del servidor.                                 |
+| `POST`   | Crear un recurso nuevo.                                | No — repetirla puede crear otro recurso.                                           |
+| `PUT`    | Reemplazar por completo un recurso existente.          | Sí — reemplazarlo varias veces por los mismos datos deja el mismo resultado final. |
+| `PATCH`  | Modificar solo algunos campos de un recurso existente. | Depende de cómo se haya definido la modificación.                                  |
+| `DELETE` | Eliminar un recurso.                                   | Sí — después de ejecutarla, el recurso queda eliminado.                            |
 
-Esa última columna importa más de lo que parece. Piensa en el botón de llamada de un ascensor: pulsarlo una vez o pulsarlo nerviosamente diez veces seguidas hace exactamente lo mismo — el ascensor viene una sola vez. `GET`, `PUT` y `DELETE` funcionan igual: si tu conexión falla justo después de mandarlos y no sabes si han llegado, puedes repetirlos sin miedo, el resultado final es el mismo. `POST` es distinto, más parecido a pulsar el botón de "pedir" en una máquina expendedora: cada pulsación te cobra y te da un producto nuevo — repetirlo a ciegas puede dejarte con el mismo libro duplicado dos veces.
+
+Esa última columna importa más de lo que parece. A esta propiedad se la llama **idempotencia**: una petición es idempotente cuando repetirla varias veces produce el mismo efecto final sobre los datos que ejecutarla una sola vez.
+
+Piensa en el botón de llamada de un ascensor: pulsarlo una vez o pulsarlo nerviosamente diez veces no hace que lleguen diez ascensores. El efecto final es el mismo — el ascensor queda avisado de que tiene que ir a tu planta.
+
+`PUT` funciona de esa manera: reemplazar cinco veces un libro por los mismos datos deja el recurso exactamente igual que reemplazarlo una sola vez. `DELETE` también es idempotente: la primera petición elimina el libro y las siguientes lo dejan igualmente eliminado.
+
+Eso no significa que todas las respuestas tengan que ser idénticas. El primer `DELETE` podría responder `204 No Content` y el segundo `404 Not Found`, porque el libro ya no existe. Las respuestas son distintas, pero el efecto final sobre los datos es el mismo: el recurso sigue eliminado.
+
+`POST`, en cambio, normalmente no es idempotente. Es más parecido a pulsar varias veces el botón de compra de una máquina expendedora: cada pulsación puede crear un pedido nuevo, cobrarte otra vez o insertar otro recurso.
+
+En el caso de `PATCH`, depende de la modificación concreta:
+
+* «Pon el precio en 19,95 €» es idempotente: repetirlo deja siempre el mismo precio.
+* «Aumenta el precio en 5 €» no lo es: cada repetición vuelve a sumar otros 5 €.
+
+!!! info "Una novedad del estándar: el método `QUERY`"
+    En junio de 2026 se incorporó al estándar HTTP el método `QUERY`, pensado para búsquedas cuyos criterios son demasiado complejos o extensos para expresarlos cómodamente mediante parámetros en la URL. En esos casos, el cliente puede describir la consulta mediante un cuerpo, normalmente en formato JSON.
+
+    Sin embargo, Spring todavía no incorpora una anotación `@QueryMapping` ni permite seleccionar `QUERY` mediante `RequestMethod.QUERY`. Por ese motivo, en este curso conocerás para qué sirve, pero las consultas se implementarán mediante `GET` y parámetros en la URL, que Spring sí soporta directamente.
 
 El servidor responde siempre con un **código de estado** de tres cifras que resume qué ha pasado, agrupado por familias:
 
@@ -174,7 +194,7 @@ El puerto `8080` y el servidor **Tomcat** que escucha en él no son magia: los t
 
 ## ❌ ¿Y si el libro no existe?
 
-Todo lo de arriba asume que el libro con ese `id` existe. Cuando no es así, el viaje de la petición es el mismo hasta `LibroService` — solo cambia lo que pasa a partir de ahí:
+Todo lo anterior supone que existe un libro con el `id` solicitado. Cuando no existe, el recorrido de la petición es casi el mismo:
 
 ```mermaid
 sequenceDiagram
@@ -186,27 +206,37 @@ sequenceDiagram
     Cliente->>Tomcat: GET /api/v1/libros/9999
     Tomcat->>Controller: getById(9999)
     Controller->>Service: findById(9999)
-    Service--xController: no existe → error 404
-    Controller-->>Tomcat: ResponseEntity(404, error)
+    Service-->>Controller: null
+    Controller-->>Tomcat: ResponseEntity(404)
     Tomcat-->>Cliente: HTTP/1.1 404 Not Found
 ```
 
-`LibroService` es quien comprueba si el libro existe de verdad, y quien decide, en ese punto exacto, que la respuesta tiene que ser un error con código `404` en vez de un `200` con el libro dentro. El código de estado que acaba viendo el cliente nace ahí, no en Tomcat.
-
-En el controller, esa decisión se traduce en algo así — una versión sencilla de lo que verás en detalle más adelante:
+En esta primera versión, el service intenta localizar el libro y devuelve `null` cuando no lo encuentra. El controller comprueba ese resultado y lo traduce al lenguaje HTTP:
 
 ```java
 @GetMapping("/{id}")
 public ResponseEntity<LibroResponseDTO> getById(@PathVariable Long id) {
     LibroResponseDTO libro = libroService.findById(id);
+    
     if (libro == null) {
         return ResponseEntity.notFound().build();
     }
+    
     return ResponseEntity.ok(libro);
 }
 ```
 
-`ResponseEntity.notFound().build()` es el mismo tipo de objeto que `ResponseEntity.ok(...)`, solo que con el código `404` en vez del `200` y sin cuerpo. Esta versión con `if` es la más fácil de leer con lo que sabes hoy; más adelante en el curso verás una forma más limpia de expresar lo mismo, sin tener que repetir ese `if` en cada método.
+El controller construye una respuesta distinta según el resultado recibido:
+
+- Si existe el libro, devuelve `200 OK` con el libro en el cuerpo.
+- Si no existe, devuelve `404 Not Found` sin cuerpo.
+
+```text
+libro encontrado     → ResponseEntity.ok(libro)       → 200
+libro no encontrado  → ResponseEntity.notFound()      → 404
+```
+
+Esta versión con `if` permite ver claramente cómo una situación de la aplicación se convierte en un código HTTP. Más adelante utilizarás una forma más limpia: el service lanzará directamente una excepción mediante `orElseThrow()` , y el controller no necesitará repetir esta comprobación.
 
 ---
 
@@ -229,10 +259,11 @@ Podrías diseñar tu propio protocolo casero sobre sockets (lo verás en el Tema
 
     - Toda comunicación HTTP es petición-respuesta entre un **cliente** y un **servidor**, con la URL como dirección (protocolo, host, puerto, ruta).
     - HTTP es texto con una primera línea, cabeceras y cuerpo opcional; `Accept` es lo que pide el cliente, `Content-Type` es lo que confirma el que envía el cuerpo.
-    - Los **verbos** (`GET`, `POST`, `PUT`, `DELETE`) expresan la intención de la operación; repetir un `GET`, `PUT` o `DELETE` dado no cambia el resultado, repetir un `POST` sí. Los **códigos de estado** (2xx/4xx/5xx) resumen el resultado sin tener que leer el cuerpo.
+    - Los **verbos HTTP** expresan la intención: `GET` lee mediante la URL, `POST` crea, `PUT` reemplaza, `PATCH` modifica parcialmente y `DELETE` borra.
+    - Los **códigos de estado** (2xx/4xx/5xx) resumen el resultado sin tener que leer el cuerpo.
     - **JSON** es el formato habitual del cuerpo de petición/respuesta en las APIs modernas.
     - **REST** modela los datos como recursos con URL propia, y usa los verbos HTTP para operar sobre ellos — la ruta identifica *qué*, el verbo identifica *qué operación*.
     - `@RestController` + `@RequestMapping` + `@GetMapping` son las anotaciones que traducen "verbo + ruta" en un método Java concreto; `ResponseEntity` construye la respuesta con su código de estado.
-    - Un código de error como `404` no lo decide Tomcat solo: nace de una comprobación en el service, que el controller traduce en `ResponseEntity.notFound().build()` en vez de `ResponseEntity.ok(...)`.
+    - Un código como `404` no aparece automáticamente: la aplicación detecta que el recurso no existe y lo traduce a una respuesta HTTP. En este primer ejemplo, el controller convierte un resultado `null` en `ResponseEntity.notFound()`.
     - El servidor embebido (Tomcat) que atiende las peticiones lo trae `spring-boot-starter-webmvc` — no lo arrancas tú a mano.
     - Usar un protocolo estándar como HTTP significa que cualquier cliente existente ya sabe hablar con tu API, sin acordar nada a medida.

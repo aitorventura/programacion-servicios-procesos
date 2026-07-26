@@ -59,29 +59,37 @@ Pero mockear no es obligatorio: a veces sí quieres saber si las piezas reales (
 
 ---
 
-## 🆚 Test unitario vs. test de integración
+## 🆚 Test aislado vs. test de integración
 
-Según esa decisión, un test cae en uno de estos dos grupos:
+Según las piezas que quieras incluir, puedes plantear el test de dos formas:
 
-| | Test unitario | Test de integración |
-|---|---|---|
-| **Qué prueba** | Una pieza aislada (una clase, un método) | Varias piezas reales trabajando juntas |
-| **Colaboradores** | Simulados (*mocks*) | Reales |
-| **Velocidad** | Muy rápido | Más lento |
+|                   | Test aislado                        | Test de integración                          |
+| ----------------- | ----------------------------------- | -------------------------------------------- |
+| **Qué prueba**    | Una parte concreta de la aplicación | Varias partes reales trabajando juntas       |
+| **Dependencias**  | Se sustituyen mediante *mocks*      | Se utilizan las dependencias reales          |
+| **Base de datos** | No es necesaria                     | Puede utilizarse una base de datos de prueba |
+| **Velocidad**     | Muy rápido                          | Más lento                                    |
 
-Visualmente, la diferencia está en dónde se corta la cadena real de piezas — en un test unitario, justo después del controller; en uno de integración, en ningún sitio:
+Visualmente, la diferencia está en hasta dónde llega el test dentro de la aplicación:
 
 ```mermaid
 flowchart LR
-    subgraph U["🧪 Test unitario — @WebMvcTest"]
+    subgraph A["🧪 Test aislado — @WebMvcTest"]
         C1["Controller<br/>(real)"] --> S1["Service<br/>(🎭 mock)"]
     end
+
     subgraph I["🔗 Test de integración — @Testcontainers"]
-        C2["Controller<br/>(real)"] --> S2["Service<br/>(real)"] --> R2["Repository<br/>(real)"] --> DB[("PostgreSQL<br/>(real, en Docker)")]
+        C2["Controller<br/>(real)"] --> S2["Service<br/>(real)"]
+        S2 --> R2["Repository<br/>(real)"]
+        R2 --> DB[("PostgreSQL<br/>(real, en Docker)")]
     end
 ```
 
-El test unitario nunca llega a saber si hay una base de datos detrás siquiera — se detiene en el mock. El de integración recorre la cadena entera, con piezas reales de principio a fin.
+En el test aislado, el controller es real, pero el service se sustituye por un mock. De esta manera puedes comprobar cómo responde el controller sin depender de la lógica de negocio ni de una base de datos.
+
+En el test de integración, la petición recorre varias piezas reales de la aplicación. Esto permite comprobar que funcionan correctamente en conjunto, aunque el test tarda más en ejecutarse.
+
+Los **tests unitarios** que ya conoces son un tipo de test aislado: normalmente prueban una clase o un método concreto sustituyendo sus dependencias. En este apartado aplicarás esa misma idea de aislamiento a un controller mediante `@WebMvcTest`.
 
 ---
 
@@ -127,22 +135,29 @@ class LibroControllerTest {
 
     @Test
     void getAll_DebeDevolverListaDeLibros() throws Exception {
-        var dto = new LibroResponseDTO(1L, "El nombre del viento", new BigDecimal("19.95"),
-                LocalDate.of(2007, 3, 27), new EditorialDTO("Plaza & Janés"));
+        var dto = new LibroResponseDTO(
+                1L,
+                "El nombre del viento",
+                new BigDecimal("19.95"),
+                LocalDate.of(2007, 3, 27),
+                new EditorialDTO(1L, "Plaza & Janés")
+        );
+
         when(libroService.findAll()).thenReturn(List.of(dto));
 
         mockMvc.perform(get("/api/v1/libros"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].titulo").value("El nombre del viento"));
+                .andExpect(jsonPath("$[0].titulo")
+                        .value("El nombre del viento"));
     }
 }
 ```
 
 Pieza a pieza:
 
-- `@WebMvcTest(LibroController.class)`: arranca solo la capa web de Spring (el controller y lo relacionado con MVC), sin levantar toda la aplicación ni conectar con una base de datos real — mucho más rápido que un arranque completo.
+- `@WebMvcTest(LibroController.class)`: prepara un entorno reducido para probar el controller sin arrancar toda la aplicación ni conectarse a una base de datos real. Spring carga únicamente los elementos necesarios para recibir la petición, dirigirla al método correspondiente y construir la respuesta.
 - `@AutoConfigureMockMvc(addFilters = false)`: `@WebMvcTest` ya te prepara un `MockMvc` listo para usar; esta anotación te deja ajustar esa configuración. `addFilters = false` desactiva los filtros de *servlet* que se aplican a cada petición — en concreto, los que añadirá Spring Security a partir del Tema 2. Sin este flag, en cuanto tu proyecto tenga seguridad configurada, estos mismos tests empezarían a fallar con un `401` en vez del código que de verdad quieres comprobar, porque la petición simulada quedaría bloqueada por el login antes de llegar al controller. Ponerlo ya, desde ahora, evita ese problema por adelantado.
-- `@MockitoBean private LibroService libroService`: sustituye el service real por un mock — el test prueba el controller de forma aislada, sin que la lógica del service (ni la base de datos que hay detrás) entre en juego.
+- `@MockitoBean private LibroService libroService`: sustituye el service real por un mock. Así puedes decidir qué devolverá en cada caso y comprobar únicamente cómo reacciona el controller.
 - `when(libroService.findAll()).thenReturn(List.of(dto))`: esta es la parte de **preparar**. Le dices al mock, explícitamente, qué debe devolver cuando alguien lo llame con `findAll()` — no hay ninguna base de datos decidiéndolo, decides tú, a mano, exactamente qué datos ve el controller.
 - `mockMvc.perform(get(...))`: construye y envía una petición simulada — el equivalente, en código, al `curl` que ya conoces.
 - `.andExpect(status().isOk())` / `.andExpect(jsonPath("$[0].titulo").value(...))`: la parte de **afirmar**. `jsonPath` navega el cuerpo JSON de la respuesta como si fuera un mini-selector — aquí, `$[0].titulo` es el campo `titulo` del primer elemento del array que devuelve `getAll()`.
@@ -153,18 +168,24 @@ Pieza a pieza:
 @Test
 void create_DebeDevolver400_CuandoElDtoNoEsValido() throws Exception {
     String body = """
-            {"titulo": "", "precio": -5, "fechaPublicacion": null, "editorialId": -1}
+            {
+              "titulo": "",
+              "precio": -5,
+              "fechaPublicacion": null,
+              "editorialId": -1
+            }
             """;
 
     mockMvc.perform(post("/api/v1/libros")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(body))
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.status").value(400));
+            .andExpect(status().isBadRequest());
 }
 ```
 
-Fíjate en que este test **no usa `when(...)` en ningún momento**. La validación de `@Valid` ocurre antes de que el controller llegue a llamar a `libroService.create(...)` — Spring rechaza la petición con un `400` sin que el service (ni, por tanto, el mock que lo sustituye) entre nunca en juego. Este test concreto es de **capa web**: prueba que el controller valida correctamente el DTO de entrada (gracias a `@Valid`, que ya viste el apartado anterior) sin necesitar preparar ningún valor de retorno.
+Fíjate en que este test **no utiliza `when(...)`**. La validación de `@Valid` se ejecuta antes de que el controller llame a `libroService.create(...)`. Como el cuerpo incumple varias restricciones del DTO, Spring detiene la petición y responde con `400 Bad Request` sin que el service llegue a intervenir.
+
+En este momento, el test comprueba únicamente el código de estado porque todavía no has definido un formato propio para el cuerpo de los errores. Más adelante, si la aplicación incorpora un manejador global que devuelva una estructura estable —por ejemplo, con el código, el mensaje y los campos inválidos—, podrás añadir comprobaciones `jsonPath(...)` sobre esa estructura.
 
 ### 🎭 Instruyendo al mock para que falle: `thenThrow`
 
@@ -201,7 +222,7 @@ Tu propio proyecto ya tiene el CRUD completo de `Videojuego` y de `Estudio`, doc
 
     - Un **test automatizado** comprueba comportamiento sin intervención humana, y se puede repetir en cada cambio; sigue el patrón preparar-actuar-afirmar. `assertEquals(esperado, actual)`: el orden importa para que el mensaje de error, si falla, se lea bien.
     - Un **mock** es un objeto falso que sustituye a una dependencia real, programado por ti (`when(...).thenReturn(...)`) para aislar lo que quieres probar de todo lo demás — así el resultado del test no depende de que haya una base de datos real conectada, con datos reales dentro.
-    - Un test **unitario** aísla una pieza con **mocks**; un test de **integración** prueba varias piezas reales juntas.
+    - Un **test aislado** se centra en una parte concreta de la aplicación y sustituye sus dependencias mediante mocks. Los tests unitarios son el ejemplo más sencillo de este enfoque. Un **test de integración** prueba varias piezas reales funcionando juntas.
     - **MockMvc** simula peticiones HTTP contra tus controladores sin arrancar un servidor real — un cliente HTTP programable y repetible.
     - `@WebMvcTest` arranca solo la capa web; `@AutoConfigureMockMvc(addFilters = false)` desactiva los filtros de seguridad para que estos tests no dependan de login; `@MockitoBean` sustituye una dependencia por un mock; `mockMvc.perform(...).andExpect(...)` construye la petición y afirma el resultado; `jsonPath` navega el cuerpo JSON.
     - `when(mock.metodo(...)).thenReturn(valor)` prepara un valor de éxito; `.thenThrow(excepcion)` prepara que el mock lance una excepción en su lugar (el mismo camino que seguiría `orElseThrow(...)` en el service real).

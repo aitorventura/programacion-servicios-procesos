@@ -45,13 +45,13 @@ public class LibroController {
 }
 ```
 
-`getAll` y `getById` responden con `200`. Los otros tres, con el mismo criterio — qué código de estado espera cada uno y si repetirlo cambia algo:
+`getAll` y `getById` responden con `200 OK`. Los tres endpoints de escritura utilizan un código distinto según el resultado que producen:
 
-| Verbo | Código habitual de éxito | ¿Repetirlo cambia algo? |
+| Verbo | Código habitual de éxito | Qué indica |
 |---|---|---|
-| `POST` | `201 Created` | Sí — crea un recurso nuevo cada vez |
-| `PUT` | `200 OK` | No |
-| `DELETE` | `204 No Content` | No |
+| `POST` | `201 Created` | Se ha creado un recurso nuevo. |
+| `PUT` | `200 OK` | El recurso se ha reemplazado correctamente y se devuelve su estado actualizado. |
+| `DELETE` | `204 No Content` | El recurso se ha eliminado y no hay ningún cuerpo que devolver. |
 
 Y, elemento a elemento, lo que hace cada pieza de esos tres métodos:
 
@@ -79,7 +79,11 @@ flowchart LR
     B -- "se visualiza en" --> C["🖥️ Swagger UI<br/>(/swagger-ui.html)"]
 ```
 
-Lo importante: tú no escribes el documento OpenAPI a mano. Una librería lo genera automáticamente, leyendo las mismas anotaciones (`@RestController`, `@GetMapping`, los DTOs...) que ya usas para construir la API — el contrato y el código nunca se desincronizan porque son la misma fuente.
+Lo importante: tú no escribes el documento OpenAPI completo a mano. Una librería genera automáticamente gran parte del contrato leyendo las mismas anotaciones (`@RestController`, `@GetMapping`, los DTOs...) que ya utilizas para construir la API.
+
+Así, las rutas, los verbos y los esquemas básicos se mantienen vinculados al código. Más adelante añadirás algunas anotaciones de OpenAPI para completar información que springdoc no puede deducir por sí solo, como la descripción de cada operación o los distintos códigos de respuesta posibles.
+
+Esto evita duplicar mucha información: si añades un nuevo endpoint o cambias los campos de un DTO, la documentación generada refleja esos cambios automáticamente. Algunos detalles, como las descripciones o los códigos de respuesta posibles, sí tendrás que indicarlos mediante anotaciones específicas.
 
 ### 🖥️ Así se ve Swagger UI, paso a paso
 
@@ -91,7 +95,11 @@ Esto es exactamente lo que vas a tener delante en tu propia pantalla, sobre tu p
 4. Pulsas **Execute**.
 
 !!! info "Swagger UI no es solo documentación: manda peticiones HTTP reales"
-    Ese último clic, **Execute**, no es una simulación. Swagger UI construye y envía una petición HTTP de verdad contra tu aplicación, corriendo en `localhost:8080` — la misma petición que mandarías con `curl`, byte a byte. La respuesta que aparece justo debajo (código de estado, cabeceras, cuerpo) es la respuesta real de tu servidor, no una previsualización. Si el `POST` crea un libro, ese libro queda guardado en tu base de datos exactamente igual que si lo hubieras creado con `curl`.
+    Al pulsar **Execute**, Swagger UI construye y envía una petición HTTP real contra tu aplicación.
+
+    Es una petición equivalente a la que podrías enviar mediante `curl`, Postman o cualquier otro cliente HTTP: llega al mismo endpoint y ejecuta el mismo código del controller.
+
+    La respuesta que aparece debajo —código de estado, cabeceras y cuerpo— es la respuesta real del servidor. Si ejecutas un `POST` y se crea un libro, quedará guardado en la base de datos.
 
 ### Documentando con OpenAPI
 
@@ -162,7 +170,7 @@ Para el diagrama de arriba —anotaciones, contrato OpenAPI, Swagger UI— exist
 
 ??? tip "Abrir resumen"
 
-    - El **contrato** de una API describe formalmente sus rutas, verbos y datos; **OpenAPI** es el formato estándar de ese contrato, generado automáticamente a partir de las anotaciones del código (no se escribe a mano).
+    - El **contrato** de una API describe sus rutas, verbos y datos; **OpenAPI** es un formato estándar para representarlo. Springdoc genera automáticamente gran parte de ese contrato a partir de los controllers, los DTOs y sus anotaciones.
     - **Swagger UI** agrupa tus endpoints por controller; al desplegar uno ves su esquema, y con "Try it out" + "Execute" mandas una petición HTTP real contra tu aplicación, sin escribir código — la misma petición que mandarías con `curl`.
     - `@RequestBody` mapea el cuerpo JSON a un objeto Java; `@Valid` activa su validación.
     - `@ApiResponses`/`@ApiResponse` documentan explícitamente qué códigos puede devolver un endpoint (más allá del `200` genérico por defecto); `springdoc.swagger-ui.path` mueve la ruta de entrada a Swagger UI, aunque por debajo siempre redirige a `/swagger-ui/index.html`.
