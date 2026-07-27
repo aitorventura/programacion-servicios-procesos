@@ -327,6 +327,8 @@ flowchart LR
 
 #### La solución completa, con las dos mitades del flujo
 
+Para hablar con RabbitMQ hace falta una dependencia nueva en el `pom.xml`, `spring-boot-starter-amqp` — es la que trae `RabbitTemplate`, `@RabbitListener` y todo lo que ves a continuación; sin ella, ninguna de estas anotaciones haría nada. La añadirás tú mismo en la próxima actividad.
+
 Antes de nada, una pieza que suele generar dudas: el que publica solo conoce el **exchange** (`CATALOGO_EXCHANGE`); el que escucha solo conoce la **cola** (`ACTIVIDAD_LIBRO_QUEUE`) — ninguno de los dos menciona al otro directamente. Lo que conecta ambos nombres es un **binding**: una regla, independiente de publicador y consumidor, que asocia un exchange con una cola bajo un patrón de *routing key* concreto — es literalmente la ficha del clasificador de la oficina de correos ("todo lo que traiga esta dirección, a este casillero"), y es donde de verdad se decide el destino final de un mensaje.
 
 ```java
