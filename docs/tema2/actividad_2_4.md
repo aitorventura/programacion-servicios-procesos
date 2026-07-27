@@ -356,6 +356,11 @@ public record AuthMeResponse(String username, List<String> roles) {}
 ```
 
 ```java
+@Operation(summary = "Consultar la identidad del usuario autenticado")
+@ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Identidad obtenida correctamente"),
+        @ApiResponse(responseCode = "401", description = "No autenticado (token ausente o inválido)")
+})
 @GetMapping("/me")
 public ResponseEntity<AuthMeResponse> me() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

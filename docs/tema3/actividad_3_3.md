@@ -1,207 +1,134 @@
-# 🧪 Actividad 3.3: El evento del warm-up de caché (1/2)
+# 🧪 Actividad 3.3: El listener `@Async` del warm-up (2/2)
 
-!!! info "Práctica guiada — pieza 1 de 2"
-    Antes de nada, montas Redis y activas la caché real de `getTopNovedades()`. Con eso listo, construyes el evento interno y su publicación. Todavía no vas a ver ningún efecto sobre la lentitud de `/top` tras una escritura — eso llega en la Actividad 3.4 con el listener.
+!!! info "Práctica guiada — pieza 2 de 2"
+    Hoy completas el warm-up: el listener asíncrono que recalienta la caché, y la medición real de que ya no se paga el coste tras cada escritura.
 
 ## Qué vas a practicar
 
-- Añadir Redis a tu proyecto y activar una caché real con `@Cacheable`/`@CacheEvict`.
-- Medir el problema real antes de resolverlo.
-- Crear un evento interno como `record` inmutable.
-- Publicar un evento con `ApplicationEventPublisher`.
+- Construir un listener `@Async` + `@TransactionalEventListener(AFTER_COMMIT)`.
+- Verificar en el log que el listener corre en un hilo distinto.
+- Medir la mejora real de rendimiento.
+- Entender por qué `AFTER_COMMIT` importa, provocando el problema que evita.
 
 ---
 
 ## Requisitos previos
 
-Tu `VideojuegoService` con `getTopNovedades()` funcionando (sin caché todavía, Actividad 1.4) — la caché con Redis y `@Cacheable` la montas tú mismo en el Paso 0 de hoy.
+Tu evento `TopNovedadesInvalidadoEvent` y su publicación (Actividad 3.2).
 
 ---
 
-## Paso 0 — Redis y `@Cacheable`, antes de nada
+## Paso 1 — El listener, guiado al completo
 
-Añade Redis a `.devcontainer/docker-compose.yml`, junto a tus servicios ya existentes:
-
-```yaml
-services:
-  # ... tus servicios app, postgres, mongodb y rabbitmq ya existentes ...
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-```
-
-En tu `pom.xml`:
-
-```xml
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-cache</artifactId>
-</dependency>
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-data-redis</artifactId>
-</dependency>
-```
-
-Y en `application-dev.yaml`:
-
-```yaml
-spring:
-  data:
-    redis:
-      host: redis
-      port: 6379
-```
-
-Otra vez el mismo patrón de siempre: `redis` es el nombre del servicio en `.devcontainer/docker-compose.yml`, no `localhost` — tu aplicación y Redis son contenedores hermanos en la misma red.
-
-Añade `@EnableCaching` a `GamevaultApplication.java`, junto a `@SpringBootApplication`:
+Antes de nada, añade `@EnableAsync` a `GamevaultApplication.java`, junto a `@SpringBootApplication`:
 
 ```java
 @SpringBootApplication
 @EnableCaching
+@EnableAsync
 public class GamevaultApplication {
     // ...
 }
 ```
 
-`@EnableCaching` es lo que activa, a nivel de toda la aplicación, que Spring se fije en anotaciones como `@Cacheable`/`@CacheEvict` que vas a añadir ahora mismo — sin ella, esas anotaciones se quedarían ahí escritas pero Spring las ignoraría por completo, en silencio, sin ningún error que te avise.
-
-Ahora anota `getTopNovedades()` con `@Cacheable`, y los tres métodos de escritura de `VideojuegoService` con `@CacheEvict`:
-
-```java
-@Cacheable("topNovedades")
-public List<VideojuegoResponseDTO> getTopNovedades() {
-    // ... tu código ya existente, con el Thread.sleep(2000) ...
-}
-```
-
-```java
-@CacheEvict(value = "topNovedades", allEntries = true)
-@Transactional
-public VideojuegoResponseDTO create(VideojuegoCreateDTO dto) {
-    // ... tu lógica de creación ya existente ...
-}
-```
-
-Repite `@CacheEvict(value = "topNovedades", allEntries = true)` en `update()` y en `delete()`. `@Cacheable` guarda el resultado la primera vez que se llama y lo devuelve directamente en las siguientes, sin ejecutar el método; `@CacheEvict` borra ese resultado guardado cuando algo cambia, para que la próxima llamada vuelva a calcularlo.
-
-**Comprueba** que funciona: pide `/api/v1/videojuegos/top` dos veces seguidas (la segunda debería ser instantánea) y confírmalo mirando dentro de Redis:
-
-```bash
-docker exec -it <tu-contenedor-redis> redis-cli
-> KEYS *
-```
-
----
-
-## Paso 1 — Medir el problema que vas a resolver
-
-```bash
-# Primera llamada: paga el Thread.sleep(2000)
-time curl -s http://localhost:8080/api/v1/videojuegos/top > /dev/null
-
-# Segunda llamada: sale de caché, instantánea
-time curl -s http://localhost:8080/api/v1/videojuegos/top > /dev/null
-
-# Crea un videojuego (invalida la caché con @CacheEvict)
-curl -X POST http://localhost:8080/api/v1/videojuegos \
-  -H "Content-Type: application/json" \
-  -d '{"titulo":"Test","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'
-
-# Tercera llamada: ha vuelto a pagar los 2 segundos
-time curl -s http://localhost:8080/api/v1/videojuegos/top > /dev/null
-```
-
-**Anota** los tres tiempos medidos. Ese "tercer usuario que paga otra vez los 2 segundos, justo después de una escritura" es exactamente lo que el warm-up de esta y la próxima actividad va a eliminar.
-
----
-
-## Paso 2 — La clase de evento
-
-Decide junto con el enunciado qué información debe transportar: para este warm-up basta con saber **cuándo** ocurrió la invalidación (no necesitas saber qué operación la causó, ni sobre qué videojuego).
+Sin `@EnableAsync`, Spring ignora por completo la anotación `@Async` que vas a usar a continuación — el método se ejecutaría igualmente, pero en el mismo hilo de quien lo llama, sin ningún error que te avise de que la asincronía no se ha activado.
 
 ```java
 package com.tunombre.gamevault.catalogo.eventos;
 
-import java.time.Instant;
+import com.tunombre.gamevault.catalogo.VideojuegoService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
-public record TopNovedadesInvalidadoEvent(Instant momento) {}
-```
-
-**Pregunta**: ¿por qué este evento vive en un paquete `catalogo.eventos` (interno) y no en `catalogo.api.eventos` (si tu proyecto ya tiene ese paquete, del `VideojuegoEvent` de RabbitMQ)? Relaciona tu respuesta con la distinción que viste en la teoría entre eventos internos de Spring y mensajería RabbitMQ entre módulos.
-
----
-
-## Paso 3 — La publicación, guiada al completo
-
-En `VideojuegoService`, añade `ApplicationEventPublisher` a tus dependencias:
-
-```java
 @Service
 @RequiredArgsConstructor
-public class VideojuegoService {
-    private final VideojuegoRepository videojuegoRepository;
-    private final EstudioRepository estudioRepository;
-    private final ApplicationEventPublisher eventPublisher;
+public class TopNovedadesWarmupListener {
 
-    @CacheEvict(value = "topNovedades", allEntries = true)
-    @Transactional
-    public VideojuegoResponseDTO create(VideojuegoCreateDTO dto) {
-        // ... tu lógica de creación ya existente ...
-        Videojuego saved = videojuegoRepository.save(v);
+    private final VideojuegoService videojuegoService;
 
-        eventPublisher.publishEvent(new TopNovedadesInvalidadoEvent(Instant.now()));
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @Async
+    public void onTopNovedadesInvalidado(TopNovedadesInvalidadoEvent event) {
+        System.out.println("[WARMUP] Empieza en hilo: " + Thread.currentThread().getName()
+                + " - evento de: " + event.momento());
 
-        return mapToDTO(saved);
+        videojuegoService.getTopNovedades(); // recalienta la caché
+
+        System.out.println("[WARMUP] Termina en hilo: " + Thread.currentThread().getName());
     }
 }
 ```
 
-`eventPublisher.publishEvent(...)` dispara el evento. Ahora mismo no pasa nada visible — no hay nadie escuchando todavía.
+`@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)` espera a que la transacción que publicó el evento termine con éxito antes de disparar este método; `@Async` hace que, cuando se dispare, corra en un hilo aparte. Llamar de nuevo a `getTopNovedades()` es lo que recalienta la caché — como sigue anotado `@Cacheable`, este propio hilo va a pagar los 2 segundos del `Thread.sleep`, pero **en segundo plano**, sin que ningún usuario esté esperando esa respuesta.
 
 ---
 
-## Mini-reto — repite en `update()` y `delete()`
+## Paso 2 — Verificar el hilo, y retirar el listener de prueba
 
-Sin más código dado, añade la misma línea de publicación (`eventPublisher.publishEvent(new TopNovedadesInvalidadoEvent(Instant.now()))`) en `update()` y en `delete()` de `VideojuegoService` — en el mismo punto relativo donde ya está en `create()` (justo antes de devolver el resultado).
+Si todavía tienes el `ListenerDePruebaTemporal` de la Actividad 3.2, **retíralo ahora** — ya no lo necesitas.
+
+Crea un videojuego y mira el log:
+
+```bash
+curl -X POST http://localhost:8080/api/v1/videojuegos \
+  -H "Content-Type: application/json" \
+  -d '{"titulo":"Test2","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'
+```
+
+**Anota** los dos nombres de hilo que ves en las trazas `[WARMUP] Empieza...`/`Termina...`. **Compara** con el nombre de hilo que anotaste en la Actividad 3.2 (sin `@Async`): ¿son el mismo tipo de hilo, o claramente distintos?
 
 ---
 
-## Paso 4 — Comprobar que se publica, con un listener trivial temporal
+## Paso 3 — La medición estrella
 
-Añade, **temporalmente**, esta clase para verificar que tu evento realmente se dispara:
+Repite el protocolo de medición de la Actividad 3.2, pero ahora con el warm-up completo:
+
+```bash
+# Crea un videojuego (dispara el warm-up en segundo plano)
+curl -X POST http://localhost:8080/api/v1/videojuegos \
+  -H "Content-Type: application/json" \
+  -d '{"titulo":"Test3","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'
+
+# Espera unos segundos a que el warm-up termine en segundo plano
+sleep 3
+
+# Mide /top — ¿cuánto tarda ahora?
+time curl -s http://localhost:8080/api/v1/videojuegos/top > /dev/null
+```
+
+**Anota** el tiempo. **Compara** con las mediciones "antes" que hiciste en la Actividad 3.2 (donde el tercer usuario pagaba ~2 segundos). Documenta la diferencia con tus propios números.
+
+---
+
+## Paso 4 — Experimento sobre `AFTER_COMMIT`
+
+Cambia temporalmente tu listener a `@EventListener` a secas (sin `@TransactionalEventListener`, sin fase):
 
 ```java
-package com.tunombre.gamevault.catalogo.eventos;
-
-import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Component;
-
-@Component
-public class ListenerDePruebaTemporal {
-
-    @EventListener
-    public void onTopNovedadesInvalidado(TopNovedadesInvalidadoEvent event) {
-        System.out.println("[TRAZA] Evento recibido en hilo: " + Thread.currentThread().getName()
-                + " - momento: " + event.momento());
-    }
+@EventListener
+@Async
+public void onTopNovedadesInvalidado(TopNovedadesInvalidadoEvent event) {
+    // ...
 }
 ```
 
-Crea un videojuego y mira la consola. **Comprueba** que la traza aparece. **Anota** el nombre del hilo en el que se ejecuta este listener — sin `@Async` todavía, ¿es el mismo hilo que procesó la petición HTTP, o uno distinto? Este dato es el contraste clave que vas a necesitar la próxima actividad: cuando añadas `@Async`, ese nombre de hilo va a cambiar.
+Añade, también temporalmente, un log que consulte cuántos videojuegos ve el listener justo al empezar (por ejemplo, contando el resultado de `videojuegoService.findAll().size()` antes de recalentar).
 
-Cuando termines de comprobarlo, **retira** esta clase — es solo para esta verificación, en la Actividad 3.4 construyes el listener real.
+**Razona**, sin necesidad de reproducirlo de forma determinista (es una condición de carrera, puede que no falle siempre): si este listener se disparara justo antes de que el `INSERT` del nuevo videojuego se confirmara en la base de datos, ¿qué vería exactamente al consultar? ¿Qué consecuencia tendría eso sobre el contenido de la caché recalentada?
+
+Vuelve a `@TransactionalEventListener(phase = AFTER_COMMIT)` y explica con tus palabras qué diferencia concreta soluciona respecto al `@EventListener` a secas que acabas de probar.
 
 ---
 
 ## Pregunta final
 
-¿Por qué conviene que `TopNovedadesInvalidadoEvent` sea un `record` inmutable, sabiendo que en la próxima actividad va a ser leído desde un hilo distinto al que lo publica? ¿Qué problema evita concretamente la inmutabilidad, comparado con si `TopNovedadesInvalidadoEvent` fuera una clase mutable con setters?
+Si dos profesores del centro crean dos videojuegos casi a la vez (segundos de diferencia), ¿cuántos eventos se publican y cuántos hilos intentan recalentar la caché? ¿Es esto un error grave del sistema, o solo trabajo duplicado sin consecuencias incorrectas? Propón, sin implementarla, alguna forma de evitar ese trabajo duplicado (piensa en si haría falta algún tipo de coordinación entre los hilos, o si bastaría con alguna comprobación previa).
 
 ---
 
 ## ✅ Cierre
 
-Tu GameVault ya emite un evento cada vez que la caché de novedades se invalida — aunque, de momento, nadie reaccione a él de forma permanente. En la próxima actividad construyes el listener `@Async` que cierra el ciclo: recalentar la caché en un hilo aparte, justo después del commit.
+El warm-up está completo y medido: tu GameVault ya no hace pagar al primer usuario los 2 segundos tras cada escritura. En el apartado siguiente configuras manualmente el `TaskExecutor` que hay detrás de este `@Async`, con nombre y prioridad propios.

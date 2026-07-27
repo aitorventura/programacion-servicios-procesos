@@ -8,7 +8,7 @@ Tomas el control fino de algo que, hasta ahora, ha funcionado "por defecto": el 
 
 ## 🏊 Por qué un pool, en serio esta vez
 
-Ya mencionaste la idea en la Actividad 3.2: crear un hilo nuevo por cada tarea no escala. Ahora, en detalle: cada hilo tiene un coste real de creación y ocupa memoria propia mientras existe — si un pico de tareas provocara crear miles de hilos de golpe, podría llegar a tumbar el proceso entero por agotamiento de recursos.
+Ya mencionaste la idea en la Actividad 3.1: crear un hilo nuevo por cada tarea no escala. Ahora, en detalle: cada hilo tiene un coste real de creación y ocupa memoria propia mientras existe — si un pico de tareas provocara crear miles de hilos de golpe, podría llegar a tumbar el proceso entero por agotamiento de recursos.
 
 Un **pool de hilos** resuelve esto con un grupo de hilos reutilizables que toman tareas de una cola, en vez de crear un hilo nuevo por tarea. Tres parámetros lo definen:
 
@@ -57,7 +57,7 @@ public class WarmupExecutorConfig {
 ```
 
 - `corePoolSize(2)`/`maxPoolSize(4)`: un pool deliberadamente pequeño — el warm-up no necesita mucha capacidad, es una tarea de fondo ocasional, no el núcleo de la aplicación.
-- `threadNamePrefix("warmup-")`: esto es, en la práctica, la herramienta de **depuración** más útil de todo el apartado — con este prefijo, cualquier hilo llamado `warmup-1`, `warmup-2`... se distingue a simple vista en el log o en jconsole, sin confundirse con los hilos genéricos `http-nio-*` de Tomcat o los del pool por defecto.
+- `threadNamePrefix("warmup-")`: esto es, en la práctica, la herramienta de **depuración** más útil de todo el apartado — con este prefijo, cualquier hilo llamado `warmup-1`, `warmup-2`... se distingue a simple vista en el log, sin confundirse con los hilos genéricos `http-nio-*` de Tomcat o los del pool por defecto.
 - `setThreadPriority(Thread.MIN_PRIORITY)`: prioridad baja, con honestidad sobre sus límites — es exactamente el caso de tarea de fondo que debe ceder el paso ante trabajo más urgente (las peticiones de usuarios reales).
 
 ### Dirigir `@Async` a este pool concreto
@@ -76,7 +76,7 @@ public void onTopNovedadesInvalidado(TopNovedadesInvalidadoEvent event) {
 
 ## 🔍 Depuración y documentación
 
-Con el nombre de hilo distintivo, localizar los hilos `warmup-*` en un thread dump o en jconsole (las mismas herramientas de la Actividad 3.2) es inmediato — y puedes comprobar directamente su prioridad configurada. **Documentar** la decisión de configuración significa dejar por escrito, en un comentario junto al bean o en la documentación del proyecto, por qué se eligieron esos tamaños de pool y esa prioridad — no basta con que el código "funcione", debe quedar claro el razonamiento detrás de cada número.
+Con el nombre de hilo distintivo, localizar los hilos `warmup-*` en el log es inmediato — se distinguen a simple vista de los `http-nio-*` de Tomcat o los genéricos `task-*` del executor por defecto. **Documentar** la decisión de configuración significa dejar por escrito, en un comentario junto al bean o en la documentación del proyecto, por qué se eligieron esos tamaños de pool y esa prioridad — no basta con que el código "funcione", debe quedar claro el razonamiento detrás de cada número.
 
 ---
 

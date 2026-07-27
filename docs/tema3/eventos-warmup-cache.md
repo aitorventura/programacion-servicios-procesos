@@ -2,7 +2,7 @@
 
 # 🧩 2. Eventos internos de Spring: el warm-up de caché (1/2)
 
-Sabes que tu aplicación ya es multihilo (pool de Tomcat, listeners de RabbitMQ), y que el warm-up de la caché quedó como problema pendiente. Su solución llega ahora, en dos piezas repartidas en dos apartados: hoy el evento y su publicación; en el próximo apartado, el listener que reacciona.
+Sabes que tu aplicación ya es multihilo (pool de Tomcat, listeners de RabbitMQ). Ahora vas a construir tú mismo una pieza nueva que se apoya en eso: el warm-up de una caché, repartido en dos apartados — hoy el evento y su publicación; en el próximo apartado, el listener que reacciona.
 
 ---
 

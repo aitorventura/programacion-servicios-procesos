@@ -1,13 +1,17 @@
-# 🧪 Actividad 3.1: RabbitMQ y el registro de actividad del catálogo
+# 🧪 Actividad 3.1: RabbitMQ, registro de actividad y los hilos reales de tu GameVault
 
-!!! info "Práctica guiada — misma sesión que la Actividad 3.2"
-    Antes de observar hilos reales en la Actividad 3.2 (que hacéis en esta misma sesión de dos horas, a continuación), hace falta que existan. Hoy montas RabbitMQ en tu proyecto por primera vez, y construyes un registro de actividad del catálogo a partir de eventos: cada vez que se crea, modifica o borra un videojuego, un mensaje viaja por una cola y otro hilo (el del listener) lo registra, sin que la petición HTTP original tenga que esperar a que eso termine.
+!!! warning "Descarga la plantilla"
+    📄 [Plantilla 3.1 — RabbitMQ, registro de actividad y los hilos reales de tu GameVault](plantillas/Actividad_3_1_PSP_Plantilla.docx){target="_blank" rel="noopener"}
+
+!!! info "Práctica guiada — construcción y observación, en una sola sesión"
+    Hoy montas RabbitMQ en tu proyecto por primera vez y construyes un registro de actividad del catálogo a partir de eventos: cada vez que se crea, modifica o borra un videojuego, un mensaje viaja por una cola y otro hilo (el del listener) lo registra, sin que la petición HTTP original tenga que esperar a que eso termine. Con eso funcionando, cierras la sesión **observando con tus propios ojos** esos hilos reales ejecutándose en tu aplicación.
 
 ## Qué vas a practicar
 
 - Añadir un broker de mensajería (RabbitMQ) a tu Dev Container y a tu proyecto.
 - Publicar eventos del catálogo con `RabbitTemplate` y consumirlos con `@RabbitListener`.
 - Construir un registro de actividad completo: entidad, servicio, endpoint protegido y consumer.
+- Localizar en logs los hilos reales que atienden peticiones HTTP y eventos de RabbitMQ.
 
 ---
 
@@ -36,7 +40,9 @@ volumes:
   rabbitmq_data:
 ```
 
-El puerto `5672` es el protocolo AMQP (por el que va a hablar tu aplicación); el `15672` es una interfaz web de administración — levanta el contenedor desde la terminal integrada (comprueba primero el nombre real de tu proyecto con `docker compose ls` — no siempre es `gamevault_devcontainer`, depende de tu editor — y sustitúyelo en `docker compose -f .devcontainer/docker-compose.yml -p <proyecto> up -d rabbitmq`), o reconstruyendo el Dev Container: "Dev Containers: Rebuild Container" en VS Code, o recreándolo desde `devcontainer.json` en IntelliJ IDEA. Después entra en `http://localhost:15672` (usuario y contraseña por defecto: `guest`/`guest`) para ver, más adelante, las colas y los mensajes pasando por ellas en vivo.
+El puerto `5672` es el protocolo AMQP (por el que va a hablar tu aplicación); el `15672` es una interfaz web de administración. Reconstruye o reinicia tu Dev Container desde tu editor para que levante también el nuevo servicio, y comprueba que el contenedor de RabbitMQ está funcionando entrando en `http://localhost:15672` (usuario y contraseña por defecto: `guest`/`guest`) — vas a volver a esa interfaz más adelante para ver las colas y los mensajes pasando por ellas en vivo.
+
+**Captura**: la interfaz de administración de RabbitMQ (`http://localhost:15672`) ya cargada, como prueba de que el contenedor está levantado y accesible.
 
 En tu `pom.xml`:
 
@@ -58,13 +64,16 @@ spring:
     password: guest
 ```
 
-Como ya viste con `postgres` y `mongodb` en Acceso a Datos: `rabbitmq` es el nombre del servicio en `.devcontainer/docker-compose.yml`, no `localhost` — tu aplicación corre dentro de `app`, y RabbitMQ es un contenedor hermano más en la misma red.
+Como ya viste con `postgres` en Acceso a Datos: `rabbitmq` es el nombre del servicio en `.devcontainer/docker-compose.yml`, no `localhost` — tu aplicación corre dentro de `app`, y RabbitMQ es un contenedor hermano más en la misma red.
+
+!!! tip "¿No debería ir `guest`/`guest` a un fichero que no se commitea?"
+    `guest` es la cuenta por defecto de RabbitMQ, y RabbitMQ la bloquea por diseño para cualquier conexión que no venga de `localhost` — no importa qué configures, esa cuenta no sirve en remoto. Como todo esto corre dentro de tu Dev Container, en tu propia máquina, no hay riesgo real en dejarla en `application-dev.yaml`. Es distinto del secreto de JWT o la contraseña de `admin` que ya proteges en `application-dev-local.yml`: si esos se filtraran, servirían para hacerse pasar por alguien en tu API real — `guest`/`guest`, fuera de tu propia máquina, no abre nada.
 
 ---
 
 ## Paso 2 — El exchange y la cola de actividad
 
-Un **exchange** es quien recibe los mensajes publicados y decide, según su *routing key*, a qué cola (o colas) los reenvía:
+Un **exchange** es quien recibe los mensajes publicados y decide, según su *routing key*, a qué cola (o colas) los reenvía. `RabbitMQConfig` va en tu paquete `config` ya existente, junto a `SecurityConfig` — el mismo paquete `com.tunombre.gamevault.config`, `src/main/java/com/tunombre/gamevault/config/RabbitMQConfig.java`:
 
 ```java
 package com.tunombre.gamevault.config;
@@ -102,6 +111,8 @@ Un `TopicExchange` enruta según un patrón de texto: la cola de actividad se en
 
 ## Paso 3 — El evento y quién lo publica
 
+`VideojuegoEvent` va en `src/main/java/com/tunombre/gamevault/catalogo/api/eventos/VideojuegoEvent.java`:
+
 ```java
 package com.tunombre.gamevault.catalogo.api.eventos;
 
@@ -111,6 +122,8 @@ public record VideojuegoEvent(String tipo, Long videojuegoId) {
     public static final String VIDEOJUEGO_ELIMINADO = "VIDEOJUEGO_ELIMINADO";
 }
 ```
+
+`VideojuegoEventPublisher`, en cambio, va junto a tu `VideojuegoService`, en el mismo paquete `catalogo` (no en el subpaquete de eventos): `src/main/java/com/tunombre/gamevault/catalogo/VideojuegoEventPublisher.java`:
 
 ```java
 package com.tunombre.gamevault.catalogo;
@@ -127,7 +140,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class VideojuegoEventPublisher {
     private final RabbitTemplate rabbitTemplate;
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public void publicar(String tipo, Long videojuegoId) {
         String accion = switch (tipo) {
@@ -155,6 +168,8 @@ Inyecta `VideojuegoEventPublisher` en `VideojuegoService` (constructor, como tod
 ---
 
 ## Paso 4 — El registro de actividad: entidad, servicio y endpoint
+
+El registro de actividad es una funcionalidad autocontenida y nueva —no forma parte del catálogo, ni de la seguridad—, así que le corresponde su propio paquete, `actividad`, creado hoy: las cinco clases de este paso (entidad, repositorio, servicio, controller y el consumer que viene al final) van todas ahí, siguiendo el mismo criterio de "un paquete por funcionalidad" que ya usa el resto de tu proyecto. Empieza por la entidad, `src/main/java/com/tunombre/gamevault/actividad/Actividad.java`:
 
 ```java
 package com.tunombre.gamevault.actividad;
@@ -188,6 +203,8 @@ public class Actividad {
 }
 ```
 
+El repositorio, `ActividadRepository.java`, en el mismo paquete:
+
 ```java
 package com.tunombre.gamevault.actividad;
 
@@ -198,6 +215,8 @@ public interface ActividadRepository extends JpaRepository<Actividad, Long> {
     List<Actividad> findAllByOrderByFechaDesc();
 }
 ```
+
+El servicio, `ActividadService.java`:
 
 ```java
 package com.tunombre.gamevault.actividad;
@@ -221,9 +240,14 @@ public class ActividadService {
 }
 ```
 
+Y el controller, `ActividadController.java`, documentado igual que el resto de endpoints del proyecto:
+
 ```java
 package com.tunombre.gamevault.actividad;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -235,6 +259,12 @@ import java.util.List;
 public class ActividadController {
     private final ActividadService actividadService;
 
+    @Operation(summary = "Listar el registro de actividad del catálogo")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Listado obtenido correctamente, más reciente primero"),
+            @ApiResponse(responseCode = "401", description = "No autenticado"),
+            @ApiResponse(responseCode = "403", description = "Autenticado, pero sin rol ADMIN")
+    })
     @GetMapping
     public ResponseEntity<List<Actividad>> getAll() {
         return ResponseEntity.ok(actividadService.listar());
@@ -242,7 +272,10 @@ public class ActividadController {
 }
 ```
 
-Y el consumer que conecta la cola con el servicio, en un hilo del contenedor de listeners de AMQP, no en el de la petición HTTP que originó el evento:
+!!! note "Los `401`/`403` aquí sí, en el resto de endpoints todavía no"
+    Te habrás fijado en que este endpoint documenta `401` y `403`, algo que los endpoints de `VideojuegoController`/`EstudioController` no hacen todavía, aunque también están protegidos por rol desde la Actividad 2.5. Sería lo correcto añadirlos ahí también — pero es una tarea mecánica y repetitiva (la misma pareja de códigos, endpoint a endpoint) que aquí se deja pasar por no ser el foco de esta actividad. En un proyecto real no se debería dejar así: una documentación desactualizada o incompleta es peor que no tener documentación, porque invita a confiar en algo que no refleja el comportamiento real de la API.
+
+Por último, el consumer, `ActividadVideojuegoEventConsumer.java` — sigue en el mismo paquete `actividad`, aunque conecte con la cola: es aquí donde se registra la actividad, no en `catalogo`, así que se queda junto al resto de piezas que dependen de él. Conecta la cola con el servicio, en un hilo aparte reservado por Spring para esto, no en el de la petición HTTP que originó el evento:
 
 ```java
 package com.tunombre.gamevault.actividad;
@@ -258,7 +291,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ActividadVideojuegoEventConsumer {
     private final ActividadService actividadService;
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @RabbitListener(queues = RabbitMQConfig.ACTIVIDAD_VIDEOJUEGO_QUEUE)
     public void recibir(String payload) throws Exception {
@@ -276,9 +309,27 @@ Por último, en tu `SecurityConfig`, añade la regla de esta ruta nueva junto a 
 
 ---
 
-## Paso 5 — Comprobar el flujo completo
+## Paso 5 — Trazas temporales, para ver los hilos reales
 
-Crea, modifica y borra un par de videojuegos con tu API de siempre, y consulta `GET /api/v1/actividad` (con un token de un usuario `ADMIN`):
+Antes de comprobar el flujo, añade, **temporalmente**, esta línea al principio de `VideojuegoService.create()`:
+
+```java
+System.out.println("[TRAZA] create() en hilo: " + Thread.currentThread().getName());
+```
+
+Y esta otra al principio del método `recibir(...)` de `ActividadVideojuegoEventConsumer`:
+
+```java
+System.out.println("[TRAZA] recibir() en hilo: " + Thread.currentThread().getName());
+```
+
+Con estas dos líneas, la siguiente comprobación te sirve a la vez para validar el flujo **y** para ver los dos hilos reales implicados.
+
+---
+
+## Paso 6 — Comprobar el flujo completo, y leer los dos hilos
+
+Crea, modifica y borra un par de videojuegos con tu API de siempre, y consulta `GET /api/v1/actividad` (con un token de un usuario `ADMIN`). Aquí tienes los comandos con `curl`, pero puedes hacer exactamente lo mismo desde Swagger UI si lo prefieres:
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/videojuegos \
@@ -288,16 +339,32 @@ curl -X POST http://localhost:8080/api/v1/videojuegos \
 curl http://localhost:8080/api/v1/actividad -H "Authorization: Bearer $TOKEN_ADMIN"
 ```
 
-**Comprueba**: que aparece un registro por cada operación, más reciente primero. Échale un vistazo también a `http://localhost:15672` (la interfaz de administración) — en la sección *Queues* deberías ver `actividad.videojuego.queue` con mensajes entregados.
+**Comprueba**: que aparece un registro por cada operación, más reciente primero.
+
+**Captura**: la respuesta de `GET /api/v1/actividad` con los registros de tus operaciones.
+
+Échale un vistazo también a `http://localhost:15672` (la interfaz de administración) — entra en `actividad.videojuego.queue`, dentro de *Queues and Streams*.
+
+!!! tip "Si no ves ningún mensaje "esperando", es normal"
+    Con tu consumer arrancado y escuchando (`Consumers: 1`), RabbitMQ entrega cada mensaje casi al instante en cuanto llega — pasa de `Ready: 0` a `1` y vuelve a `0` en milisegundos, así que lo normal es que "Queued messages" te salga con todo a cero. Eso no es un fallo: es la prueba de que el mensaje se ha entregado y consumido correctamente, no que no haya pasado nada. Para ver el pico igualmente, cambia el desplegable de "Message rates" de *last minute* a **last 10 minutes** — con esa ventana más ancha sí se aprecia el pico de `Publish`/`Deliver` del momento en que has creado el videojuego. La prueba real de que ha funcionado, en cualquier caso, es el `GET /api/v1/actividad` de arriba, con un registro por operación.
+
+**Captura**: la página de `actividad.videojuego.queue` en la interfaz de RabbitMQ (aunque salga todo a cero).
+
+**Anota**: los dos nombres de hilo que han aparecido en la consola junto a las trazas `[TRAZA]` (deberían ser distintos — algo como `http-nio-8080-exec-N` para uno, y un nombre relacionado con el listener de RabbitMQ para el otro).
+
+**Captura**: la consola con las dos trazas `[TRAZA]` visibles, una por cada hilo.
+
+**Explica con tus propias palabras**, apoyándote en el diagrama de la teoría, por qué esos dos nombres no coinciden.
+
+---
+
+## Paso 7 — Retirar las trazas
+
+!!! warning "No dejes las trazas temporales en tu código"
+    Elimina las dos líneas `System.out.println("[TRAZA] ...")` que has añadido en el Paso 5 — eran solo para esta comprobación, no forman parte del código final.
 
 ---
 
 ## Pregunta final
 
 `VideojuegoController` termina de responder (con un `201 Created`, por ejemplo) sin esperar a que `ActividadVideojuegoEventConsumer` haya terminado de guardar el registro de actividad. ¿Qué consecuencia práctica tiene esto si consultases `GET /api/v1/actividad` en el mismísimo instante después de crear un videojuego? ¿Es un problema real, o algo asumible dado lo que este registro representa?
-
----
-
-## ✅ Cierre
-
-Tu GameVault ya tiene RabbitMQ funcionando y un registro de actividad completo, construido sobre un hilo distinto al de las peticiones HTTP. En la próxima actividad vas a **observar** esos hilos reales — los que ya has creado hoy sin necesidad de escribir `new Thread()` en ningún sitio.
