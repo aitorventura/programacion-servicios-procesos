@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../actividad_3_4/">
+        <link rel="prev" href="../actividad_3_3/">
       
       
-        <link rel="next" href="../actividad_3_5/">
+        <link rel="next" href="../actividad_3_4/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -1737,30 +1737,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 3.1 - RabbitMQ y el registro de actividad
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../actividad_3_2/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Actividad 3.2 - Cazando hilos en GameVault
+    Actividad 3.1 - RabbitMQ, registro de actividad y los hilos reales
     
   </span>
   
@@ -1847,12 +1824,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../actividad_3_3/" class="md-nav__link">
+      <a href="../actividad_3_2/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.3 - El evento del warm-up
+    Actividad 3.2 - El evento del warm-up
     
   </span>
   
@@ -1939,12 +1916,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../actividad_3_4/" class="md-nav__link">
+      <a href="../actividad_3_3/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.4 - El listener @Async del warm-up
+    Actividad 3.3 - El listener @Async del warm-up
     
   </span>
   
@@ -2135,12 +2112,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../actividad_3_5/" class="md-nav__link">
+      <a href="../actividad_3_4/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.5 - TaskExecutor propio
+    Actividad 3.4 - TaskExecutor propio
     
   </span>
   
@@ -2617,7 +2594,7 @@
 <p>Tomas el control fino de algo que, hasta ahora, ha funcionado "por defecto": el pool de hilos que hay detrás de <code>@Async</code>.</p>
 <hr>
 <h2 id="por-que-un-pool-en-serio-esta-vez">🏊 Por qué un pool, en serio esta vez<a class="headerlink" href="#por-que-un-pool-en-serio-esta-vez" title="Permanent link">¶</a></h2>
-<p>Ya mencionaste la idea en la Actividad 3.2: crear un hilo nuevo por cada tarea no escala. Ahora, en detalle: cada hilo tiene un coste real de creación y ocupa memoria propia mientras existe — si un pico de tareas provocara crear miles de hilos de golpe, podría llegar a tumbar el proceso entero por agotamiento de recursos.</p>
+<p>Ya mencionaste la idea en la Actividad 3.1: crear un hilo nuevo por cada tarea no escala. Ahora, en detalle: cada hilo tiene un coste real de creación y ocupa memoria propia mientras existe — si un pico de tareas provocara crear miles de hilos de golpe, podría llegar a tumbar el proceso entero por agotamiento de recursos.</p>
 <p>Un <strong>pool de hilos</strong> resuelve esto con un grupo de hilos reutilizables que toman tareas de una cola, en vez de crear un hilo nuevo por tarea. Tres parámetros lo definen:</p>
 <pre class="mermaid"><code>flowchart LR
     T["📥 Tareas nuevas"] --&gt; Q["📋 Cola&lt;br/&gt;(queueCapacity)"]
@@ -2667,7 +2644,7 @@
 </code></pre></div></td></tr></table></div>
 <ul>
 <li><code>corePoolSize(2)</code>/<code>maxPoolSize(4)</code>: un pool deliberadamente pequeño — el warm-up no necesita mucha capacidad, es una tarea de fondo ocasional, no el núcleo de la aplicación.</li>
-<li><code>threadNamePrefix("warmup-")</code>: esto es, en la práctica, la herramienta de <strong>depuración</strong> más útil de todo el apartado — con este prefijo, cualquier hilo llamado <code>warmup-1</code>, <code>warmup-2</code>... se distingue a simple vista en el log o en jconsole, sin confundirse con los hilos genéricos <code>http-nio-*</code> de Tomcat o los del pool por defecto.</li>
+<li><code>threadNamePrefix("warmup-")</code>: esto es, en la práctica, la herramienta de <strong>depuración</strong> más útil de todo el apartado — con este prefijo, cualquier hilo llamado <code>warmup-1</code>, <code>warmup-2</code>... se distingue a simple vista en el log, sin confundirse con los hilos genéricos <code>http-nio-*</code> de Tomcat o los del pool por defecto.</li>
 <li><code>setThreadPriority(Thread.MIN_PRIORITY)</code>: prioridad baja, con honestidad sobre sus límites — es exactamente el caso de tarea de fondo que debe ceder el paso ante trabajo más urgente (las peticiones de usuarios reales).</li>
 </ul>
 <h3 id="dirigir-async-a-este-pool-concreto">Dirigir <code>@Async</code> a este pool concreto<a class="headerlink" href="#dirigir-async-a-este-pool-concreto" title="Permanent link">¶</a></h3>
@@ -2684,7 +2661,7 @@
 <p><code>@Async("warmupExecutor")</code>, con el nombre del bean entre paréntesis, dirige explícitamente la ejecución a ese pool concreto — en vez del genérico por defecto. Aislar las tareas de fondo en su propio pool pequeño evita que un pico de warm-ups (por ejemplo, muchas escrituras seguidas) "robe" hilos que deberían estar disponibles para atender peticiones de usuarios reales.</p>
 <hr>
 <h2 id="depuracion-y-documentacion">🔍 Depuración y documentación<a class="headerlink" href="#depuracion-y-documentacion" title="Permanent link">¶</a></h2>
-<p>Con el nombre de hilo distintivo, localizar los hilos <code>warmup-*</code> en un thread dump o en jconsole (las mismas herramientas de la Actividad 3.2) es inmediato — y puedes comprobar directamente su prioridad configurada. <strong>Documentar</strong> la decisión de configuración significa dejar por escrito, en un comentario junto al bean o en la documentación del proyecto, por qué se eligieron esos tamaños de pool y esa prioridad — no basta con que el código "funcione", debe quedar claro el razonamiento detrás de cada número.</p>
+<p>Con el nombre de hilo distintivo, localizar los hilos <code>warmup-*</code> en el log es inmediato — se distinguen a simple vista de los <code>http-nio-*</code> de Tomcat o los genéricos <code>task-*</code> del executor por defecto. <strong>Documentar</strong> la decisión de configuración significa dejar por escrito, en un comentario junto al bean o en la documentación del proyecto, por qué se eligieron esos tamaños de pool y esa prioridad — no basta con que el código "funcione", debe quedar claro el razonamiento detrás de cada número.</p>
 <hr>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
 <details class="tip">
@@ -2732,7 +2709,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Pie" >
         
           
-          <a href="../actividad_3_4/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Actividad 3.4 - El listener @Async del warm-up">
+          <a href="../actividad_3_3/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Actividad 3.3 - El listener @Async del warm-up">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -2742,20 +2719,20 @@
                 Anterior
               </span>
               <div class="md-ellipsis">
-                Actividad 3.4 - El listener @Async del warm-up
+                Actividad 3.3 - El listener @Async del warm-up
               </div>
             </div>
           </a>
         
         
           
-          <a href="../actividad_3_5/" class="md-footer__link md-footer__link--next" aria-label="Siguiente: Actividad 3.5 - TaskExecutor propio">
+          <a href="../actividad_3_4/" class="md-footer__link md-footer__link--next" aria-label="Siguiente: Actividad 3.4 - TaskExecutor propio">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Siguiente
               </span>
               <div class="md-ellipsis">
-                Actividad 3.5 - TaskExecutor propio
+                Actividad 3.4 - TaskExecutor propio
               </div>
             </div>
             <div class="md-footer__button md-icon">

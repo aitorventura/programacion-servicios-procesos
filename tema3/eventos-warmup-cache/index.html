@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../actividad_3_2/">
+        <link rel="prev" href="../actividad_3_1/">
       
       
-        <link rel="next" href="../actividad_3_3/">
+        <link rel="next" href="../actividad_3_2/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -1737,30 +1737,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 3.1 - RabbitMQ y el registro de actividad
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../actividad_3_2/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Actividad 3.2 - Cazando hilos en GameVault
+    Actividad 3.1 - RabbitMQ, registro de actividad y los hilos reales
     
   </span>
   
@@ -1978,12 +1955,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../actividad_3_3/" class="md-nav__link">
+      <a href="../actividad_3_2/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.3 - El evento del warm-up
+    Actividad 3.2 - El evento del warm-up
     
   </span>
   
@@ -2070,12 +2047,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../actividad_3_4/" class="md-nav__link">
+      <a href="../actividad_3_3/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.4 - El listener @Async del warm-up
+    Actividad 3.3 - El listener @Async del warm-up
     
   </span>
   
@@ -2162,12 +2139,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../actividad_3_5/" class="md-nav__link">
+      <a href="../actividad_3_4/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.5 - TaskExecutor propio
+    Actividad 3.4 - TaskExecutor propio
     
   </span>
   
@@ -2668,7 +2645,7 @@
 
 <div><p><a id="eventos-warmup-cache"></a></p>
 <h1 id="2-eventos-internos-de-spring-el-warm-up-de-cache-12">🧩 2. Eventos internos de Spring: el warm-up de caché (1/2)<a class="headerlink" href="#2-eventos-internos-de-spring-el-warm-up-de-cache-12" title="Permanent link">¶</a></h1>
-<p>Sabes que tu aplicación ya es multihilo (pool de Tomcat, listeners de RabbitMQ), y que el warm-up de la caché quedó como problema pendiente. Su solución llega ahora, en dos piezas repartidas en dos apartados: hoy el evento y su publicación; en el próximo apartado, el listener que reacciona.</p>
+<p>Sabes que tu aplicación ya es multihilo (pool de Tomcat, listeners de RabbitMQ). Ahora vas a construir tú mismo una pieza nueva que se apoya en eso: el warm-up de una caché, repartido en dos apartados — hoy el evento y su publicación; en el próximo apartado, el listener que reacciona.</p>
 <hr>
 <h2 id="que-es-un-evento-patron-observadorpublicador-suscriptor">📢 Qué es un evento (patrón observador/publicador-suscriptor)<a class="headerlink" href="#que-es-un-evento-patron-observadorpublicador-suscriptor" title="Permanent link">¶</a></h2>
 <p>Un <strong>evento</strong> es, conceptualmente, "algo ha pasado" — empaquetado como un objeto que describe ese suceso. El patrón que lo rodea tiene dos papeles: quien <strong>publica</strong> el evento (lo anuncia, sin saber quién lo va a escuchar) y quien <strong>escucha</strong> (reacciona cuando ocurre, sin que el publicador tenga que conocerlo).</p>
@@ -2796,7 +2773,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Pie" >
         
           
-          <a href="../actividad_3_2/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Actividad 3.2 - Cazando hilos en GameVault">
+          <a href="../actividad_3_1/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Actividad 3.1 - RabbitMQ, registro de actividad y los hilos reales">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -2806,20 +2783,20 @@
                 Anterior
               </span>
               <div class="md-ellipsis">
-                Actividad 3.2 - Cazando hilos en GameVault
+                Actividad 3.1 - RabbitMQ, registro de actividad y los hilos reales
               </div>
             </div>
           </a>
         
         
           
-          <a href="../actividad_3_3/" class="md-footer__link md-footer__link--next" aria-label="Siguiente: Actividad 3.3 - El evento del warm-up">
+          <a href="../actividad_3_2/" class="md-footer__link md-footer__link--next" aria-label="Siguiente: Actividad 3.2 - El evento del warm-up">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Siguiente
               </span>
               <div class="md-ellipsis">
-                Actividad 3.3 - El evento del warm-up
+                Actividad 3.2 - El evento del warm-up
               </div>
             </div>
             <div class="md-footer__button md-icon">

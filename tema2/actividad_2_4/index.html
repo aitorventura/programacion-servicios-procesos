@@ -1880,30 +1880,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 3.1 - RabbitMQ y el registro de actividad
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../tema3/actividad_3_2/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Actividad 3.2 - Cazando hilos en GameVault
+    Actividad 3.1 - RabbitMQ, registro de actividad y los hilos reales
     
   </span>
   
@@ -1990,12 +1967,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema3/actividad_3_3/" class="md-nav__link">
+      <a href="../../tema3/actividad_3_2/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.3 - El evento del warm-up
+    Actividad 3.2 - El evento del warm-up
     
   </span>
   
@@ -2082,12 +2059,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema3/actividad_3_4/" class="md-nav__link">
+      <a href="../../tema3/actividad_3_3/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.4 - El listener @Async del warm-up
+    Actividad 3.3 - El listener @Async del warm-up
     
   </span>
   
@@ -2174,12 +2151,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tema3/actividad_3_5/" class="md-nav__link">
+      <a href="../../tema3/actividad_3_4/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.5 - TaskExecutor propio
+    Actividad 3.4 - TaskExecutor propio
     
   </span>
   
@@ -3179,18 +3156,28 @@ Esto te da una cadena aleatoria de más de 32 caracteres, lista para pegar en <c
 <span class="normal"><a href="#__codelineno-16-9"> 9</a></span>
 <span class="normal"><a href="#__codelineno-16-10">10</a></span>
 <span class="normal"><a href="#__codelineno-16-11">11</a></span>
-<span class="normal"><a href="#__codelineno-16-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1"></a><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/me"</span><span class="p">)</span>
-<a id="__codelineno-16-2" name="__codelineno-16-2"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">AuthMeResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">me</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-16-3" name="__codelineno-16-3"></a><span class="w">    </span><span class="n">Authentication</span><span class="w"> </span><span class="n">authentication</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SecurityContextHolder</span><span class="p">.</span><span class="na">getContext</span><span class="p">().</span><span class="na">getAuthentication</span><span class="p">();</span>
-<a id="__codelineno-16-4" name="__codelineno-16-4"></a>
-<a id="__codelineno-16-5" name="__codelineno-16-5"></a><span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">roles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">authentication</span><span class="p">.</span><span class="na">getAuthorities</span><span class="p">().</span><span class="na">stream</span><span class="p">()</span>
-<a id="__codelineno-16-6" name="__codelineno-16-6"></a><span class="w">            </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">GrantedAuthority</span><span class="p">::</span><span class="n">getAuthority</span><span class="p">)</span>
-<a id="__codelineno-16-7" name="__codelineno-16-7"></a><span class="w">            </span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="na">startsWith</span><span class="p">(</span><span class="s">"ROLE_"</span><span class="p">))</span>
-<a id="__codelineno-16-8" name="__codelineno-16-8"></a><span class="w">            </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="na">replace</span><span class="p">(</span><span class="s">"ROLE_"</span><span class="p">,</span><span class="w"> </span><span class="s">""</span><span class="p">))</span>
-<a id="__codelineno-16-9" name="__codelineno-16-9"></a><span class="w">            </span><span class="p">.</span><span class="na">toList</span><span class="p">();</span>
-<a id="__codelineno-16-10" name="__codelineno-16-10"></a>
-<a id="__codelineno-16-11" name="__codelineno-16-11"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">AuthMeResponse</span><span class="p">(</span><span class="n">authentication</span><span class="p">.</span><span class="na">getName</span><span class="p">(),</span><span class="w"> </span><span class="n">roles</span><span class="p">));</span>
-<a id="__codelineno-16-12" name="__codelineno-16-12"></a><span class="p">}</span>
+<span class="normal"><a href="#__codelineno-16-12">12</a></span>
+<span class="normal"><a href="#__codelineno-16-13">13</a></span>
+<span class="normal"><a href="#__codelineno-16-14">14</a></span>
+<span class="normal"><a href="#__codelineno-16-15">15</a></span>
+<span class="normal"><a href="#__codelineno-16-16">16</a></span>
+<span class="normal"><a href="#__codelineno-16-17">17</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1"></a><span class="nd">@Operation</span><span class="p">(</span><span class="n">summary</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Consultar la identidad del usuario autenticado"</span><span class="p">)</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2"></a><span class="nd">@ApiResponses</span><span class="p">({</span>
+<a id="__codelineno-16-3" name="__codelineno-16-3"></a><span class="w">        </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"200"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Identidad obtenida correctamente"</span><span class="p">),</span>
+<a id="__codelineno-16-4" name="__codelineno-16-4"></a><span class="w">        </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"401"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"No autenticado (token ausente o inválido)"</span><span class="p">)</span>
+<a id="__codelineno-16-5" name="__codelineno-16-5"></a><span class="p">})</span>
+<a id="__codelineno-16-6" name="__codelineno-16-6"></a><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/me"</span><span class="p">)</span>
+<a id="__codelineno-16-7" name="__codelineno-16-7"></a><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">AuthMeResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">me</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-16-8" name="__codelineno-16-8"></a><span class="w">    </span><span class="n">Authentication</span><span class="w"> </span><span class="n">authentication</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SecurityContextHolder</span><span class="p">.</span><span class="na">getContext</span><span class="p">().</span><span class="na">getAuthentication</span><span class="p">();</span>
+<a id="__codelineno-16-9" name="__codelineno-16-9"></a>
+<a id="__codelineno-16-10" name="__codelineno-16-10"></a><span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">roles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">authentication</span><span class="p">.</span><span class="na">getAuthorities</span><span class="p">().</span><span class="na">stream</span><span class="p">()</span>
+<a id="__codelineno-16-11" name="__codelineno-16-11"></a><span class="w">            </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">GrantedAuthority</span><span class="p">::</span><span class="n">getAuthority</span><span class="p">)</span>
+<a id="__codelineno-16-12" name="__codelineno-16-12"></a><span class="w">            </span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="na">startsWith</span><span class="p">(</span><span class="s">"ROLE_"</span><span class="p">))</span>
+<a id="__codelineno-16-13" name="__codelineno-16-13"></a><span class="w">            </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="na">replace</span><span class="p">(</span><span class="s">"ROLE_"</span><span class="p">,</span><span class="w"> </span><span class="s">""</span><span class="p">))</span>
+<a id="__codelineno-16-14" name="__codelineno-16-14"></a><span class="w">            </span><span class="p">.</span><span class="na">toList</span><span class="p">();</span>
+<a id="__codelineno-16-15" name="__codelineno-16-15"></a>
+<a id="__codelineno-16-16" name="__codelineno-16-16"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">AuthMeResponse</span><span class="p">(</span><span class="n">authentication</span><span class="p">.</span><span class="na">getName</span><span class="p">(),</span><span class="w"> </span><span class="n">roles</span><span class="p">));</span>
+<a id="__codelineno-16-17" name="__codelineno-16-17"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>El <code>.filter()</code>/<code>.map()</code> para quitar el prefijo <code>ROLE_</code> es el mismo que ya has usado en <code>JwtService</code> (Paso 2) — hace falta repetirlo aquí para que los roles que ves en <code>/me</code> coincidan exactamente con los que has decodificado del JWT (que tampoco llevan el prefijo).</p>
 <p>Pruébalo con el token de <code>admin</code> del Paso 5 y comprueba que la información coincide con lo que has decodificado a mano.</p>

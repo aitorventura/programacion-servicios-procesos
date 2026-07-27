@@ -12,7 +12,7 @@
         <link rel="prev" href="../hilos-en-una-app-real/">
       
       
-        <link rel="next" href="../actividad_3_2/">
+        <link rel="next" href="../eventos-warmup-cache/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -20,7 +20,7 @@
     
     
       
-        <title>Actividad 3.1 - RabbitMQ y el registro de actividad - Programación de Servicios y Procesos</title>
+        <title>Actividad 3.1 - RabbitMQ, registro de actividad y los hilos reales - Programación de Servicios y Procesos</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#actividad-31-rabbitmq-y-el-registro-de-actividad-del-catalogo" class="md-skip">
+        <a href="#actividad-31-rabbitmq-registro-de-actividad-y-los-hilos-reales-de-tu-gamevault" class="md-skip">
           Saltar a contenido
         </a>
       
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Actividad 3.1 - RabbitMQ y el registro de actividad
+              Actividad 3.1 - RabbitMQ, registro de actividad y los hilos reales
             
           </span>
         </div>
@@ -1748,7 +1748,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 3.1 - RabbitMQ y el registro de actividad
+    Actividad 3.1 - RabbitMQ, registro de actividad y los hilos reales
     
   </span>
   
@@ -1761,7 +1761,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 3.1 - RabbitMQ y el registro de actividad
+    Actividad 3.1 - RabbitMQ, registro de actividad y los hilos reales
     
   </span>
   
@@ -1838,9 +1838,27 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#paso-5-comprobar-el-flujo-completo" class="md-nav__link">
+  <a href="#paso-5-trazas-temporales-para-ver-los-hilos-reales" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 5 — Comprobar el flujo completo
+      Paso 5 — Trazas temporales, para ver los hilos reales
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-6-comprobar-el-flujo-completo-y-leer-los-dos-hilos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 6 — Comprobar el flujo completo, y leer los dos hilos
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-7-retirar-las-trazas" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 7 — Retirar las trazas
     </span>
   </a>
   
@@ -1855,42 +1873,10 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#cierre" class="md-nav__link">
-    <span class="md-ellipsis">
-      ✅ Cierre
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../actividad_3_2/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Actividad 3.2 - Cazando hilos en GameVault
-    
-  </span>
-  
-
-      </a>
     </li>
   
 
@@ -1972,12 +1958,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../actividad_3_3/" class="md-nav__link">
+      <a href="../actividad_3_2/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.3 - El evento del warm-up
+    Actividad 3.2 - El evento del warm-up
     
   </span>
   
@@ -2064,12 +2050,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../actividad_3_4/" class="md-nav__link">
+      <a href="../actividad_3_3/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.4 - El listener @Async del warm-up
+    Actividad 3.3 - El listener @Async del warm-up
     
   </span>
   
@@ -2156,12 +2142,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../actividad_3_5/" class="md-nav__link">
+      <a href="../actividad_3_4/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad 3.5 - TaskExecutor propio
+    Actividad 3.4 - TaskExecutor propio
     
   </span>
   
@@ -2612,9 +2598,27 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#paso-5-comprobar-el-flujo-completo" class="md-nav__link">
+  <a href="#paso-5-trazas-temporales-para-ver-los-hilos-reales" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 5 — Comprobar el flujo completo
+      Paso 5 — Trazas temporales, para ver los hilos reales
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-6-comprobar-el-flujo-completo-y-leer-los-dos-hilos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 6 — Comprobar el flujo completo, y leer los dos hilos
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-7-retirar-las-trazas" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 7 — Retirar las trazas
     </span>
   </a>
   
@@ -2624,15 +2628,6 @@
   <a href="#pregunta-final" class="md-nav__link">
     <span class="md-ellipsis">
       Pregunta final
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cierre" class="md-nav__link">
-    <span class="md-ellipsis">
-      ✅ Cierre
     </span>
   </a>
   
@@ -2654,16 +2649,21 @@
 
 
 
-<div><h1 id="actividad-31-rabbitmq-y-el-registro-de-actividad-del-catalogo">🧪 Actividad 3.1: RabbitMQ y el registro de actividad del catálogo<a class="headerlink" href="#actividad-31-rabbitmq-y-el-registro-de-actividad-del-catalogo" title="Permanent link">¶</a></h1>
+<div><h1 id="actividad-31-rabbitmq-registro-de-actividad-y-los-hilos-reales-de-tu-gamevault">🧪 Actividad 3.1: RabbitMQ, registro de actividad y los hilos reales de tu GameVault<a class="headerlink" href="#actividad-31-rabbitmq-registro-de-actividad-y-los-hilos-reales-de-tu-gamevault" title="Permanent link">¶</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Descarga la plantilla</p>
+<p>📄 <a href="../plantillas/Actividad_3_1_PSP_Plantilla.docx" rel="noopener" target="_blank">Plantilla 3.1 — RabbitMQ, registro de actividad y los hilos reales de tu GameVault</a></p>
+</div>
 <div class="admonition info">
-<p class="admonition-title">Práctica guiada — misma sesión que la Actividad 3.2</p>
-<p>Antes de observar hilos reales en la Actividad 3.2 (que hacéis en esta misma sesión de dos horas, a continuación), hace falta que existan. Hoy montas RabbitMQ en tu proyecto por primera vez, y construyes un registro de actividad del catálogo a partir de eventos: cada vez que se crea, modifica o borra un videojuego, un mensaje viaja por una cola y otro hilo (el del listener) lo registra, sin que la petición HTTP original tenga que esperar a que eso termine.</p>
+<p class="admonition-title">Práctica guiada — construcción y observación, en una sola sesión</p>
+<p>Hoy montas RabbitMQ en tu proyecto por primera vez y construyes un registro de actividad del catálogo a partir de eventos: cada vez que se crea, modifica o borra un videojuego, un mensaje viaja por una cola y otro hilo (el del listener) lo registra, sin que la petición HTTP original tenga que esperar a que eso termine. Con eso funcionando, cierras la sesión <strong>observando con tus propios ojos</strong> esos hilos reales ejecutándose en tu aplicación.</p>
 </div>
 <h2 id="que-vas-a-practicar">Qué vas a practicar<a class="headerlink" href="#que-vas-a-practicar" title="Permanent link">¶</a></h2>
 <ul>
 <li>Añadir un broker de mensajería (RabbitMQ) a tu Dev Container y a tu proyecto.</li>
 <li>Publicar eventos del catálogo con <code>RabbitTemplate</code> y consumirlos con <code>@RabbitListener</code>.</li>
 <li>Construir un registro de actividad completo: entidad, servicio, endpoint protegido y consumer.</li>
+<li>Localizar en logs los hilos reales que atienden peticiones HTTP y eventos de RabbitMQ.</li>
 </ul>
 <hr>
 <h2 id="requisitos-previos">Requisitos previos<a class="headerlink" href="#requisitos-previos" title="Permanent link">¶</a></h2>
@@ -2695,7 +2695,8 @@
 <a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="nt">volumes</span><span class="p">:</span>
 <a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="w">  </span><span class="nt">rabbitmq_data</span><span class="p">:</span>
 </code></pre></div></td></tr></table></div>
-<p>El puerto <code>5672</code> es el protocolo AMQP (por el que va a hablar tu aplicación); el <code>15672</code> es una interfaz web de administración — levanta el contenedor desde la terminal integrada (comprueba primero el nombre real de tu proyecto con <code>docker compose ls</code> — no siempre es <code>gamevault_devcontainer</code>, depende de tu editor — y sustitúyelo en <code>docker compose -f .devcontainer/docker-compose.yml -p &lt;proyecto&gt; up -d rabbitmq</code>), o reconstruyendo el Dev Container: "Dev Containers: Rebuild Container" en VS Code, o recreándolo desde <code>devcontainer.json</code> en IntelliJ IDEA. Después entra en <code>http://localhost:15672</code> (usuario y contraseña por defecto: <code>guest</code>/<code>guest</code>) para ver, más adelante, las colas y los mensajes pasando por ellas en vivo.</p>
+<p>El puerto <code>5672</code> es el protocolo AMQP (por el que va a hablar tu aplicación); el <code>15672</code> es una interfaz web de administración. Reconstruye o reinicia tu Dev Container desde tu editor para que levante también el nuevo servicio, y comprueba que el contenedor de RabbitMQ está funcionando entrando en <code>http://localhost:15672</code> (usuario y contraseña por defecto: <code>guest</code>/<code>guest</code>) — vas a volver a esa interfaz más adelante para ver las colas y los mensajes pasando por ellas en vivo.</p>
+<p><strong>Captura</strong>: la interfaz de administración de RabbitMQ (<code>http://localhost:15672</code>) ya cargada, como prueba de que el contenedor está levantado y accesible.</p>
 <p>En tu <code>pom.xml</code>:</p>
 <div class="language-xml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">XML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
 <span class="normal"><a href="#__codelineno-1-2">2</a></span>
@@ -2718,10 +2719,14 @@
 <a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">    </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">guest</span>
 <a id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">guest</span>
 </code></pre></div></td></tr></table></div>
-<p>Como ya viste con <code>postgres</code> y <code>mongodb</code> en Acceso a Datos: <code>rabbitmq</code> es el nombre del servicio en <code>.devcontainer/docker-compose.yml</code>, no <code>localhost</code> — tu aplicación corre dentro de <code>app</code>, y RabbitMQ es un contenedor hermano más en la misma red.</p>
+<p>Como ya viste con <code>postgres</code> en Acceso a Datos: <code>rabbitmq</code> es el nombre del servicio en <code>.devcontainer/docker-compose.yml</code>, no <code>localhost</code> — tu aplicación corre dentro de <code>app</code>, y RabbitMQ es un contenedor hermano más en la misma red.</p>
+<div class="admonition tip">
+<p class="admonition-title">¿No debería ir <code>guest</code>/<code>guest</code> a un fichero que no se commitea?</p>
+<p><code>guest</code> es la cuenta por defecto de RabbitMQ, y RabbitMQ la bloquea por diseño para cualquier conexión que no venga de <code>localhost</code> — no importa qué configures, esa cuenta no sirve en remoto. Como todo esto corre dentro de tu Dev Container, en tu propia máquina, no hay riesgo real en dejarla en <code>application-dev.yaml</code>. Es distinto del secreto de JWT o la contraseña de <code>admin</code> que ya proteges en <code>application-dev-local.yml</code>: si esos se filtraran, servirían para hacerse pasar por alguien en tu API real — <code>guest</code>/<code>guest</code>, fuera de tu propia máquina, no abre nada.</p>
+</div>
 <hr>
 <h2 id="paso-2-el-exchange-y-la-cola-de-actividad">Paso 2 — El exchange y la cola de actividad<a class="headerlink" href="#paso-2-el-exchange-y-la-cola-de-actividad" title="Permanent link">¶</a></h2>
-<p>Un <strong>exchange</strong> es quien recibe los mensajes publicados y decide, según su <em>routing key</em>, a qué cola (o colas) los reenvía:</p>
+<p>Un <strong>exchange</strong> es quien recibe los mensajes publicados y decide, según su <em>routing key</em>, a qué cola (o colas) los reenvía. <code>RabbitMQConfig</code> va en tu paquete <code>config</code> ya existente, junto a <code>SecurityConfig</code> — el mismo paquete <code>com.tunombre.gamevault.config</code>, <code>src/main/java/com/tunombre/gamevault/config/RabbitMQConfig.java</code>:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-3-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-3-3"> 3</a></span>
@@ -2779,6 +2784,7 @@
 <p>Un <code>TopicExchange</code> enruta según un patrón de texto: la cola de actividad se enlaza con <code>videojuego.*</code> — el asterisco encaja con <code>videojuego.creado</code>, <code>videojuego.actualizado</code> o <code>videojuego.eliminado</code>, cualquier evento del catálogo. Deja este exchange con un único consumidor por ahora; en Acceso a Datos, cuando conectes las reseñas de MongoDB con el borrado del catálogo, vas a añadir una <strong>segunda</strong> cola sobre este mismo exchange, enlazada solo a <code>videojuego.eliminado</code> — no hace falta que te adelantes a eso hoy.</p>
 <hr>
 <h2 id="paso-3-el-evento-y-quien-lo-publica">Paso 3 — El evento y quién lo publica<a class="headerlink" href="#paso-3-el-evento-y-quien-lo-publica" title="Permanent link">¶</a></h2>
+<p><code>VideojuegoEvent</code> va en <code>src/main/java/com/tunombre/gamevault/catalogo/api/eventos/VideojuegoEvent.java</code>:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span>
 <span class="normal"><a href="#__codelineno-4-2">2</a></span>
 <span class="normal"><a href="#__codelineno-4-3">3</a></span>
@@ -2793,6 +2799,7 @@
 <a id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">VIDEOJUEGO_ELIMINADO</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"VIDEOJUEGO_ELIMINADO"</span><span class="p">;</span>
 <a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
+<p><code>VideojuegoEventPublisher</code>, en cambio, va junto a tu <code>VideojuegoService</code>, en el mismo paquete <code>catalogo</code> (no en el subpaquete de eventos): <code>src/main/java/com/tunombre/gamevault/catalogo/VideojuegoEventPublisher.java</code>:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-5-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-5-3"> 3</a></span>
@@ -2837,7 +2844,7 @@
 <a id="__codelineno-5-12" name="__codelineno-5-12"></a><span class="nd">@RequiredArgsConstructor</span>
 <a id="__codelineno-5-13" name="__codelineno-5-13"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">VideojuegoEventPublisher</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-5-14" name="__codelineno-5-14"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">RabbitTemplate</span><span class="w"> </span><span class="n">rabbitTemplate</span><span class="p">;</span>
-<a id="__codelineno-5-15" name="__codelineno-5-15"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ObjectMapper</span><span class="w"> </span><span class="n">objectMapper</span><span class="p">;</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ObjectMapper</span><span class="w"> </span><span class="n">objectMapper</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ObjectMapper</span><span class="p">();</span>
 <a id="__codelineno-5-16" name="__codelineno-5-16"></a>
 <a id="__codelineno-5-17" name="__codelineno-5-17"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">publicar</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">tipo</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">videojuegoId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-5-18" name="__codelineno-5-18"></a><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">accion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">tipo</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -2860,6 +2867,7 @@
 <p><strong>Pregunta</strong>: <code>VideojuegoService</code> ahora depende de <code>VideojuegoEventPublisher</code>, pero no de nada de RabbitMQ directamente (ni <code>RabbitTemplate</code> aparece en <code>VideojuegoService</code>). ¿Por qué esa capa intermedia, en vez de inyectar <code>RabbitTemplate</code> directamente en <code>VideojuegoService</code>?</p>
 <hr>
 <h2 id="paso-4-el-registro-de-actividad-entidad-servicio-y-endpoint">Paso 4 — El registro de actividad: entidad, servicio y endpoint<a class="headerlink" href="#paso-4-el-registro-de-actividad-entidad-servicio-y-endpoint" title="Permanent link">¶</a></h2>
+<p>El registro de actividad es una funcionalidad autocontenida y nueva —no forma parte del catálogo, ni de la seguridad—, así que le corresponde su propio paquete, <code>actividad</code>, creado hoy: las cinco clases de este paso (entidad, repositorio, servicio, controller y el consumer que viene al final) van todas ahí, siguiendo el mismo criterio de "un paquete por funcionalidad" que ya usa el resto de tu proyecto. Empieza por la entidad, <code>src/main/java/com/tunombre/gamevault/actividad/Actividad.java</code>:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-6-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-6-3"> 3</a></span>
@@ -2918,6 +2926,7 @@
 <a id="__codelineno-6-28" name="__codelineno-6-28"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-6-29" name="__codelineno-6-29"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
+<p>El repositorio, <code>ActividadRepository.java</code>, en el mismo paquete:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span>
 <span class="normal"><a href="#__codelineno-7-2">2</a></span>
 <span class="normal"><a href="#__codelineno-7-3">3</a></span>
@@ -2934,6 +2943,7 @@
 <a id="__codelineno-7-7" name="__codelineno-7-7"></a><span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Actividad</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">findAllByOrderByFechaDesc</span><span class="p">();</span>
 <a id="__codelineno-7-8" name="__codelineno-7-8"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
+<p>El servicio, <code>ActividadService.java</code>:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-8-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-8-3"> 3</a></span>
@@ -2972,6 +2982,7 @@
 <a id="__codelineno-8-18" name="__codelineno-8-18"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-8-19" name="__codelineno-8-19"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
+<p>Y el controller, <code>ActividadController.java</code>, documentado igual que el resto de endpoints del proyecto:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-9-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-9-3"> 3</a></span>
@@ -2989,26 +3000,48 @@
 <span class="normal"><a href="#__codelineno-9-15">15</a></span>
 <span class="normal"><a href="#__codelineno-9-16">16</a></span>
 <span class="normal"><a href="#__codelineno-9-17">17</a></span>
-<span class="normal"><a href="#__codelineno-9-18">18</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.tunombre.gamevault.actividad</span><span class="p">;</span>
+<span class="normal"><a href="#__codelineno-9-18">18</a></span>
+<span class="normal"><a href="#__codelineno-9-19">19</a></span>
+<span class="normal"><a href="#__codelineno-9-20">20</a></span>
+<span class="normal"><a href="#__codelineno-9-21">21</a></span>
+<span class="normal"><a href="#__codelineno-9-22">22</a></span>
+<span class="normal"><a href="#__codelineno-9-23">23</a></span>
+<span class="normal"><a href="#__codelineno-9-24">24</a></span>
+<span class="normal"><a href="#__codelineno-9-25">25</a></span>
+<span class="normal"><a href="#__codelineno-9-26">26</a></span>
+<span class="normal"><a href="#__codelineno-9-27">27</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.tunombre.gamevault.actividad</span><span class="p">;</span>
 <a id="__codelineno-9-2" name="__codelineno-9-2"></a>
-<a id="__codelineno-9-3" name="__codelineno-9-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">lombok.RequiredArgsConstructor</span><span class="p">;</span>
-<a id="__codelineno-9-4" name="__codelineno-9-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.http.ResponseEntity</span><span class="p">;</span>
-<a id="__codelineno-9-5" name="__codelineno-9-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.web.bind.annotation.*</span><span class="p">;</span>
-<a id="__codelineno-9-6" name="__codelineno-9-6"></a><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span>
-<a id="__codelineno-9-7" name="__codelineno-9-7"></a>
-<a id="__codelineno-9-8" name="__codelineno-9-8"></a><span class="nd">@RestController</span>
-<a id="__codelineno-9-9" name="__codelineno-9-9"></a><span class="nd">@RequestMapping</span><span class="p">(</span><span class="s">"/api/v1/actividad"</span><span class="p">)</span>
-<a id="__codelineno-9-10" name="__codelineno-9-10"></a><span class="nd">@RequiredArgsConstructor</span>
-<a id="__codelineno-9-11" name="__codelineno-9-11"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ActividadController</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-9-12" name="__codelineno-9-12"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ActividadService</span><span class="w"> </span><span class="n">actividadService</span><span class="p">;</span>
-<a id="__codelineno-9-13" name="__codelineno-9-13"></a>
-<a id="__codelineno-9-14" name="__codelineno-9-14"></a><span class="w">    </span><span class="nd">@GetMapping</span>
-<a id="__codelineno-9-15" name="__codelineno-9-15"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Actividad</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="nf">getAll</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-9-16" name="__codelineno-9-16"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="n">actividadService</span><span class="p">.</span><span class="na">listar</span><span class="p">());</span>
-<a id="__codelineno-9-17" name="__codelineno-9-17"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-9-18" name="__codelineno-9-18"></a><span class="p">}</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">io.swagger.v3.oas.annotations.Operation</span><span class="p">;</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">io.swagger.v3.oas.annotations.responses.ApiResponse</span><span class="p">;</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">io.swagger.v3.oas.annotations.responses.ApiResponses</span><span class="p">;</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6"></a><span class="kn">import</span><span class="w"> </span><span class="nn">lombok.RequiredArgsConstructor</span><span class="p">;</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.http.ResponseEntity</span><span class="p">;</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.web.bind.annotation.*</span><span class="p">;</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9"></a><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10"></a>
+<a id="__codelineno-9-11" name="__codelineno-9-11"></a><span class="nd">@RestController</span>
+<a id="__codelineno-9-12" name="__codelineno-9-12"></a><span class="nd">@RequestMapping</span><span class="p">(</span><span class="s">"/api/v1/actividad"</span><span class="p">)</span>
+<a id="__codelineno-9-13" name="__codelineno-9-13"></a><span class="nd">@RequiredArgsConstructor</span>
+<a id="__codelineno-9-14" name="__codelineno-9-14"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ActividadController</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-9-15" name="__codelineno-9-15"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ActividadService</span><span class="w"> </span><span class="n">actividadService</span><span class="p">;</span>
+<a id="__codelineno-9-16" name="__codelineno-9-16"></a>
+<a id="__codelineno-9-17" name="__codelineno-9-17"></a><span class="w">    </span><span class="nd">@Operation</span><span class="p">(</span><span class="n">summary</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Listar el registro de actividad del catálogo"</span><span class="p">)</span>
+<a id="__codelineno-9-18" name="__codelineno-9-18"></a><span class="w">    </span><span class="nd">@ApiResponses</span><span class="p">({</span>
+<a id="__codelineno-9-19" name="__codelineno-9-19"></a><span class="w">            </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"200"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Listado obtenido correctamente, más reciente primero"</span><span class="p">),</span>
+<a id="__codelineno-9-20" name="__codelineno-9-20"></a><span class="w">            </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"401"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"No autenticado"</span><span class="p">),</span>
+<a id="__codelineno-9-21" name="__codelineno-9-21"></a><span class="w">            </span><span class="nd">@ApiResponse</span><span class="p">(</span><span class="n">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"403"</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Autenticado, pero sin rol ADMIN"</span><span class="p">)</span>
+<a id="__codelineno-9-22" name="__codelineno-9-22"></a><span class="w">    </span><span class="p">})</span>
+<a id="__codelineno-9-23" name="__codelineno-9-23"></a><span class="w">    </span><span class="nd">@GetMapping</span>
+<a id="__codelineno-9-24" name="__codelineno-9-24"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Actividad</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="nf">getAll</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-9-25" name="__codelineno-9-25"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">ok</span><span class="p">(</span><span class="n">actividadService</span><span class="p">.</span><span class="na">listar</span><span class="p">());</span>
+<a id="__codelineno-9-26" name="__codelineno-9-26"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-9-27" name="__codelineno-9-27"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p>Y el consumer que conecta la cola con el servicio, en un hilo del contenedor de listeners de AMQP, no en el de la petición HTTP que originó el evento:</p>
+<div class="admonition note">
+<p class="admonition-title">Los <code>401</code>/<code>403</code> aquí sí, en el resto de endpoints todavía no</p>
+<p>Te habrás fijado en que este endpoint documenta <code>401</code> y <code>403</code>, algo que los endpoints de <code>VideojuegoController</code>/<code>EstudioController</code> no hacen todavía, aunque también están protegidos por rol desde la Actividad 2.5. Sería lo correcto añadirlos ahí también — pero es una tarea mecánica y repetitiva (la misma pareja de códigos, endpoint a endpoint) que aquí se deja pasar por no ser el foco de esta actividad. En un proyecto real no se debería dejar así: una documentación desactualizada o incompleta es peor que no tener documentación, porque invita a confiar en algo que no refleja el comportamiento real de la API.</p>
+</div>
+<p>Por último, el consumer, <code>ActividadVideojuegoEventConsumer.java</code> — sigue en el mismo paquete <code>actividad</code>, aunque conecte con la cola: es aquí donde se registra la actividad, no en <code>catalogo</code>, así que se queda junto al resto de piezas que dependen de él. Conecta la cola con el servicio, en un hilo aparte reservado por Spring para esto, no en el de la petición HTTP que originó el evento:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-10-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-10-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-10-3"> 3</a></span>
@@ -3042,7 +3075,7 @@
 <a id="__codelineno-10-11" name="__codelineno-10-11"></a><span class="nd">@RequiredArgsConstructor</span>
 <a id="__codelineno-10-12" name="__codelineno-10-12"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ActividadVideojuegoEventConsumer</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-10-13" name="__codelineno-10-13"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ActividadService</span><span class="w"> </span><span class="n">actividadService</span><span class="p">;</span>
-<a id="__codelineno-10-14" name="__codelineno-10-14"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ObjectMapper</span><span class="w"> </span><span class="n">objectMapper</span><span class="p">;</span>
+<a id="__codelineno-10-14" name="__codelineno-10-14"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ObjectMapper</span><span class="w"> </span><span class="n">objectMapper</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ObjectMapper</span><span class="p">();</span>
 <a id="__codelineno-10-15" name="__codelineno-10-15"></a>
 <a id="__codelineno-10-16" name="__codelineno-10-16"></a><span class="w">    </span><span class="nd">@RabbitListener</span><span class="p">(</span><span class="n">queues</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RabbitMQConfig</span><span class="p">.</span><span class="na">ACTIVIDAD_VIDEOJUEGO_QUEUE</span><span class="p">)</span>
 <a id="__codelineno-10-17" name="__codelineno-10-17"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">recibir</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">payload</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
@@ -3055,25 +3088,47 @@
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-11-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1"></a><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/actividad"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 <hr>
-<h2 id="paso-5-comprobar-el-flujo-completo">Paso 5 — Comprobar el flujo completo<a class="headerlink" href="#paso-5-comprobar-el-flujo-completo" title="Permanent link">¶</a></h2>
-<p>Crea, modifica y borra un par de videojuegos con tu API de siempre, y consulta <code>GET /api/v1/actividad</code> (con un token de un usuario <code>ADMIN</code>):</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-12-1">1</a></span>
-<span class="normal"><a href="#__codelineno-12-2">2</a></span>
-<span class="normal"><a href="#__codelineno-12-3">3</a></span>
-<span class="normal"><a href="#__codelineno-12-4">4</a></span>
-<span class="normal"><a href="#__codelineno-12-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/videojuegos<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-12-2" name="__codelineno-12-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-12-3" name="__codelineno-12-3"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"titulo":"Test","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'</span>
-<a id="__codelineno-12-4" name="__codelineno-12-4"></a>
-<a id="__codelineno-12-5" name="__codelineno-12-5"></a>curl<span class="w"> </span>http://localhost:8080/api/v1/actividad<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN_ADMIN</span><span class="s2">"</span>
+<h2 id="paso-5-trazas-temporales-para-ver-los-hilos-reales">Paso 5 — Trazas temporales, para ver los hilos reales<a class="headerlink" href="#paso-5-trazas-temporales-para-ver-los-hilos-reales" title="Permanent link">¶</a></h2>
+<p>Antes de comprobar el flujo, añade, <strong>temporalmente</strong>, esta línea al principio de <code>VideojuegoService.create()</code>:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-12-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1"></a><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"[TRAZA] create() en hilo: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">().</span><span class="na">getName</span><span class="p">());</span>
 </code></pre></div></td></tr></table></div>
-<p><strong>Comprueba</strong>: que aparece un registro por cada operación, más reciente primero. Échale un vistazo también a <code>http://localhost:15672</code> (la interfaz de administración) — en la sección <em>Queues</em> deberías ver <code>actividad.videojuego.queue</code> con mensajes entregados.</p>
+<p>Y esta otra al principio del método <code>recibir(...)</code> de <code>ActividadVideojuegoEventConsumer</code>:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-13-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1"></a><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"[TRAZA] recibir() en hilo: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">().</span><span class="na">getName</span><span class="p">());</span>
+</code></pre></div></td></tr></table></div>
+<p>Con estas dos líneas, la siguiente comprobación te sirve a la vez para validar el flujo <strong>y</strong> para ver los dos hilos reales implicados.</p>
+<hr>
+<h2 id="paso-6-comprobar-el-flujo-completo-y-leer-los-dos-hilos">Paso 6 — Comprobar el flujo completo, y leer los dos hilos<a class="headerlink" href="#paso-6-comprobar-el-flujo-completo-y-leer-los-dos-hilos" title="Permanent link">¶</a></h2>
+<p>Crea, modifica y borra un par de videojuegos con tu API de siempre, y consulta <code>GET /api/v1/actividad</code> (con un token de un usuario <code>ADMIN</code>). Aquí tienes los comandos con <code>curl</code>, pero puedes hacer exactamente lo mismo desde Swagger UI si lo prefieres:</p>
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-14-1">1</a></span>
+<span class="normal"><a href="#__codelineno-14-2">2</a></span>
+<span class="normal"><a href="#__codelineno-14-3">3</a></span>
+<span class="normal"><a href="#__codelineno-14-4">4</a></span>
+<span class="normal"><a href="#__codelineno-14-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/videojuegos<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"titulo":"Test","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4"></a>
+<a id="__codelineno-14-5" name="__codelineno-14-5"></a>curl<span class="w"> </span>http://localhost:8080/api/v1/actividad<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN_ADMIN</span><span class="s2">"</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Comprueba</strong>: que aparece un registro por cada operación, más reciente primero.</p>
+<p><strong>Captura</strong>: la respuesta de <code>GET /api/v1/actividad</code> con los registros de tus operaciones.</p>
+<p>Échale un vistazo también a <code>http://localhost:15672</code> (la interfaz de administración) — entra en <code>actividad.videojuego.queue</code>, dentro de <em>Queues and Streams</em>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Si no ves ningún mensaje "esperando", es normal</p>
+<p>Con tu consumer arrancado y escuchando (<code>Consumers: 1</code>), RabbitMQ entrega cada mensaje casi al instante en cuanto llega — pasa de <code>Ready: 0</code> a <code>1</code> y vuelve a <code>0</code> en milisegundos, así que lo normal es que "Queued messages" te salga con todo a cero. Eso no es un fallo: es la prueba de que el mensaje se ha entregado y consumido correctamente, no que no haya pasado nada. Para ver el pico igualmente, cambia el desplegable de "Message rates" de <em>last minute</em> a <strong>last 10 minutes</strong> — con esa ventana más ancha sí se aprecia el pico de <code>Publish</code>/<code>Deliver</code> del momento en que has creado el videojuego. La prueba real de que ha funcionado, en cualquier caso, es el <code>GET /api/v1/actividad</code> de arriba, con un registro por operación.</p>
+</div>
+<p><strong>Captura</strong>: la página de <code>actividad.videojuego.queue</code> en la interfaz de RabbitMQ (aunque salga todo a cero).</p>
+<p><strong>Anota</strong>: los dos nombres de hilo que han aparecido en la consola junto a las trazas <code>[TRAZA]</code> (deberían ser distintos — algo como <code>http-nio-8080-exec-N</code> para uno, y un nombre relacionado con el listener de RabbitMQ para el otro).</p>
+<p><strong>Captura</strong>: la consola con las dos trazas <code>[TRAZA]</code> visibles, una por cada hilo.</p>
+<p><strong>Explica con tus propias palabras</strong>, apoyándote en el diagrama de la teoría, por qué esos dos nombres no coinciden.</p>
+<hr>
+<h2 id="paso-7-retirar-las-trazas">Paso 7 — Retirar las trazas<a class="headerlink" href="#paso-7-retirar-las-trazas" title="Permanent link">¶</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">No dejes las trazas temporales en tu código</p>
+<p>Elimina las dos líneas <code>System.out.println("[TRAZA] ...")</code> que has añadido en el Paso 5 — eran solo para esta comprobación, no forman parte del código final.</p>
+</div>
 <hr>
 <h2 id="pregunta-final">Pregunta final<a class="headerlink" href="#pregunta-final" title="Permanent link">¶</a></h2>
-<p><code>VideojuegoController</code> termina de responder (con un <code>201 Created</code>, por ejemplo) sin esperar a que <code>ActividadVideojuegoEventConsumer</code> haya terminado de guardar el registro de actividad. ¿Qué consecuencia práctica tiene esto si consultases <code>GET /api/v1/actividad</code> en el mismísimo instante después de crear un videojuego? ¿Es un problema real, o algo asumible dado lo que este registro representa?</p>
-<hr>
-<h2 id="cierre">✅ Cierre<a class="headerlink" href="#cierre" title="Permanent link">¶</a></h2>
-<p>Tu GameVault ya tiene RabbitMQ funcionando y un registro de actividad completo, construido sobre un hilo distinto al de las peticiones HTTP. En la próxima actividad vas a <strong>observar</strong> esos hilos reales — los que ya has creado hoy sin necesidad de escribir <code>new Thread()</code> en ningún sitio.</p></div>
+<p><code>VideojuegoController</code> termina de responder (con un <code>201 Created</code>, por ejemplo) sin esperar a que <code>ActividadVideojuegoEventConsumer</code> haya terminado de guardar el registro de actividad. ¿Qué consecuencia práctica tiene esto si consultases <code>GET /api/v1/actividad</code> en el mismísimo instante después de crear un videojuego? ¿Es un problema real, o algo asumible dado lo que este registro representa?</p></div>
 
 
 
@@ -3126,13 +3181,13 @@
         
         
           
-          <a href="../actividad_3_2/" class="md-footer__link md-footer__link--next" aria-label="Siguiente: Actividad 3.2 - Cazando hilos en GameVault">
+          <a href="../eventos-warmup-cache/" class="md-footer__link md-footer__link--next" aria-label="Siguiente: Eventos internos (warm-up 1/2)">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Siguiente
               </span>
               <div class="md-ellipsis">
-                Actividad 3.2 - Cazando hilos en GameVault
+                Eventos internos (warm-up 1/2)
               </div>
             </div>
             <div class="md-footer__button md-icon">
