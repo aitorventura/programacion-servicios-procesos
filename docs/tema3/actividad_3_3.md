@@ -129,6 +129,12 @@ Si dos profesores del centro crean dos videojuegos casi a la vez (segundos de di
 
 ---
 
+## Paso 5 — Retira el retraso artificial, ya no lo necesitas
+
+Ya has medido y demostrado el warm-up de principio a fin — el `Thread.sleep(2000)` ha cumplido su propósito. Quítalo otra vez de `getTopNovedades()`, exactamente como hiciste al terminar la Actividad 1.4: `@Cacheable` sigue evitando el trabajo repetido cuando de verdad haga falta, sin necesidad de un retraso falso permanente en una funcionalidad real.
+
+---
+
 ## ✅ Cierre
 
-El warm-up está completo y medido: tu GameVault ya no hace pagar al primer usuario los 2 segundos tras cada escritura. En el apartado siguiente configuras manualmente el `TaskExecutor` que hay detrás de este `@Async`, con nombre y prioridad propios.
+El warm-up está completo y medido: tu GameVault ya no hace pagar al primer usuario el coste de recalcular las novedades tras cada escritura. En el apartado siguiente configuras manualmente el `TaskExecutor` que hay detrás de este `@Async`, con nombre y prioridad propios.

@@ -1,5 +1,8 @@
 # 🧪 Actividad 3.2: El evento del warm-up de caché (1/2)
 
+!!! warning "Descarga la plantilla"
+    📄 [Plantilla 3.2 — El evento del warm-up de caché (1/2)](plantillas/Actividad_3_2_PSP_Plantilla.docx){target="_blank" rel="noopener"}
+
 !!! info "Práctica guiada — pieza 1 de 2"
     Antes de nada, montas Redis y activas la caché real de `getTopNovedades()`. Con eso listo, construyes el evento interno y su publicación. Todavía no vas a ver ningún efecto sobre la lentitud de `/top` tras una escritura — eso llega en la Actividad 3.3 con el listener.
 
@@ -14,7 +17,7 @@
 
 ## Requisitos previos
 
-Tu `VideojuegoService` con `getTopNovedades()` funcionando (sin caché todavía, Actividad 1.4) — la caché con Redis y `@Cacheable` la montas tú mismo en el Paso 0 de hoy.
+Tu `VideojuegoService` con `getTopNovedades()` funcionando (sin caché todavía, Actividad 1.4) — la caché con Redis y `@Cacheable` la montas tú mismo en el Paso 0 de hoy. Recuerda que al final de la Actividad 1.4 quitaste el `Thread.sleep(2000)` de ese método porque ya no tenía sentido para una funcionalidad real sin caché — hoy lo recuperas, de forma temporal, para tener algo genuinamente caro que cachear.
 
 ---
 
@@ -30,6 +33,8 @@ services:
     ports:
       - "6379:6379"
 ```
+
+A diferencia de `postgres`/`mongodb`/`rabbitmq`, aquí no hace falta `volumes`: Redis es una caché, no una fuente de verdad — si el contenedor se reinicia y pierde todo lo guardado, no pasa nada grave, la próxima petición simplemente vuelve a pagar el coste y `@Cacheable` la rellena otra vez.
 
 En tu `pom.xml`:
 
@@ -68,12 +73,26 @@ public class GamevaultApplication {
 
 `@EnableCaching` es lo que activa, a nivel de toda la aplicación, que Spring se fije en anotaciones como `@Cacheable`/`@CacheEvict` que vas a añadir ahora mismo — sin ella, esas anotaciones se quedarían ahí escritas pero Spring las ignoraría por completo, en silencio, sin ningún error que te avise.
 
-Ahora anota `getTopNovedades()` con `@Cacheable`, y los tres métodos de escritura de `VideojuegoService` con `@CacheEvict`:
+!!! warning "Esto rompe tus tests `@WebMvcTest` ya existentes (Actividad 1.3)"
+    En cuanto añadas `@EnableCaching`, `VideojuegoControllerTest`/`EstudioControllerTest` van a fallar con `NoSuchBeanDefinitionException: No qualifying bean of type 'CacheManager'`. El motivo: `@WebMvcTest` carga `GamevaultApplication` (y con ella `@EnableCaching`), pero no trae la autoconfiguración de Redis que normalmente aporta el `CacheManager` — un test de solo el nivel web no toca cachés reales. Arréglalo añadiendo un `CacheManager` de mentira a esos dos tests, junto al `@MockitoBean` del service que ya tenías:
+    ```java
+    @MockitoBean
+    private CacheManager cacheManager;
+    ```
+    No necesita ningún comportamiento real: ningún código de estos tests llega a usar la caché de verdad (el service ya está mockeado), así que solo hace falta que el bean exista para que el contexto arranque.
+
+Antes de anotarlo, vuelve a añadir el `Thread.sleep(2000)` que quitaste al terminar la Actividad 1.4 — exactamente el mismo bloque `try`/`catch` de entonces. Sin él, `getTopNovedades()` ya es rápido de por sí y no tendrías nada real que cachear. Ahora sí, anótalo con `@Cacheable`, y los tres métodos de escritura de `VideojuegoService` con `@CacheEvict`:
 
 ```java
 @Cacheable("topNovedades")
+@Transactional(readOnly = true)
 public List<VideojuegoResponseDTO> getTopNovedades() {
-    // ... tu código ya existente, con el Thread.sleep(2000) ...
+    try {
+        Thread.sleep(2000); // de vuelta, temporalmente — lo quitas otra vez al final de la Actividad 3.3
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+    }
+    // ... tu código ya existente ...
 }
 ```
 
@@ -87,6 +106,21 @@ public VideojuegoResponseDTO create(VideojuegoCreateDTO dto) {
 
 Repite `@CacheEvict(value = "topNovedades", allEntries = true)` en `update()` y en `delete()`. `@Cacheable` guarda el resultado la primera vez que se llama y lo devuelve directamente en las siguientes, sin ejecutar el método; `@CacheEvict` borra ese resultado guardado cuando algo cambia, para que la próxima llamada vuelva a calcularlo.
 
+Antes de probarlo, un detalle que si no lo añades ahora te va a dar un `500` en cuanto pidas `/top`: por defecto, Spring guarda en Redis usando la serialización estándar de Java, que exige que la clase sea `Serializable` — y `VideojuegoResponseDTO`, al ser un `record`, no lo es por defecto. Añádeselo:
+
+```java
+public record VideojuegoResponseDTO(
+    Long id,
+    String titulo,
+    BigDecimal precio,
+    LocalDate fechaLanzamiento,
+    String nombreEstudio,
+    Map<String, Object> detallesPlataforma
+) implements Serializable {}
+```
+
+Un `record` puede implementar `Serializable` sin ningún cambio más en su definición — sigue siendo inmutable, sigue generando `equals`/`hashCode`/`toString` automáticamente, solo que ahora también sabe convertirse a bytes y de vuelta.
+
 **Comprueba** que funciona: pide `/api/v1/videojuegos/top` dos veces seguidas (la segunda debería ser instantánea) y confírmalo mirando dentro de Redis:
 
 ```bash
@@ -94,9 +128,18 @@ docker exec -it <tu-contenedor-redis> redis-cli
 > KEYS *
 ```
 
+**Captura**: la clave que aparece en Redis tras la segunda petición a `/top`.
+
 ---
 
 ## Paso 1 — Medir el problema que vas a resolver
+
+Tras las pruebas del Paso 0, la caché ya está caliente — si mides ahora, la "primera llamada" saldría instantánea, sin decir nada del problema real. Vacíala antes de empezar:
+
+```bash
+docker exec -it <tu-contenedor-redis> redis-cli
+> FLUSHALL
+```
 
 ```bash
 # Primera llamada: paga el Thread.sleep(2000)
@@ -105,8 +148,9 @@ time curl -s http://localhost:8080/api/v1/videojuegos/top > /dev/null
 # Segunda llamada: sale de caché, instantánea
 time curl -s http://localhost:8080/api/v1/videojuegos/top > /dev/null
 
-# Crea un videojuego (invalida la caché con @CacheEvict)
+# Crea un videojuego (invalida la caché con @CacheEvict) — recuerda: exige rol ADMIN
 curl -X POST http://localhost:8080/api/v1/videojuegos \
+  -H "Authorization: Bearer $TOKEN_ADMIN" \
   -H "Content-Type: application/json" \
   -d '{"titulo":"Test","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'
 
@@ -114,7 +158,7 @@ curl -X POST http://localhost:8080/api/v1/videojuegos \
 time curl -s http://localhost:8080/api/v1/videojuegos/top > /dev/null
 ```
 
-**Anota** los tres tiempos medidos. Ese "tercer usuario que paga otra vez los 2 segundos, justo después de una escritura" es exactamente lo que el warm-up de esta y la próxima actividad va a eliminar.
+**Captura**: la terminal con los tres tiempos medidos (`real` de cada `time curl`). Ese "tercer usuario que paga otra vez los 2 segundos, justo después de una escritura" es exactamente lo que el warm-up de esta y la próxima actividad va a eliminar.
 
 ---
 
@@ -130,7 +174,7 @@ import java.time.Instant;
 public record TopNovedadesInvalidadoEvent(Instant momento) {}
 ```
 
-**Pregunta**: ¿por qué este evento vive en un paquete `catalogo.eventos` (interno) y no en `catalogo.api.eventos` (si tu proyecto ya tiene ese paquete, del `VideojuegoEvent` de RabbitMQ)? Relaciona tu respuesta con la distinción que viste en la teoría entre eventos internos de Spring y mensajería RabbitMQ entre módulos.
+**Pregunta**: ¿por qué este evento vive en un paquete `catalogo.eventos` (interno) y no en `catalogo.api.eventos` (si tu proyecto ya tiene ese paquete, del `VideojuegoEvent` de RabbitMQ)? Relaciona tu respuesta con la distinción que has visto en la teoría entre eventos internos de Spring y mensajería RabbitMQ entre módulos.
 
 ---
 
@@ -150,11 +194,11 @@ public class VideojuegoService {
     @Transactional
     public VideojuegoResponseDTO create(VideojuegoCreateDTO dto) {
         // ... tu lógica de creación ya existente ...
-        Videojuego saved = videojuegoRepository.save(v);
+        Videojuego savedVideojuego = videojuegoRepository.save(videojuego);
 
         eventPublisher.publishEvent(new TopNovedadesInvalidadoEvent(Instant.now()));
 
-        return mapToDTO(saved);
+        return mapToDTO(savedVideojuego);
     }
 }
 ```
@@ -163,13 +207,13 @@ public class VideojuegoService {
 
 ---
 
-## Mini-reto — repite en `update()` y `delete()`
+## Paso 4 — Repite en `update()` y `delete()`
 
 Sin más código dado, añade la misma línea de publicación (`eventPublisher.publishEvent(new TopNovedadesInvalidadoEvent(Instant.now()))`) en `update()` y en `delete()` de `VideojuegoService` — en el mismo punto relativo donde ya está en `create()` (justo antes de devolver el resultado).
 
 ---
 
-## Paso 4 — Comprobar que se publica, con un listener trivial temporal
+## Paso 5 — Comprobar que se publica, con un listener trivial temporal
 
 Añade, **temporalmente**, esta clase para verificar que tu evento realmente se dispara:
 
@@ -190,9 +234,20 @@ public class ListenerDePruebaTemporal {
 }
 ```
 
-Crea un videojuego y mira la consola. **Comprueba** que la traza aparece. **Anota** el nombre del hilo en el que se ejecuta este listener — sin `@Async` todavía, ¿es el mismo hilo que procesó la petición HTTP, o uno distinto? Este dato es el contraste clave que vas a necesitar la próxima actividad: cuando añadas `@Async`, ese nombre de hilo va a cambiar.
+Para poder comparar de verdad, también necesitas saber en qué hilo se publica el evento — sin eso, no tienes contra qué comparar la traza de arriba. Añade, también **temporalmente**, una segunda traza en `VideojuegoService.create()`, justo antes de `eventPublisher.publishEvent(...)`:
 
-Cuando termines de comprobarlo, **retira** esta clase — es solo para esta verificación, en la Actividad 3.3 construyes el listener real.
+```java
+System.out.println("[TRAZA] Publicando evento en hilo: " + Thread.currentThread().getName());
+eventPublisher.publishEvent(new TopNovedadesInvalidadoEvent(Instant.now()));
+```
+
+Crea un videojuego y mira la consola. **Comprueba** que aparecen las dos trazas, una detrás de otra.
+
+**Captura**: las dos líneas de traza en la consola — `[TRAZA] Publicando evento en hilo: ...` y `[TRAZA] Evento recibido en hilo: ...`.
+
+**Anota** ambos nombres de hilo y compáralos — sin `@Async` todavía, ¿son el mismo hilo, o dos distintos? Este dato es el contraste clave que vas a necesitar la próxima actividad: cuando añadas `@Async`, el nombre del hilo que recibe el evento va a cambiar, mientras que el que publica sigue siendo el mismo (el de la petición HTTP).
+
+Cuando termines de comprobarlo, **retira** la clase `ListenerDePruebaTemporal` y la traza que has añadido en `create()` — son solo para esta verificación, en la Actividad 3.3 construyes el listener real.
 
 ---
 
