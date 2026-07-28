@@ -2031,6 +2031,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#paso-5-retira-el-retraso-artificial-ya-no-lo-necesitas" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 5 — Retira el retraso artificial, ya no lo necesitas
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cierre" class="md-nav__link">
     <span class="md-ellipsis">
       ✅ Cierre
@@ -2589,6 +2598,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#paso-5-retira-el-retraso-artificial-ya-no-lo-necesitas" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paso 5 — Retira el retraso artificial, ya no lo necesitas
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cierre" class="md-nav__link">
     <span class="md-ellipsis">
       ✅ Cierre
@@ -2752,8 +2770,11 @@
 <h2 id="pregunta-final">Pregunta final<a class="headerlink" href="#pregunta-final" title="Permanent link">¶</a></h2>
 <p>Si dos profesores del centro crean dos videojuegos casi a la vez (segundos de diferencia), ¿cuántos eventos se publican y cuántos hilos intentan recalentar la caché? ¿Es esto un error grave del sistema, o solo trabajo duplicado sin consecuencias incorrectas? Propón, sin implementarla, alguna forma de evitar ese trabajo duplicado (piensa en si haría falta algún tipo de coordinación entre los hilos, o si bastaría con alguna comprobación previa).</p>
 <hr>
+<h2 id="paso-5-retira-el-retraso-artificial-ya-no-lo-necesitas">Paso 5 — Retira el retraso artificial, ya no lo necesitas<a class="headerlink" href="#paso-5-retira-el-retraso-artificial-ya-no-lo-necesitas" title="Permanent link">¶</a></h2>
+<p>Ya has medido y demostrado el warm-up de principio a fin — el <code>Thread.sleep(2000)</code> ha cumplido su propósito. Quítalo otra vez de <code>getTopNovedades()</code>, exactamente como hiciste al terminar la Actividad 1.4: <code>@Cacheable</code> sigue evitando el trabajo repetido cuando de verdad haga falta, sin necesidad de un retraso falso permanente en una funcionalidad real.</p>
+<hr>
 <h2 id="cierre">✅ Cierre<a class="headerlink" href="#cierre" title="Permanent link">¶</a></h2>
-<p>El warm-up está completo y medido: tu GameVault ya no hace pagar al primer usuario los 2 segundos tras cada escritura. En el apartado siguiente configuras manualmente el <code>TaskExecutor</code> que hay detrás de este <code>@Async</code>, con nombre y prioridad propios.</p></div>
+<p>El warm-up está completo y medido: tu GameVault ya no hace pagar al primer usuario el coste de recalcular las novedades tras cada escritura. En el apartado siguiente configuras manualmente el <code>TaskExecutor</code> que hay detrás de este <code>@Async</code>, con nombre y prioridad propios.</p></div>
 
 
 

@@ -1853,15 +1853,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#que-es-un-evento-patron-observadorpublicador-suscriptor" class="md-nav__link">
-    <span class="md-ellipsis">
-      📢 Qué es un evento (patrón observador/publicador-suscriptor)
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#que-es-una-cache" class="md-nav__link">
     <span class="md-ellipsis">
       💾 Qué es una caché
@@ -1871,9 +1862,36 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#que-es-redis-y-por-que-aparece-en-este-proyecto" class="md-nav__link">
+  <a href="#como-funcionan-cacheable-y-cacheevict-por-debajo" class="md-nav__link">
     <span class="md-ellipsis">
-      🔴 Qué es Redis, y por qué aparece en este proyecto
+      ⚙️ Cómo funcionan @Cacheable y @CacheEvict por debajo
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#que-es-redis" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔴 Qué es Redis
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#por-que-esto-todavia-no-basta-falta-anunciar-el-cambio" class="md-nav__link">
+    <span class="md-ellipsis">
+      🤔 Por qué esto todavía no basta: falta anunciar el cambio
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#que-es-un-evento-patron-observadorpublicador-suscriptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      📢 Qué es un evento (patrón observador/publicador-suscriptor)
     </span>
   </a>
   
@@ -2541,15 +2559,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#que-es-un-evento-patron-observadorpublicador-suscriptor" class="md-nav__link">
-    <span class="md-ellipsis">
-      📢 Qué es un evento (patrón observador/publicador-suscriptor)
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#que-es-una-cache" class="md-nav__link">
     <span class="md-ellipsis">
       💾 Qué es una caché
@@ -2559,9 +2568,36 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#que-es-redis-y-por-que-aparece-en-este-proyecto" class="md-nav__link">
+  <a href="#como-funcionan-cacheable-y-cacheevict-por-debajo" class="md-nav__link">
     <span class="md-ellipsis">
-      🔴 Qué es Redis, y por qué aparece en este proyecto
+      ⚙️ Cómo funcionan @Cacheable y @CacheEvict por debajo
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#que-es-redis" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔴 Qué es Redis
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#por-que-esto-todavia-no-basta-falta-anunciar-el-cambio" class="md-nav__link">
+    <span class="md-ellipsis">
+      🤔 Por qué esto todavía no basta: falta anunciar el cambio
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#que-es-un-evento-patron-observadorpublicador-suscriptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      📢 Qué es un evento (patrón observador/publicador-suscriptor)
     </span>
   </a>
   
@@ -2645,7 +2681,180 @@
 
 <div><p><a id="eventos-warmup-cache"></a></p>
 <h1 id="2-eventos-internos-de-spring-el-warm-up-de-cache-12">🧩 2. Eventos internos de Spring: el warm-up de caché (1/2)<a class="headerlink" href="#2-eventos-internos-de-spring-el-warm-up-de-cache-12" title="Permanent link">¶</a></h1>
-<p>Sabes que tu aplicación ya es multihilo (pool de Tomcat, listeners de RabbitMQ). Ahora vas a construir tú mismo una pieza nueva que se apoya en eso: el warm-up de una caché, repartido en dos apartados — hoy el evento y su publicación; en el próximo apartado, el listener que reacciona.</p>
+<p>Sabes que tu aplicación ya es multihilo (pool de Tomcat, listeners de RabbitMQ). Ahora vas a construir tú mismo una pieza nueva que se apoya en eso: el warm-up de una caché, repartido en dos apartados — hoy montas la caché y el evento que avisa cuando deja de ser válida; en el próximo apartado, el listener que reacciona a ese aviso.</p>
+<hr>
+<h2 id="que-es-una-cache">💾 Qué es una caché<a class="headerlink" href="#que-es-una-cache" title="Permanent link">¶</a></h2>
+<p>Una <strong>caché</strong> guarda el resultado de una operación cara (lenta, costosa) para reutilizarlo sin repetir el trabajo. Imagina que tu catálogo de libros quisiera ofrecer un listado con los <strong>libros más baratos</strong> — una consulta que, con un catálogo grande y aplicando ordenación y filtros, tarda un rato en calcularse cada vez.</p>
+<table>
+<thead>
+<tr>
+<th>Momento</th>
+<th>Sin caché</th>
+<th>Con caché</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1ª petición</td>
+<td>Paga el coste completo</td>
+<td>Paga el coste completo, y lo guarda</td>
+</tr>
+<tr>
+<td>2ª petición (nada ha cambiado)</td>
+<td>Vuelve a pagar el coste completo</td>
+<td>Instantánea — usa lo ya guardado</td>
+</tr>
+<tr>
+<td>Justo después de crear/editar/borrar un libro</td>
+<td>Paga el coste completo (como siempre)</td>
+<td>Paga el coste completo otra vez — la caché ya no vale</td>
+</tr>
+</tbody>
+</table>
+<p>Esa última fila es el problema que le falta resolver a una caché simple: en cuanto los datos subyacentes cambian, hay que <strong>invalidarla</strong> — borrar el resultado guardado, para que la próxima petición fuerce un recálculo. Pero invalidar sin más solo traslada el problema: la siguiente persona que pida el listado paga otra vez el precio completo, justo la que tuvo la mala suerte de llegar después de una escritura. <strong>Recalentar</strong> una caché es volver a calcular ese resultado por adelantado, nada más invalidarla y antes de que nadie lo pida, para que esa próxima petición reciba el resultado ya listo, sin pagar ningún coste — la fila que le falta a esta tabla.</p>
+<hr>
+<h2 id="como-funcionan-cacheable-y-cacheevict-por-debajo">⚙️ Cómo funcionan <code>@Cacheable</code> y <code>@CacheEvict</code> por debajo<a class="headerlink" href="#como-funcionan-cacheable-y-cacheevict-por-debajo" title="Permanent link">¶</a></h2>
+<p>Empieza por la mitad más sencilla: guardar y reutilizar. Por dentro, una caché funciona igual que un <code>Map</code> de toda la vida, clave-valor: cada resultado guardado tiene una <strong>clave</strong> que lo identifica, y para recuperarlo hace falta esa misma clave.</p>
+<p><code>@Cacheable("librosBaratos")</code> sobre un método le dice a Spring que, antes de ejecutarlo de verdad, siga estos dos pasos:</p>
+<ol>
+<li>Calcula la clave que le corresponde a esta llamada, y comprueba si ya hay algo guardado bajo esa clave.</li>
+<li>Si lo hay, lo devuelve directamente — <strong>sin ejecutar ni una línea del método</strong>. Si no lo hay, ejecuta el método como siempre, guarda lo que devuelva bajo esa clave, y a partir de ahora responde con eso.</li>
+</ol>
+<p>Tú no escribes ese "compruebo primero, ejecuto si hace falta" en ningún sitio de tu código — es Spring quien lo añade automáticamente en cuanto detecta la anotación, sin que toques el cuerpo del método para nada. Para que lo haga de verdad hace falta un interruptor a nivel de toda la aplicación: <code>@EnableCaching</code>, en tu clase principal. Sin él, <code>@Cacheable</code>/<code>@CacheEvict</code> se quedan ahí escritas pero Spring las ignora por completo, en silencio, sin ningún error que te avise.</p>
+<div class="admonition tip">
+<p class="admonition-title">Ese interruptor puede romper tests que ya tenías</p>
+<p><code>@EnableCaching</code> se activa para <strong>toda</strong> la aplicación, no solo para el método que te interesa cachear. Si ya tenías tests de la capa web (<code>@WebMvcTest</code>) de actividades anteriores, es fácil que dejen de arrancar: cargan tu clase principal (y con ella <code>@EnableCaching</code>), pero un test de solo el nivel web no trae la autoconfiguración que normalmente aporta el almacén real detrás de la caché — así que Spring no encuentra dónde guardar nada, y el test falla al arrancar el contexto, no al ejecutar ninguna aserción. Es un buen ejemplo de por qué un test "de una sola capa" (como <code>@WebMvcTest</code>) sigue arrastrando piezas de configuración global de tu aplicación, aunque no las necesite para lo que está probando.</p>
+</div>
+<pre class="mermaid"><code>flowchart TD
+    A["Alguien llama a getLibrosBaratos()"] --&gt; B{"¿Hay resultado&lt;br/&gt;guardado para esta clave?"}
+    B --&gt;|"Sí (cache hit)"| C["Devuelve el resultado guardado&lt;br/&gt;NO ejecuta el método"]
+    B --&gt;|"No (cache miss)"| D["Ejecuta el método de verdad"]
+    D --&gt; E["Guarda el resultado"]
+    E --&gt; F["Lo devuelve"]</code></pre>
+<div class="admonition tip">
+<p class="admonition-title">'librosBaratos' no es la clave — es el nombre de la caché</p>
+<p><code>"librosBaratos"</code> es el nombre de la caché completa —piensa en ella como el propio <code>Map</code>—, no una clave dentro de él. La clave de cada entrada se construye, por defecto, a partir de los argumentos con los que se llamó al método: dos llamadas con los mismos parámetros comparten la misma clave. Como <code>getLibrosBaratos()</code> no recibe ningún parámetro, Spring usa siempre la misma clave fija (la que representa "sin argumentos"), así que dentro de <code>"librosBaratos"</code> solo cabe una entrada guardada, sea quien sea quien la pida. Es justo lo que vas a ver dentro de Redis: la clave completa combina las dos partes, <code>nombreDeLaCaché::clave</code>.</p>
+</div>
+<div class="admonition example">
+<p class="admonition-title">Contraste: un método con parámetro tiene varias claves</p>
+<p>Imagina un método distinto, <code>getLibrosPorAutor(String autor)</code> (no lo vas a construir, es solo para ver el contraste). Aquí cada autor genera su propia clave, dentro de la misma caché <code>"librosPorAutor"</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Llamada</th>
+<th>Clave generada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>getLibrosPorAutor("Rothfuss")</code></td>
+<td><code>Rothfuss</code></td>
+</tr>
+<tr>
+<td><code>getLibrosPorAutor("García Márquez")</code></td>
+<td><code>García Márquez</code></td>
+</tr>
+</tbody>
+</table>
+<p>Las dos llamadas guardan resultados <strong>distintos</strong>, uno por cada autor — a diferencia de <code>getLibrosBaratos()</code>, que al no recibir parámetros solo tiene sitio para una única entrada, sea quien sea quien lo pida.</p>
+</div>
+<p>Ahora la otra mitad, invalidar. <code>@CacheEvict</code> hace justo lo contrario a <code>@Cacheable</code>: en vez de comprobar si hay algo guardado, lo borra.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><code>@Cacheable</code></th>
+<th><code>@CacheEvict</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Va sobre</td>
+<td>Un método de <strong>lectura</strong></td>
+<td>Un método de <strong>escritura</strong> (<code>create</code>/<code>update</code>/<code>delete</code>)</td>
+</tr>
+<tr>
+<td>Qué hace</td>
+<td>Guarda el resultado la primera vez; lo reutiliza después</td>
+<td>Borra el resultado guardado</td>
+</tr>
+<tr>
+<td>Con <code>allEntries = true</code></td>
+<td>No aplica</td>
+<td>Borra <strong>todas</strong> las entradas de esa caché de golpe</td>
+</tr>
+</tbody>
+</table>
+<p>Aquí interesa <code>allEntries = true</code> porque cualquier escritura sobre el catálogo (crear, modificar o borrar un libro) puede cambiar cuál es la lista de "más baratos" — no vale la pena intentar borrar solo la entrada afectada.</p>
+<p>Falta decidir una última cosa antes de anotar nada: <strong>dónde</strong> se guarda físicamente ese resultado.</p>
+<hr>
+<h2 id="que-es-redis">🔴 Qué es Redis<a class="headerlink" href="#que-es-redis" title="Permanent link">¶</a></h2>
+<p><strong>Redis</strong> es una base de datos en memoria, de tipo clave-valor, muy rápida, que se usa típicamente como <strong>caché compartida</strong>. La diferencia frente a una caché que viviera solo en la memoria de tu propia aplicación:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Caché en memoria de la app</th>
+<th>Caché en Redis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>¿Sobrevive a un reinicio de la aplicación?</td>
+<td>No — se pierde entera</td>
+<td>Sí — vive en su propio contenedor</td>
+</tr>
+<tr>
+<td>¿Se comparte entre varias instancias de la misma app?</td>
+<td>No — cada instancia tiene la suya</td>
+<td>Sí — todas leen del mismo Redis</td>
+</tr>
+<tr>
+<td>¿Dónde vive físicamente el dato?</td>
+<td>En un mapa dentro de la JVM de tu app</td>
+<td>En el contenedor Redis, aparte</td>
+</tr>
+</tbody>
+</table>
+<p>Con <code>spring-boot-starter-cache</code> y <code>spring-boot-starter-data-redis</code> presentes en el <code>pom.xml</code> (las vas a añadir en la actividad de hoy), Spring Boot autoconfigura Redis como el almacén real detrás de <code>@Cacheable</code>. Es decir: en cuanto anotes tu método con <code>@Cacheable("librosBaratos")</code>, ese resultado se va a guardar <strong>físicamente en un contenedor Redis</strong>, no en un mapa en memoria de tu propia aplicación Java.</p>
+<div class="admonition warning">
+<p class="admonition-title">Por defecto, Spring exige que lo que guardes en Redis sea <code>Serializable</code></p>
+<p>Para enviar un objeto por la red hasta Redis, Spring primero tiene que convertirlo a una secuencia de bytes — eso es serializar. Por defecto, <code>RedisCacheManager</code> usa la serialización estándar de Java, que exige que la clase implemente <code>Serializable</code>. Un <code>record</code> como el que devuelve <code>getLibrosBaratos()</code> no la implementa por defecto, así que intentar guardarlo en caché tal cual falla con un error de serialización. La solución más simple y fiable es que el propio DTO implemente <code>Serializable</code> — un <code>record</code> puede hacerlo sin cambiar nada más de su definición.</p>
+</div>
+<hr>
+<h2 id="por-que-esto-todavia-no-basta-falta-anunciar-el-cambio">🤔 Por qué esto todavía no basta: falta anunciar el cambio<a class="headerlink" href="#por-que-esto-todavia-no-basta-falta-anunciar-el-cambio" title="Permanent link">¶</a></h2>
+<p>Con <code>@Cacheable</code>/<code>@CacheEvict</code> montados, invalidar y recalentar ya tienen dónde apoyarse — pero hay un problema de secuencia que ninguna de las dos anotaciones resuelve por sí sola.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Invalidar (<code>@CacheEvict</code>)</th>
+<th>Recalentar (volver a llamar al método)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>¿Dónde ocurre?</td>
+<td>Dentro de <code>create()</code>/<code>update()</code>/<code>delete()</code>, en el hilo de la petición</td>
+<td>No ocurre todavía — sería justo ahí mismo, a continuación, si lo llamaras</td>
+</tr>
+<tr>
+<td>¿Cuánto cuesta?</td>
+<td>Poco — borrar una entrada de Redis</td>
+<td>Mucho — la misma consulta lenta de siempre</td>
+</tr>
+<tr>
+<td>¿Quién paga ese coste, si lo haces ahí mismo?</td>
+<td>—</td>
+<td>El cliente que solo quería crear un libro</td>
+</tr>
+</tbody>
+</table>
+<p>Ese último recuadro es el problema — exactamente el mismo que ya has visto con el registro de actividad, en el primer apartado de este tema: un trabajo caro y secundario, colgado del hilo de una petición que no debería tener que esperarlo.</p>
+<div class="admonition tip">
+<p class="admonition-title">La misma solución de entonces</p>
+<p>Separar "esto acaba de pasar" de "quién se encarga de reaccionar". Que <code>create()</code>/<code>update()</code>/<code>delete()</code> se limiten a <strong>anunciar</strong> que la caché se ha invalidado, sin saber ni que le importe quién, cómo o cuándo se encarga de recalentarla. Eso es exactamente lo que te da un <strong>evento</strong>.</p>
+</div>
 <hr>
 <h2 id="que-es-un-evento-patron-observadorpublicador-suscriptor">📢 Qué es un evento (patrón observador/publicador-suscriptor)<a class="headerlink" href="#que-es-un-evento-patron-observadorpublicador-suscriptor" title="Permanent link">¶</a></h2>
 <p>Un <strong>evento</strong> es, conceptualmente, "algo ha pasado" — empaquetado como un objeto que describe ese suceso. El patrón que lo rodea tiene dos papeles: quien <strong>publica</strong> el evento (lo anuncia, sin saber quién lo va a escuchar) y quien <strong>escucha</strong> (reacciona cuando ocurre, sin que el publicador tenga que conocerlo).</p>
@@ -2655,84 +2864,99 @@
 </div>
 <p>Ese desacoplamiento es la ganancia central del patrón: el que publica no conoce a los que reaccionan, y se pueden añadir reacciones nuevas sin tocar al emisor. De hecho, ya has usado dos versiones de este mismo patrón sin ponerles ese nombre: los eventos de una interfaz gráfica (un clic de botón dispara un <em>listener</em>, sin que el botón sepa qué hace ese listener) y RabbitMQ, que ya conoces (Actividad 3.1) — un broker externo con productores y consumidores que no se conocen entre sí. Es el mismo patrón, a distintas escalas.</p>
 <hr>
-<h2 id="que-es-una-cache">💾 Qué es una caché<a class="headerlink" href="#que-es-una-cache" title="Permanent link">¶</a></h2>
-<p>Una <strong>caché</strong> guarda el resultado de una operación cara (lenta, costosa) para reutilizarlo sin repetir el trabajo. Cuando ese resultado deja de ser válido (los datos subyacentes han cambiado), hay que <strong>invalidarla</strong> — borrar el resultado guardado, para que la próxima vez se recalcule. <strong>Recalentar</strong> una caché es volver a calcular ese resultado por adelantado, antes de que alguien lo pida, para que quien lo pida a continuación no pague el coste de calcularlo de cero.</p>
-<p>Es exactamente lo que vas a conseguir en esta pareja de apartados con <code>@Cacheable</code> sobre el <code>getTopNovedades()</code> que ya tienes (Actividad 1.4) — pero antes de anotarlo, falta decidir <strong>dónde</strong> se guarda físicamente ese resultado.</p>
-<hr>
-<h2 id="que-es-redis-y-por-que-aparece-en-este-proyecto">🔴 Qué es Redis, y por qué aparece en este proyecto<a class="headerlink" href="#que-es-redis-y-por-que-aparece-en-este-proyecto" title="Permanent link">¶</a></h2>
-<p><strong>Redis</strong> es una base de datos en memoria, de tipo clave-valor, muy rápida, que se usa típicamente como <strong>caché compartida</strong>. La diferencia frente a una caché que viviera solo en la memoria de tu propia aplicación: una caché en Redis sobrevive a un reinicio de la aplicación, y podría compartirse entre varias instancias de la misma aplicación corriendo a la vez (si algún día hubiera más de una).</p>
-<p>Con <code>spring-boot-starter-cache</code> y <code>spring-boot-starter-data-redis</code> presentes en el <code>pom.xml</code> (las vas a añadir en la actividad de hoy), Spring Boot autoconfigura Redis como el almacén real detrás de <code>@Cacheable</code>. Es decir: cuando <code>getTopNovedades()</code> guarde su resultado en la caché <code>"topNovedades"</code>, ese resultado se va a guardar <strong>físicamente en un contenedor Redis</strong>, no en un mapa en memoria de tu propia aplicación Java.</p>
-<p>Una vez lo tengas montado, vas a poder comprobarlo tú mismo:</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
-<span class="normal"><a href="#__codelineno-0-2">2</a></span>
-<span class="normal"><a href="#__codelineno-0-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>&lt;tu-contenedor-redis&gt;<span class="w"> </span>redis-cli
-<a id="__codelineno-0-2" name="__codelineno-0-2"></a>&gt;<span class="w"> </span>KEYS<span class="w"> </span>*
-<a id="__codelineno-0-3" name="__codelineno-0-3"></a>&gt;<span class="w"> </span>GET<span class="w"> </span><span class="s2">"topNovedades::SimpleKey []"</span>
-</code></pre></div></td></tr></table></div>
-<p>Tras la primera petición a <code>/api/v1/videojuegos/top</code>, deberías ver aparecer una clave relacionada con <code>topNovedades</code> en Redis.</p>
-<hr>
 <h2 id="los-eventos-internos-de-spring-applicationeventpublisher">⚙️ Los eventos internos de Spring: <code>ApplicationEventPublisher</code><a class="headerlink" href="#los-eventos-internos-de-spring-applicationeventpublisher" title="Permanent link">¶</a></h2>
-<p>Spring implementa el patrón observador/publicador-suscriptor <strong>dentro de la propia aplicación</strong>, sin ningún broker externo de por medio, con <code>ApplicationEventPublisher</code> y los <em>listeners</em> que reaccionan a lo que publica.</p>
+<p>Para el aviso de "la caché se ha invalidado" no hace falta nada tan pesado como un broker externo — el publicador y el listener viven en la misma aplicación, así que Spring ofrece una versión más ligera del mismo patrón: <code>ApplicationEventPublisher</code> implementa el patrón observador/publicador-suscriptor <strong>dentro de la propia aplicación</strong>, sin ningún broker externo de por medio.</p>
 <div class="admonition danger">
 <p class="admonition-title">No lo confundas con RabbitMQ</p>
-<p>Es fácil mezclar ambos, así que distínguelos desde ya: <strong>RabbitMQ</strong> es mensajería entre procesos/módulos, a través de un broker externo (lo que ya conoces, con <code>VideojuegoEvent</code> en el paquete de eventos del catálogo). <strong><code>ApplicationEventPublisher</code></strong> son eventos <strong>dentro de la misma JVM</strong>, entre beans de la misma aplicación, sin ningún broker — mucho más ligero, pero solo sirve dentro del propio proceso.</p>
+<p>Es fácil mezclar ambos, así que distínguelos desde ya: <strong>RabbitMQ</strong> es mensajería entre procesos/módulos, a través de un broker externo (el <code>LibroEvent</code> que has visto en el apartado anterior). <strong><code>ApplicationEventPublisher</code></strong> son eventos <strong>dentro de la misma JVM</strong>, entre beans de la misma aplicación, sin ningún broker — mucho más ligero, pero solo sirve dentro del propio proceso.</p>
 </div>
 <hr>
 <h2 id="el-diseno-del-warm-up-pieza-1-de-2">🎯 El diseño del warm-up (pieza 1 de 2)<a class="headerlink" href="#el-diseno-del-warm-up-pieza-1-de-2" title="Permanent link">¶</a></h2>
-<p>En este apartado construyes el evento y su publicación; en el próximo, el listener que reacciona. El plan completo:</p>
+<p>Con la caché, Redis y el mecanismo de eventos ya explicados, toca montarlos juntos. En este apartado construyes el evento y su publicación; en el próximo, el listener que reacciona. El plan completo, siguiendo con el mismo ejemplo de los libros más baratos:</p>
 <pre class="mermaid"><code>flowchart LR
-    A["VideojuegoService&lt;br/&gt;@CacheEvict tras escritura"] --&gt;|"publica"| B["TopNovedadesInvalidadoEvent"]
+    A["LibroService&lt;br/&gt;@CacheEvict tras escritura"] --&gt;|"publica"| B["LibrosBaratosInvalidadoEvent"]
     B -.-&gt;|"próximo apartado"| C["Listener @Async&lt;br/&gt;recalienta la caché"]</code></pre>
-<p>Cuando <code>VideojuegoService</code> invalida la caché <code>"topNovedades"</code> (en <code>create</code>/<code>update</code>/<code>delete</code>, cada uno anotado <code>@CacheEvict</code>), va a publicar además un evento interno <code>TopNovedadesInvalidadoEvent</code>. Ahora mismo, sin listener todavía, publicar ese evento <strong>no hace nada visible</strong> — el sistema queda "emitiendo" a la espera de la pieza 2.</p>
+<p>Cuando <code>LibroService</code> invalida la caché <code>"librosBaratos"</code> (en <code>create</code>/<code>update</code>/<code>delete</code>, cada uno anotado <code>@CacheEvict</code>), va a publicar además un evento interno <code>LibrosBaratosInvalidadoEvent</code>. Ahora mismo, sin listener todavía, publicar ese evento <strong>no hace nada visible</strong> — el sistema queda "emitiendo" a la espera de la pieza 2.</p>
 <h3 id="la-clase-de-evento-un-record-inmutable">La clase de evento: un record inmutable<a class="headerlink" href="#la-clase-de-evento-un-record-inmutable" title="Permanent link">¶</a></h3>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">record</span> <span class="nc">TopNovedadesInvalidadoEvent</span><span class="p">(</span><span class="n">Instant</span><span class="w"> </span><span class="n">momento</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">record</span> <span class="nc">LibrosBaratosInvalidadoEvent</span><span class="p">(</span><span class="n">Instant</span><span class="w"> </span><span class="n">momento</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
 </code></pre></div></td></tr></table></div>
 <p>Un <code>record</code> (ya lo conoces de Acceso a Datos) encaja perfectamente aquí: es <strong>inmutable</strong> por diseño, y eso importa especialmente cuando el objeto va a viajar entre hilos distintos. Un objeto inmutable no puede cambiar después de crearse — así que no hay riesgo de que un hilo lo modifique mientras otro lo está leyendo, sin necesitar ningún <code>synchronized</code> ni ningún lock: la inmutabilidad es, en sí misma, una forma segura de compartir información entre hilos.</p>
 <h3 id="la-publicacion">La publicación<a class="headerlink" href="#la-publicacion" title="Permanent link">¶</a></h3>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-2-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-2-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-2-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-2-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-2-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-2-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-2-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-2-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-2-10">10</a></span>
-<span class="normal"><a href="#__codelineno-2-11">11</a></span>
-<span class="normal"><a href="#__codelineno-2-12">12</a></span>
-<span class="normal"><a href="#__codelineno-2-13">13</a></span>
-<span class="normal"><a href="#__codelineno-2-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nd">@Service</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="nd">@RequiredArgsConstructor</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">VideojuegoService</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">VideojuegoRepository</span><span class="w"> </span><span class="n">videojuegoRepository</span><span class="p">;</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ApplicationEventPublisher</span><span class="w"> </span><span class="n">eventPublisher</span><span class="p">;</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6"></a>
-<a id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">    </span><span class="nd">@CacheEvict</span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"topNovedades"</span><span class="p">,</span><span class="w"> </span><span class="n">allEntries</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="w">    </span><span class="nd">@Transactional</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">VideojuegoResponseDTO</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="n">VideojuegoCreateDTO</span><span class="w"> </span><span class="n">dto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="w">        </span><span class="c1">// ... lógica de creación ya existente ...</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11"></a><span class="w">        </span><span class="n">eventPublisher</span><span class="p">.</span><span class="na">publishEvent</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">TopNovedadesInvalidadoEvent</span><span class="p">(</span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">()));</span>
-<a id="__codelineno-2-12" name="__codelineno-2-12"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mapToDTO</span><span class="p">(</span><span class="n">saved</span><span class="p">);</span>
-<a id="__codelineno-2-13" name="__codelineno-2-13"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-2-14" name="__codelineno-2-14"></a><span class="p">}</span>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-1-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-1-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-1-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-1-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-1-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-1-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-1-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-1-10">10</a></span>
+<span class="normal"><a href="#__codelineno-1-11">11</a></span>
+<span class="normal"><a href="#__codelineno-1-12">12</a></span>
+<span class="normal"><a href="#__codelineno-1-13">13</a></span>
+<span class="normal"><a href="#__codelineno-1-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nd">@Service</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="nd">@RequiredArgsConstructor</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LibroService</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">LibroRepository</span><span class="w"> </span><span class="n">libroRepository</span><span class="p">;</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ApplicationEventPublisher</span><span class="w"> </span><span class="n">eventPublisher</span><span class="p">;</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6"></a>
+<a id="__codelineno-1-7" name="__codelineno-1-7"></a><span class="w">    </span><span class="nd">@CacheEvict</span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"librosBaratos"</span><span class="p">,</span><span class="w"> </span><span class="n">allEntries</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="w">    </span><span class="nd">@Transactional</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">LibroResponseDTO</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="n">LibroCreateDTO</span><span class="w"> </span><span class="n">dto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10"></a><span class="w">        </span><span class="c1">// ... lógica de creación ya existente ...</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11"></a><span class="w">        </span><span class="n">eventPublisher</span><span class="p">.</span><span class="na">publishEvent</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">LibrosBaratosInvalidadoEvent</span><span class="p">(</span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">()));</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mapToDTO</span><span class="p">(</span><span class="n">saved</span><span class="p">);</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p><code>ApplicationEventPublisher</code> se inyecta exactamente igual que cualquier otra dependencia — con <code>@RequiredArgsConstructor</code>, como todo en este proyecto. <code>publishEvent(...)</code> es la llamada que dispara el evento hacia quien esté escuchando — que, de momento, es nadie.</p>
+<p>La misma línea de publicación va también en <code>update()</code> y en <code>delete()</code>, junto a su propio <code>@CacheEvict</code>: un libro editado o borrado puede cambiar igual de bien cuáles son los "más baratos", así que las tres operaciones de escritura necesitan avisar por igual.</p>
 <div class="admonition tip">
 <p class="admonition-title">Esta pieza es nueva, no la tienes todavía</p>
-<p>Es una mejora que tú vas a construir desde cero: no confundas este evento interno de Spring con los <code>VideojuegoEvent</code> que ya conoces, que son de RabbitMQ, entre módulos — son dos mecanismos distintos.</p>
+<p>Es una mejora que tú vas a construir desde cero, sobre tu propio proyecto: no confundas este evento interno de Spring con el <code>LibroEvent</code> que ya conoces del apartado anterior, que es de RabbitMQ, entre módulos — son dos mecanismos distintos.</p>
 </div>
 <hr>
 <h2 id="el-mapa-completo">🗺️ El mapa completo<a class="headerlink" href="#el-mapa-completo" title="Permanent link">¶</a></h2>
-<p>Este apartado: evento + publicación. El próximo: listener <code>@Async</code> que recalienta la caché, sincronizado con el momento exacto en que la transacción hace commit. Con las dos piezas montadas, el "primer usuario tras una escritura" dejará de pagar los 2 segundos de <code>getTopNovedades()</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Pieza</th>
+<th>¿Dónde se construye?</th>
+<th>¿Ya tiene efecto visible?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Caché con Redis (<code>@Cacheable</code>/<code>@CacheEvict</code>)</td>
+<td>Este apartado</td>
+<td>Sí — la segunda petición ya sale gratis</td>
+</tr>
+<tr>
+<td>Evento + publicación (<code>LibrosBaratosInvalidadoEvent</code>)</td>
+<td>Este apartado</td>
+<td>No — nadie lo escucha todavía</td>
+</tr>
+<tr>
+<td>Listener <code>@Async</code> que recalienta</td>
+<td>Próximo apartado</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>Con las dos primeras piezas montadas, ya tienes caché de verdad: la segunda petición a un mismo listado es instantánea. Pero sigue quedando pendiente la fila que peor sale en la tabla de "Qué es una caché", más arriba: el "primer usuario tras una escritura" todavía paga el coste completo, porque la caché acaba de invalidarse y nadie la ha vuelto a llenar. Ese alivio final —que ni siquiera ese primer usuario tenga que esperar, porque el listener ya ha recalentado la caché en segundo plano antes de que él la pida— llega con la pieza que construyes en el próximo apartado, y lo vas a medir tú mismo, con números reales, en la Actividad 3.3.</p>
 <hr>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
 <details class="tip">
 <summary>Abrir resumen</summary>
 <ul>
+<li>Una <strong>caché</strong> guarda el resultado de una operación cara para no repetir el trabajo. <strong>Invalidar</strong> borra un resultado que ya no es válido; <strong>recalentar</strong> la vuelve a calcular por adelantado, antes de que alguien la pida.</li>
+<li><code>@Cacheable</code> hace que Spring intercepte la llamada: si ya hay un resultado guardado para esa clave, lo devuelve sin ejecutar el método; si no, lo ejecuta y guarda el resultado. <code>@CacheEvict(allEntries = true)</code> borra todo lo guardado, forzando el próximo recálculo.</li>
+<li><code>@EnableCaching</code> activa ese mecanismo para toda la aplicación — y, precisamente por eso, puede romper tests de una sola capa (<code>@WebMvcTest</code>) que carguen la clase principal sin traer la autoconfiguración que da soporte real a la caché.</li>
+<li><strong>Redis</strong> es una base de datos en memoria clave-valor, usada aquí como caché compartida real detrás de <code>@Cacheable</code> — el resultado se guarda físicamente en el contenedor Redis, no en memoria de la aplicación, y sobrevive a un reinicio.</li>
+<li>Por defecto, Spring guarda en Redis con serialización JDK, que exige <code>Serializable</code> — un <code>record</code> no lo es por defecto. Se resuelve añadiendo <code>implements Serializable</code> al DTO.</li>
+<li>Invalidar (barato) y recalentar (caro) hay que separarlos, para que el coste de recalentar no se lo lleve por delante quien hizo la escritura — el mismo problema que ya has resuelto con el registro de actividad del primer apartado.</li>
 <li>Un <strong>evento</strong> es "algo ha pasado", empaquetado como objeto; publicador y suscriptor no se conocen entre sí (desacoplamiento).</li>
-<li><strong>Invalidar</strong> una caché borra un resultado que ya no es válido; <strong>recalentar</strong> la vuelve a calcular por adelantado.</li>
-<li><strong>Redis</strong> es una base de datos en memoria clave-valor, usada aquí como caché compartida real detrás de <code>@Cacheable</code> — el resultado de <code>getTopNovedades()</code> se guarda físicamente en el contenedor Redis, no en memoria de la aplicación.</li>
 <li><code>ApplicationEventPublisher</code> implementa eventos <strong>dentro</strong> de la JVM, entre beans — distinto de RabbitMQ (broker externo, entre procesos).</li>
 <li>Un evento como <code>record</code> es inmutable, lo que lo hace seguro de compartir entre hilos sin locks.</li>
 <li>En este apartado: evento + publicación (sin efecto visible todavía). En el próximo: el listener <code>@Async</code> que cierra el ciclo.</li>
