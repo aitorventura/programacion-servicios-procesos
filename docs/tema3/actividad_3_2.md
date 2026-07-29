@@ -97,14 +97,16 @@ public List<VideojuegoResponseDTO> getTopNovedades() {
 ```
 
 ```java
-@CacheEvict(value = "topNovedades", allEntries = true)
+@CacheEvict(value = "topNovedades", allEntries = true, beforeInvocation = true)
 @Transactional
 public VideojuegoResponseDTO create(VideojuegoCreateDTO dto) {
     // ... tu lógica de creación ya existente ...
 }
 ```
 
-Repite `@CacheEvict(value = "topNovedades", allEntries = true)` en `update()` y en `delete()`. `@Cacheable` guarda el resultado la primera vez que se llama y lo devuelve directamente en las siguientes, sin ejecutar el método; `@CacheEvict` borra ese resultado guardado cuando algo cambia, para que la próxima llamada vuelva a calcularlo.
+Repite `@CacheEvict(value = "topNovedades", allEntries = true, beforeInvocation = true)` en `update()` y en `delete()`. `@Cacheable` guarda el resultado la primera vez que se llama y lo devuelve directamente en las siguientes, sin ejecutar el método; `@CacheEvict` borra ese resultado guardado cuando algo cambia, para que la próxima llamada vuelva a calcularlo.
+
+`beforeInvocation = true` no es opcional aquí: sin él, Spring evita **después** de que `create()`/`update()`/`delete()` terminen del todo (incluido el `commit`, que llega en el próximo apartado) — justo el mismo instante en que vas a disparar un aviso de "recalienta ya". Con el orden por defecto, ese aviso podría llegar antes de que el evict haya limpiado nada, encontrar la caché todavía con el valor viejo, y no recalcular nada de verdad.
 
 Antes de probarlo, un detalle que si no lo añades ahora te va a dar un `500` en cuanto pidas `/top`: por defecto, Spring guarda en Redis usando la serialización estándar de Java, que exige que la clase sea `Serializable` — y `VideojuegoResponseDTO`, al ser un `record`, no lo es por defecto. Añádeselo:
 
@@ -190,7 +192,7 @@ public class VideojuegoService {
     private final EstudioRepository estudioRepository;
     private final ApplicationEventPublisher eventPublisher;
 
-    @CacheEvict(value = "topNovedades", allEntries = true)
+    @CacheEvict(value = "topNovedades", allEntries = true, beforeInvocation = true)
     @Transactional
     public VideojuegoResponseDTO create(VideojuegoCreateDTO dto) {
         // ... tu lógica de creación ya existente ...

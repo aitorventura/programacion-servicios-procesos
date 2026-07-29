@@ -1,5 +1,8 @@
 # 🧪 Actividad 3.3: El listener `@Async` del warm-up (2/2)
 
+!!! warning "Descarga la plantilla"
+    📄 [Plantilla 3.3 — El listener @Async del warm-up (2/2)](plantillas/Actividad_3_3_PSP_Plantilla.docx){target="_blank" rel="noopener"}
+
 !!! info "Práctica guiada — pieza 2 de 2"
     Hoy completas el warm-up: el listener asíncrono que recalienta la caché, y la medición real de que ya no se paga el coste tras cada escritura.
 
@@ -70,26 +73,28 @@ public class TopNovedadesWarmupListener {
 
 Si todavía tienes el `ListenerDePruebaTemporal` de la Actividad 3.2, **retíralo ahora** — ya no lo necesitas.
 
-Crea un videojuego y mira el log:
+Crea un videojuego y mira el log. Aquí tienes el comando con `curl`, pero puedes hacer exactamente lo mismo desde Swagger UI si lo prefieres:
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/videojuegos \
-  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN_ADMIN" -H "Content-Type: application/json" \
   -d '{"titulo":"Test2","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'
 ```
 
-**Anota** los dos nombres de hilo que ves en las trazas `[WARMUP] Empieza...`/`Termina...`. **Compara** con el nombre de hilo que anotaste en la Actividad 3.2 (sin `@Async`): ¿son el mismo tipo de hilo, o claramente distintos?
+**Captura**: las trazas `[WARMUP] Empieza en hilo: ...`/`Termina en hilo: ...` en la consola.
+
+**Anota** los dos nombres de hilo que ves ahí. **Compara** con el nombre de hilo que anotaste en la Actividad 3.2 (sin `@Async`): ¿son el mismo tipo de hilo, o claramente distintos?
 
 ---
 
 ## Paso 3 — La medición estrella
 
-Repite el protocolo de medición de la Actividad 3.2, pero ahora con el warm-up completo:
+Repite el protocolo de medición de la Actividad 3.2, pero ahora con el warm-up completo. Puedes crear el videojuego desde Swagger UI si lo prefieres — pero la medición en sí, con `time`, necesitas hacerla con `curl`:
 
 ```bash
 # Crea un videojuego (dispara el warm-up en segundo plano)
 curl -X POST http://localhost:8080/api/v1/videojuegos \
-  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN_ADMIN" -H "Content-Type: application/json" \
   -d '{"titulo":"Test3","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'
 
 # Espera unos segundos a que el warm-up termine en segundo plano
@@ -98,6 +103,8 @@ sleep 3
 # Mide /top — ¿cuánto tarda ahora?
 time curl -s http://localhost:8080/api/v1/videojuegos/top > /dev/null
 ```
+
+**Captura**: la terminal con el tiempo medido (`real` de `time curl`).
 
 **Anota** el tiempo. **Compara** con las mediciones "antes" que hiciste en la Actividad 3.2 (donde el tercer usuario pagaba ~2 segundos). Documenta la diferencia con tus propios números.
 
@@ -123,15 +130,18 @@ Vuelve a `@TransactionalEventListener(phase = AFTER_COMMIT)` y explica con tus p
 
 ---
 
-## Pregunta final
+## Paso 5 — Retira lo que era solo para medir y verificar
 
-Si dos profesores del centro crean dos videojuegos casi a la vez (segundos de diferencia), ¿cuántos eventos se publican y cuántos hilos intentan recalentar la caché? ¿Es esto un error grave del sistema, o solo trabajo duplicado sin consecuencias incorrectas? Propón, sin implementarla, alguna forma de evitar ese trabajo duplicado (piensa en si haría falta algún tipo de coordinación entre los hilos, o si bastaría con alguna comprobación previa).
+Ya has medido y demostrado el warm-up de principio a fin. Toca retirar dos cosas que solo estaban ahí para eso, no para quedarse en el código final:
+
+- El `Thread.sleep(2000)` de `getTopNovedades()` — ha cumplido su propósito. Quítalo otra vez, exactamente como hiciste al terminar la Actividad 1.4: `@Cacheable` sigue evitando el trabajo repetido cuando de verdad haga falta, sin necesidad de un retraso falso permanente en una funcionalidad real.
+- Las dos trazas `[WARMUP] Empieza...`/`Termina...` de `TopNovedadesWarmupListener` — eran para que pudieras comparar hilos en el Paso 2, no logging que tenga sentido dejar en una funcionalidad terminada.
 
 ---
 
-## Paso 5 — Retira el retraso artificial, ya no lo necesitas
+## Pregunta final
 
-Ya has medido y demostrado el warm-up de principio a fin — el `Thread.sleep(2000)` ha cumplido su propósito. Quítalo otra vez de `getTopNovedades()`, exactamente como hiciste al terminar la Actividad 1.4: `@Cacheable` sigue evitando el trabajo repetido cuando de verdad haga falta, sin necesidad de un retraso falso permanente en una funcionalidad real.
+Si dos profesores del centro crean dos videojuegos casi a la vez (segundos de diferencia), ¿cuántos eventos se publican y cuántos hilos intentan recalentar la caché? ¿Es esto un error grave del sistema, o solo trabajo duplicado sin consecuencias incorrectas? Propón, sin implementarla, alguna forma de evitar ese trabajo duplicado (piensa en si haría falta algún tipo de coordinación entre los hilos, o si bastaría con alguna comprobación previa).
 
 ---
 

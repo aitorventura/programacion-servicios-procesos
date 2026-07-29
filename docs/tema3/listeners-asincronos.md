@@ -6,6 +6,29 @@ En el apartado anterior has construido el evento y su publicación — sin ning�
 
 ---
 
+## 🤔 Qué pasaría si el listener no fuera asíncrono
+
+El listener que vas a construir reacciona al mismo evento que ya publicas en `create()`/`update()`/`delete()` — y, para recalentar la caché, tiene que volver a llamar a `getTopNovedades()`, la misma consulta que tarda 2 segundos. Si Spring ejecutara ese listener de la forma más simple posible, sin nada más, lo haría **en el mismo hilo** que ha publicado el evento: el hilo de la petición HTTP que acaba de crear el videojuego. El cliente, que solo quería su `201 Created`, se quedaría esperando esos 2 segundos igualmente — el mismo coste que la caché pretendía evitar, solo que trasladado de sitio, no eliminado.
+
+```mermaid
+flowchart LR
+    subgraph Sin["🚫 Listener normal, sin @Async"]
+        A1["create() publica<br/>el evento"] --> B1["Listener recalienta,<br/>en el mismo hilo"] --> C1["Responde al cliente<br/>tras 2 segundos"]
+    end
+```
+
+`@Async` es justo lo que rompe esa cadena — es la pieza que hace que "el listener reacciona" y "el cliente espera" dejen de ser la misma cosa.
+
+```mermaid
+flowchart LR
+    subgraph Con["✅ Listener con @Async"]
+        A2["create() publica<br/>el evento"] --> C2["Responde al cliente<br/>al instante"]
+        A2 -.->|"otro hilo"| B2["Listener recalienta<br/>en segundo plano"]
+    end
+```
+
+---
+
 ## ⚡ `@Async`: qué hace exactamente
 
 `@Async` sobre un método le dice a Spring: "no ejecutes este método en el hilo de quien lo llama — despáchalo a un pool de hilos aparte, y devuelve el control inmediatamente a quien llamó". Es el mismo tipo de mecanismo que ya has visto con `@Cacheable` en el apartado anterior: Spring intercepta la llamada al método anotado y hace algo distinto de lo que harías tú al llamarlo a pelo.
@@ -20,7 +43,7 @@ Por debajo, en cuanto invocas un método `@Async`, Spring no lo ejecuta ahí mis
 Ya tienes el contraste medido en la Actividad 3.2: sin `@Async`, tu listener trivial de prueba corría en el **mismo hilo** de la petición HTTP que publicó el evento. Con `@Async`, va a correr en un hilo **distinto** — lo vas a verificar de nuevo hoy, comparando los nombres de hilo en el log.
 
 !!! danger "La trampa clásica: llamar a un método `@Async` desde dentro de la misma clase"
-    Spring solo puede interceptar una llamada que venga **de fuera** de la clase. Si en vez de eso un método llama directamente a otro método `@Async` de esa misma clase (`this.metodoAsync(...)`), no hay ninguna llamada externa que interceptar — se ejecuta como una llamada normal de Java, en el mismo hilo, y `@Async` se ignora **en silencio**, sin ningún error ni aviso. Es uno de los fallos más comunes con `@Async`/`@Transactional` en Spring: en este warm-up no te va a pasar, porque el listener es un bean aparte al que Spring llama desde fuera, pero conviene que lo tengas en la cabeza para el futuro.
+    Spring solo puede interceptar una llamada que venga **de fuera** de la clase. Si en vez de eso un método llama directamente a otro método `@Async` de esa misma clase (`this.metodoAsync(...)`), no hay ninguna llamada externa que interceptar — se ejecuta como una llamada normal de Java, en el mismo hilo, y `@Async` se ignora **en silencio**, sin ningún error ni aviso. Es uno de los fallos más comunes con `@Async` en Spring: en este warm-up no te va a pasar, porque el listener es un bean aparte al que Spring llama desde fuera, pero conviene que lo tengas en la cabeza para el futuro.
 
 ---
 
@@ -38,7 +61,7 @@ sequenceDiagram
     S->>L: publishEvent(...)
     alt EventListener a secas
         L->>DB: Recalienta, leyendo ahora mismo
-        Note over L,DB: El commit aún no ha ocurrido — el libro nuevo NO aparece
+        Note over L,DB: El commit aún no ha ocurrido,<br/>el libro nuevo NO aparece
     else TransactionalEventListener AFTER_COMMIT
         S->>DB: commit
         DB-->>L: Ahora sí, se dispara el listener
@@ -81,8 +104,6 @@ Dos preguntas que conviene hacerse antes de dar el warm-up por terminado:
 - **¿Qué pasa si dos escrituras casi simultáneas publican dos eventos?** Dos hilos distintos intentarían recalentar la misma caché casi a la vez — trabajo duplicado (ambos recalculan lo mismo) y, en el peor caso, una carrera sobre qué resultado queda finalmente guardado en la caché. No es un error grave (el resultado final sigue siendo correcto), pero sí ineficiente.
 - **¿Y si el listener leyera una entidad JPA compartida en vez de un evento inmutable?** Si `LibrosBaratosInvalidadoEvent` no fuera un `record` inmutable, sino que el listener leyera directamente un objeto mutable compartido con el hilo que publicó, existiría el riesgo de que ese objeto cambiara mientras el listener aún lo está usando — exactamente el tipo de condición de carrera que has visto en la Actividad 3.1. La inmutabilidad del evento elimina ese riesgo por diseño.
 
-Como panorámica breve: por debajo de `@Async`, Spring usa piezas de `java.util.concurrent` — típicamente un `ExecutorService`/pool de hilos configurable. La configuración fina de ese pool (cuántos hilos, con qué nombre, con qué prioridad) es exactamente lo que vas a construir en el apartado siguiente.
-
 ---
 
 ## 📈 El resultado que vas a medir
@@ -105,4 +126,3 @@ Con las dos piezas montadas (evento + listener asíncrono sincronizado con el co
     - `@TransactionalEventListener(phase = AFTER_COMMIT)` sincroniza el arranque del listener con el momento en que la transacción que publicó el evento ya ha hecho commit — evita leer datos "a medias".
     - El retraso artificial del endpoint lento es un caso observable real del estado **TIMED_WAITING**.
     - Publicaciones casi simultáneas pueden causar trabajo duplicado (no un error grave); un evento **inmutable** evita condiciones de carrera al compartir información entre hilos.
-    - Por debajo de `@Async`, Spring usa `java.util.concurrent` — la configuración fina del pool llega en el apartado siguiente.
