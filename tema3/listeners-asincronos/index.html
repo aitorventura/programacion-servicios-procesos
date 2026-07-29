@@ -2707,7 +2707,9 @@
 <ul>
 <li><strong>¿Qué pasa si dos escrituras casi simultáneas publican dos eventos?</strong> Dos hilos distintos intentarían recalentar la misma caché casi a la vez — trabajo duplicado (ambos recalculan lo mismo) y, en el peor caso, una carrera sobre qué resultado queda finalmente guardado en la caché. No es un error grave (el resultado final sigue siendo correcto), pero sí ineficiente.</li>
 <li><strong>¿Y si el listener leyera una entidad JPA compartida en vez de un evento inmutable?</strong> Si <code>LibrosBaratosInvalidadoEvent</code> no fuera un <code>record</code> inmutable, sino que el listener leyera directamente un objeto mutable compartido con el hilo que publicó, existiría el riesgo de que ese objeto cambiara mientras el listener aún lo está usando — exactamente el tipo de condición de carrera que has visto en la Actividad 3.1. La inmutabilidad del evento elimina ese riesgo por diseño.</li>
+<li><strong>¿Y si el listener necesitara algo del contexto del hilo original, como el usuario autenticado?</strong> No lo tendría — un hilo nuevo no hereda lo que estuviera guardado en un <code>ThreadLocal</code> (así almacena Spring Security el usuario actual), así que ese dato tendría que pasarse como parámetro explícito, nunca leerse esperando que "ya esté ahí".</li>
 </ul>
+<hr>
 <hr>
 <h2 id="el-resultado-que-vas-a-medir">📈 El resultado que vas a medir<a class="headerlink" href="#el-resultado-que-vas-a-medir" title="Permanent link">¶</a></h2>
 <table>
@@ -2742,6 +2744,7 @@
 <li><code>@TransactionalEventListener(phase = AFTER_COMMIT)</code> sincroniza el arranque del listener con el momento en que la transacción que publicó el evento ya ha hecho commit — evita leer datos "a medias".</li>
 <li>El retraso artificial del endpoint lento es un caso observable real del estado <strong>TIMED_WAITING</strong>.</li>
 <li>Publicaciones casi simultáneas pueden causar trabajo duplicado (no un error grave); un evento <strong>inmutable</strong> evita condiciones de carrera al compartir información entre hilos.</li>
+<li>Un hilo nuevo no hereda el contexto del hilo original: nada guardado en un <code>ThreadLocal</code> (como el <code>SecurityContext</code> de Spring Security) viaja solo. Por eso los datos que un método <code>@Async</code> necesita del contexto de la petición se pasan como parámetro explícito, no se leen "mágicamente" desde dentro.</li>
 </ul>
 </details></div>
 

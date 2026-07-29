@@ -2037,18 +2037,18 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#por-que-un-pool-en-serio-esta-vez" class="md-nav__link">
+  <a href="#por-que-un-pool" class="md-nav__link">
     <span class="md-ellipsis">
-      🏊 Por qué un pool, en serio esta vez
+      🏊 Por qué un pool
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#que-es-la-prioridad-de-un-hilo-con-honestidad-tecnica" class="md-nav__link">
+  <a href="#la-prioridad-de-un-hilo-que-controla-de-verdad" class="md-nav__link">
     <span class="md-ellipsis">
-      🎚️ Qué es la prioridad de un hilo — con honestidad técnica
+      🎚️ La prioridad de un hilo: qué controla de verdad
     </span>
   </a>
   
@@ -2075,15 +2075,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#depuracion-y-documentacion" class="md-nav__link">
-    <span class="md-ellipsis">
-      🔍 Depuración y documentación
-    </span>
-  </a>
   
 </li>
       
@@ -2514,18 +2505,18 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#por-que-un-pool-en-serio-esta-vez" class="md-nav__link">
+  <a href="#por-que-un-pool" class="md-nav__link">
     <span class="md-ellipsis">
-      🏊 Por qué un pool, en serio esta vez
+      🏊 Por qué un pool
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#que-es-la-prioridad-de-un-hilo-con-honestidad-tecnica" class="md-nav__link">
+  <a href="#la-prioridad-de-un-hilo-que-controla-de-verdad" class="md-nav__link">
     <span class="md-ellipsis">
-      🎚️ Qué es la prioridad de un hilo — con honestidad técnica
+      🎚️ La prioridad de un hilo: qué controla de verdad
     </span>
   </a>
   
@@ -2556,15 +2547,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#depuracion-y-documentacion" class="md-nav__link">
-    <span class="md-ellipsis">
-      🔍 Depuración y documentación
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#ideas-clave" class="md-nav__link">
     <span class="md-ellipsis">
       ✅ Ideas clave
@@ -2591,10 +2573,10 @@
 
 <div><p><a id="taskexecutor-prioridades"></a></p>
 <h1 id="4-taskexecutor-propio-y-prioridades">🧩 4. <code>TaskExecutor</code> propio y prioridades<a class="headerlink" href="#4-taskexecutor-propio-y-prioridades" title="Permanent link">¶</a></h1>
-<p>Tomas el control fino de algo que, hasta ahora, ha funcionado "por defecto": el pool de hilos que hay detrás de <code>@Async</code>.</p>
+<p>El warm-up ya funciona de principio a fin: un evento se publica, un listener <code>@Async</code> lo recoge y recalienta la caché en segundo plano, sincronizado con el momento justo del commit. Queda una sola pieza suelta: <strong>dónde</strong> corre ese trabajo. Hasta ahora, en el pool de hilos genérico que Spring monta por defecto para cualquier <code>@Async</code> de tu proyecto, compartido con cualquier otra tarea asíncrona que pudiera existir — sin que tú hayas decidido nada al respecto. Hoy cierras el tema tomando ese control.</p>
 <hr>
-<h2 id="por-que-un-pool-en-serio-esta-vez">🏊 Por qué un pool, en serio esta vez<a class="headerlink" href="#por-que-un-pool-en-serio-esta-vez" title="Permanent link">¶</a></h2>
-<p>Ya mencionaste la idea en la Actividad 3.1: crear un hilo nuevo por cada tarea no escala. Ahora, en detalle: cada hilo tiene un coste real de creación y ocupa memoria propia mientras existe — si un pico de tareas provocara crear miles de hilos de golpe, podría llegar a tumbar el proceso entero por agotamiento de recursos.</p>
+<h2 id="por-que-un-pool">🏊 Por qué un pool<a class="headerlink" href="#por-que-un-pool" title="Permanent link">¶</a></h2>
+<p>Ya viste la idea en el primer apartado de este tema, en "la escala de abstracción": crear un hilo nuevo por cada tarea, sin límite, es como contratar y despedir a un operario distinto por cada tarea que aparece, por pequeña que sea — funciona, pero es un despilfarro si las tareas no dejan de llegar. Un <code>ExecutorService</code> (o, aquí, un <code>ThreadPoolTaskExecutor</code>) es la plantilla fija de operarios que resuelve ese despilfarro. Ahora le toca el turno al detalle: cada hilo tiene un coste real de creación y ocupa memoria propia mientras existe — si un pico de tareas provocara crear miles de hilos de golpe, podría llegar a tumbar el proceso entero por agotamiento de recursos.</p>
 <p>Un <strong>pool de hilos</strong> resuelve esto con un grupo de hilos reutilizables que toman tareas de una cola, en vez de crear un hilo nuevo por tarea. Tres parámetros lo definen:</p>
 <pre class="mermaid"><code>flowchart LR
     T["📥 Tareas nuevas"] --&gt; Q["📋 Cola&lt;br/&gt;(queueCapacity)"]
@@ -2604,14 +2586,96 @@
 <li><strong><code>maxPoolSize</code></strong>: el límite máximo de hilos que el pool puede llegar a crear si la carga aumenta.</li>
 <li><strong><code>queueCapacity</code></strong>: cuántas tareas pueden esperar en cola antes de que el pool decida crear más hilos (hasta <code>maxPoolSize</code>) o, si ya está en el máximo, rechazar la tarea.</li>
 </ul>
-<p>Si la cola se llena y ya se ha alcanzado <code>maxPoolSize</code>, la tarea nueva no tiene dónde ir — el comportamiento exacto (bloquear, descartar, lanzar una excepción) depende de la política configurada.</p>
+<p>Si la cola se llena y ya se ha alcanzado <code>maxPoolSize</code>, la tarea nueva no tiene dónde ir — qué pasa entonces lo decide la <strong>política de rechazo</strong> (<code>RejectedExecutionHandler</code>) del pool:</p>
+<table>
+<thead>
+<tr>
+<th>Política</th>
+<th>Qué hace con la tarea que no cabe</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AbortPolicy</code> (la de por defecto)</td>
+<td>Lanza <code>RejectedExecutionException</code> — quien publicó la tarea se entera del rechazo</td>
+</tr>
+<tr>
+<td><code>CallerRunsPolicy</code></td>
+<td>La ejecuta el propio hilo que intentaba publicarla, en vez de un hilo del pool — frena a quien publica, sin perder la tarea</td>
+</tr>
+<tr>
+<td><code>DiscardPolicy</code></td>
+<td>La descarta en silencio, sin avisar a nadie</td>
+</tr>
+<tr>
+<td><code>DiscardOldestPolicy</code></td>
+<td>Descarta la tarea más antigua de la cola, para hacer sitio a la nueva</td>
+</tr>
+</tbody>
+</table>
+<p>Ninguna de las cuatro es "la correcta" en abstracto — depende de si perder una tarea es aceptable (un warm-up de caché, por ejemplo, puede permitírselo) o si hace falta enterarse siempre de un rechazo (una operación que el usuario espera confirmar).</p>
 <hr>
-<h2 id="que-es-la-prioridad-de-un-hilo-con-honestidad-tecnica">🎚️ Qué es la prioridad de un hilo — con honestidad técnica<a class="headerlink" href="#que-es-la-prioridad-de-un-hilo-con-honestidad-tecnica" title="Permanent link">¶</a></h2>
-<p>La <strong>prioridad</strong> de un hilo es una pista que le das al planificador del sistema operativo sobre a quién dar turno de ejecución antes cuando varios hilos compiten por CPU. Es importante ser honesto sobre sus límites: es una <strong>sugerencia</strong>, no una garantía — el planificador puede (y a menudo lo hace) ignorarla parcialmente, según el sistema operativo y su carga real.</p>
-<p>Por eso, la práctica moderna prefiere <strong>pools separados y tamaños acotados</strong> antes que jugar con prioridades para controlar el comportamiento del sistema: es un mecanismo más fiable y predecible que confiar en que el sistema operativo respete una sugerencia de prioridad.</p>
+<h2 id="la-prioridad-de-un-hilo-que-controla-de-verdad">🎚️ La prioridad de un hilo: qué controla de verdad<a class="headerlink" href="#la-prioridad-de-un-hilo-que-controla-de-verdad" title="Permanent link">¶</a></h2>
+<p>Recuerda al <strong>planificador del sistema operativo</strong> del primer apartado de este tema: el que decide, turno a turno, qué hilo ejecuta ahora mismo en cada núcleo. La prioridad es una pista que le das a ese mismo planificador — no un mecanismo nuevo, ni una reserva de CPU.</p>
+<p>En Java va de 1 (<code>Thread.MIN_PRIORITY</code>) a 10 (<code>Thread.MAX_PRIORITY</code>), con 5 (<code>Thread.NORM_PRIORITY</code>) por defecto si no tocas nada — fijarla es solo decirle al planificador "si tienes que elegir, prefiere a este hilo".</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Prioridad de hilo (<code>setThreadPriority</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Qué hace</td>
+<td>Da una pista al planificador del SO sobre a quién preferir</td>
+</tr>
+<tr>
+<td>Qué no garantiza</td>
+<td>Que el hilo de baja prioridad se quede sin CPU, ni que el de alta la consiga siempre</td>
+</tr>
+<tr>
+<td>Cuándo se nota</td>
+<td>Solo si hay contención real por los mismos núcleos</td>
+</tr>
+<tr>
+<td>Portabilidad</td>
+<td>El mismo número puede comportarse distinto según el sistema operativo</td>
+</tr>
+</tbody>
+</table>
+<p>Esa última fila es la que más pesa: Linux, Windows y macOS no tratan la prioridad de Java igual, y encima solo se nota cuando de verdad hay <strong>contención</strong> — varios hilos activos peleando por el turno en el mismo núcleo, al mismo tiempo. Si tu máquina tiene núcleos libres, o los hilos pasan la mayor parte del tiempo esperando (un <code>sleep</code>, una respuesta de base de datos) en vez de pedir turno sin parar, la prioridad casi no cambia nada observable.</p>
+<p>Por eso la práctica moderna prefiere <strong>pools separados y tamaños acotados</strong> antes que jugar con prioridades para controlar el comportamiento del sistema: acotar <code>corePoolSize</code>/<code>maxPoolSize</code> es una garantía real (como mucho van a existir tantos hilos de warm-up como hayas fijado, en cualquier sistema operativo), mientras que la prioridad es, como mucho, una esperanza.</p>
 <hr>
 <h2 id="un-taskexecutor-propio-para-el-warm-up">🛠️ Un <code>TaskExecutor</code> propio para el warm-up<a class="headerlink" href="#un-taskexecutor-propio-para-el-warm-up" title="Permanent link">¶</a></h2>
-<p>Hasta ahora, el <code>@Async</code> del warm-up usa el executor <strong>por defecto</strong> de Spring — genérico, compartido con cualquier otra tarea asíncrona que pudiera existir en la aplicación. La mejora que vas a construir: definir un pool propio, pequeño y con nombre reconocible, específico para el warm-up.</p>
+<p>Hasta ahora, el <code>@Async</code> del warm-up usa el executor <strong>por defecto</strong> de Spring — genérico, compartido con cualquier otra tarea asíncrona que pudiera existir en la aplicación. Eso tiene un coste concreto: si mañana añades otra tarea <code>@Async</code> a tu proyecto (un envío de correo, por ejemplo), competiría por los mismos hilos que el warm-up, y en el log todos aparecerían con el mismo nombre genérico (<code>task-1</code>, <code>task-2</code>...), sin forma de saber a simple vista cuál es cuál.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Executor por defecto</th>
+<th><code>TaskExecutor</code> propio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>¿Quién más lo usa?</td>
+<td>Cualquier otra tarea <code>@Async</code> del proyecto</td>
+<td>Solo el warm-up</td>
+</tr>
+<tr>
+<td>Nombre de hilo en el log</td>
+<td>Genérico (<code>task-1</code>, <code>task-2</code>...)</td>
+<td>Reconocible (<code>warmup-1</code>, <code>warmup-2</code>...)</td>
+</tr>
+<tr>
+<td>Tamaño del pool</td>
+<td>El que decida Spring por defecto</td>
+<td>El que tú decidas, ajustado a esta tarea concreta</td>
+</tr>
+</tbody>
+</table>
+<p>La mejora que vas a construir: definir un pool propio, pequeño y con nombre reconocible, específico para el warm-up.</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
@@ -2642,11 +2706,49 @@
 <a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<ul>
-<li><code>corePoolSize(2)</code>/<code>maxPoolSize(4)</code>: un pool deliberadamente pequeño — el warm-up no necesita mucha capacidad, es una tarea de fondo ocasional, no el núcleo de la aplicación.</li>
-<li><code>threadNamePrefix("warmup-")</code>: esto es, en la práctica, la herramienta de <strong>depuración</strong> más útil de todo el apartado — con este prefijo, cualquier hilo llamado <code>warmup-1</code>, <code>warmup-2</code>... se distingue a simple vista en el log, sin confundirse con los hilos genéricos <code>http-nio-*</code> de Tomcat o los del pool por defecto.</li>
-<li><code>setThreadPriority(Thread.MIN_PRIORITY)</code>: prioridad baja, con honestidad sobre sus límites — es exactamente el caso de tarea de fondo que debe ceder el paso ante trabajo más urgente (las peticiones de usuarios reales).</li>
-</ul>
+<p>Cada valor tiene un porqué concreto, no es arbitrario:</p>
+<table>
+<thead>
+<tr>
+<th>Parámetro</th>
+<th>Qué es</th>
+<th>Valor elegido</th>
+<th>Por qué</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>corePoolSize</code></td>
+<td>Hilos que el pool mantiene siempre activos, incluso sin tareas</td>
+<td>2</td>
+<td>El warm-up no necesita mucha capacidad — es una tarea de fondo ocasional, no el núcleo de la aplicación</td>
+</tr>
+<tr>
+<td><code>maxPoolSize</code></td>
+<td>Límite máximo de hilos que el pool puede llegar a crear</td>
+<td>4</td>
+<td>Un límite bajo a propósito: si hay un pico de escrituras, el pool no debe crecer sin control</td>
+</tr>
+<tr>
+<td><code>queueCapacity</code></td>
+<td>Tareas que pueden esperar en cola antes de crear más hilos</td>
+<td>20</td>
+<td>Margen para picos breves de escrituras seguidas, sin llegar a disparar <code>maxPoolSize</code> por cada una</td>
+</tr>
+<tr>
+<td><code>threadNamePrefix</code></td>
+<td>Prefijo del nombre de cada hilo que crea este pool</td>
+<td><code>"warmup-"</code></td>
+<td>La herramienta de <strong>depuración</strong> más útil de todo el apartado — cualquier hilo <code>warmup-1</code>, <code>warmup-2</code>... se distingue a simple vista en el log, sin confundirse con los <code>http-nio-*</code> de Tomcat o los genéricos del pool por defecto</td>
+</tr>
+<tr>
+<td><code>threadPriority</code></td>
+<td>Pista de prioridad para los hilos de este pool (ver arriba)</td>
+<td><code>MIN_PRIORITY</code></td>
+<td>Marca esta tarea de fondo como candidata a ceder el paso ante trabajo más urgente</td>
+</tr>
+</tbody>
+</table>
 <h3 id="dirigir-async-a-este-pool-concreto">Dirigir <code>@Async</code> a este pool concreto<a class="headerlink" href="#dirigir-async-a-este-pool-concreto" title="Permanent link">¶</a></h3>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
 <span class="normal"><a href="#__codelineno-1-2">2</a></span>
@@ -2659,15 +2761,16 @@
 <a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p><code>@Async("warmupExecutor")</code>, con el nombre del bean entre paréntesis, dirige explícitamente la ejecución a ese pool concreto — en vez del genérico por defecto. Aislar las tareas de fondo en su propio pool pequeño evita que un pico de warm-ups (por ejemplo, muchas escrituras seguidas) "robe" hilos que deberían estar disponibles para atender peticiones de usuarios reales.</p>
-<hr>
-<h2 id="depuracion-y-documentacion">🔍 Depuración y documentación<a class="headerlink" href="#depuracion-y-documentacion" title="Permanent link">¶</a></h2>
-<p>Con el nombre de hilo distintivo, localizar los hilos <code>warmup-*</code> en el log es inmediato — se distinguen a simple vista de los <code>http-nio-*</code> de Tomcat o los genéricos <code>task-*</code> del executor por defecto. <strong>Documentar</strong> la decisión de configuración significa dejar por escrito, en un comentario junto al bean o en la documentación del proyecto, por qué se eligieron esos tamaños de pool y esa prioridad — no basta con que el código "funcione", debe quedar claro el razonamiento detrás de cada número.</p>
+<div class="admonition tip">
+<p class="admonition-title">Cada tarea de fondo distinta, su propio pool</p>
+<p><code>warmupExecutor</code> no tiene por qué ser el único. Si mañana añadieras otra tarea <code>@Async</code> con necesidades distintas —enviar correos, por ejemplo, que puede tardar por depender de un servidor externo, frente al warm-up, rápido y ocasional—, lo normal es darle su propio <code>@Bean</code> aparte: otro nombre (<code>emailExecutor</code>), otro <code>threadNamePrefix</code> (<code>email-</code>), y un tamaño de pool y una prioridad pensados para esa tarea, no para el warm-up. Compartir un mismo pool entre dos tareas con necesidades tan distintas es exactamente el problema que ya has visto con el executor por defecto —una puede "robarle" hilos a la otra en un pico—, solo que ahora entre dos pools propios en vez de entre uno propio y el genérico de Spring.</p>
+</div>
 <hr>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
 <details class="tip">
 <summary>Abrir resumen</summary>
 <ul>
-<li>Un pool de hilos se define por <code>corePoolSize</code> (mínimo activo), <code>maxPoolSize</code> (límite) y <code>queueCapacity</code> (cola de espera).</li>
+<li>Un pool de hilos se define por <code>corePoolSize</code> (mínimo activo), <code>maxPoolSize</code> (límite) y <code>queueCapacity</code> (cola de espera). Si la cola se llena con el pool al máximo, la política de rechazo (<code>AbortPolicy</code> por defecto, o <code>CallerRunsPolicy</code>/<code>DiscardPolicy</code>/<code>DiscardOldestPolicy</code>) decide qué pasa con la tarea que no cabe.</li>
 <li>La <strong>prioridad</strong> de un hilo es una sugerencia al planificador del SO, no una garantía — por eso se prefieren pools separados y acotados antes que confiar en prioridades.</li>
 <li><code>threadNamePrefix</code> es la herramienta de depuración más práctica: hilos identificables a simple vista en logs y herramientas de monitorización.</li>
 <li><code>@Async("nombreDelBean")</code> dirige la ejecución a un <code>TaskExecutor</code> concreto, en vez del genérico por defecto — aislar tareas de fondo evita que roben hilos a las peticiones reales.</li>
