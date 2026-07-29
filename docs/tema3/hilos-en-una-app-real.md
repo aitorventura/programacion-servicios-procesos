@@ -231,6 +231,9 @@ public class EstadosDemo {
 }
 ```
 
+!!! tip "Qué hace `Thread.currentThread().interrupt()`"
+    `sleep()` puede terminar antes de tiempo si otro hilo llama a `.interrupt()` sobre este hilo — Java lo avisa lanzando `InterruptedException`. Volver a llamar a `interrupt()` dentro del propio `catch` es el patrón estándar para no perder ese aviso, por si algún código más arriba también necesita saber que ha pasado.
+
 Ejecútalo tú mismo — esta es la salida real, los cinco estados en el mismo orden del diagrama, uno detrás de otro:
 
 ![Salida de EstadosDemo: NEW, RUNNABLE, BLOCKED, TIMED_WAITING, TERMINATED, y Valor final: 2](img/estados-demo-salida.png)
@@ -436,6 +439,7 @@ flowchart LR
     - `new Thread(runnable).start()` arranca un hilo real; llamar a `run()` directamente NO crea ningún hilo nuevo.
     - La **condición de carrera** ocurre cuando varios hilos modifican el mismo dato sin coordinación; `synchronized` la resuelve creando una sección crítica protegida por un **lock** — pero en exceso puede provocar **deadlock**.
     - Ciclo de vida: NEW → RUNNABLE → BLOCKED (esperando un lock) / WAITING → TERMINATED.
+    - `.interrupt()` puede hacer que `sleep()` termine antes lanzando `InterruptedException`; volver a llamar a `interrupt()` en el `catch` es el patrón estándar para no perder ese aviso.
     - **RabbitMQ**: un broker de mensajería con colas y exchanges; `@RabbitListener` procesa mensajes en un hilo aparte, distinto del hilo que publicó. Publicador y consumidor no se conocen entre sí — es el **binding** (exchange + patrón de *routing key* → cola) quien conecta a uno con el otro.
     - Publicar un mensaje y dejar que otro hilo lo procese evita que el trabajo no esencial (como registrar actividad) retrase la respuesta al cliente — y un broker, a diferencia de un `new Thread()` suelto, conserva el mensaje aunque en ese momento no haya nadie escuchando.
     - Tu aplicación ya es multihilo: el pool de Tomcat (una petición, un hilo) ya lo tienes, sin haberlo pedido ni escrito `new Thread()` nunca. El listener de RabbitMQ sigue el mismo patrón, pero es la pieza que vas a construir tú mismo en la próxima actividad.

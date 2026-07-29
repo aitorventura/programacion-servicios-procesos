@@ -1,5 +1,8 @@
 # 🧪 Actividad 3.4: `TaskExecutor` propio
 
+!!! warning "Descarga la plantilla"
+    📄 [Plantilla 3.4 — TaskExecutor propio](plantillas/Actividad_3_4_PSP_Plantilla.docx){target="_blank" rel="noopener"}
+
 !!! info "Práctica guiada"
     Hoy le das a tu warm-up un pool de hilos propio, con nombre reconocible y prioridad baja, y documentas la decisión.
 
@@ -17,9 +20,15 @@ Tu listener `@Async` del warm-up funcionando (Actividad 3.3).
 
 ---
 
-## Paso 1 — El bean, guiado al completo
+## Paso 1 — El bean, con tu propia configuración
 
-Crea, en tu paquete `config`, siguiendo el estilo de tu configuración de RabbitMQ:
+Crea, en tu paquete `config`, siguiendo el estilo de tu configuración de RabbitMQ, un `TaskExecutor` propio para el warm-up con esta configuración:
+
+- Como mucho **2 hilos siempre activos**, incluso sin tareas que hacer (`corePoolSize`).
+- El pool puede crecer hasta **3 hilos** si hace falta, nunca más (`maxPoolSize`).
+- Cola para **15 tareas** esperando antes de que el pool necesite crecer (`queueCapacity`).
+- Nombre de hilo reconocible, con el prefijo `"warmup-"` (`threadNamePrefix`).
+- Prioridad baja (`Thread.MIN_PRIORITY`) — es trabajo de fondo, no debe competir con las peticiones reales.
 
 ```java
 package com.tunombre.gamevault.config;
@@ -35,30 +44,28 @@ public class WarmupExecutorConfig {
     @Bean(name = "warmupExecutor")
     public TaskExecutor warmupExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(2);
-        executor.setMaxPoolSize(4);
-        executor.setQueueCapacity(20);
-        executor.setThreadNamePrefix("warmup-");
-        executor.setThreadPriority(Thread.MIN_PRIORITY);
+        // Configura aquí los cinco parámetros de la lista de arriba
+
         executor.initialize();
         return executor;
     }
 }
 ```
 
-Cada parámetro tiene un porqué: `corePoolSize(2)` y `maxPoolSize(4)` son deliberadamente pequeños, porque el warm-up es una tarea de fondo ocasional, no el núcleo de tu aplicación; `threadNamePrefix("warmup-")` hace que estos hilos se distingan a simple vista en el log; `setThreadPriority(Thread.MIN_PRIORITY)` los marca como candidatos a ceder el paso ante trabajo más urgente.
+Fíjate en que los valores no son los mismos que ves en la teoría — ahí tienes el mismo patrón con otros números, no una plantilla para copiar tal cual.
 
 ---
 
 ## Paso 2 — Conectar tu listener a este pool
 
-En `TopNovedadesWarmupListener`, cambia:
+En `TopNovedadesWarmupListener`, dirige `@Async` a tu pool nuevo. Aprovecha también para añadir, **temporalmente**, la traza que quitaste al terminar la Actividad 3.3 — hoy la necesitas otra vez, para comprobar el nombre del hilo en el Paso 3:
 
 ```java
 @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 @Async("warmupExecutor")
 public void onTopNovedadesInvalidado(TopNovedadesInvalidadoEvent event) {
-    // ... tu código ya existente ...
+    System.out.println("[WARMUP] Empieza en hilo: " + Thread.currentThread().getName());
+    videojuegoService.getTopNovedades(); // recalienta la caché
 }
 ```
 
@@ -72,41 +79,40 @@ Crea un videojuego y mira el log:
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/videojuegos \
-  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN_ADMIN" -H "Content-Type: application/json" \
   -d '{"titulo":"Test4","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'
 ```
 
-**Comprueba**: que la traza `[WARMUP] Empieza en hilo: ...` ahora muestra un nombre como `warmup-1`, en vez del nombre genérico `task-N` que tenía con el executor por defecto en la Actividad 3.3. **Anota** ambos nombres para comparar.
+**Comprueba**: que la traza `[WARMUP] Empieza en hilo: ...` ahora muestra un nombre como `warmup-1`, en vez del nombre genérico `task-N` que tenía con el executor por defecto en la Actividad 3.3.
+
+**Captura**: la traza `[WARMUP] Empieza en hilo: warmup-...`.
+
+**Anota** ambos nombres (el de hoy y el `task-N` de la Actividad 3.3) para comparar.
 
 ---
 
-## Mini-reto — el efecto de `corePoolSize`
+## Paso 4 — El efecto de `corePoolSize`
 
 Crea 3-4 videojuegos seguidos, muy rápido (uno detrás de otro, sin esperar entre peticiones):
 
 ```bash
 for i in 1 2 3 4; do
   curl -s -X POST http://localhost:8080/api/v1/videojuegos \
-    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $TOKEN_ADMIN" -H "Content-Type: application/json" \
     -d "{\"titulo\":\"Rapido$i\",\"precio\":1,\"fechaLanzamiento\":\"2020-01-01\",\"estudioId\":1}" > /dev/null
 done
 ```
 
-**Observa** en el log cuántos hilos `warmup-*` distintos llegan a aparecer (con `corePoolSize(2)`, no deberías ver muchos más de 2-3 simultáneos, aunque hayas disparado 4 eventos).
+**Observa** en el log cuántos hilos `warmup-*` distintos llegan a aparecer: con `corePoolSize(2)` y una `queueCapacity(15)` tan holgada, no deberías ver más de **2** hilos distintos, aunque hayas disparado 4 eventos — el pool solo crece por encima de `corePoolSize` cuando la cola se llena, y con sitio de sobra para 15 tareas, eso no llega a pasar con solo 4.
+
+**Captura**: el log mostrando los hilos `warmup-*` de esta primera prueba, con `corePoolSize(2)`.
 
 Ahora cambia `corePoolSize` a `1` y `maxPoolSize` a `1`, reinicia, y repite el mismo experimento de las 4 peticiones seguidas.
 
-**Describe** la diferencia observada: ¿cuántos hilos `warmup-*` ves esta vez? ¿Qué le pasa a las tareas que no caben de inmediato en ese único hilo (pista: relaciónalo con la `queueCapacity`)? Vuelve a dejar `corePoolSize(2)`/`maxPoolSize(4)` al terminar — es la configuración razonada que documentas a continuación.
+**Captura**: el log mostrando los hilos `warmup-*` de esta segunda prueba, con `corePoolSize(1)`/`maxPoolSize(1)`.
 
----
+**Describe** la diferencia observada: ¿cuántos hilos `warmup-*` ves esta vez? ¿Qué le pasa a las tareas que no caben de inmediato en ese único hilo (pista: relaciónalo con la `queueCapacity`)?
 
-## Cierre del tema
+Vuelve a dejar tu configuración original (`corePoolSize(2)`/`maxPoolSize(3)`/`queueCapacity(15)`) al terminar.
 
-1. **Documenta tu configuración**: 2-3 frases por parámetro (`corePoolSize`, `maxPoolSize`, `queueCapacity`, prioridad) explicando por qué elegiste esos valores concretos para el warm-up — no "porque sí", con el razonamiento real detrás.
-2. **Repaso propio** (4-5 frases) de todo el recorrido de este tema: observar los hilos que ya existían en tu aplicación → construir un evento interno inmutable → un listener asíncrono sincronizado con el commit → un executor propio con nombre y prioridad. ¿Qué pieza te ha costado más entender, y por qué?
-
----
-
-## ✅ Cierre
-
-En el Tema 4 vuelves a trabajar con hilos, pero esta vez completamente a mano, sin que Spring medie: sockets clásicos primero, WebSocket después.
+Ya has comprobado lo que necesitabas del nombre del hilo — **retira otra vez** la traza `[WARMUP] Empieza en hilo: ...` de `TopNovedadesWarmupListener`, igual que hiciste al terminar la Actividad 3.3.

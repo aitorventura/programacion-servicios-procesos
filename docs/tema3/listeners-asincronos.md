@@ -103,6 +103,9 @@ Dos preguntas que conviene hacerse antes de dar el warm-up por terminado:
 
 - **¿Qué pasa si dos escrituras casi simultáneas publican dos eventos?** Dos hilos distintos intentarían recalentar la misma caché casi a la vez — trabajo duplicado (ambos recalculan lo mismo) y, en el peor caso, una carrera sobre qué resultado queda finalmente guardado en la caché. No es un error grave (el resultado final sigue siendo correcto), pero sí ineficiente.
 - **¿Y si el listener leyera una entidad JPA compartida en vez de un evento inmutable?** Si `LibrosBaratosInvalidadoEvent` no fuera un `record` inmutable, sino que el listener leyera directamente un objeto mutable compartido con el hilo que publicó, existiría el riesgo de que ese objeto cambiara mientras el listener aún lo está usando — exactamente el tipo de condición de carrera que has visto en la Actividad 3.1. La inmutabilidad del evento elimina ese riesgo por diseño.
+- **¿Y si el listener necesitara algo del contexto del hilo original, como el usuario autenticado?** No lo tendría — un hilo nuevo no hereda lo que estuviera guardado en un `ThreadLocal` (así almacena Spring Security el usuario actual), así que ese dato tendría que pasarse como parámetro explícito, nunca leerse esperando que "ya esté ahí".
+
+---
 
 ---
 
@@ -126,3 +129,4 @@ Con las dos piezas montadas (evento + listener asíncrono sincronizado con el co
     - `@TransactionalEventListener(phase = AFTER_COMMIT)` sincroniza el arranque del listener con el momento en que la transacción que publicó el evento ya ha hecho commit — evita leer datos "a medias".
     - El retraso artificial del endpoint lento es un caso observable real del estado **TIMED_WAITING**.
     - Publicaciones casi simultáneas pueden causar trabajo duplicado (no un error grave); un evento **inmutable** evita condiciones de carrera al compartir información entre hilos.
+    - Un hilo nuevo no hereda el contexto del hilo original: nada guardado en un `ThreadLocal` (como el `SecurityContext` de Spring Security) viaja solo. Por eso los datos que un método `@Async` necesita del contexto de la petición se pasan como parámetro explícito, no se leen "mágicamente" desde dentro.
