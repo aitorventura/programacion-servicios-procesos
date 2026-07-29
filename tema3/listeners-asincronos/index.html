@@ -1945,6 +1945,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#que-pasaria-si-el-listener-no-fuera-asincrono" class="md-nav__link">
+    <span class="md-ellipsis">
+      🤔 Qué pasaría si el listener no fuera asíncrono
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#async-que-hace-exactamente" class="md-nav__link">
     <span class="md-ellipsis">
       ⚡ @Async: qué hace exactamente
@@ -2508,6 +2517,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#que-pasaria-si-el-listener-no-fuera-asincrono" class="md-nav__link">
+    <span class="md-ellipsis">
+      🤔 Qué pasaría si el listener no fuera asíncrono
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#async-que-hace-exactamente" class="md-nav__link">
     <span class="md-ellipsis">
       ⚡ @Async: qué hace exactamente
@@ -2581,6 +2599,19 @@
 <h1 id="3-listeners-asincronos-el-warm-up-de-cache-22">🧩 3. Listeners asíncronos: el warm-up de caché (2/2)<a class="headerlink" href="#3-listeners-asincronos-el-warm-up-de-cache-22" title="Permanent link">¶</a></h1>
 <p>En el apartado anterior has construido el evento y su publicación — sin ningún efecto visible todavía. Hoy construyes la pieza que le da sentido a todo: el listener que reacciona, recalentando la caché en un hilo aparte. Aquí es donde entra en juego <code>@EnableAsync</code> — una capacidad que tu proyecto todavía no usa en ningún sitio, y que hoy activas tú mismo junto a la anotación <code>@Async</code>.</p>
 <hr>
+<h2 id="que-pasaria-si-el-listener-no-fuera-asincrono">🤔 Qué pasaría si el listener no fuera asíncrono<a class="headerlink" href="#que-pasaria-si-el-listener-no-fuera-asincrono" title="Permanent link">¶</a></h2>
+<p>El listener que vas a construir reacciona al mismo evento que ya publicas en <code>create()</code>/<code>update()</code>/<code>delete()</code> — y, para recalentar la caché, tiene que volver a llamar a <code>getTopNovedades()</code>, la misma consulta que tarda 2 segundos. Si Spring ejecutara ese listener de la forma más simple posible, sin nada más, lo haría <strong>en el mismo hilo</strong> que ha publicado el evento: el hilo de la petición HTTP que acaba de crear el videojuego. El cliente, que solo quería su <code>201 Created</code>, se quedaría esperando esos 2 segundos igualmente — el mismo coste que la caché pretendía evitar, solo que trasladado de sitio, no eliminado.</p>
+<pre class="mermaid"><code>flowchart LR
+    subgraph Sin["🚫 Listener normal, sin @Async"]
+        A1["create() publica&lt;br/&gt;el evento"] --&gt; B1["Listener recalienta,&lt;br/&gt;en el mismo hilo"] --&gt; C1["Responde al cliente&lt;br/&gt;tras 2 segundos"]
+    end</code></pre>
+<p><code>@Async</code> es justo lo que rompe esa cadena — es la pieza que hace que "el listener reacciona" y "el cliente espera" dejen de ser la misma cosa.</p>
+<pre class="mermaid"><code>flowchart LR
+    subgraph Con["✅ Listener con @Async"]
+        A2["create() publica&lt;br/&gt;el evento"] --&gt; C2["Responde al cliente&lt;br/&gt;al instante"]
+        A2 -.-&gt;|"otro hilo"| B2["Listener recalienta&lt;br/&gt;en segundo plano"]
+    end</code></pre>
+<hr>
 <h2 id="async-que-hace-exactamente">⚡ <code>@Async</code>: qué hace exactamente<a class="headerlink" href="#async-que-hace-exactamente" title="Permanent link">¶</a></h2>
 <p><code>@Async</code> sobre un método le dice a Spring: "no ejecutes este método en el hilo de quien lo llama — despáchalo a un pool de hilos aparte, y devuelve el control inmediatamente a quien llamó". Es el mismo tipo de mecanismo que ya has visto con <code>@Cacheable</code> en el apartado anterior: Spring intercepta la llamada al método anotado y hace algo distinto de lo que harías tú al llamarlo a pelo.</p>
 <table>
@@ -2608,7 +2639,7 @@
 <p>Ya tienes el contraste medido en la Actividad 3.2: sin <code>@Async</code>, tu listener trivial de prueba corría en el <strong>mismo hilo</strong> de la petición HTTP que publicó el evento. Con <code>@Async</code>, va a correr en un hilo <strong>distinto</strong> — lo vas a verificar de nuevo hoy, comparando los nombres de hilo en el log.</p>
 <div class="admonition danger">
 <p class="admonition-title">La trampa clásica: llamar a un método <code>@Async</code> desde dentro de la misma clase</p>
-<p>Spring solo puede interceptar una llamada que venga <strong>de fuera</strong> de la clase. Si en vez de eso un método llama directamente a otro método <code>@Async</code> de esa misma clase (<code>this.metodoAsync(...)</code>), no hay ninguna llamada externa que interceptar — se ejecuta como una llamada normal de Java, en el mismo hilo, y <code>@Async</code> se ignora <strong>en silencio</strong>, sin ningún error ni aviso. Es uno de los fallos más comunes con <code>@Async</code>/<code>@Transactional</code> en Spring: en este warm-up no te va a pasar, porque el listener es un bean aparte al que Spring llama desde fuera, pero conviene que lo tengas en la cabeza para el futuro.</p>
+<p>Spring solo puede interceptar una llamada que venga <strong>de fuera</strong> de la clase. Si en vez de eso un método llama directamente a otro método <code>@Async</code> de esa misma clase (<code>this.metodoAsync(...)</code>), no hay ninguna llamada externa que interceptar — se ejecuta como una llamada normal de Java, en el mismo hilo, y <code>@Async</code> se ignora <strong>en silencio</strong>, sin ningún error ni aviso. Es uno de los fallos más comunes con <code>@Async</code> en Spring: en este warm-up no te va a pasar, porque el listener es un bean aparte al que Spring llama desde fuera, pero conviene que lo tengas en la cabeza para el futuro.</p>
 </div>
 <hr>
 <h2 id="transactionaleventlistenerphase-after_commit">⏱️ <code>@TransactionalEventListener(phase = AFTER_COMMIT)</code><a class="headerlink" href="#transactionaleventlistenerphase-after_commit" title="Permanent link">¶</a></h2>
@@ -2622,7 +2653,7 @@
     S-&gt;&gt;L: publishEvent(...)
     alt EventListener a secas
         L-&gt;&gt;DB: Recalienta, leyendo ahora mismo
-        Note over L,DB: El commit aún no ha ocurrido — el libro nuevo NO aparece
+        Note over L,DB: El commit aún no ha ocurrido,&lt;br/&gt;el libro nuevo NO aparece
     else TransactionalEventListener AFTER_COMMIT
         S-&gt;&gt;DB: commit
         DB--&gt;&gt;L: Ahora sí, se dispara el listener
@@ -2677,7 +2708,6 @@
 <li><strong>¿Qué pasa si dos escrituras casi simultáneas publican dos eventos?</strong> Dos hilos distintos intentarían recalentar la misma caché casi a la vez — trabajo duplicado (ambos recalculan lo mismo) y, en el peor caso, una carrera sobre qué resultado queda finalmente guardado en la caché. No es un error grave (el resultado final sigue siendo correcto), pero sí ineficiente.</li>
 <li><strong>¿Y si el listener leyera una entidad JPA compartida en vez de un evento inmutable?</strong> Si <code>LibrosBaratosInvalidadoEvent</code> no fuera un <code>record</code> inmutable, sino que el listener leyera directamente un objeto mutable compartido con el hilo que publicó, existiría el riesgo de que ese objeto cambiara mientras el listener aún lo está usando — exactamente el tipo de condición de carrera que has visto en la Actividad 3.1. La inmutabilidad del evento elimina ese riesgo por diseño.</li>
 </ul>
-<p>Como panorámica breve: por debajo de <code>@Async</code>, Spring usa piezas de <code>java.util.concurrent</code> — típicamente un <code>ExecutorService</code>/pool de hilos configurable. La configuración fina de ese pool (cuántos hilos, con qué nombre, con qué prioridad) es exactamente lo que vas a construir en el apartado siguiente.</p>
 <hr>
 <h2 id="el-resultado-que-vas-a-medir">📈 El resultado que vas a medir<a class="headerlink" href="#el-resultado-que-vas-a-medir" title="Permanent link">¶</a></h2>
 <table>
@@ -2712,7 +2742,6 @@
 <li><code>@TransactionalEventListener(phase = AFTER_COMMIT)</code> sincroniza el arranque del listener con el momento en que la transacción que publicó el evento ya ha hecho commit — evita leer datos "a medias".</li>
 <li>El retraso artificial del endpoint lento es un caso observable real del estado <strong>TIMED_WAITING</strong>.</li>
 <li>Publicaciones casi simultáneas pueden causar trabajo duplicado (no un error grave); un evento <strong>inmutable</strong> evita condiciones de carrera al compartir información entre hilos.</li>
-<li>Por debajo de <code>@Async</code>, Spring usa <code>java.util.concurrent</code> — la configuración fina del pool llega en el apartado siguiente.</li>
 </ul>
 </details></div>
 

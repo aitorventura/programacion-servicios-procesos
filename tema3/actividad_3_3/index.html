@@ -2022,18 +2022,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pregunta-final" class="md-nav__link">
+  <a href="#paso-5-retira-lo-que-era-solo-para-medir-y-verificar" class="md-nav__link">
     <span class="md-ellipsis">
-      Pregunta final
+      Paso 5 — Retira lo que era solo para medir y verificar
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#paso-5-retira-el-retraso-artificial-ya-no-lo-necesitas" class="md-nav__link">
+  <a href="#pregunta-final" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 5 — Retira el retraso artificial, ya no lo necesitas
+      Pregunta final
     </span>
   </a>
   
@@ -2589,18 +2589,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#pregunta-final" class="md-nav__link">
+  <a href="#paso-5-retira-lo-que-era-solo-para-medir-y-verificar" class="md-nav__link">
     <span class="md-ellipsis">
-      Pregunta final
+      Paso 5 — Retira lo que era solo para medir y verificar
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#paso-5-retira-el-retraso-artificial-ya-no-lo-necesitas" class="md-nav__link">
+  <a href="#pregunta-final" class="md-nav__link">
     <span class="md-ellipsis">
-      Paso 5 — Retira el retraso artificial, ya no lo necesitas
+      Pregunta final
     </span>
   </a>
   
@@ -2632,6 +2632,10 @@
 
 
 <div><h1 id="actividad-33-el-listener-async-del-warm-up-22">🧪 Actividad 3.3: El listener <code>@Async</code> del warm-up (2/2)<a class="headerlink" href="#actividad-33-el-listener-async-del-warm-up-22" title="Permanent link">¶</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Descarga la plantilla</p>
+<p>📄 <a href="../plantillas/Actividad_3_3_PSP_Plantilla.docx" rel="noopener" target="_blank">Plantilla 3.3 — El listener @Async del warm-up (2/2)</a></p>
+</div>
 <div class="admonition info">
 <p class="admonition-title">Práctica guiada — pieza 2 de 2</p>
 <p>Hoy completas el warm-up: el listener asíncrono que recalienta la caché, y la medición real de que ya no se paga el coste tras cada escritura.</p>
@@ -2718,17 +2722,18 @@
 <hr>
 <h2 id="paso-2-verificar-el-hilo-y-retirar-el-listener-de-prueba">Paso 2 — Verificar el hilo, y retirar el listener de prueba<a class="headerlink" href="#paso-2-verificar-el-hilo-y-retirar-el-listener-de-prueba" title="Permanent link">¶</a></h2>
 <p>Si todavía tienes el <code>ListenerDePruebaTemporal</code> de la Actividad 3.2, <strong>retíralo ahora</strong> — ya no lo necesitas.</p>
-<p>Crea un videojuego y mira el log:</p>
+<p>Crea un videojuego y mira el log. Aquí tienes el comando con <code>curl</code>, pero puedes hacer exactamente lo mismo desde Swagger UI si lo prefieres:</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
 <span class="normal"><a href="#__codelineno-2-2">2</a></span>
 <span class="normal"><a href="#__codelineno-2-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/videojuegos<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN_ADMIN</span><span class="s2">"</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"titulo":"Test2","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'</span>
 </code></pre></div></td></tr></table></div>
-<p><strong>Anota</strong> los dos nombres de hilo que ves en las trazas <code>[WARMUP] Empieza...</code>/<code>Termina...</code>. <strong>Compara</strong> con el nombre de hilo que anotaste en la Actividad 3.2 (sin <code>@Async</code>): ¿son el mismo tipo de hilo, o claramente distintos?</p>
+<p><strong>Captura</strong>: las trazas <code>[WARMUP] Empieza en hilo: ...</code>/<code>Termina en hilo: ...</code> en la consola.</p>
+<p><strong>Anota</strong> los dos nombres de hilo que ves ahí. <strong>Compara</strong> con el nombre de hilo que anotaste en la Actividad 3.2 (sin <code>@Async</code>): ¿son el mismo tipo de hilo, o claramente distintos?</p>
 <hr>
 <h2 id="paso-3-la-medicion-estrella">Paso 3 — La medición estrella<a class="headerlink" href="#paso-3-la-medicion-estrella" title="Permanent link">¶</a></h2>
-<p>Repite el protocolo de medición de la Actividad 3.2, pero ahora con el warm-up completo:</p>
+<p>Repite el protocolo de medición de la Actividad 3.2, pero ahora con el warm-up completo. Puedes crear el videojuego desde Swagger UI si lo prefieres — pero la medición en sí, con <code>time</code>, necesitas hacerla con <code>curl</code>:</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-3-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-3-3"> 3</a></span>
@@ -2740,7 +2745,7 @@
 <span class="normal"><a href="#__codelineno-3-9"> 9</a></span>
 <span class="normal"><a href="#__codelineno-3-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="c1"># Crea un videojuego (dispara el warm-up en segundo plano)</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/videojuegos<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN_ADMIN</span><span class="s2">"</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"titulo":"Test3","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'</span>
 <a id="__codelineno-3-5" name="__codelineno-3-5"></a>
 <a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="c1"># Espera unos segundos a que el warm-up termine en segundo plano</span>
@@ -2749,6 +2754,7 @@
 <a id="__codelineno-3-9" name="__codelineno-3-9"></a><span class="c1"># Mide /top — ¿cuánto tarda ahora?</span>
 <a id="__codelineno-3-10" name="__codelineno-3-10"></a><span class="nb">time</span><span class="w"> </span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/videojuegos/top<span class="w"> </span>&gt;<span class="w"> </span>/dev/null
 </code></pre></div></td></tr></table></div>
+<p><strong>Captura</strong>: la terminal con el tiempo medido (<code>real</code> de <code>time curl</code>).</p>
 <p><strong>Anota</strong> el tiempo. <strong>Compara</strong> con las mediciones "antes" que hiciste en la Actividad 3.2 (donde el tercer usuario pagaba ~2 segundos). Documenta la diferencia con tus propios números.</p>
 <hr>
 <h2 id="paso-4-experimento-sobre-after_commit">Paso 4 — Experimento sobre <code>AFTER_COMMIT</code><a class="headerlink" href="#paso-4-experimento-sobre-after_commit" title="Permanent link">¶</a></h2>
@@ -2767,11 +2773,15 @@
 <p><strong>Razona</strong>, sin necesidad de reproducirlo de forma determinista (es una condición de carrera, puede que no falle siempre): si este listener se disparara justo antes de que el <code>INSERT</code> del nuevo videojuego se confirmara en la base de datos, ¿qué vería exactamente al consultar? ¿Qué consecuencia tendría eso sobre el contenido de la caché recalentada?</p>
 <p>Vuelve a <code>@TransactionalEventListener(phase = AFTER_COMMIT)</code> y explica con tus palabras qué diferencia concreta soluciona respecto al <code>@EventListener</code> a secas que acabas de probar.</p>
 <hr>
+<h2 id="paso-5-retira-lo-que-era-solo-para-medir-y-verificar">Paso 5 — Retira lo que era solo para medir y verificar<a class="headerlink" href="#paso-5-retira-lo-que-era-solo-para-medir-y-verificar" title="Permanent link">¶</a></h2>
+<p>Ya has medido y demostrado el warm-up de principio a fin. Toca retirar dos cosas que solo estaban ahí para eso, no para quedarse en el código final:</p>
+<ul>
+<li>El <code>Thread.sleep(2000)</code> de <code>getTopNovedades()</code> — ha cumplido su propósito. Quítalo otra vez, exactamente como hiciste al terminar la Actividad 1.4: <code>@Cacheable</code> sigue evitando el trabajo repetido cuando de verdad haga falta, sin necesidad de un retraso falso permanente en una funcionalidad real.</li>
+<li>Las dos trazas <code>[WARMUP] Empieza...</code>/<code>Termina...</code> de <code>TopNovedadesWarmupListener</code> — eran para que pudieras comparar hilos en el Paso 2, no logging que tenga sentido dejar en una funcionalidad terminada.</li>
+</ul>
+<hr>
 <h2 id="pregunta-final">Pregunta final<a class="headerlink" href="#pregunta-final" title="Permanent link">¶</a></h2>
 <p>Si dos profesores del centro crean dos videojuegos casi a la vez (segundos de diferencia), ¿cuántos eventos se publican y cuántos hilos intentan recalentar la caché? ¿Es esto un error grave del sistema, o solo trabajo duplicado sin consecuencias incorrectas? Propón, sin implementarla, alguna forma de evitar ese trabajo duplicado (piensa en si haría falta algún tipo de coordinación entre los hilos, o si bastaría con alguna comprobación previa).</p>
-<hr>
-<h2 id="paso-5-retira-el-retraso-artificial-ya-no-lo-necesitas">Paso 5 — Retira el retraso artificial, ya no lo necesitas<a class="headerlink" href="#paso-5-retira-el-retraso-artificial-ya-no-lo-necesitas" title="Permanent link">¶</a></h2>
-<p>Ya has medido y demostrado el warm-up de principio a fin — el <code>Thread.sleep(2000)</code> ha cumplido su propósito. Quítalo otra vez de <code>getTopNovedades()</code>, exactamente como hiciste al terminar la Actividad 1.4: <code>@Cacheable</code> sigue evitando el trabajo repetido cuando de verdad haga falta, sin necesidad de un retraso falso permanente en una funcionalidad real.</p>
 <hr>
 <h2 id="cierre">✅ Cierre<a class="headerlink" href="#cierre" title="Permanent link">¶</a></h2>
 <p>El warm-up está completo y medido: tu GameVault ya no hace pagar al primer usuario el coste de recalcular las novedades tras cada escritura. En el apartado siguiente configuras manualmente el <code>TaskExecutor</code> que hay detrás de este <code>@Async</code>, con nombre y prioridad propios.</p></div>
