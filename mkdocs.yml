@@ -95,6 +95,7 @@ nav:
       - Actividad en vivo y seguridad del canal:
           - Actividad en vivo y seguridad del canal: tema4/actividad-en-vivo-cierre.md
           - Actividad 4.3 - Actividad en vivo, cierre de RA3: tema4/actividad_4_3.md
+  - Cierre del módulo: cierre.md
 
 markdown_extensions:
   - md_in_html
