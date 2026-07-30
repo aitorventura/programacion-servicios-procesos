@@ -94,6 +94,8 @@ Cada valor tiene un porqué concreto, no es arbitrario:
 | `threadNamePrefix` | Prefijo del nombre de cada hilo que crea este pool | `"warmup-"` | La herramienta de **depuración** más útil de todo el apartado — cualquier hilo `warmup-1`, `warmup-2`... se distingue a simple vista en el log, sin confundirse con los `http-nio-*` de Tomcat o los genéricos del pool por defecto |
 | `threadPriority` | Pista de prioridad para los hilos de este pool (ver arriba) | `MIN_PRIORITY` | Marca esta tarea de fondo como candidata a ceder el paso ante trabajo más urgente |
 
+Esta tabla es, en sí misma, la forma de **documentar** una configuración: dejar por escrito el porqué de cada valor, no solo el valor — normalmente como comentario junto al propio `@Bean`, para que quien lea el código después (tú mismo, dentro de unos meses) no tenga que adivinarlo.
+
 ### Dirigir `@Async` a este pool concreto
 
 ```java
