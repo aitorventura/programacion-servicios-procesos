@@ -5,7 +5,7 @@
 
 ## Qué vas a practicar
 
-- Emitir datos reales por el canal WebSocket que construiste en la Actividad 4.2.
+- Emitir datos reales por el canal WebSocket que has construido en la Actividad 4.2.
 - Trazar el viaje completo de un dato a través de todo lo construido en el curso.
 - Detectar **y corregir** una vulnerabilidad real de seguridad.
 
@@ -83,7 +83,7 @@ curl -X POST http://localhost:8080/api/v1/videojuegos \
 
 ---
 
-## Mini-reto — `update` y `delete` en vivo también
+## Paso 3 — `update` y `delete` en vivo también
 
 Sin tocar nada más, comprueba que actualizar y borrar un videojuego **también** aparecen en vivo en tus pestañas. Deberían funcionar solos, sin ningún cambio adicional.
 
@@ -103,59 +103,10 @@ Abre una ventana de **incógnito** (sin ninguna sesión iniciada, sin token) y c
 
 ## Paso 5 — Remediación mínima obligatoria
 
-Aplica la solución de la teoría: exige un token válido en el handshake.
+Aplica la solución de la teoría de este apartado: el `JwtHandshakeInterceptor` que ya has visto ahí, letra por letra el mismo código — no hace falta repetirlo aquí. Dos detalles de conexión con tu propio proyecto, que sí son nuevos:
 
-```java
-@Component
-@RequiredArgsConstructor
-public class JwtHandshakeInterceptor implements HandshakeInterceptor {
-
-    private final JwtDecoder jwtDecoder;
-
-    @Override
-    public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
-                                    WebSocketHandler wsHandler, Map<String, Object> attributes) {
-        String query = request.getURI().getQuery();
-        String token = extraerToken(query);
-
-        if (token == null) {
-            response.setStatusCode(HttpStatus.UNAUTHORIZED);
-            return false;
-        }
-
-        try {
-            jwtDecoder.decode(token);
-            return true;
-        } catch (JwtException e) {
-            response.setStatusCode(HttpStatus.UNAUTHORIZED);
-            return false;
-        }
-    }
-
-    @Override
-    public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
-                                WebSocketHandler wsHandler, Exception exception) { }
-
-    private String extraerToken(String query) {
-        if (query == null) return null;
-        for (String param : query.split("&")) {
-            if (param.startsWith("token=")) return param.substring(6);
-        }
-        return null;
-    }
-}
-```
-
-Regístralo en `WebSocketConfig`:
-
-```java
-@Override
-public void registerStompEndpoints(StompEndpointRegistry registry) {
-    registry.addEndpoint("/ws-actividad")
-            .setAllowedOriginPatterns("*")
-            .addInterceptors(jwtHandshakeInterceptor);
-}
-```
+- Convierte también tu `WebSocketConfig` en `@RequiredArgsConstructor`, con un campo `JwtHandshakeInterceptor jwtHandshakeInterceptor` — hasta ahora no tenía ningún campo, y ahora necesita que Spring le inyecte el interceptor para poder registrarlo.
+- En `registerStompEndpoints(...)`, añade `.addInterceptors(jwtHandshakeInterceptor)` a la cadena que ya tienes sobre `registry.addEndpoint(...)`.
 
 Actualiza tu cliente `actividad.html` para pasar el token en la conexión:
 

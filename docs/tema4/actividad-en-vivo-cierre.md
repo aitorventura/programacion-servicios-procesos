@@ -26,15 +26,15 @@ flowchart LR
 
 ## 🧵 Hilos y clientes simultáneos
 
-¿En qué hilo se ejecuta el *push* hacia WebSocket? En el mismo hilo del **listener de RabbitMQ** que procesa el evento — el mismo hilo que ya identificaste en el Tema 3, ahora con una responsabilidad más. ¿Y quién gestiona los N clientes WebSocket conectados a la vez? El propio **contenedor** de Spring, exactamente igual que Tomcat gestiona las peticiones HTTP — es el mismo patrón "un hilo por cliente/conexión" que programaste **a mano** en la Actividad 4.1, aquí resuelto por el framework.
+¿En qué hilo se ejecuta el *push* hacia WebSocket? En el mismo hilo del **listener de RabbitMQ** que procesa el evento — el mismo hilo que ya identificaste en el Tema 3, ahora con una responsabilidad más. ¿Y quién gestiona los N clientes WebSocket conectados a la vez? El propio **contenedor** de Spring, exactamente igual que Tomcat gestiona las peticiones HTTP — es el mismo patrón "un hilo por cliente/conexión" que has programado **a mano** en la Actividad 4.1, aquí resuelto por el framework.
 
 ---
 
 ## 🔓 El aviso de seguridad del handshake
 
-Aquí llega el momento de mirar atrás con ojo crítico. En la Actividad 4.2 abriste `/ws-actividad` con `permitAll()` — sin exigir ninguna autenticación. Pero `GET /api/v1/actividad` (la misma información, por REST) exige rol `ADMIN`. Hay una incoherencia real: **¿puede un usuario anónimo suscribirse al topic y ver en vivo exactamente lo que por REST está protegido?**
+Aquí llega el momento de mirar atrás con ojo crítico. En la Actividad 4.2 has abierto `/ws-actividad` con `permitAll()` — sin exigir ninguna autenticación. Pero `GET /api/v1/actividad` (la misma información, por REST) exige rol `ADMIN`. Hay una incoherencia real: **¿puede un usuario anónimo suscribirse al topic y ver en vivo exactamente lo que por REST está protegido?**
 
-La respuesta es sí, y el motivo técnico es concreto: el *handshake* de WebSocket, tal como lo configuraste, no lleva el JWT por ningún sitio — un cliente que ni siquiera ha hecho login puede conectar y suscribirse sin problema. Las opciones frente a esto:
+La respuesta es sí, y el motivo técnico es concreto: el *handshake* de WebSocket, tal como lo has configurado, no lleva el JWT por ningún sitio — un cliente que ni siquiera ha hecho login puede conectar y suscribirse sin problema. Las opciones frente a esto:
 
 1. **Restringir el handshake**: exigir un token válido antes de aceptar la conexión.
 2. **Filtrar qué se emite**: dejar el canal abierto, pero no mandar por él nada sensible.
@@ -48,13 +48,11 @@ La respuesta es sí, y el motivo técnico es concreto: el *handshake* de WebSock
 La forma más simple de exigir el token en el handshake es pasarlo como parámetro de consulta en la propia URL de conexión (`/ws-actividad?token=...`), y validarlo con un interceptor antes de aceptar:
 
 ```java
+@Component
+@RequiredArgsConstructor
 public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 
     private final JwtDecoder jwtDecoder;
-
-    public JwtHandshakeInterceptor(JwtDecoder jwtDecoder) {
-        this.jwtDecoder = jwtDecoder;
-    }
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
@@ -92,18 +90,28 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 }
 ```
 
-Y se registra en la configuración:
+Al ser un `@Component`, Spring lo inyecta como cualquier otra dependencia — incluida tu propia `WebSocketConfig`, que hasta ahora no necesitaba ningún campo:
 
 ```java
-@Override
-public void registerStompEndpoints(StompEndpointRegistry registry) {
-    registry.addEndpoint("/ws-actividad")
-            .setAllowedOriginPatterns("*")
-            .addInterceptors(new JwtHandshakeInterceptor(jwtDecoder));
+@Configuration
+@EnableWebSocketMessageBroker
+@RequiredArgsConstructor
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    private final JwtHandshakeInterceptor jwtHandshakeInterceptor;
+
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/ws-actividad")
+                .setAllowedOriginPatterns("*")
+                .addInterceptors(jwtHandshakeInterceptor);
+    }
+
+    // configureMessageBroker sigue exactamente igual
 }
 ```
 
-`beforeHandshake` se ejecuta **antes** de que la conexión WebSocket se establezca — si devuelve `false`, el *handshake* se rechaza y la conexión nunca llega a completarse. Reutilizas el mismo `JwtDecoder` que ya tenías configurado desde el Tema 2 para validar el token — no hace falta ninguna pieza criptográfica nueva.
+`beforeHandshake` se ejecuta **antes** de que la conexión WebSocket se establezca — si devuelve `false`, el *handshake* se rechaza y la conexión nunca llega a completarse. Reutilizas el mismo `JwtDecoder` que ya tenías configurado desde el Tema 2 para validar el token — no hace falta ninguna pieza criptográfica nueva, ni tampoco instanciar el interceptor a mano: al llevar `@RequiredArgsConstructor` en ambas clases, Spring construye y conecta las dos piezas solo.
 
 ---
 
