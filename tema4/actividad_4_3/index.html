@@ -2440,9 +2440,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#mini-reto-update-y-delete-en-vivo-tambien" class="md-nav__link">
+  <a href="#paso-3-update-y-delete-en-vivo-tambien" class="md-nav__link">
     <span class="md-ellipsis">
-      Mini-reto — update y delete en vivo también
+      Paso 3 — update y delete en vivo también
     </span>
   </a>
   
@@ -2593,9 +2593,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#mini-reto-update-y-delete-en-vivo-tambien" class="md-nav__link">
+  <a href="#paso-3-update-y-delete-en-vivo-tambien" class="md-nav__link">
     <span class="md-ellipsis">
-      Mini-reto — update y delete en vivo también
+      Paso 3 — update y delete en vivo también
     </span>
   </a>
   
@@ -2660,7 +2660,7 @@
 </div>
 <h2 id="que-vas-a-practicar">Qué vas a practicar<a class="headerlink" href="#que-vas-a-practicar" title="Permanent link">¶</a></h2>
 <ul>
-<li>Emitir datos reales por el canal WebSocket que construiste en la Actividad 4.2.</li>
+<li>Emitir datos reales por el canal WebSocket que has construido en la Actividad 4.2.</li>
 <li>Trazar el viaje completo de un dato a través de todo lo construido en el curso.</li>
 <li>Detectar <strong>y corregir</strong> una vulnerabilidad real de seguridad.</li>
 </ul>
@@ -2743,7 +2743,7 @@
 <p><strong>Captura</strong>: una pantalla mostrando ambas pestañas con el registro recién llegado.</p>
 <p><strong>Traza</strong> el viaje completo del dato en tus logs (añade trazas temporales de <code>Thread.currentThread().getName()</code> si no las tienes ya de los Temas 3-4): un nombre de hilo para la petición HTTP, otro distinto para el listener de RabbitMQ que ejecuta <code>registrar()</code> (y, por tanto, el propio push WebSocket).</p>
 <hr>
-<h2 id="mini-reto-update-y-delete-en-vivo-tambien">Mini-reto — <code>update</code> y <code>delete</code> en vivo también<a class="headerlink" href="#mini-reto-update-y-delete-en-vivo-tambien" title="Permanent link">¶</a></h2>
+<h2 id="paso-3-update-y-delete-en-vivo-tambien">Paso 3 — <code>update</code> y <code>delete</code> en vivo también<a class="headerlink" href="#paso-3-update-y-delete-en-vivo-tambien" title="Permanent link">¶</a></h2>
 <p>Sin tocar nada más, comprueba que actualizar y borrar un videojuego <strong>también</strong> aparecen en vivo en tus pestañas. Deberían funcionar solos, sin ningún cambio adicional.</p>
 <p><strong>Explica por qué</strong>: sigue el flujo completo (RabbitMQ → consumer → <code>registrar()</code>) y razona por qué añadir la emisión dentro de <code>registrar()</code> en el Paso 1 basta para cubrir los tres tipos de evento (crear, actualizar, borrar), sin tener que tocar tres sitios distintos.</p>
 <hr>
@@ -2753,102 +2753,17 @@
 <p><strong>Escribe el hallazgo</strong> como una mini-incidencia de seguridad: qué se expone (el contenido concreto), a quién (cualquiera, sin autenticar), y qué opciones de mitigación existen (las tres de la teoría: restringir el handshake, filtrar qué se emite, o documentarlo como decisión consciente).</p>
 <hr>
 <h2 id="paso-5-remediacion-minima-obligatoria">Paso 5 — Remediación mínima obligatoria<a class="headerlink" href="#paso-5-remediacion-minima-obligatoria" title="Permanent link">¶</a></h2>
-<p>Aplica la solución de la teoría: exige un token válido en el handshake.</p>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-3-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-3-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-3-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-3-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-3-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-3-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-3-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-3-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-3-10">10</a></span>
-<span class="normal"><a href="#__codelineno-3-11">11</a></span>
-<span class="normal"><a href="#__codelineno-3-12">12</a></span>
-<span class="normal"><a href="#__codelineno-3-13">13</a></span>
-<span class="normal"><a href="#__codelineno-3-14">14</a></span>
-<span class="normal"><a href="#__codelineno-3-15">15</a></span>
-<span class="normal"><a href="#__codelineno-3-16">16</a></span>
-<span class="normal"><a href="#__codelineno-3-17">17</a></span>
-<span class="normal"><a href="#__codelineno-3-18">18</a></span>
-<span class="normal"><a href="#__codelineno-3-19">19</a></span>
-<span class="normal"><a href="#__codelineno-3-20">20</a></span>
-<span class="normal"><a href="#__codelineno-3-21">21</a></span>
-<span class="normal"><a href="#__codelineno-3-22">22</a></span>
-<span class="normal"><a href="#__codelineno-3-23">23</a></span>
-<span class="normal"><a href="#__codelineno-3-24">24</a></span>
-<span class="normal"><a href="#__codelineno-3-25">25</a></span>
-<span class="normal"><a href="#__codelineno-3-26">26</a></span>
-<span class="normal"><a href="#__codelineno-3-27">27</a></span>
-<span class="normal"><a href="#__codelineno-3-28">28</a></span>
-<span class="normal"><a href="#__codelineno-3-29">29</a></span>
-<span class="normal"><a href="#__codelineno-3-30">30</a></span>
-<span class="normal"><a href="#__codelineno-3-31">31</a></span>
-<span class="normal"><a href="#__codelineno-3-32">32</a></span>
-<span class="normal"><a href="#__codelineno-3-33">33</a></span>
-<span class="normal"><a href="#__codelineno-3-34">34</a></span>
-<span class="normal"><a href="#__codelineno-3-35">35</a></span>
-<span class="normal"><a href="#__codelineno-3-36">36</a></span>
-<span class="normal"><a href="#__codelineno-3-37">37</a></span>
-<span class="normal"><a href="#__codelineno-3-38">38</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nd">@Component</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="nd">@RequiredArgsConstructor</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">JwtHandshakeInterceptor</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">HandshakeInterceptor</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4"></a>
-<a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">JwtDecoder</span><span class="w"> </span><span class="n">jwtDecoder</span><span class="p">;</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6"></a>
-<a id="__codelineno-3-7" name="__codelineno-3-7"></a><span class="w">    </span><span class="nd">@Override</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">beforeHandshake</span><span class="p">(</span><span class="n">ServerHttpRequest</span><span class="w"> </span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">ServerHttpResponse</span><span class="w"> </span><span class="n">response</span><span class="p">,</span>
-<a id="__codelineno-3-9" name="__codelineno-3-9"></a><span class="w">                                    </span><span class="n">WebSocketHandler</span><span class="w"> </span><span class="n">wsHandler</span><span class="p">,</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">attributes</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-3-10" name="__codelineno-3-10"></a><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getURI</span><span class="p">().</span><span class="na">getQuery</span><span class="p">();</span>
-<a id="__codelineno-3-11" name="__codelineno-3-11"></a><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">token</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">extraerToken</span><span class="p">(</span><span class="n">query</span><span class="p">);</span>
-<a id="__codelineno-3-12" name="__codelineno-3-12"></a>
-<a id="__codelineno-3-13" name="__codelineno-3-13"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">token</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-3-14" name="__codelineno-3-14"></a><span class="w">            </span><span class="n">response</span><span class="p">.</span><span class="na">setStatusCode</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">UNAUTHORIZED</span><span class="p">);</span>
-<a id="__codelineno-3-15" name="__codelineno-3-15"></a><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
-<a id="__codelineno-3-16" name="__codelineno-3-16"></a><span class="w">        </span><span class="p">}</span>
-<a id="__codelineno-3-17" name="__codelineno-3-17"></a>
-<a id="__codelineno-3-18" name="__codelineno-3-18"></a><span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-3-19" name="__codelineno-3-19"></a><span class="w">            </span><span class="n">jwtDecoder</span><span class="p">.</span><span class="na">decode</span><span class="p">(</span><span class="n">token</span><span class="p">);</span>
-<a id="__codelineno-3-20" name="__codelineno-3-20"></a><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
-<a id="__codelineno-3-21" name="__codelineno-3-21"></a><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">JwtException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-3-22" name="__codelineno-3-22"></a><span class="w">            </span><span class="n">response</span><span class="p">.</span><span class="na">setStatusCode</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">UNAUTHORIZED</span><span class="p">);</span>
-<a id="__codelineno-3-23" name="__codelineno-3-23"></a><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
-<a id="__codelineno-3-24" name="__codelineno-3-24"></a><span class="w">        </span><span class="p">}</span>
-<a id="__codelineno-3-25" name="__codelineno-3-25"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-3-26" name="__codelineno-3-26"></a>
-<a id="__codelineno-3-27" name="__codelineno-3-27"></a><span class="w">    </span><span class="nd">@Override</span>
-<a id="__codelineno-3-28" name="__codelineno-3-28"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">afterHandshake</span><span class="p">(</span><span class="n">ServerHttpRequest</span><span class="w"> </span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">ServerHttpResponse</span><span class="w"> </span><span class="n">response</span><span class="p">,</span>
-<a id="__codelineno-3-29" name="__codelineno-3-29"></a><span class="w">                                </span><span class="n">WebSocketHandler</span><span class="w"> </span><span class="n">wsHandler</span><span class="p">,</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="n">exception</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">}</span>
-<a id="__codelineno-3-30" name="__codelineno-3-30"></a>
-<a id="__codelineno-3-31" name="__codelineno-3-31"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">extraerToken</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">query</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-3-32" name="__codelineno-3-32"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">query</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
-<a id="__codelineno-3-33" name="__codelineno-3-33"></a><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">param</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">query</span><span class="p">.</span><span class="na">split</span><span class="p">(</span><span class="s">"&amp;"</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-3-34" name="__codelineno-3-34"></a><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">param</span><span class="p">.</span><span class="na">startsWith</span><span class="p">(</span><span class="s">"token="</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">param</span><span class="p">.</span><span class="na">substring</span><span class="p">(</span><span class="mi">6</span><span class="p">);</span>
-<a id="__codelineno-3-35" name="__codelineno-3-35"></a><span class="w">        </span><span class="p">}</span>
-<a id="__codelineno-3-36" name="__codelineno-3-36"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
-<a id="__codelineno-3-37" name="__codelineno-3-37"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-3-38" name="__codelineno-3-38"></a><span class="p">}</span>
-</code></pre></div></td></tr></table></div>
-<p>Regístralo en <code>WebSocketConfig</code>:</p>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span>
-<span class="normal"><a href="#__codelineno-4-2">2</a></span>
-<span class="normal"><a href="#__codelineno-4-3">3</a></span>
-<span class="normal"><a href="#__codelineno-4-4">4</a></span>
-<span class="normal"><a href="#__codelineno-4-5">5</a></span>
-<span class="normal"><a href="#__codelineno-4-6">6</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="nd">@Override</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">registerStompEndpoints</span><span class="p">(</span><span class="n">StompEndpointRegistry</span><span class="w"> </span><span class="n">registry</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="w">    </span><span class="n">registry</span><span class="p">.</span><span class="na">addEndpoint</span><span class="p">(</span><span class="s">"/ws-actividad"</span><span class="p">)</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="w">            </span><span class="p">.</span><span class="na">setAllowedOriginPatterns</span><span class="p">(</span><span class="s">"*"</span><span class="p">)</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="w">            </span><span class="p">.</span><span class="na">addInterceptors</span><span class="p">(</span><span class="n">jwtHandshakeInterceptor</span><span class="p">);</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="p">}</span>
-</code></pre></div></td></tr></table></div>
+<p>Aplica la solución de la teoría de este apartado: el <code>JwtHandshakeInterceptor</code> que ya has visto ahí, letra por letra el mismo código — no hace falta repetirlo aquí. Dos detalles de conexión con tu propio proyecto, que sí son nuevos:</p>
+<ul>
+<li>Convierte también tu <code>WebSocketConfig</code> en <code>@RequiredArgsConstructor</code>, con un campo <code>JwtHandshakeInterceptor jwtHandshakeInterceptor</code> — hasta ahora no tenía ningún campo, y ahora necesita que Spring le inyecte el interceptor para poder registrarlo.</li>
+<li>En <code>registerStompEndpoints(...)</code>, añade <code>.addInterceptors(jwtHandshakeInterceptor)</code> a la cadena que ya tienes sobre <code>registry.addEndpoint(...)</code>.</li>
+</ul>
 <p>Actualiza tu cliente <code>actividad.html</code> para pasar el token en la conexión:</p>
-<div class="language-javascript highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">JavaScript</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span>
-<span class="normal"><a href="#__codelineno-5-2">2</a></span>
-<span class="normal"><a href="#__codelineno-5-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="kd">const</span><span class="w"> </span><span class="nx">client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">StompJs</span><span class="p">.</span><span class="nx">Client</span><span class="p">({</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="w">    </span><span class="nx">brokerURL</span><span class="o">:</span><span class="w"> </span><span class="sb">`ws://localhost:8080/ws-actividad?token=</span><span class="si">${</span><span class="nx">miToken</span><span class="si">}</span><span class="sb">`</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="p">});</span>
+<div class="language-javascript highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">JavaScript</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
+<span class="normal"><a href="#__codelineno-3-2">2</a></span>
+<span class="normal"><a href="#__codelineno-3-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="kd">const</span><span class="w"> </span><span class="nx">client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">StompJs</span><span class="p">.</span><span class="nx">Client</span><span class="p">({</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">    </span><span class="nx">brokerURL</span><span class="o">:</span><span class="w"> </span><span class="sb">`ws://localhost:8080/ws-actividad?token=</span><span class="si">${</span><span class="nx">miToken</span><span class="si">}</span><span class="sb">`</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="p">});</span>
 </code></pre></div></td></tr></table></div>
 <p>Repite la prueba de la ventana de incógnito <strong>sin</strong> token: <strong>comprueba</strong> que ahora el handshake es rechazado. Repite con un token válido: <strong>comprueba</strong> que sigue funcionando exactamente igual que antes.</p>
 <hr>

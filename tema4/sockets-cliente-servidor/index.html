@@ -2242,15 +2242,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#lo-que-viene-la-actividad-41" class="md-nav__link">
-    <span class="md-ellipsis">
-      🧭 Lo que viene: la Actividad 4.1
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#ideas-clave" class="md-nav__link">
     <span class="md-ellipsis">
       ✅ Ideas clave
@@ -2584,15 +2575,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#lo-que-viene-la-actividad-41" class="md-nav__link">
-    <span class="md-ellipsis">
-      🧭 Lo que viene: la Actividad 4.1
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#ideas-clave" class="md-nav__link">
     <span class="md-ellipsis">
       ✅ Ideas clave
@@ -2622,7 +2604,27 @@
 <p>Todo lo que has hecho hasta ahora en este módulo —peticiones REST, JWT, RabbitMQ— viaja, por debajo, sobre una pieza que nunca has tocado directamente: el <strong>socket</strong>. Este apartado la saca a la superficie.</p>
 <hr>
 <h2 id="que-es-un-socket">🔌 Qué es un socket<a class="headerlink" href="#que-es-un-socket" title="Permanent link">¶</a></h2>
-<p>Un <strong>socket</strong> es el extremo programable de una conexión de red: una combinación de IP y puerto por la que un programa envía y recibe datos. Es la pieza que hay <strong>debajo</strong> de todo lo que ya has usado sin saberlo: cuando <code>curl</code> habla con tu aplicación en el puerto 8080, cuando tu aplicación se conecta a PostgreSQL (5432), MongoDB (27017) o RabbitMQ (5672), hay sockets TCP funcionando por debajo, en cada uno de esos casos.</p>
+<p>Dos programas que se comunican por red —tu navegador y un servidor web, tu aplicación y PostgreSQL— lo hacen a través de una <strong>conexión de red</strong>: un canal por el que viajan datos entre una máquina y otra.</p>
+<p>Esa máquina, y ese programa concreto dentro de ella, se identifican con dos datos — por ejemplo, en <code>192.168.1.5:8080</code>:</p>
+<table>
+<thead>
+<tr>
+<th><code>192.168.1.5</code></th>
+<th><code>8080</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>IP</strong> — qué máquina, de entre todas las de la red</td>
+<td><strong>Puerto</strong> — qué programa concreto, de entre todos los que están corriendo en esa máquina a la vez</td>
+</tr>
+</tbody>
+</table>
+<p>Piénsalo como la dirección de un edificio: la IP es el portal (qué edificio, de entre todos los de la calle), y el puerto es el piso concreto dentro de ese portal. No basta con acertar el edificio — si mandas la carta sin el piso, o al piso equivocado, nunca llega a quien la espera. Con una petición de red pasa lo mismo: tiene que llegar exactamente al puerto donde esa aplicación en concreto está esperando, aunque en la misma máquina convivan otras muchas escuchando en sus propios puertos.</p>
+<p>Un <strong>socket</strong> es, simplemente, el objeto de tu código que representa uno de los dos extremos de esa conexión — sobre el que lees y escribes datos con los mismos streams de entrada/salida que ya conoces de Java. Cada uno de los dos programas tiene el suyo, en su propio lado:</p>
+<pre class="mermaid"><code>flowchart LR
+    A["Tu programa&lt;br/&gt;🔌 socket"] &lt;--&gt;|conexión de red| B["El otro programa&lt;br/&gt;🔌 socket"]</code></pre>
+<p>Y esa pieza está <strong>debajo</strong> de todo lo que ya has usado sin saberlo: cuando <code>curl</code> habla con tu aplicación en el puerto 8080, o cuando tu aplicación se conecta a PostgreSQL (5432), MongoDB (27017) o RabbitMQ (5672), hay un socket TCP a cada lado en todos esos casos.</p>
 <p>Compruébalo en vivo, con tu aplicación arrancada:</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
 <span class="normal"><a href="#__codelineno-0-2">2</a></span>
@@ -2630,17 +2632,99 @@
 <a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="c1"># o, en sistemas más recientes:</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3"></a>ss<span class="w"> </span>-tan<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="m">8080</span>
 </code></pre></div></td></tr></table></div>
-<p>Verás las conexiones establecidas de tu propia aplicación — cada una es un socket real.</p>
+<p>Verás una línea en estado <code>LISTEN</code> sobre el <code>:8080</code> — el socket con el que tu aplicación espera que alguien se conecte, no una conversación ya en marcha. Ahora repite el mismo comando cambiando <code>8080</code> por <code>5432</code>: esta vez verás una línea en estado <code>ESTABLISHED</code> — la conexión ya abierta con PostgreSQL, solo que aquí tu aplicación no espera, sino que es ella quien se ha conectado. Dos sockets reales de tu misma aplicación, cada uno con un papel distinto.</p>
 <hr>
 <h2 id="roles-cliente-y-servidor">🎭 Roles cliente y servidor<a class="headerlink" href="#roles-cliente-y-servidor" title="Permanent link">¶</a></h2>
-<p>Dos papeles bien diferenciados:</p>
+<p>Ya sabes que cada programa tiene su propio socket, en su propio lado de la conexión. Pero esos dos lados no son intercambiables: alguien tiene que existir primero y quedarse esperando a que le contacten, y alguien tiene que decidir el momento de conectarse. Son los dos papeles de toda comunicación en red:</p>
 <ul>
 <li><strong>Servidor</strong>: <strong>escucha</strong> en un puerto concreto, esperando conexiones — como Tomcat, escuchando en el 8080 de tu aplicación. En Java clásico, esto es un <code>ServerSocket</code>.</li>
 <li><strong>Cliente</strong>: <strong>inicia</strong> la conexión hacia el servidor — como <code>curl</code>, o como tu propia aplicación cuando se conecta a PostgreSQL. En Java clásico, esto es un <code>Socket</code>.</li>
 </ul>
-<p>El servidor sigue la secuencia <em>bind</em> (asociarse a un puerto) → <em>listen</em> (empezar a escuchar) → <em>accept</em> (aceptar una conexión entrante); el cliente hace <em>connect</em> (iniciar la conexión). Una vez establecida la conexión, ambos lados intercambian datos a través de <strong>streams</strong> de entrada y salida sobre el socket — exactamente como los flujos que ya conoces de Java para leer y escribir.</p>
+<p>El servidor y el cliente no hacen lo mismo, ni en el mismo orden. Retomando la analogía del portal y el piso:</p>
+<table>
+<thead>
+<tr>
+<th>Paso</th>
+<th>Qué hace</th>
+<th>Como si...</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>bind</strong></td>
+<td>El servidor se asocia a un puerto concreto — lo reclama para sí mismo, nadie más en esa máquina puede usarlo ya</td>
+<td>...te mudaras a un piso y pusieras tu nombre en el buzón</td>
+</tr>
+<tr>
+<td><strong>listen</strong></td>
+<td>Pasa de "ocupado pero en silencio" a aceptar que llamen a esa puerta</td>
+<td>...abrieras la puerta, listo para recibir visita</td>
+</tr>
+<tr>
+<td><strong>accept</strong></td>
+<td>Se queda bloqueado esperando a que llegue alguien; en cuanto llega, lo acepta y abre un canal dedicado solo para hablar con ese cliente</td>
+<td>...te quedaras de pie junto a la puerta hasta que alguien llamara, y entonces le abrieras y te quedaras hablando con él</td>
+</tr>
+<tr>
+<td><strong>connect</strong></td>
+<td>El cliente inicia la conexión hacia la IP y el puerto del servidor</td>
+<td>...fueras tú a la dirección de otra persona y llamaras al timbre</td>
+</tr>
+</tbody>
+</table>
+<p>Puestos en orden, uno detrás de otro, así queda la secuencia completa:</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant S as Servidor
+    participant C as Cliente
+    S-&gt;&gt;S: bind (se asocia al puerto)
+    S-&gt;&gt;S: listen (empieza a escuchar)
+    S-&gt;&gt;S: llama a accept()
+    activate S
+    Note over S: bloqueado aquí, sin que&lt;br/&gt;haya llegado nadie todavía
+    C-&gt;&gt;S: connect (inicia la conexión)
+    deactivate S
+    Note over C,S: los dos tienen ya su propio Socket</code></pre>
+<p>Nadie le entrega su <code>Socket</code> a nadie — cada lado se queda con el suyo propio, cada uno por su lado:</p>
+<ul>
+<li>El <strong>cliente</strong> ya lo tiene desde el principio: su propio <code>connect()</code> se lo devuelve en cuanto la conexión queda lista.</li>
+<li>El <strong>servidor</strong> consigue el suyo en ese mismo momento, pero por otro camino: es <code>accept()</code> quien se lo devuelve a él. Y ojo, no es el mismo objeto que el <code>ServerSocket</code> — es un <code>Socket</code> nuevo, creado solo para hablar con ese cliente concreto.</li>
+</ul>
+<p>Dos objetos <code>Socket</code> distintos, uno en cada lado, cada uno apuntando a su propio extremo de la misma conexión. A partir de ahí, cada uno lee y escribe en el suyo con <strong>streams</strong> de entrada y salida — exactamente como ya haces en Java para leer y escribir.</p>
+<div class="admonition tip">
+<p class="admonition-title">El ServerSocket nunca habla con nadie</p>
+<p>Su único trabajo es <em>bind</em> + <em>listen</em> + <em>accept</em>, una y otra vez — nunca lee ni escribe un solo dato de ningún cliente. Cada vez que <code>accept()</code> devuelve, se crea un <code>Socket</code> <strong>nuevo y distinto</strong>, uno por cada cliente aceptado, y es con <strong>ese</strong> <code>Socket</code> con el que de verdad se conversa — nunca con el <code>ServerSocket</code>. Mientras tanto, el <code>ServerSocket</code> se queda libre, listo para volver a llamar a <code>accept()</code> y aceptar al siguiente.</p>
+</div>
+<p>Fíjate en un detalle de <em>accept</em>: es una llamada <strong>bloqueante</strong> que devuelve una sola conexión cada vez. Un servidor que solo hace eso, un cliente detrás de otro, no puede atender a una segunda persona mientras sigue "hablando" con la primera — se queda atrapado. Lo vas a comprobar con tus propios ojos, y a resolverlo con hilos, en la Actividad 4.1.</p>
+<p>Cada paso de esa secuencia tiene un nombre concreto en la librería <code>java.net</code> de Java, la que vas a usar en la Actividad 4.1:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Servidor</th>
+<th>Cliente</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Asociarse al puerto y escuchar</td>
+<td><code>new ServerSocket(puerto)</code> (bind + listen)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Aceptar / conectar</td>
+<td><code>serverSocket.accept()</code> (bloqueante, devuelve un <code>Socket</code>)</td>
+<td><code>new Socket(host, puerto)</code> (connect)</td>
+</tr>
+<tr>
+<td>Leer y escribir</td>
+<td>streams sobre el <code>Socket</code> que ha devuelto <code>accept()</code></td>
+<td>streams sobre su propio <code>Socket</code></td>
+</tr>
+</tbody>
+</table>
 <hr>
 <h2 id="tipos-de-socket-tcp-vs-udp">🆚 Tipos de socket: TCP vs. UDP<a class="headerlink" href="#tipos-de-socket-tcp-vs-udp" title="Permanent link">¶</a></h2>
+<p>El <code>Socket</code>/<code>ServerSocket</code> que acabas de ver son de un tipo concreto de socket — el que vas a usar en todo el curso. Existen dos tipos, según cómo viajan los datos por la red:</p>
 <table>
 <thead>
 <tr>
@@ -2661,36 +2745,106 @@
 <td>Sin garantías</td>
 </tr>
 <tr>
+<td><strong>Clases Java</strong></td>
+<td><code>Socket</code>, <code>ServerSocket</code></td>
+<td><code>DatagramSocket</code>, <code>DatagramPacket</code></td>
+</tr>
+<tr>
 <td><strong>Dónde se usa</strong></td>
 <td>Todo lo que has construido en el curso (HTTP, conexiones a BD, RabbitMQ)</td>
 <td>Streaming en tiempo real, juegos en tiempo real, donde perder algún paquete es aceptable a cambio de velocidad</td>
 </tr>
 </tbody>
 </table>
-<p>Todo lo que has construido en este curso usa TCP — la fiabilidad importa más que la velocidad extrema cuando hablamos de peticiones REST o de guardar datos en una base de datos.</p>
+<p>"Orientado a conexión" no es solo una etiqueta — es justo lo que acabas de ver con <em>connect</em>. Antes de que viaje ni un solo byte de datos, cliente y servidor negocian tres mensajes de control para ponerse de acuerdo en que la conexión existe:</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant C as Cliente
+    participant S as Servidor
+    C-&gt;&gt;S: SYN (¿puedo conectar?)
+    S-&gt;&gt;C: SYN-ACK (sí, adelante)
+    C-&gt;&gt;S: ACK (confirmado)
+    Note over C,S: conexión TCP establecida</code></pre>
+<p>Tu código Java nunca escribe esos tres mensajes — los intercambia el propio sistema operativo, por debajo. Lo único que hace tu programa es llamar a <code>connect()</code>; a partir de ahí, es el sistema operativo quien envía y recibe el SYN, el SYN-ACK y el ACK por su cuenta, mientras tu llamada se queda esperando, sin continuar, hasta que ese intercambio termina — solo entonces te devuelve el <code>Socket</code>. Es el mismo tipo de espera que ya viste con <code>accept()</code> en el servidor — ninguno de los dos avanza hasta que la negociación termina.</p>
+<p>Esa misma conexión, ya abierta, es la que TCP aprovecha después para cumplir su promesa de fiabilidad: cada paquete va numerado, y el otro lado responde con un <strong>ACK</strong> (de <em>acknowledgement</em>, "confirmación de recibido") por cada uno, para decir "este ya me ha llegado".</p>
+<p>Hay dos formas de que algo se pierda por el camino, y desde el cliente se ven exactamente igual —no le llega confirmación a tiempo—, así que reacciona igual en las dos: reenvía el paquete.</p>
+<div class="tabs-colored">
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked id="__tabbed_1_1" name="__tabbed_1" type="radio"><input id="__tabbed_1_2" name="__tabbed_1" type="radio"><div class="tabbed-labels"><label for="__tabbed_1_1">🔵 Se pierde el paquete</label><label for="__tabbed_1_2">🟢 Se pierde el ACK</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<pre class="mermaid"><code>sequenceDiagram
+    participant C as Cliente
+    participant S as Servidor
+    C-&gt;&gt;S: Paquete #1
+    S-&gt;&gt;C: ACK #1
+    C-&gt;&gt;S: Paquete #2
+    Note over C,S: el paquete #2 se pierde,&lt;br/&gt;nunca llega al servidor
+    Note over C: no llega ACK #2 a tiempo
+    C-&gt;&gt;S: reenvía Paquete #2
+    S-&gt;&gt;C: ACK #2</code></pre>
+</div>
+<div class="tabbed-block">
+<pre class="mermaid"><code>sequenceDiagram
+    participant C as Cliente
+    participant S as Servidor
+    C-&gt;&gt;S: Paquete #1
+    S-&gt;&gt;C: ACK #1
+    C-&gt;&gt;S: Paquete #2
+    S-&gt;&gt;C: ACK #2
+    Note over C,S: se pierde de vuelta —&lt;br/&gt;el cliente nunca lo ve
+    C-&gt;&gt;S: reenvía Paquete #2
+    Note over S: ya lo tenía —&lt;br/&gt;lo descarta por el número de paquete
+    S-&gt;&gt;C: ACK #2</code></pre>
+</div>
+</div>
+</div>
+</div>
+<p>En el primer caso, el servidor no tenía el paquete y ahora sí. En el segundo, ya lo tenía, y le llega un duplicado — pero como cada paquete va numerado, TCP se da cuenta y lo descarta él solo, sin entregarlo dos veces a tu aplicación. Tu código nunca ve nada de este ir y venir: ni el reenvío, ni el duplicado descartado. Solo lees de un stream, y los datos te llegan completos, en orden, y una sola vez.</p>
+<p>UDP no negocia nada de esto por delante: el cliente manda cada paquete directo, con la dirección de destino pegada a él, sin haber quedado antes con nadie.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>TCP</th>
+<th>UDP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Antes de enviar datos</td>
+<td>negocia la conexión primero</td>
+<td>envía directo, sin avisar</td>
+</tr>
+<tr>
+<td>Si un paquete se pierde</td>
+<td>se reenvía solo, tú no te enteras</td>
+<td>se pierde y nadie te avisa</td>
+</tr>
+<tr>
+<td>Coste de todo eso</td>
+<td>más lento</td>
+<td>más rápido</td>
+</tr>
+</tbody>
+</table>
+<p>Esa tabla explica por qué UDP sigue existiendo pese a ser menos fiable: en una videollamada o una partida online, un dato que llega tarde ya no sirve de nada —mejor perder un fotograma y seguir con el siguiente, que congelarse esperando a que TCP reenvíe el que faltó—, así que ahí compensa cambiar fiabilidad por velocidad. En cambio, al guardar una fila en base de datos o hacer una transferencia bancaria, perder un solo byte no es aceptable: ahí es TCP quien tiene sentido, y es exactamente lo que ha usado todo lo que has construido en este curso.</p>
 <hr>
 <h2 id="modelos-de-comunicacion-en-arquitecturas-distribuidas">🌐 Modelos de comunicación en arquitecturas distribuidas<a class="headerlink" href="#modelos-de-comunicacion-en-arquitecturas-distribuidas" title="Permanent link">¶</a></h2>
-<p>Tres modelos, cada uno anclado a algo que ya conoces del curso:</p>
+<p>TCP y UDP responden a una pregunta muy concreta: cómo viajan los datos, byte a byte, por la red. Pero hay otra pregunta distinta, un nivel por encima: una vez la conexión existe, ¿qué patrón sigue la conversación entre los dos programas? ¿Uno pregunta y el otro responde? ¿Uno avisa cuando le interesa, sin que nadie se lo pida? Ahí es donde entran los <strong>modelos de comunicación</strong>.</p>
+<p>No son los únicos que existen —también hay, por ejemplo, streaming continuo o llamadas a procedimiento remoto—, pero sí los tres que vas a encontrarte una y otra vez en aplicaciones como la tuya, y cada uno está anclado a algo que ya conoces del curso:</p>
 <pre class="mermaid"><code>flowchart TB
-    A["🔄 Petición-respuesta síncrono&lt;br/&gt;(REST — todo el curso)"]
-    B["📢 Publicación-suscripción asíncrono&lt;br/&gt;(RabbitMQ — Tema 3)"]
-    C["🔗 Canal bidireccional persistente&lt;br/&gt;(WebSocket — próximo apartado)"]</code></pre>
+    Q["¿Cómo se comunican dos programas?"]
+    Q --&gt; A["🔄 Petición-respuesta síncrono&lt;br/&gt;REST — todo el curso"]
+    Q --&gt; B["📬 Cola de mensajes asíncrona&lt;br/&gt;RabbitMQ — Tema 3"]
+    Q --&gt; C["🔗 Canal bidireccional persistente&lt;br/&gt;WebSocket — próximo apartado"]</code></pre>
 <ul>
 <li><strong>Petición-respuesta síncrono</strong>: el cliente pide, el servidor responde, ahí termina esa conversación — el modelo de todo REST que has construido en PSP y AD.</li>
-<li><strong>Publicación-suscripción asíncrono</strong>: productor y consumidor no se conocen ni tienen que estar activos a la vez — RabbitMQ, del Tema 3.</li>
+<li><strong>Cola de mensajes asíncrona</strong>: el productor publica sin saber quién (ni si alguien) lo va a procesar, y cada mensaje concreto lo procesa un único consumidor — RabbitMQ, del Tema 3. Ojo, no es lo mismo que publicación-suscripción: en una cola, cada mensaje tiene un solo destinatario; en pub-sub, varios suscriptores reciben cada uno su propia copia del mismo mensaje.</li>
 <li><strong>Canal bidireccional persistente</strong>: una conexión que permanece abierta, por la que ambos lados pueden enviar datos en cualquier momento sin volver a conectar — el modelo que falta por conocer, WebSocket, en el próximo apartado.</li>
 </ul>
 <hr>
 <h2 id="escenarios-que-necesitan-algo-mas-que-peticion-respuesta">🚨 Escenarios que necesitan algo más que petición-respuesta<a class="headerlink" href="#escenarios-que-necesitan-algo-mas-que-peticion-respuesta" title="Permanent link">¶</a></h2>
 <p>¿Cuándo no basta con petición-respuesta? Cuando el <strong>servidor</strong> necesita avisar al cliente de algo que acaba de pasar, <strong>sin que el cliente pregunte primero</strong>. Con REST puro, el cliente tendría que estar preguntando constantemente ("¿ha pasado algo? ¿y ahora? ¿y ahora?") para enterarse a tiempo — ineficiente y con retraso.</p>
-<p>El caso concreto que vas a construir en las próximas actividades: un panel de actividad en vivo de tu aplicación, donde el servidor empuja cada evento del catálogo (crear, actualizar, borrar un libro) hacia los clientes conectados, en el instante en que ocurre — sin que ellos tengan que preguntar.</p>
-<hr>
-<h2 id="lo-que-viene-la-actividad-41">🧭 Lo que viene: la Actividad 4.1<a class="headerlink" href="#lo-que-viene-la-actividad-41" title="Permanent link">¶</a></h2>
-<p>La Actividad 4.1 construye un mini cliente/servidor de consola con <code>ServerSocket</code>/<code>Socket</code> e hilos — para tocar con las manos exactamente lo que Spring normalmente esconde.</p>
-<div class="admonition tip">
-<p class="admonition-title">Esta actividad, con sockets reales, ya cubre el contenido de forma completa</p>
-<p>La Actividad 4.1, con <code>java.net.Socket</code>/<code>ServerSocket</code> reales y multihilo, cubre de forma <strong>completa</strong> el uso de sockets — no es un aperitivo antes de la "cobertura real" con WebSocket: es ya la cobertura real. Las próximas actividades (WebSocket) amplían el mismo contenido sobre un caso de aplicación real, pero no son necesarias para tenerlo cubierto.</p>
-</div>
+<p>El caso concreto que vas a construir en las próximas actividades: un panel de actividad en vivo de tu aplicación, donde el servidor empuja cada evento del catálogo hacia los clientes conectados, en el instante en que ocurre — sin que ellos tengan que preguntar.</p>
 <hr>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
 <details class="tip">
@@ -2699,9 +2853,8 @@
 <li>Un <strong>socket</strong> es el extremo programable de una conexión de red (IP + puerto) — está debajo de toda comunicación que ya has usado en el curso.</li>
 <li><strong>Servidor</strong> (<code>ServerSocket</code>: bind/listen/accept) escucha; <strong>cliente</strong> (<code>Socket</code>: connect) inicia la conexión.</li>
 <li><strong>TCP</strong> (orientado a conexión, fiable) es lo que usa todo lo construido en el curso; <strong>UDP</strong> (sin conexión, sin garantías) se usa donde la velocidad importa más que la fiabilidad total.</li>
-<li>Tres modelos de comunicación: petición-respuesta síncrono (REST), publicación-suscripción asíncrono (RabbitMQ), canal bidireccional persistente (WebSocket).</li>
+<li>Tres modelos de comunicación: petición-respuesta síncrono (REST), cola de mensajes asíncrona (RabbitMQ — un consumidor por mensaje, no publicación-suscripción), canal bidireccional persistente (WebSocket).</li>
 <li>Un servidor necesita avisar proactivamente al cliente cuando petición-respuesta no basta — el escenario que resuelve el panel de actividad en vivo de las próximas actividades.</li>
-<li>La Actividad 4.1, con sockets reales, cubre el contenido de forma completa — WebSocket es ampliación, no requisito.</li>
 </ul>
 </details></div>
 

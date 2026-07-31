@@ -2669,7 +2669,7 @@
 <h1 id="2-websocket-con-stomp-el-canal-de-actividad-en-vivo">🧩 2. WebSocket con STOMP: el canal de actividad en vivo<a class="headerlink" href="#2-websocket-con-stomp-el-canal-de-actividad-en-vivo" title="Permanent link">¶</a></h1>
 <div class="admonition warning">
 <p class="admonition-title">Una pieza construida enteramente aquí, paso a paso</p>
-<p>Lo que ves en este apartado no es un patrón estándar de un manual de Spring — es una funcionalidad concreta que vas a construir completamente guiado, sin nada previo sobre lo que apoyarte. Lo que ya viste con sockets Java reales (Actividad 4.1) queda cubierto de forma completa — este apartado lo <strong>amplía</strong> sobre un protocolo de nivel más alto, pero no es un punto de partida obligatorio para lo anterior.</p>
+<p>Lo que ves en este apartado no es un patrón estándar de un manual de Spring — es una funcionalidad concreta que vas a construir completamente guiado, sin nada previo sobre lo que apoyarte. Lo que ya has visto con sockets Java reales (Actividad 4.1) queda cubierto de forma completa — este apartado lo <strong>amplía</strong> sobre un protocolo de nivel más alto, pero no es un punto de partida obligatorio para lo anterior.</p>
 </div>
 <hr>
 <h2 id="el-problema-como-se-entera-un-cliente-de-algo-que-acaba-de-pasar">🔔 El problema: ¿cómo se entera un cliente de algo que acaba de pasar?<a class="headerlink" href="#el-problema-como-se-entera-un-cliente-de-algo-que-acaba-de-pasar" title="Permanent link">¶</a></h2>
@@ -2693,10 +2693,10 @@
     S-&gt;&gt;C: otro mensaje, más tarde</code></pre>
 <hr>
 <h2 id="que-es-stomp">📨 Qué es STOMP<a class="headerlink" href="#que-es-stomp" title="Permanent link">¶</a></h2>
-<p>WebSocket, por sí solo, solo da un tubo de bytes/mensajes sin formato — no sabe nada de "canales" o "suscripciones". <strong>STOMP</strong> (<em>Simple Text Oriented Messaging Protocol</em>) es un protocolo sencillo que se monta por encima, añadiendo la semántica de mensajería que ya conoces: destinos con nombre (<code>/topic/algo</code>), suscribirse a un destino, enviar a un destino — reutilizando el mismo modelo publicación-suscripción que ya conoces de RabbitMQ y de los eventos internos del Tema 3.</p>
+<p>WebSocket, por sí solo, solo da un tubo de bytes/mensajes sin formato — no sabe nada de "canales" o "suscripciones". <strong>STOMP</strong> (<em>Simple Text Oriented Messaging Protocol</em>) es un protocolo sencillo que se monta por encima, añadiendo la semántica de mensajería que ya conoces: destinos con nombre (<code>/topic/algo</code>), suscribirse a un destino, enviar a un destino. Es el mismo patrón de publicación-suscripción que ya viste con <code>ApplicationEventPublisher</code> en el Tema 3: un destino puede tener varios suscriptores a la vez, y todos reciben su propia copia de cada mensaje — a diferencia de la cola de RabbitMQ, también del Tema 3, donde cada mensaje concreto lo procesa un único consumidor.</p>
 <hr>
 <h2 id="el-caso-de-uso-actividad-en-vivo">🎯 El caso de uso: actividad en vivo<a class="headerlink" href="#el-caso-de-uso-actividad-en-vivo" title="Permanent link">¶</a></h2>
-<p>El punto de partida: imagina que <code>ActividadService.registrar()</code> ya guarda cada evento del catálogo (crear, actualizar, borrar un libro) en la base de datos — hoy solo puede consultarse con <code>GET /api/v1/actividad</code>, en frío, y solo por <code>ADMIN</code>. Vas a construir un canal que emita esos mismos registros <strong>en vivo</strong>, según ocurren.</p>
+<p>El punto de partida: imagina que <code>ActividadService.registrar()</code> ya guarda cada evento del catálogo en la base de datos — hoy solo puede consultarse con <code>GET /api/v1/actividad</code>, en frío, y solo por <code>ADMIN</code>. Vas a construir un canal que emita esos mismos registros <strong>en vivo</strong>, según ocurren.</p>
 <h3 id="la-configuracion">La configuración<a class="headerlink" href="#la-configuracion" title="Permanent link">¶</a></h3>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
@@ -2735,7 +2735,7 @@
     participant S as Servidor
     N-&gt;&gt;S: Conecta a /ws-actividad (handshake)
     N-&gt;&gt;S: Se suscribe a /topic/actividad
-    Note over S: Alguien crea/borra un libro
+    Note over S: Ocurre un evento en el catálogo
     S-&gt;&gt;N: Publica en /topic/actividad
     Note over N: TODOS los suscritos lo reciben al instante</code></pre>
 <h3 id="comparado-con-rest">Comparado con REST<a class="headerlink" href="#comparado-con-rest" title="Permanent link">¶</a></h3>
@@ -2770,7 +2770,7 @@
 </tr>
 </tbody>
 </table>
-<p>Y el paralelismo con RabbitMQ que ya conoces: el mismo modelo publicación-suscripción, pero con distinto alcance — RabbitMQ conecta módulos <strong>dentro</strong> del backend; WebSocket conecta el backend con <strong>navegadores</strong>, fuera del propio servidor.</p>
+<p>Y el paralelismo correcto no es con RabbitMQ (esa es una cola punto a punto, cada mensaje a un único consumidor) — es con los eventos internos de Spring del Tema 3: mismo modelo de publicación-suscripción, pero con distinto alcance. <code>ApplicationEventPublisher</code> llega a otros beans <strong>dentro</strong> de la misma JVM; STOMP llega a <strong>navegadores</strong>, fuera del propio servidor.</p>
 <hr>
 <h2 id="como-probar-un-websocket-sin-escribir-un-frontend-entero">🧪 Cómo probar un WebSocket sin escribir un frontend entero<a class="headerlink" href="#como-probar-un-websocket-sin-escribir-un-frontend-entero" title="Permanent link">¶</a></h2>
 <p>No hace falta una aplicación cliente completa para probar esto — basta con una página HTML mínima con un cliente STOMP en JavaScript (la librería <code>@stomp/stompjs</code>, servida desde un CDN o un fichero estático). La Actividad 4.2 te guía paso a paso por esa vía.</p>
@@ -2783,7 +2783,7 @@
 <li><strong>WebSocket</strong> es un canal bidireccional persistente: handshake HTTP con <code>Upgrade</code>, después conexión permanente donde el servidor envía sin que el cliente pregunte.</li>
 <li><strong>STOMP</strong> añade semántica de mensajería (destinos, suscripción) sobre el tubo de bytes desnudo de WebSocket.</li>
 <li><code>@EnableWebSocketMessageBroker</code> + <code>registerStompEndpoints</code> + <code>configureMessageBroker</code> son las tres piezas de configuración base.</li>
-<li>Mismo modelo pub-sub que RabbitMQ, distinto alcance: RabbitMQ entre módulos del backend, WebSocket entre backend y navegadores.</li>
+<li>Mismo modelo pub-sub que los eventos internos de Spring (<code>ApplicationEventPublisher</code>, Tema 3), distinto alcance: dentro de la JVM entre beans, o hacia navegadores. RabbitMQ, en cambio, es una cola punto a punto — cada mensaje a un único consumidor, no lo mismo.</li>
 <li>Se puede probar sin frontend completo: una página HTML mínima con STOMP.js basta.</li>
 </ul>
 </details></div>
