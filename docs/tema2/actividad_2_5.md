@@ -245,15 +245,17 @@ Crea la clase, junto a tu `ErrorResponseAuthenticationEntryPoint` de la Activida
 
 ```java
 @Component
+@RequiredArgsConstructor
 public class ErrorResponseAccessDeniedHandler implements AccessDeniedHandler {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final JsonMapper jsonMapper;
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
                         AccessDeniedException accessDeniedException) throws IOException {
         // tu turno: construye el ErrorResponse (403, "No autorizado") y escríbelo en la respuesta,
         // igual que ya has hecho en ErrorResponseAuthenticationEntryPoint
+        // (no olvides response.setCharacterEncoding("UTF-8") antes de escribir, para los mensajes con tildes)
     }
 }
 ```

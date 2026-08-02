@@ -170,23 +170,25 @@ Un `@ExceptionHandler` no puede arreglar esto —nunca llega a ejecutarse—, pe
 ```java
 package com.tunombre.gamevault.seguridad;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tunombre.gamevault.exception.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 
 @Component
+@RequiredArgsConstructor
 public class ErrorResponseAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final JsonMapper jsonMapper;
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
@@ -200,12 +202,13 @@ public class ErrorResponseAuthenticationEntryPoint implements AuthenticationEntr
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.getWriter().write(objectMapper.writeValueAsString(error));
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(jsonMapper.writeValueAsString(error));
     }
 }
 ```
 
-Reutiliza tu propio `ErrorResponse` de la Actividad 2.1 — el mismo formato de siempre, solo que construido a mano, porque aquí no hay ningún `@ExceptionHandler` que lo haga por ti.
+`JsonMapper` se inyecta como cualquier otra dependencia (por eso `@RequiredArgsConstructor`) — Spring Boot ya te lo configura como bean, no hace falta instanciarlo tú a mano. Reutiliza tu propio `ErrorResponse` de la Actividad 2.1 — el mismo formato de siempre, solo que construido a mano, porque aquí no hay ningún `@ExceptionHandler` que lo haga por ti.
 
 Conéctalo en `securityFilterChain`, añadiendo el nuevo bean como parámetro (Spring lo inyecta solo, por tipo) y registrándolo en `exceptionHandling(...)`:
 

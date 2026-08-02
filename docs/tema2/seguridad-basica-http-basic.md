@@ -204,9 +204,10 @@ Spring Security tiene su propia pieza para el mismo trabajo, con otro nombre: un
 
 ```java
 @Component
+@RequiredArgsConstructor
 public class ErrorResponseAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final JsonMapper jsonMapper;
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
@@ -220,15 +221,18 @@ public class ErrorResponseAuthenticationEntryPoint implements AuthenticationEntr
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.getWriter().write(objectMapper.writeValueAsString(error));
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(jsonMapper.writeValueAsString(error));
     }
 }
 ```
 
+`JsonMapper` es la pieza de Jackson que convierte objetos Java a JSON y viceversa — la misma que usa Spring por debajo para las respuestas de tus controllers, aunque ahí nunca la has visto directamente. Aquí la necesitas a la vista porque, como ya has visto arriba, este `401` nunca llega al `DispatcherServlet` — y con él, tampoco al mecanismo normal de serialización de Spring MVC. Se inyecta como cualquier otra dependencia, con `@RequiredArgsConstructor` — Spring Boot ya te la configura como bean, sin que tengas que instanciarla tú a mano.
+
 !!! tip "No hace falta memorizar esto"
     Esta clase es prácticamente idéntica en cualquier proyecto Spring Security que quiera dar errores coherentes — cambia poco más que el mensaje del `ErrorResponse`. No merece la pena memorizar la sintaxis exacta de `commence(...)` ni los detalles de `HttpServletResponse`; lo que importa es entender **qué hace y por qué hace falta**: que Spring Security tiene su propio punto de entrada para este caso, fuera del circuito normal de tu `GlobalExceptionHandler`. El código, cuando lo necesites, se copia y se adapta — es la misma idea en todos los proyectos.
 
-Fíjate en la diferencia con un `@ExceptionHandler` normal: ahí devuelves un `ResponseEntity<ErrorResponse>` y Spring MVC se encarga solo de convertirlo a JSON. Aquí no hay ningún `ResponseEntity` — trabajas directamente sobre `HttpServletResponse`, la clase de bajo nivel que representa la respuesta HTTP en crudo, porque `commence(...)` se ejecuta **antes** de que exista ningún mecanismo de Spring MVC que convierta objetos a JSON por ti. Por eso el método construye su propio `ObjectMapper` (la misma clase de Jackson que usa Spring MVC por debajo) y llama a `writeValueAsString(...)` a mano.
+Fíjate en la diferencia con un `@ExceptionHandler` normal: ahí devuelves un `ResponseEntity<ErrorResponse>` y Spring MVC se encarga solo de convertirlo a JSON. Aquí no hay ningún `ResponseEntity` — trabajas directamente sobre `HttpServletResponse`, la clase de bajo nivel que representa la respuesta HTTP en crudo, porque `commence(...)` se ejecuta **antes** de que exista ningún mecanismo de Spring MVC que convierta objetos a JSON por ti. Por eso el método usa el `JsonMapper` inyectado (la misma pieza de Jackson que usa Spring MVC por debajo) y llama a `writeValueAsString(...)` a mano.
 
 Falta un último paso: decirle a Spring Security que use esta pieza en vez de la suya por defecto. Se registra en el mismo `securityFilterChain` que has visto un poco más arriba, añadiendo un bloque nuevo:
 

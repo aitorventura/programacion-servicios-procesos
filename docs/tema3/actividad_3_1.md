@@ -128,19 +128,19 @@ public record VideojuegoEvent(String tipo, Long videojuegoId) {
 ```java
 package com.tunombre.gamevault.catalogo;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tunombre.gamevault.catalogo.api.eventos.VideojuegoEvent;
 import com.tunombre.gamevault.config.RabbitMQConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 @Component
 @RequiredArgsConstructor
 public class VideojuegoEventPublisher {
     private final RabbitTemplate rabbitTemplate;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final JsonMapper jsonMapper;
 
     public void publicar(String tipo, Long videojuegoId) {
         String accion = switch (tipo) {
@@ -150,16 +150,16 @@ public class VideojuegoEventPublisher {
             default -> throw new IllegalArgumentException("Tipo de evento desconocido: " + tipo);
         };
         try {
-            String payload = objectMapper.writeValueAsString(new VideojuegoEvent(tipo, videojuegoId));
+            String payload = jsonMapper.writeValueAsString(new VideojuegoEvent(tipo, videojuegoId));
             rabbitTemplate.convertAndSend(RabbitMQConfig.CATALOGO_EXCHANGE, "videojuego." + accion, payload);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException("No se ha podido serializar el evento", e);
         }
     }
 }
 ```
 
-`RabbitTemplate` es el equivalente en mensajería de `JdbcTemplate`, que ya conoces de Acceso a Datos: Spring Boot lo configura solo en cuanto detecta `spring-boot-starter-amqp` en el classpath, sin que lo registres tú.
+`RabbitTemplate` es el equivalente en mensajería de `JdbcTemplate`, que ya conoces de Acceso a Datos: Spring Boot lo configura solo en cuanto detecta `spring-boot-starter-amqp` en el classpath, sin que lo registres tú. `JsonMapper`, igual: es un bean que Spring Boot ya te da configurado (viene con Jackson), así que se inyecta por constructor como todo lo demás — nada de `new JsonMapper()` a mano.
 
 Inyecta `VideojuegoEventPublisher` en `VideojuegoService` (constructor, como todo lo demás) y llama a `publicar(...)` al final de `create`, `update` y `delete`, con el tipo correspondiente y el `id` del videojuego.
 
@@ -280,22 +280,22 @@ Por último, el consumer, `ActividadVideojuegoEventConsumer.java` — sigue en e
 ```java
 package com.tunombre.gamevault.actividad;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tunombre.gamevault.catalogo.api.eventos.VideojuegoEvent;
 import com.tunombre.gamevault.config.RabbitMQConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.json.JsonMapper;
 
 @Service
 @RequiredArgsConstructor
 public class ActividadVideojuegoEventConsumer {
     private final ActividadService actividadService;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final JsonMapper jsonMapper;
 
     @RabbitListener(queues = RabbitMQConfig.ACTIVIDAD_VIDEOJUEGO_QUEUE)
-    public void recibir(String payload) throws Exception {
-        VideojuegoEvent event = objectMapper.readValue(payload, VideojuegoEvent.class);
+    public void recibir(String payload) {
+        VideojuegoEvent event = jsonMapper.readValue(payload, VideojuegoEvent.class);
         actividadService.registrar(event.tipo(), "Videojuego", event.videojuegoId().toString());
     }
 }

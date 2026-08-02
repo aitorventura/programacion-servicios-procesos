@@ -124,9 +124,10 @@ Spring Security tiene, otra vez, su propia pieza para este trabajo: un **`Access
 
 ```java
 @Component
+@RequiredArgsConstructor
 public class ErrorResponseAccessDeniedHandler implements AccessDeniedHandler {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final JsonMapper jsonMapper;
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
@@ -140,7 +141,8 @@ public class ErrorResponseAccessDeniedHandler implements AccessDeniedHandler {
 
         response.setStatus(HttpStatus.FORBIDDEN.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.getWriter().write(objectMapper.writeValueAsString(error));
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(jsonMapper.writeValueAsString(error));
     }
 }
 ```
