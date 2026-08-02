@@ -104,6 +104,8 @@ public PasswordEncoder passwordEncoder() {
 }
 ```
 
+Los ficheros `application-dev.yml`, `application-dev-local.yml` y `application-dev-local.yml.example` deben estar en `src/main/resources`. El fichero local y su plantilla se colocan junto al `application-dev.yml` que realiza la importación.
+
 Antes de crear el `ApplicationRunner`, prepara dónde va a vivir la contraseña de ese primer `admin` — **nunca** escrita en un `.java` ni en un fichero versionado. Añade a tu `.gitignore`:
 
 ```
@@ -126,7 +128,7 @@ gamevault:
     password: admin123
 ```
 
-Y en tu `application-dev.yml`, importa ese fichero:
+En tu `application-dev.yml`, integra la propiedad `import` dentro del bloque `spring.config` que ya existe. No crees un segundo bloque raíz `spring:` si el fichero ya contiene uno:
 
 ```yaml
 spring:
@@ -208,7 +210,7 @@ public class AuthController {
 }
 ```
 
-Abre esta ruta en tu política de acceso — nadie tiene todavía una cuenta con la que autenticarse para registrarse:
+Abre esta ruta en tu política de acceso. Coloca la regla **antes de `anyRequest().authenticated()`**, junto al resto de reglas concretas:
 
 ```java
 .requestMatchers(HttpMethod.POST, "/api/v1/auth/register").permitAll()
@@ -234,7 +236,7 @@ curl -i -X POST http://localhost:8080/api/v1/auth/register \
 
 Tienes dos vías, igual que en Acceso a Datos — usa la que prefieras:
 
-- **Herramienta gráfica** (pgAdmin, DBeaver): conecta a `localhost:5432` con las credenciales de tu `docker-compose.yml`, y ejecuta `SELECT username, password FROM usuarios;` sobre `gamevault_db`.
+- **Herramienta gráfica** (pgAdmin, DBeaver): conecta a `localhost` utilizando el puerto que tengas publicado en tu `docker-compose.yml` (`5432` si el mapeo es `5432:5432`) y ejecuta `SELECT username, password FROM usuarios;` sobre `gamevault_db`.
 - **`psql` desde terminal**:
   ```bash
   docker exec -it <tu-contenedor-postgres> psql -U gamevault_user -d gamevault_db \

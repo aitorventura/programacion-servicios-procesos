@@ -99,7 +99,7 @@ public class SecurityConfig {
 }
 ```
 
-`{noop}` le dice a Spring Security que la contraseña no está cifrada (la contraseña se compara tal cual, sin BCrypt); `permitAll()` deja esa ruta abierta a peticiones sin autenticar; `anyRequest().authenticated()` exige estar autenticado para todo lo que no tenga ya una regla propia; `csrf(AbstractHttpConfigurer::disable)` desactiva la protección CSRF, ya explicada en la teoría; `httpBasic(Customizer.withDefaults())` activa HTTP Basic.
+`{noop}` le dice a Spring Security que la contraseña está almacenada en texto claro y debe compararse directamente, sin aplicar ningún `PasswordEncoder`; `permitAll()` deja esa ruta abierta a peticiones sin autenticar; `anyRequest().authenticated()` exige estar autenticado para todo lo que no tenga ya una regla propia; `csrf(AbstractHttpConfigurer::disable)` desactiva la protección CSRF, ya explicada en la teoría; `httpBasic(Customizer.withDefaults())` activa HTTP Basic.
 
 Reinicia y comprueba de nuevo el `GET` del Paso 1 — debería volver a funcionar sin credenciales, porque ahora está explícitamente marcado como público.
 
@@ -250,7 +250,7 @@ Esta configuración tiene dos problemas serios para un proyecto real. Nómbralos
 
 ## ✅ Cierre
 
-Tu API ya distingue quién puede hacer qué — pero con usuarios que se pierden al reiniciar y contraseñas casi en claro en cada petición. En la próxima actividad resuelves el primero: usuarios reales en PostgreSQL, con contraseñas protegidas por BCrypt.
+Tu API ya distingue quién puede hacer qué, pero los usuarios siguen definidos en el código y no existe una persistencia real para sus posibles modificaciones; además, HTTP Basic envía las credenciales prácticamente en claro en cada petición si no se utiliza HTTPS.
 
 ---
 

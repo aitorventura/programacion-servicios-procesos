@@ -64,8 +64,10 @@ gamevault:
     expiration-minutes: 60
 ```
 
-!!! warning "El secreto necesita al menos 32 caracteres"
-    HS256 exige una clave de al menos 256 bits (32 caracteres) — con menos, Spring lanza una excepción al arrancar la aplicación. El del ejemplo de arriba ya cumple de sobra, pero si escribes el tuyo a mano, cuenta los caracteres. Una forma rápida de generar uno válido:
+!!! warning "El secreto necesita al menos 32 bytes"
+    HS256 requiere una clave de al menos **256 bits (32 bytes)**. Como el código convierte el texto directamente a UTF-8, una cadena ASCII de 32 caracteres ocupa esos 32 bytes mínimos.
+
+    La longitud no basta: el secreto también debe ser aleatorio e impredecible. Una clave demasiado corta será rechazada cuando la biblioteca intente utilizarla para firmar o validar un token. Una forma rápida de generar uno válido:
     ```bash
     openssl rand -base64 32
     ```
@@ -206,7 +208,7 @@ public class AuthController {
 }
 ```
 
-**No olvides** abrir esta ruta en tu política de seguridad — es la única que debe ser pública sin excepción:
+**No olvides** abrir también esta ruta en tu política de seguridad: el login debe poder utilizarse sin disponer todavía de un token.
 
 ```java
 .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
@@ -341,7 +343,9 @@ curl -i -X POST http://localhost:8080/api/v1/videojuegos \
 
 **Captura**: las tres respuestas (con token de `admin`, sin token, con token de `user`), una junto a la otra.
 
-Decodifica el payload del token de `admin` (cópialo, pégalo en [jwt.io](https://jwt.io) o decodifica la segunda parte con `base64 -d`) y **anota** los claims que ves.
+Decodifica el payload del token de `admin` con una herramienta para JWT y **anota** los claims que ves. Utiliza únicamente el token de desarrollo generado en esta actividad; no pegues tokens reales en servicios externos.
+
+Recuerda que las partes del JWT utilizan Base64URL, no Base64 convencional, por lo que la segunda parte puede necesitar adaptar sus caracteres y restaurar el relleno antes de usar un decodificador de terminal.
 
 **Captura**: el payload ya decodificado, con los claims a la vista.
 
@@ -421,4 +425,4 @@ El payload de un JWT se puede decodificar sin conocer el secreto (lo acabas de h
 
 ## ✅ Cierre
 
-Tu GameVault ya no reenvía credenciales en cada petición. En la próxima actividad completas la política de rutas y añades tests automatizados de seguridad.
+Tu GameVault ya no reenvía las credenciales en cada petición. En la próxima actividad completarás la política de rutas, cerrarás la aplicación por defecto y darás al `403` el mismo formato que al resto de errores.

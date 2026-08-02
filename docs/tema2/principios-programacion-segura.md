@@ -5,7 +5,11 @@
 Tu proyecto, tal y como está ahora, no comprueba quién hace las peticiones ni les pone ningún límite: cualquiera que sepa la URL puede leer, crear, modificar o borrar lo que quiera. Antes de tocar autenticación (eso empieza el apartado que viene), toca dar un paso atrás y preguntarse algo más básico: ¿qué significa exactamente que una aplicación sea "segura"?
 
 !!! example "Un caso concreto, sin que haga falta ningún atacante experto"
-    Manda un `POST /api/v1/videojuegos` con un `precio` negativo. Ya tienes `@Valid` desde Acceso a Datos, así que la petición se rechaza — pero mira la respuesta: un mensaje genérico en inglés, sin decirte qué campo ha fallado ni por qué. Ahora prueba a pedir un listado ordenado por un campo que no existe, algo como `?sort=noExiste,asc`: ahí ni siquiera hay rechazo controlado, lo que ves es una traza de pila completa. Ninguno de los dos casos necesita un atacante: basta con un cliente mal hecho, o con probar a mano.
+    Manda un `POST /api/v1/videojuegos` con un `precio` negativo. Ya tienes `@Valid` desde Acceso a Datos, así que la petición se rechaza, pero la respuesta usa el formato genérico de Spring y no indica de forma clara qué campo ha fallado.
+
+    Ahora prueba a pedir un listado ordenado por un campo que no existe, por ejemplo `?sort=noExiste,asc`: la petición puede acabar en un `500`, aunque el problema está realmente en el parámetro enviado por el cliente.
+
+    Ninguno de los dos casos necesita un atacante: basta con un cliente mal programado o con probar la API manualmente.
 
 Ese ejemplo, multiplicado por todos los puntos por los que algo externo entra en tu sistema, es justo lo que este apartado trata de arreglar — sin necesitar todavía ni un login.
 
@@ -42,8 +46,10 @@ La regla de oro de antes no se queda en una frase bonita: se traduce en varias d
 - **No guardar secretos en el código**: contraseñas, claves, tokens — nunca escritos directamente en una clase Java; viven en configuración externa.
 - **Defensa en profundidad**: varias capas de protección, no una sola barrera — si una falla, las siguientes siguen ahí.
 
-!!! tip "¿Y la contraseña de Postgres en tu propio `application-dev.yaml`?"
-    Si te has fijado, tu GameVault incumple este principio desde el primer día (Acceso a Datos, Actividad 1.1): `password: password123` viaja en un fichero versionado, subido a tu repositorio. Aquí se deja así a propósito — esa base de datos vive dentro de la red privada de tu Dev Container, nadie fuera de tu propia máquina puede alcanzarla, así que filtrar esa contraseña concreta no compromete nada real (es una convención habitual incluso en proyectos reales, para servicios que nunca salen de un entorno local). La diferencia está en la **exposición**, no en el tipo de dato: si algún día desplegaras GameVault contra una base de datos en la nube (un Postgres de Supabase, por ejemplo, en vez del contenedor local), esa misma contraseña dejaría de ser inofensiva y pasaría a ser un secreto real — del mismo tipo que los que vas a manejar más adelante en este tema, cuando trabajes con autenticación.
+!!! tip "¿Y la contraseña de PostgreSQL en `application-dev.yaml`?"
+    En el entorno local de GameVault usamos una contraseña sencilla y versionada porque solo pertenece a una base de datos de desarrollo creada dentro de Docker y no se reutiliza en ningún entorno real.
+
+    Esto es aceptable para una credencial local y desechable, pero no para una base de datos desplegada ni para ningún secreto real. En esos casos, las credenciales deben quedar fuera del repositorio y proporcionarse mediante variables de entorno u otro sistema de configuración externa.
 
 Estos principios no son abstractos: detrás de cada uno hay un ataque real que previenen. Un vistazo rápido, sin profundizar todavía — irás viendo cada uno con más detalle a lo largo del tema:
 
@@ -67,17 +73,17 @@ Las anotaciones de Bean Validation (`@NotBlank`, `@NotNull`, `@PositiveOrZero`..
 ```java
 public record LibroCreateDTO(
         @NotBlank(message = "El título no puede estar vacío")
-        @Size(max = 150)
+        @Size(max = 150, message = "El título no puede superar los 150 caracteres")
         String titulo,
 
-        @NotNull
+        @NotNull(message = "El precio es obligatorio")
         @PositiveOrZero(message = "El precio no puede ser negativo")
-        BigDecimal precio,
+        BigDecimal precio
         // ...
 ) {}
 ```
 
-Sin `message`, cada anotación usa su texto por defecto — genérico, y en inglés (`must not be blank`, por ejemplo). Con él, la respuesta dice exactamente lo que tú decidas, en el idioma que quieras.
+Si no indicas `message`, la anotación utiliza su mensaje predeterminado. Al definirlo tú, puedes devolver una explicación clara y adaptada al idioma de tu API.
 
 El `create(...)` del controller ya tiene `@Valid` sobre este DTO, así que nada cambia en esa parte: `@Valid` activa la comprobación de estas anotaciones **antes** de que el cuerpo del método se ejecute — si algo no cumple, ni siquiera llega a tu lógica de negocio. Esto es "validar en la frontera" hecho código: el dato hostil se rechaza en la puerta, no dentro de la casa.
 
@@ -178,7 +184,7 @@ Aquí el código de estado no está fijo, al contrario que en el handler anterio
 
 #### Handler 3: un parámetro que Spring Data no sabe interpretar
 
-El tercero viene motivado por un problema real, no teórico: en Acceso a Datos, Actividad 1.5 (Specifications y paginación), pedir un listado ordenado por un campo que no existe en la entidad —por ejemplo `?sort=noExiste,asc`— lanza `PropertyReferenceException` (`org.springframework.data.core`): Spring Data intenta traducir ese nombre de campo a una propiedad real de tu entidad, y no la encuentra. Sin capturarla, cae en exactamente lo que este apartado lleva rato evitando: una traza de pila filtrada al cliente, con un `500` que además es el código equivocado — el problema es que el **cliente** ha pedido algo que no existe, no que el servidor haya fallado.
+El tercero viene motivado por un problema real, no teórico: en Acceso a Datos, Actividad 1.5 (Specifications y paginación), pedir un listado ordenado por un campo que no existe en la entidad —por ejemplo `?sort=noExiste,asc`— lanza `PropertyReferenceException` (`org.springframework.data.core`): Spring Data intenta traducir ese nombre de campo a una propiedad real de tu entidad y no la encuentra. Sin capturarla, la petición puede acabar en un `500`, aunque el código no refleja correctamente lo ocurrido: el **cliente** ha enviado un parámetro que no existe, no se ha producido un fallo interno del servidor.
 
 ```java
 @ExceptionHandler(PropertyReferenceException.class)
@@ -193,18 +199,20 @@ public ResponseEntity<ErrorResponse> handlePropertyReferenceException(
 }
 ```
 
-A diferencia del primer handler, aquí no hay un campo concreto que señalar —la excepción no identifica el parámetro que ha fallado con la misma precisión que `FieldError`—, así que el mensaje es fijo. Sigue siendo mucho mejor que una traza de pila de servidor.
+A diferencia del primer handler, aquí no hay un campo concreto que señalar —la excepción no identifica el parámetro que ha fallado con la misma precisión que `FieldError`—, así que el mensaje es fijo. Sigue siendo mucho mejor que devolver un `500` genérico o información interna de la aplicación.
 
 #### Handler 4: una restricción que solo existe en la base de datos
 
-Bean Validation comprueba lo que puede comprobar sin tocar la base de datos — pero una clave foránea solo existe ahí, y ninguna anotación puede replicarla. Dos ejemplos de tu propio GameVault, con destinos muy distintos:
+Bean Validation comprueba aquello que puede validarse a partir de los datos recibidos, sin consultar la base de datos. Sin embargo, algunas reglas dependen de las relaciones y restricciones definidas en ella.
 
-| Operación | ¿Algo lo comprueba antes de llegar a la base de datos? | Qué pasa |
-|---|---|---|
-| `POST /videojuegos` con un `estudioId` inexistente | Sí — `VideojuegoService.create()` hace `orElseThrow` sobre el `Estudio` | Nunca llega a la base de datos: se queda en un `404` controlado (Handler 2) |
-| `DELETE /estudios/{id}` sobre un `Estudio` con `Videojuego`s asociados | Solo si tu `@OneToMany` tiene `cascade`/`orphanRemoval` — y eso lo resuelve JPA, no una comprobación tuya | Sin ese `cascade`, la clave foránea rechaza el borrado de verdad |
+Dos ejemplos de tu propio GameVault, con resultados distintos:
 
-El segundo caso es el que vas a provocar tú mismo en la actividad, comentando ese `cascade` un momento. Es el mismo principio de **defensa en profundidad** que has visto al principio de este apartado: la comprobación explícita (o el `cascade` automático) es la primera barrera; la clave foránea es la segunda, por si el día de mañana algo se salta la primera. Este handler es lo que convierte esa segunda barrera en una respuesta útil, en vez de un `500` en blanco.
+| Operación | Qué ocurre |
+|---|---|
+| `POST /videojuegos` con un `estudioId` inexistente | `VideojuegoService.create()` busca primero el `Estudio` y lanza un `404` controlado si no existe. La operación no llega a incumplir la clave foránea. |
+| `DELETE /estudios/{id}` sobre un `Estudio` con videojuegos asociados | Si el borrado no se propaga mediante `cascade`, PostgreSQL rechaza la operación porque dejaría referencias inválidas. |
+
+En el segundo caso no hay una comprobación previa en el service: es la propia clave foránea la que protege la integridad de los datos. Spring traduce normalmente ese error de la base de datos a una `DataIntegrityViolationException`, y este handler permite convertirlo en una respuesta controlada.
 
 ```java
 @ExceptionHandler(DataIntegrityViolationException.class)
@@ -220,12 +228,11 @@ public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(
 }
 ```
 
-Aquí cambia también el código de estado: `409 Conflict`, no `400`. La diferencia es sutil pero real — un `400` dice "tu petición está mal construida"; un `409` dice "tu petición está bien construida, pero choca con el estado actual de los datos" (ese `estudioId` podría ser válido para *otro* videojuego, el problema es que ahora mismo no existe). Es el mismo tipo de fallo que provoca una clave foránea que no encaja al insertar directamente en la base de datos, solo que aquí puede ocurrir en caliente, con cualquier petición HTTP normal, no solo al cargar datos a mano.
+Aquí se utiliza `409 Conflict`, no `400`. La petición puede estar correctamente construida, pero no puede completarse porque entra en conflicto con el estado actual de los datos: en este caso, todavía existen videojuegos que dependen del estudio que se intenta eliminar.
 
 #### Handler 5: la red de seguridad final
 
-Los cuatro handlers anteriores cubren tipos concretos de error. Pero cualquier excepción que no sea ninguno de esos —un bug en tu propio código, por ejemplo— no tiene quién la atrape, y cae directamente en el manejo por defecto de Spring: la misma fuga de información que este apartado lleva rato evitando. Un último handler, genérico, cierra ese hueco:
-
+Los cuatro handlers anteriores cubren tipos concretos de error. Cualquier otra excepción —un bug en tu propio código, por ejemplo— queda fuera del formato común y termina en el manejo predeterminado de Spring. Un último handler genérico controla la respuesta enviada al cliente para las excepciones que llegan al circuito normal de Spring MVC:
 ```java
 @ExceptionHandler(Exception.class)
 public ResponseEntity<ErrorResponse> handleGenericException(
@@ -240,7 +247,9 @@ public ResponseEntity<ErrorResponse> handleGenericException(
 ```
 
 !!! warning "No devuelvas `ex.getMessage()` aquí"
-    Es tentador pasarle al cliente el mensaje real de la excepción, para depurar más rápido — pero ese mensaje puede contener justo lo que este apartado lleva rato evitando: nombres de clases, de tablas, rutas internas. Usa siempre un mensaje fijo como el de arriba. El `ex` real solo debería acabar en un sitio donde solo tú lo veas (un logger del lado del servidor, algo que queda fuera del alcance de hoy), nunca en el cuerpo de la respuesta.
+    Es tentador pasarle al cliente el mensaje real de la excepción para depurar más rápido, pero puede contener detalles internos de la aplicación. Devuelve un mensaje genérico. En un proyecto real, conviene registrar además la excepción completa en los logs del servidor.
+    
+    Más adelante verás que algunas excepciones, como las generadas por Spring Security antes de llegar al controller, necesitan un tratamiento distinto.
 
 #### Todo junto
 
@@ -326,10 +335,7 @@ Resumen de los cinco, de un vistazo:
 | `handleResponseStatusException` | `ResponseStatusException` | Un `orElseThrow(...)` lanza un `404`, u otro código que hayas decidido tú explícitamente |
 | `handlePropertyReferenceException` | `PropertyReferenceException` | Spring Data recibe un parámetro que no sabe interpretar — por ejemplo, un `sort` sobre un campo que no existe |
 | `handleDataIntegrityViolationException` | `DataIntegrityViolationException` | La base de datos rechaza la operación — una clave foránea que no existe, un registro del que aún dependen otros, un valor duplicado, etc. |
-| `handleGenericException` | `Exception` | Cualquier otra excepción no prevista — la red de seguridad final |
-
-!!! danger "Lo que este handler evita filtrar"
-    Sin él, una excepción no controlada puede acabar devolviendo al cliente una traza de pila completa: nombres de clases internas, de tablas, incluso versiones de librerías. Eso es información gratis para un atacante sobre cómo está construido tu sistema por dentro. `GlobalExceptionHandler` garantiza que, pase lo que pase, el cliente solo ve el mensaje controlado que tú decides — nunca los detalles internos.
+| `handleGenericException` | `Exception` | Cualquier otra excepción no prevista que llegue al circuito de Spring MVC |
 
 ---
 

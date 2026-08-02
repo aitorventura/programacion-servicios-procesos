@@ -31,6 +31,8 @@ Es un ejemplo con el dominio de siempre (`libro`/`editorial`) — no un catálog
         .requestMatchers(HttpMethod.PUT, "/api/v1/libros/*").hasRole("ADMIN")
         .requestMatchers(HttpMethod.DELETE, "/api/v1/libros/*").hasRole("ADMIN")
         .requestMatchers(HttpMethod.POST, "/api/v1/editoriales").hasRole("ADMIN")
+        .requestMatchers(HttpMethod.PUT, "/api/v1/editoriales/*").hasRole("ADMIN")
+        .requestMatchers(HttpMethod.DELETE, "/api/v1/editoriales/*").hasRole("ADMIN")
         .requestMatchers("/error").permitAll()
         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
         .anyRequest().denyAll()
@@ -62,7 +64,9 @@ Tres códigos que se confunden con frecuencia, pero responden a preguntas distin
 Con la tabla de arriba: un `POST /api/v1/libros` sin token da `401`; el mismo `POST` con el token de un usuario `USER` (no `ADMIN`) da `403`. El `404` es distinto a los otros dos: no depende de quién eres, sino de si ese endpoint existe de verdad.
 
 !!! note "`denyAll()` sin token también da `401`, no `403`"
-    Podrías pensar que `denyAll()` —"nadie puede, sea quien sea"— siempre da `403`, ya que ni con el rol más alto se pasaría esa regla. Pero si la petición no lleva ningún token, Spring Security nunca llega a comprobar el rol: antes de eso, ve que no hay ninguna autenticación válida, y responde con tu `AuthenticationEntryPoint` —`401`—, exactamente igual que con cualquier otra regla. El `403` solo aparece cuando **sí** hay un token válido, pero la regla lo rechaza de todas formas (por rol, o por `denyAll()`). La diferencia no está en la regla que salta, está en si ya sabes o no quién ha hecho la petición.
+    `denyAll()` rechaza siempre cualquier petición que llegue hasta esa regla. Después, Spring Security distingue quién ha realizado la petición: si no existe una autenticación válida, `ExceptionTranslationFilter` llama al `AuthenticationEntryPoint` y devuelve `401`; si la petición lleva un token válido, delega en el `AccessDeniedHandler` y devuelve `403`.
+
+    Por tanto, la misma regla `denyAll()` puede terminar en uno u otro código: la diferencia no está en la regla, sino en si el solicitante está autenticado.
 
 ### 🐛 Cuando el 404 no es un 404: `NoResourceFoundException`
 

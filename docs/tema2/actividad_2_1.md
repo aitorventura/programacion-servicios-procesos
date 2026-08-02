@@ -4,7 +4,7 @@
     📄 [Plantilla 2.1 — Validación y GlobalExceptionHandler](plantillas/Actividad_2_1_PSP_Plantilla.docx){target="_blank" rel="noopener"}
 
 !!! info "Práctica guiada"
-    Vas a construir en tu GameVault la gestión centralizada de errores. Primero provocas, a propósito, los cinco tipos de error que puede devolver tu API tal como está hoy — sin gestionar nada. Después construyes un `GlobalExceptionHandler` completo. Al final, repites exactamente los mismos cinco errores para comprobar cómo cambia cada respuesta.
+    Vas a construir en tu GameVault la gestión centralizada de errores. Primero provocas cinco escenarios de error representativos antes de gestionarlos: algunos aparecen de forma natural en la API y otros se simulan temporalmente para poder observar su comportamiento.
 
 ## Qué vas a practicar
 
@@ -79,7 +79,9 @@ En el formulario de `GET /videojuegos/{id}`, pide un `id` que sepas que no exist
 
 En el formulario de `GET /videojuegos`, escribe `noExiste,asc` en el campo `sort` (un campo que no existe en la entidad).
 
-**Captura**: la respuesta. Deberías obtener un `500 Internal Server Error` con una traza de pila completa.
+**Captura**: la respuesta. Deberías obtener un `500 Internal Server Error` con el formato de error predeterminado de Spring. Consulta también la consola de la aplicación, donde podrás ver la excepción y su traza completa.
+
+Por defecto, Spring Boot no incluye la traza en el cuerpo de la respuesta HTTP, aunque sí registre el error en el servidor.
 
 ### 4. Una restricción que solo existe en la base de datos
 
@@ -106,9 +108,13 @@ Añade una línea al principio de cualquier método de tu `VideojuegoController`
 throw new RuntimeException("Fallo simulado");
 ```
 
-Prueba ese endpoint desde Swagger UI. Ninguno de tus cuatro handlers está pensado para una `RuntimeException` genérica, así que se escapa igual que se escaparía un bug real que no hubieras previsto.
+Prueba ese endpoint desde Swagger UI. Como todavía no has construido el `GlobalExceptionHandler`, esta `RuntimeException` termina en el manejo predeterminado de Spring, igual que ocurriría con un fallo interno no previsto. Cuando construyas los handlers, será el handler genérico el encargado de convertirla en una respuesta controlada.
 
 **Captura**: la respuesta.
+
+Quita ahora esta línea antes de continuar con el Paso 3. Más adelante, cuando ya tengas el `GlobalExceptionHandler`, volverás a añadirla temporalmente para comprobar el comportamiento del handler genérico.
+
+Si la dejas puesta, puede interferir con las demás pruebas —por ejemplo, impedir que `getById()` llegue a lanzar el `404` correspondiente a un recurso inexistente—.
 
 ---
 
@@ -237,7 +243,7 @@ public class GlobalExceptionHandler {
 }
 ```
 
-`@RestControllerAdvice` hace que esta clase intercepte excepciones de **todos** tus controllers, no solo de uno. Cada `@ExceptionHandler` decide qué tipo de excepción atrapa y cómo la convierte en un `ErrorResponse` uniforme — en orden, del más específico (una validación concreta) al más genérico (cualquier excepción no prevista).
+`@RestControllerAdvice` hace que esta clase intercepte excepciones de **todos** tus controllers, no solo de uno. Cada `@ExceptionHandler` decide qué tipo de excepción atrapa y cómo la convierte en un `ErrorResponse` uniforme. Spring selecciona el handler compatible más específico según el tipo de excepción; el orden en que aparezcan los métodos no determina cuál se ejecuta.
 
 ---
 
@@ -265,7 +271,7 @@ Repite la misma petición a `GET /videojuegos/{id}` con el `id` inexistente.
 
 Repite la misma petición a `GET /videojuegos` con `sort=noExiste,asc`.
 
-**Captura**: la respuesta nueva — comprueba que ahora obtienes un `400` con tu formato de `ErrorResponse`, no la traza de pila de antes.
+**Captura**: la respuesta nueva — comprueba que ahora obtienes un `400` con tu formato de `ErrorResponse`, no el `500` con el formato predeterminado de Spring que obtenías antes.
 
 **Pregunta**: ¿por qué un `500` era la respuesta equivocada para este caso, aunque técnicamente la aplicación "haya fallado" al intentar ordenar por ese campo? Piensa en quién ha cometido el error — el cliente, al pedir un campo que no existe, o el servidor, al no saber gestionarlo.
 
@@ -277,7 +283,9 @@ Con el `cascade`/`orphanRemoval` todavía comentado en `Estudio.java`, repite el
 
 **Pregunta**: ¿por qué `409 Conflict` encaja mejor aquí que `400 Bad Request`? Piensa en la diferencia entre "esta petición está mal construida" y "esta petición está bien construida, pero no encaja con el estado actual de tus datos".
 
-Descomenta ahora `cascade = CascadeType.ALL, orphanRemoval = true` en `Estudio.java` — no debe quedarse desactivado. El handler que acabas de construir es la segunda barrera, no un sustituto de la primera.
+Descomenta ahora `cascade = CascadeType.ALL, orphanRemoval = true` en `Estudio.java` para recuperar la configuración original del proyecto. Solo lo habías desactivado temporalmente para provocar una violación de clave foránea.
+
+El `cascade` y el handler no son dos barreras equivalentes: el primero decide qué debe ocurrir con los videojuegos asociados cuando se elimina un estudio; el segundo únicamente da un formato controlado a las operaciones que la base de datos rechaza.
 
 ### 5. El error que no era ninguno de los anteriores
 
@@ -293,7 +301,7 @@ Ahora sí, quita esa línea de tu código — no debe quedarse ahí. Era solo pa
 
 ## Pregunta final
 
-¿Por qué conviene que **todas** las excepciones de la aplicación pasen por un único punto (`GlobalExceptionHandler`) antes de convertirse en respuesta HTTP, en vez de gestionar cada error donde ocurre? Nombra un dato interno concreto de tu propio proyecto (una clase, una tabla, una ruta de fichero) que este handler evita que se filtre a quien esté probando tu API desde fuera.
+¿Por qué conviene que las excepciones que llegan al circuito normal de Spring MVC pasen por un único punto (`GlobalExceptionHandler`) antes de convertirse en respuesta HTTP...?
 
 ---
 

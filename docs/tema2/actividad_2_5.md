@@ -56,7 +56,7 @@ Esta es la tabla objetivo — incluye tanto las rutas del catálogo base como la
 | Ruta | Verbo | Quién puede |
 |---|---|---|
 | `/actuator/health` | GET | ¿? *(decide tú — piensa en quién necesita comprobar que el servicio está vivo)* |
-| `/swagger-ui/**`, `/v3/api-docs/**`, `/error` | — | Cualquiera |
+| `/documentacion`, `/swagger-ui/**`, `/v3/api-docs/**`, `/error` | — | Cualquiera |
 | Todo lo demás | — | Nadie |
 
 !!! danger "Revisa tus propios controllers antes de dar la tabla por completa"
@@ -120,7 +120,7 @@ Con la configuración recién escrita, documéntala antes de seguir — mejor ah
 | Ruta | Verbo | Quién puede |
 |---|---|---|
 | `/actuator/health` | GET | ??? |
-| `/swagger-ui/**`, `/v3/api-docs/**`, `/error` | — | Cualquiera |
+| `/documentacion`, `/swagger-ui/**`, `/v3/api-docs/**`, `/error` | — | Cualquiera |
 | Todo lo demás | — | Nadie |
 ```
 
@@ -136,7 +136,7 @@ Prueba una ruta que, a propósito, no está en tu lista (por ejemplo, si tuviera
 curl -i http://localhost:8080/api/v1/algo-inventado
 ```
 
-**Comprueba**: que la respuesta es un `401` (no un `404` amable) — no un `403`, aunque sea `denyAll()`: como el `curl` no lleva ningún token, Spring Security ni siquiera llega a evaluar la regla, y responde con tu `AuthenticationEntryPoint` de siempre.
+**Comprueba**: que la respuesta es un `401` —no un `404` ni un `403`—. Spring Security evalúa `denyAll()` y rechaza la petición; como el `curl` no lleva ningún token válido, `ExceptionTranslationFilter` llama a tu `AuthenticationEntryPoint`. La misma petición con un JWT válido terminaría en `403`.
 
 **Captura**: esta respuesta, con el `401`.
 
