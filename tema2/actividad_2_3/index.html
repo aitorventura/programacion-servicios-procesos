@@ -2692,8 +2692,8 @@
 <p>Tu <code>SecurityConfig</code> con usuarios en memoria de la Actividad 2.2.</p>
 <div class="admonition warning">
 <p class="admonition-title">Revisa tu <code>data.sql</code>, o perderás los usuarios que crees hoy</p>
-<p>Si desde Acceso a Datos sigues teniendo <code>spring.sql.init.mode: always</code> en tu <code>application-dev.yaml</code>, tu <code>data.sql</code> se vuelve a ejecutar en <strong>cada</strong> arranque de la aplicación — y si sigue el patrón habitual de borrar e insertar datos de prueba para dejar la base de datos en un estado repetible, cualquier usuario que crees hoy con <code>/register</code> (o el <code>admin</code> del <em>seed</em>) desaparecerá la próxima vez que reinicies, sin que hayas hecho nada mal.</p>
-<p>Para evitarlo, cambia en tu <code>application-dev.yaml</code>:
+<p>Si desde Acceso a Datos sigues teniendo <code>spring.sql.init.mode: always</code> en tu <code>application-dev.yml</code>, tu <code>data.sql</code> se vuelve a ejecutar en <strong>cada</strong> arranque de la aplicación — y si sigue el patrón habitual de borrar e insertar datos de prueba para dejar la base de datos en un estado repetible, cualquier usuario que crees hoy con <code>/register</code> (o el <code>admin</code> del <em>seed</em>) desaparecerá la próxima vez que reinicies, sin que hayas hecho nada mal.</p>
+<p>Para evitarlo, cambia en tu <code>application-dev.yml</code>:
 </p><div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
 <span class="normal"><a href="#__codelineno-0-2">2</a></span>
 <span class="normal"><a href="#__codelineno-0-3">3</a></span>
@@ -2808,6 +2808,7 @@ Con <code>never</code>, <code>data.sql</code> deja de ejecutarse en cada arranqu
 <a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">PasswordEncoderFactories</span><span class="p">.</span><span class="na">createDelegatingPasswordEncoder</span><span class="p">();</span>
 <a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
+<p>Los ficheros <code>application-dev.yml</code>, <code>application-dev-local.yml</code> y <code>application-dev-local.yml.example</code> deben estar en <code>src/main/resources</code>. El fichero local y su plantilla se colocan junto al <code>application-dev.yml</code> que realiza la importación.</p>
 <p>Antes de crear el <code>ApplicationRunner</code>, prepara dónde va a vivir la contraseña de ese primer <code>admin</code> — <strong>nunca</strong> escrita en un <code>.java</code> ni en un fichero versionado. Añade a tu <code>.gitignore</code>:</p>
 <div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1"></a>application-dev-local.yml
 </code></pre></div></td></tr></table></div>
@@ -2825,7 +2826,7 @@ Con <code>never</code>, <code>data.sql</code> deja de ejecutarse en cada arranqu
 <a id="__codelineno-7-2" name="__codelineno-7-2"></a><span class="w">  </span><span class="nt">admin</span><span class="p">:</span>
 <a id="__codelineno-7-3" name="__codelineno-7-3"></a><span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admin123</span>
 </code></pre></div></td></tr></table></div>
-<p>Y en tu <code>application-dev.yml</code>, importa ese fichero:</p>
+<p>En tu <code>application-dev.yml</code>, integra la propiedad <code>import</code> dentro del bloque <code>spring.config</code> que ya existe. No crees un segundo bloque raíz <code>spring:</code> si el fichero ya contiene uno:</p>
 <div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1">1</a></span>
 <span class="normal"><a href="#__codelineno-8-2">2</a></span>
 <span class="normal"><a href="#__codelineno-8-3">3</a></span>
@@ -2947,7 +2948,7 @@ Con <code>never</code>, <code>data.sql</code> deja de ejecutarse en cada arranqu
 <a id="__codelineno-11-25" name="__codelineno-11-25"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-11-26" name="__codelineno-11-26"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p>Abre esta ruta en tu política de acceso — nadie tiene todavía una cuenta con la que autenticarse para registrarse:</p>
+<p>Abre esta ruta en tu política de acceso. Coloca la regla <strong>antes de <code>anyRequest().authenticated()</code></strong>, junto al resto de reglas concretas:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-12-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1"></a><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/auth/register"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
 <p>Reinicia y crea el usuario <code>user</code> a través de tu propio endpoint:</p>
@@ -2964,7 +2965,7 @@ Con <code>never</code>, <code>data.sql</code> deja de ejecutarse en cada arranqu
 <h2 id="paso-4-comprobar-los-hashes-en-la-base-de-datos">Paso 4 — Comprobar los hashes en la base de datos<a class="headerlink" href="#paso-4-comprobar-los-hashes-en-la-base-de-datos" title="Permanent link">¶</a></h2>
 <p>Tienes dos vías, igual que en Acceso a Datos — usa la que prefieras:</p>
 <ul>
-<li><strong>Herramienta gráfica</strong> (pgAdmin, DBeaver): conecta a <code>localhost:5432</code> con las credenciales de tu <code>docker-compose.yml</code>, y ejecuta <code>SELECT username, password FROM usuarios;</code> sobre <code>gamevault_db</code>.</li>
+<li><strong>Herramienta gráfica</strong> (pgAdmin, DBeaver): conecta a <code>localhost</code> utilizando el puerto que tengas publicado en tu <code>docker-compose.yml</code> (<code>5432</code> si el mapeo es <code>5432:5432</code>) y ejecuta <code>SELECT username, password FROM usuarios;</code> sobre <code>gamevault_db</code>.</li>
 <li><strong><code>psql</code> desde terminal</strong>:
   <div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-14-1">1</a></span>
 <span class="normal"><a href="#__codelineno-14-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>&lt;tu-contenedor-postgres&gt;<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>gamevault_user<span class="w"> </span>-d<span class="w"> </span>gamevault_db<span class="w"> </span><span class="se">\</span>

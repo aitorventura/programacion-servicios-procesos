@@ -2796,7 +2796,7 @@
 <a id="__codelineno-2-41" name="__codelineno-2-41"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-2-42" name="__codelineno-2-42"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p><code>{noop}</code> le dice a Spring Security que la contraseña no está cifrada (la contraseña se compara tal cual, sin BCrypt); <code>permitAll()</code> deja esa ruta abierta a peticiones sin autenticar; <code>anyRequest().authenticated()</code> exige estar autenticado para todo lo que no tenga ya una regla propia; <code>csrf(AbstractHttpConfigurer::disable)</code> desactiva la protección CSRF, ya explicada en la teoría; <code>httpBasic(Customizer.withDefaults())</code> activa HTTP Basic.</p>
+<p><code>{noop}</code> le dice a Spring Security que la contraseña está almacenada en texto claro y debe compararse directamente, sin aplicar ningún <code>PasswordEncoder</code>; <code>permitAll()</code> deja esa ruta abierta a peticiones sin autenticar; <code>anyRequest().authenticated()</code> exige estar autenticado para todo lo que no tenga ya una regla propia; <code>csrf(AbstractHttpConfigurer::disable)</code> desactiva la protección CSRF, ya explicada en la teoría; <code>httpBasic(Customizer.withDefaults())</code> activa HTTP Basic.</p>
 <p>Reinicia y comprueba de nuevo el <code>GET</code> del Paso 1 — debería volver a funcionar sin credenciales, porque ahora está explícitamente marcado como público.</p>
 <p><strong>Captura</strong>: la respuesta de ese <code>GET</code>, ya en <code>200</code> otra vez sin mandar ninguna credencial.</p>
 <hr>
@@ -2955,7 +2955,7 @@
 <p>Esta configuración tiene dos problemas serios para un proyecto real. Nómbralos con tus propias palabras, relacionando cada uno con algo concreto que hayas visto en esta actividad (uno tiene que ver con dónde viven <code>user</code>/<code>admin</code> en tu código; el otro con lo que has visto al decodificar la cabecera <code>Authorization</code>). ¿Qué actividad crees que resolverá cada uno, según lo que se ha adelantado en la teoría?</p>
 <hr>
 <h2 id="cierre">✅ Cierre<a class="headerlink" href="#cierre" title="Permanent link">¶</a></h2>
-<p>Tu API ya distingue quién puede hacer qué — pero con usuarios que se pierden al reiniciar y contraseñas casi en claro en cada petición. En la próxima actividad resuelves el primero: usuarios reales en PostgreSQL, con contraseñas protegidas por BCrypt.</p>
+<p>Tu API ya distingue quién puede hacer qué, pero los usuarios siguen definidos en el código y no existe una persistencia real para sus posibles modificaciones; además, HTTP Basic envía las credenciales prácticamente en claro en cada petición si no se utiliza HTTPS.</p>
 <hr>
 <h2 id="extra-opcional-swagger-ui-tras-el-authenticationentrypoint">🧭 Extra opcional — Swagger UI, tras el <code>AuthenticationEntryPoint</code><a class="headerlink" href="#extra-opcional-swagger-ui-tras-el-authenticationentrypoint" title="Permanent link">¶</a></h2>
 <div class="admonition tip">

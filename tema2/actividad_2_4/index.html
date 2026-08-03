@@ -2755,8 +2755,9 @@
 <a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">    </span><span class="nt">expiration-minutes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
 </code></pre></div></td></tr></table></div>
 <div class="admonition warning">
-<p class="admonition-title">El secreto necesita al menos 32 caracteres</p>
-<p>HS256 exige una clave de al menos 256 bits (32 caracteres) — con menos, Spring lanza una excepción al arrancar la aplicación. El del ejemplo de arriba ya cumple de sobra, pero si escribes el tuyo a mano, cuenta los caracteres. Una forma rápida de generar uno válido:
+<p class="admonition-title">El secreto necesita al menos 32 bytes</p>
+<p>HS256 requiere una clave de al menos <strong>256 bits (32 bytes)</strong>. Como el código convierte el texto directamente a UTF-8, una cadena ASCII de 32 caracteres ocupa esos 32 bytes mínimos.</p>
+<p>La longitud no basta: el secreto también debe ser aleatorio e impredecible. Una clave demasiado corta será rechazada cuando la biblioteca intente utilizarla para firmar o validar un token. Una forma rápida de generar uno válido:
 </p><div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a>openssl<span class="w"> </span>rand<span class="w"> </span>-base64<span class="w"> </span><span class="m">32</span>
 </code></pre></div></td></tr></table></div>
 Esto te da una cadena aleatoria de más de 32 caracteres, lista para pegar en <code>jwt.secret</code> — no hace falta que "signifique" nada, solo que sea larga e impredecible.
@@ -2979,7 +2980,7 @@ Esto te da una cadena aleatoria de más de 32 caracteres, lista para pegar en <c
 <a id="__codelineno-8-31" name="__codelineno-8-31"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-8-32" name="__codelineno-8-32"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p><strong>No olvides</strong> abrir esta ruta en tu política de seguridad — es la única que debe ser pública sin excepción:</p>
+<p><strong>No olvides</strong> abrir también esta ruta en tu política de seguridad: el login debe poder utilizarse sin disponer todavía de un token.</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/auth/login"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
 <p>(la regla de <code>/api/v1/auth/register</code> ya la tenías de la Actividad 2.3 — no hace falta tocarla).</p>
@@ -3160,7 +3161,8 @@ Esto te da una cadena aleatoria de más de 32 caracteres, lista para pegar en <c
 <p>A diferencia del <code>401</code>, que ya formatea tu <code>AuthenticationEntryPoint</code>, este <code>403</code> sale con el formato por defecto de Spring Security — es la misma grieta que el <code>401</code> tenía antes de la Actividad 2.2, pero para autorización en vez de autenticación. Se cierra más adelante en el tema, con un <code>AccessDeniedHandler</code> a medida.</p>
 </div>
 <p><strong>Captura</strong>: las tres respuestas (con token de <code>admin</code>, sin token, con token de <code>user</code>), una junto a la otra.</p>
-<p>Decodifica el payload del token de <code>admin</code> (cópialo, pégalo en <a href="https://jwt.io">jwt.io</a> o decodifica la segunda parte con <code>base64 -d</code>) y <strong>anota</strong> los claims que ves.</p>
+<p>Decodifica el payload del token de <code>admin</code> con una herramienta para JWT y <strong>anota</strong> los claims que ves. Utiliza únicamente el token de desarrollo generado en esta actividad; no pegues tokens reales en servicios externos.</p>
+<p>Recuerda que las partes del JWT utilizan Base64URL, no Base64 convencional, por lo que la segunda parte puede necesitar adaptar sus caracteres y restaurar el relleno antes de usar un decodificador de terminal.</p>
 <p><strong>Captura</strong>: el payload ya decodificado, con los claims a la vista.</p>
 <hr>
 <h2 id="paso-6-get-apiv1authme">Paso 6 — <code>GET /api/v1/auth/me</code><a class="headerlink" href="#paso-6-get-apiv1authme" title="Permanent link">¶</a></h2>
@@ -3245,7 +3247,7 @@ Esto te da una cadena aleatoria de más de 32 caracteres, lista para pegar en <c
 <p>El payload de un JWT se puede decodificar sin conocer el secreto (lo acabas de hacer en jwt.io). ¿Por qué, entonces, el servidor confía en el token? Si alguien modificara a mano el claim <code>"roles"</code> de un token robado, cambiando <code>["USER"]</code> por <code>["ADMIN"]</code>, y volviera a mandarlo, ¿qué detectaría tu servidor?</p>
 <hr>
 <h2 id="cierre">✅ Cierre<a class="headerlink" href="#cierre" title="Permanent link">¶</a></h2>
-<p>Tu GameVault ya no reenvía credenciales en cada petición. En la próxima actividad completas la política de rutas y añades tests automatizados de seguridad.</p></div>
+<p>Tu GameVault ya no reenvía las credenciales en cada petición. En la próxima actividad completarás la política de rutas, cerrarás la aplicación por defecto y darás al <code>403</code> el mismo formato que al resto de errores.</p></div>
 
 
 

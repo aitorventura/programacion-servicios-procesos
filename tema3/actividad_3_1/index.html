@@ -2728,7 +2728,7 @@
 <a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-amqp<span class="nt">&lt;/artifactId&gt;</span>
 <a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div></td></tr></table></div>
-<p>Y en <code>application-dev.yaml</code>:</p>
+<p>Y en <code>application-dev.yml</code>:</p>
 <div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
 <span class="normal"><a href="#__codelineno-2-2">2</a></span>
 <span class="normal"><a href="#__codelineno-2-3">3</a></span>
@@ -2744,7 +2744,7 @@
 <p>Como ya viste con <code>postgres</code> en Acceso a Datos: <code>rabbitmq</code> es el nombre del servicio en <code>.devcontainer/docker-compose.yml</code>, no <code>localhost</code> — tu aplicación corre dentro de <code>app</code>, y RabbitMQ es un contenedor hermano más en la misma red.</p>
 <div class="admonition tip">
 <p class="admonition-title">¿No debería ir <code>guest</code>/<code>guest</code> a un fichero que no se commitea?</p>
-<p><code>guest</code> es la cuenta por defecto de RabbitMQ, y RabbitMQ la bloquea por diseño para cualquier conexión que no venga de <code>localhost</code> — no importa qué configures, esa cuenta no sirve en remoto. Como todo esto corre dentro de tu Dev Container, en tu propia máquina, no hay riesgo real en dejarla en <code>application-dev.yaml</code>. Es distinto del secreto de JWT o la contraseña de <code>admin</code> que ya proteges en <code>application-dev-local.yml</code>: si esos se filtraran, servirían para hacerse pasar por alguien en tu API real — <code>guest</code>/<code>guest</code>, fuera de tu propia máquina, no abre nada.</p>
+<p><code>guest</code> es la cuenta por defecto de RabbitMQ, y RabbitMQ la bloquea por diseño para cualquier conexión que no venga de <code>localhost</code> — no importa qué configures, esa cuenta no sirve en remoto. Como todo esto corre dentro de tu Dev Container, en tu propia máquina, no hay riesgo real en dejarla en <code>application-dev.yml</code>. Es distinto del secreto de JWT o la contraseña de <code>admin</code> que ya proteges en <code>application-dev-local.yml</code>: si esos se filtraran, servirían para hacerse pasar por alguien en tu API real — <code>guest</code>/<code>guest</code>, fuera de tu propia máquina, no abre nada.</p>
 </div>
 <hr>
 <h2 id="paso-2-el-exchange-y-la-cola-de-actividad">Paso 2 — El exchange y la cola de actividad<a class="headerlink" href="#paso-2-el-exchange-y-la-cola-de-actividad" title="Permanent link">¶</a></h2>

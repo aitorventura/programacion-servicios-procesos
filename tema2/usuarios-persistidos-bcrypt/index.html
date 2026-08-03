@@ -1508,6 +1508,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#en-el-proximo-apartado-jwt-permitira-autenticarse-una-vez-y-presentar-un-token-en-las-peticiones-siguientes" class="md-nav__link">
+    <span class="md-ellipsis">
+      En el próximo apartado, JWT permitirá autenticarse una vez y presentar un token en las peticiones siguientes.
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#ideas-clave" class="md-nav__link">
     <span class="md-ellipsis">
       ✅ Ideas clave
@@ -2713,6 +2722,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#en-el-proximo-apartado-jwt-permitira-autenticarse-una-vez-y-presentar-un-token-en-las-peticiones-siguientes" class="md-nav__link">
+    <span class="md-ellipsis">
+      En el próximo apartado, JWT permitirá autenticarse una vez y presentar un token en las peticiones siguientes.
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#ideas-clave" class="md-nav__link">
     <span class="md-ellipsis">
       ✅ Ideas clave
@@ -2740,11 +2758,12 @@
 <div><p><a id="usuarios-persistidos-bcrypt"></a></p>
 <h1 id="3-usuarios-persistidos-y-bcrypt">🧩 3. Usuarios persistidos y BCrypt<a class="headerlink" href="#3-usuarios-persistidos-y-bcrypt" title="Permanent link">¶</a></h1>
 <h2 id="de-donde-partimos">📍 De dónde partimos<a class="headerlink" href="#de-donde-partimos" title="Permanent link">¶</a></h2>
-<p>Al terminar el apartado anterior, tu API ya distinguía autenticación de autorización, pero con dos piezas deliberadamente provisionales: los usuarios <code>user</code> y <code>admin</code> declarados a mano en un <code>InMemoryUserDetailsManager</code>, con la contraseña en texto plano (el prefijo <code>{noop}</code>); y HTTP Basic, mandando esas credenciales en cada petición, solo codificadas en Base64, no cifradas.</p>
-<p>Esa versión dejaba dos problemas señalados a propósito. Hoy resuelves el primero: los usuarios vivían en el propio código Java —visibles para cualquiera con acceso al repositorio, y se perdían cada vez que reiniciabas la aplicación—; a partir de ahora viven en PostgreSQL, con la contraseña protegida de verdad. El segundo problema —las credenciales viajando en cada petición— sigue abierto; lo resuelve JWT, más adelante en el tema.</p>
+<p>Al terminar el apartado anterior, tu API ya distinguía autenticación de autorización, pero utilizaba dos piezas deliberadamente provisionales: los usuarios <code>user</code> y <code>admin</code> estaban definidos directamente en un <code>InMemoryUserDetailsManager</code>, con sus contraseñas en texto claro mediante el prefijo <code>{noop}</code>; y HTTP Basic enviaba esas credenciales en cada petición, codificadas en Base64, no cifradas.</p>
+<p>Esa versión dejaba dos problemas señalados a propósito. Hoy resuelves el primero: los usuarios estaban escritos en el propio código, visibles para cualquiera con acceso al repositorio y sin una persistencia real para las modificaciones realizadas durante la ejecución. A partir de ahora vivirán en PostgreSQL, con sus contraseñas protegidas mediante BCrypt.</p>
+<p>El segundo problema —las credenciales viajando en cada petición— sigue abierto; lo resolverá JWT más adelante.</p>
 <div class="admonition tip">
-<p class="admonition-title">Esto sí es ya el estado final</p>
-<p>A diferencia del apartado anterior (usuarios en memoria, un paso intermedio), lo que construyes hoy es la solución definitiva: usuarios reales en PostgreSQL, con la contraseña protegida por BCrypt.</p>
+<p class="admonition-title">Esta pieza sí se mantendrá</p>
+<p>A diferencia de los usuarios en memoria del apartado anterior, la persistencia en PostgreSQL y la protección de las contraseñas mediante BCrypt ya forman parte de la solución que mantendrás cuando sustituyas HTTP Basic por JWT.</p>
 </div>
 <hr>
 <h2 id="cifrar-vs-hashear">🔐 Cifrar vs. hashear<a class="headerlink" href="#cifrar-vs-hashear" title="Permanent link">¶</a></h2>
@@ -2773,8 +2792,12 @@
 <p>Una contraseña no necesitas nunca "leerla de vuelta" — solo necesitas comprobar si la que te acaban de dar coincide con la que el usuario registró. Por eso las contraseñas se <strong>hashean</strong>, no se cifran: ni siquiera tú, con acceso total a la base de datos, deberías poder recuperar la contraseña original a partir del hash guardado.</p>
 <hr>
 <h2 id="hash-con-sal">🧂 Hash con sal<a class="headerlink" href="#hash-con-sal" title="Permanent link">¶</a></h2>
-<p>Si simplemente aplicaras una función hash (<code>hash("miPassword123")</code>) a cada contraseña, dos usuarios con la misma contraseña tendrían <strong>el mismo hash guardado</strong> — y eso es un problema: cualquiera que vea la base de datos sabría que comparten contraseña, y un atacante podría precalcular por adelantado los hashes de las contraseñas más habituales en una <strong>tabla arcoíris</strong>* y buscar coincidencias directas contra cualquier base de datos robada.</p>
-<p>La <strong>sal</strong> (<em>salt</em>) resuelve esto: un valor aleatorio distinto para cada usuario, que se combina con la contraseña antes de hashear. Así, dos usuarios con la misma contraseña obtienen hashes completamente distintos — la sal rompe la comparación directa.</p>
+<p>Si simplemente aplicaras una función hash (<code>hash("miPassword123")</code>) a cada contraseña, dos usuarios con la misma contraseña tendrían <strong>el mismo hash guardado</strong>. Eso permitiría detectar que comparten contraseña y facilitaría ataques basados en hashes precalculados, como las <strong>tablas arcoíris</strong>.</p>
+<div class="admonition info">
+<p class="admonition-title">¿Qué es una tabla arcoíris?</p>
+<p>Es una colección precalculada que relaciona contraseñas habituales con los hashes que producen. Si un atacante roba una tabla de hashes, puede buscar coincidencias directamente en esa colección, sin calcular cada contraseña desde cero.</p>
+</div>
+<p>La <strong>sal</strong> (<em>salt</em>) resuelve este problema: es un valor aleatorio distinto para cada contraseña, que se combina con ella antes de calcular el hash. Así, dos usuarios con la misma contraseña obtienen hashes completamente distintos.</p>
 <p>Con datos concretos, dos usuarios que eligen exactamente la misma contraseña:</p>
 <table>
 <thead>
@@ -2800,13 +2823,12 @@
 </tr>
 </tbody>
 </table>
-<p>Nadie que mire la tabla <code>usuarios</code> puede saber que <code>ana</code> y <code>luis</code> comparten contraseña, y una tabla arcoíris precalculada para <code>miPassword123</code> no sirve de nada aquí: habría que precalcularla de nuevo para cada sal distinta, una por usuario.</p>
-<p><small>* Una tabla arcoíris es un diccionario gigante, calculado una sola vez por adelantado, que empareja contraseñas comunes con el hash que producirían. El atacante no calcula nada en el momento del ataque: roba una tabla de hashes y busca cada uno directamente en su diccionario ya hecho. Por eso la sal la inutiliza — necesitaría una tabla distinta para cada sal.</small></p>
+<p>Nadie que mire la tabla <code>usuarios</code> puede saber que <code>ana</code> y <code>luis</code> comparten contraseña. Además, una tabla arcoíris calculada sin tener en cuenta esas sales deja de ser reutilizable: el atacante necesitaría realizar cálculos específicos para cada sal.</p>
 <hr>
 <h2 id="por-que-bcrypt-y-no-un-hash-rapido">🐌 Por qué BCrypt y no un hash rápido<a class="headerlink" href="#por-que-bcrypt-y-no-un-hash-rapido" title="Permanent link">¶</a></h2>
 <p>Podrías pensar en usar <strong>SHA-256</strong> directamente — otra función hash, de propósito general, muy usada para comprobar que un fichero descargado no se ha corrompido o alterado. El problema es justo su virtud en ese otro contexto: <strong>es rápido</strong>, pensado para calcularse millones de veces por segundo sin apenas coste. Aplicado a contraseñas, eso juega en tu contra: un atacante con acceso a una tabla de hashes robada puede probar miles de millones de contraseñas por segundo contra un hash SHA-256, por fuerza bruta.</p>
 <p><strong>BCrypt</strong> está diseñado deliberadamente para ser <strong>lento</strong>, con un coste computacional configurable (el llamado <em>factor de coste</em>): cuanto mayor el coste, más tiempo (y recursos) hace falta para calcular un solo hash — insignificante para un login legítimo (una fracción de segundo), pero devastador para un atacante que necesita probar millones de combinaciones. BCrypt incluye además la sal automáticamente, como parte del propio hash resultante.</p>
-<p>Una idea de cuánto pesa ese coste en la práctica (tiempos aproximados, en hardware normal):</p>
+<p>Una referencia meramente orientativa —los tiempos cambian mucho según el hardware y la implementación—:</p>
 <table>
 <thead>
 <tr>
@@ -2830,10 +2852,6 @@
 </tbody>
 </table>
 <p>Cien milisegundos son imperceptibles para un usuario que hace login una vez. Pero multiplicados por los millones de intentos que necesitaría un ataque de fuerza bruta, la diferencia entre "factible" e "inviable" se cuenta en años de cómputo.</p>
-<div class="admonition tip">
-<p class="admonition-title">Un apunte sobre criptografía de clave pública/privada</p>
-<p>Existe otra familia de criptografía, la de <strong>clave pública/privada</strong>: un par de claves matemáticamente relacionadas donde lo que cifra una (o firma) solo lo puede verificar la otra. No es la que vas a usar en el próximo apartado —ahí firmarás el JWT con HMAC, un algoritmo distinto que usa una única clave compartida entre quien firma y quien verifica—, pero es la otra gran familia de la criptografía, y la encontrarás si alguna vez trabajas con JWT firmados con RS256 en vez de HS256.</p>
-</div>
 <hr>
 <h2 id="usuarios-reales-en-la-base-de-datos">🗄️ Usuarios reales en la base de datos<a class="headerlink" href="#usuarios-reales-en-la-base-de-datos" title="Permanent link">¶</a></h2>
 <h3 id="la-entidad-usuario">La entidad <code>Usuario</code><a class="headerlink" href="#la-entidad-usuario" title="Permanent link">¶</a></h3>
@@ -2899,7 +2917,7 @@
 <p>Un hash BCrypt real tiene esta forma:</p>
 <div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a>{bcrypt}$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy
 </code></pre></div></td></tr></table></div>
-<p>Diseccionado: <code>{bcrypt}</code> (el prefijo del <code>DelegatingPasswordEncoder</code>), <code>$2a$</code> (la versión del algoritmo), <code>10$</code> (el factor de coste — aquí, 2¹⁰ iteraciones), y el resto combina la sal y el hash resultante, ambos codificados en la misma cadena — no hace falta guardar la sal en una columna aparte, viaja incluida.</p>
+<p>Diseccionado: <code>{bcrypt}</code> es el prefijo añadido por <code>DelegatingPasswordEncoder</code>; <code>$2a$</code> identifica la versión de BCrypt; <code>10$</code> indica el factor de coste, cuyo trabajo aumenta exponencialmente; y el resto contiene la sal y el hash codificados en una misma cadena. No hace falta guardar la sal en otra columna.</p>
 <h3 id="un-userdetailsservice-propio-el-sustituto-del-inmemoryuserdetailsmanager">Un <code>UserDetailsService</code> propio: el sustituto del <code>InMemoryUserDetailsManager</code><a class="headerlink" href="#un-userdetailsservice-propio-el-sustituto-del-inmemoryuserdetailsmanager" title="Permanent link">¶</a></h3>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
@@ -2939,8 +2957,9 @@
 </code></pre></div></td></tr></table></div>
 <p>Es el reemplazo directo del <code>InMemoryUserDetailsManager</code> del apartado anterior: implementa <code>UserDetailsService</code>, y en vez de buscar en una lista fija en memoria, busca en <code>UsuarioRepository</code> — la misma base de datos que usas para todo lo demás. Spring Security llama a <code>loadUserByUsername(...)</code> automáticamente cuando alguien intenta autenticarse; tú solo tienes que decirle dónde encontrar al usuario. El <code>.disabled(!usuario.isActivo())</code> es justo lo que usa el <code>activo</code> que has visto al definir la entidad: un usuario con <code>activo = false</code> sigue existiendo en la tabla, pero Spring Security lo trata como deshabilitado y rechaza sus intentos de login.</p>
 <div class="admonition tip">
-<p class="admonition-title"><code>securityFilterChain</code> no cambia ni una línea</p>
-<p>Podría parecer que, al sustituir una pieza tan central, tendrías que volver a tocar <code>.authorizeHttpRequests(...)</code>, <code>.csrf(...)</code>, <code>.exceptionHandling(...)</code> o <code>.httpBasic(...)</code> — pero no hace falta tocar nada de eso. Spring Security detecta automáticamente el único bean <code>UserDetailsService</code> que hay en el contexto (antes era <code>InMemoryUserDetailsManager</code>; ahora es <code>BdUserDetailsService</code>) y lo conecta solo con el <code>PasswordEncoder</code> que acabas de declarar, usándolos internamente para comparar la contraseña recibida contra el hash guardado. Todo lo que has construido en el apartado anterior —rutas públicas, CSRF desactivado, tu <code>AuthenticationEntryPoint</code> a medida— sigue funcionando exactamente igual, sin que toques <code>securityFilterChain</code> para nada.</p>
+<p class="admonition-title">Cambiar el almacén de usuarios no obliga a modificar <code>securityFilterChain</code></p>
+<p>Sustituir <code>InMemoryUserDetailsManager</code> por <code>BdUserDetailsService</code> no obliga a modificar <code>.csrf(...)</code>, <code>.exceptionHandling(...)</code>, <code>.httpBasic(...)</code> ni las reglas que ya existen. Spring Security utiliza el bean <code>UserDetailsService</code> disponible en el contexto junto con el <code>PasswordEncoder</code> para configurar la autenticación por usuario y contraseña.</p>
+<p>Más adelante sí añadirás una regla nueva a <code>authorizeHttpRequests(...)</code>, pero será porque aparece un endpoint público nuevo, <code>/api/v1/auth/register</code>, no porque los usuarios hayan pasado de memoria a PostgreSQL.</p>
 </div>
 <h3 id="el-registro-authcontroller">El registro: <code>AuthController</code><a class="headerlink" href="#el-registro-authcontroller" title="Permanent link">¶</a></h3>
 <p>Todo lo de arriba explica cómo se <strong>verifica</strong> un usuario que ya existe — pero no cómo llega a existir el primero. Para eso hace falta un endpoint público que reciba usuario y contraseña, codifique la contraseña con el mismo <code>PasswordEncoder</code> de antes, y guarde el <code>Usuario</code> resultante:</p>
@@ -3000,17 +3019,17 @@
 <a id="__codelineno-6-23" name="__codelineno-6-23"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-6-24" name="__codelineno-6-24"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p><code>passwordEncoder.encode(...)</code> es la otra mitad del mismo bean que ya conoces: aquí <strong>codifica</strong>, en <code>BdUserDetailsService</code> de arriba se <strong>verificaba</strong> — el mismo <code>PasswordEncoder</code>, las dos operaciones opuestas que necesita todo el ciclo de vida de una contraseña. Si alguien intentara registrar un <code>username</code> que ya existe, la restricción <code>unique = true</code> de la entidad lo bloquea en la base de datos — y ese error ya sabes gestionarlo, es el mismo <code>DataIntegrityViolationException</code> que tu <code>GlobalExceptionHandler</code> convierte en un <code>409</code> desde el primer apartado del tema.</p>
+<p><code>passwordEncoder.encode(...)</code> genera aquí el hash que se guarda en la base de datos. Durante el login, <code>BdUserDetailsService</code> solo carga el usuario y devuelve ese hash; es <code>DaoAuthenticationProvider</code> quien utiliza el mismo <code>PasswordEncoder</code> para comparar la contraseña recibida con el hash almacenado. Si alguien intentara registrar un <code>username</code> que ya existe, la restricción <code>unique = true</code> de la entidad lo bloquea en la base de datos — y ese error ya sabes gestionarlo, es el mismo <code>DataIntegrityViolationException</code> que tu <code>GlobalExceptionHandler</code> convierte en un <code>409</code> desde el primer apartado del tema.</p>
 <div class="admonition warning">
 <p class="admonition-title">El rol nunca lo decide quien se registra</p>
 <p>Fíjate en que <code>RolUsuario.USER</code> está fijado aquí mismo, en el servidor — no viene del DTO que manda el cliente. Si <code>RegisterRequestDTO</code> incluyera un campo <code>rol</code> y lo guardaras tal cual, cualquiera podría registrarse a sí mismo como <code>ADMIN</code> con solo añadirlo al JSON. La regla es simple: nunca dejes que el cliente decida sus propios privilegios.</p>
 </div>
-<p>Como cualquier otra ruta nueva, hay que abrirla explícitamente en tu política de acceso — nadie tiene todavía una cuenta con la que autenticarse para registrarse:</p>
+<p>Como cualquier otra ruta nueva, hay que abrirla explícitamente en tu política de acceso. Añade esta regla <strong>antes de <code>anyRequest().authenticated()</code></strong>, porque esa regla final captura todo lo que no haya coincidido anteriormente:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">POST</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/auth/register"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
 <p>Pero ese mismo aviso deja una pregunta abierta: si nadie puede auto-asignarse <code>ADMIN</code>, ¿de dónde sale el primero? Ese usuario tiene que venir de fuera del propio flujo de registro.</p>
 <h3 id="el-primer-admin-un-applicationrunner">El primer <code>ADMIN</code>: un <code>ApplicationRunner</code><a class="headerlink" href="#el-primer-admin-un-applicationrunner" title="Permanent link">¶</a></h3>
-<p>La pieza que hace falta es un <code>ApplicationRunner</code>: una interfaz de Spring Boot con un único método, <code>run(...)</code>, que el propio framework ejecuta automáticamente <strong>una sola vez</strong>, justo después de que la aplicación termine de arrancar — antes de que llegue ninguna petición. Es el sitio natural para insertar datos que tienen que existir desde el primer momento:</p>
+<p>La pieza que hace falta es un <code>ApplicationRunner</code>: una interfaz de Spring Boot con un único método, <code>run(...)</code>, que el framework ejecuta automáticamente <strong>una vez en cada arranque</strong>, después de crear el contexto de la aplicación y antes de considerarla preparada para aceptar tráfico. Es un sitio adecuado para insertar datos que deben existir desde el primer momento:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-8-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-8-3"> 3</a></span>
@@ -3056,46 +3075,49 @@
 <p>Igual que con <code>UserDetailsService</code>, no hace falta registrar nada a mano: basta con anotar la clase <code>@Component</code> e implementar <code>ApplicationRunner</code>, y Spring Boot la detecta y la ejecuta sola en cada arranque. El <code>if (...isEmpty())</code> es imprescindible por eso mismo —<code>run(...)</code> se ejecuta en <strong>cada</strong> arranque, no solo la primera vez—: sin esa comprobación, intentarías insertar el mismo <code>admin</code> cada vez que reinicies, y chocarías con la restricción <code>unique = true</code> del <code>username</code>.</p>
 <p>Fíjate en que la contraseña ya no está escrita directamente en el código: viene de <code>${libreria.admin.password}</code>, una propiedad externa. El motivo lo ves en la siguiente sección.</p>
 <h3 id="esa-contrasena-tampoco-deberia-estar-en-tu-repositorio">Esa contraseña tampoco debería estar en tu repositorio<a class="headerlink" href="#esa-contrasena-tampoco-deberia-estar-en-tu-repositorio" title="Permanent link">¶</a></h3>
-<p>Aunque <code>admin123</code> ya no viva en ningún <code>.java</code>, si la escribieras tal cual en <code>application-dev.yaml</code> seguirías teniendo el mismo problema: ese fichero se sube a Git, así que cualquiera con acceso al repositorio la vería igual. La solución es un fichero de propiedades <strong>aparte, que nunca se versiona</strong>:</p>
+<p>Aunque <code>admin123</code> ya no viva en ningún <code>.java</code>, si la escribieras tal cual en <code>application-dev.yml</code> seguirías teniendo el mismo problema: ese fichero se sube a Git, así que cualquiera con acceso al repositorio la vería igual. La solución es un fichero de propiedades <strong>aparte, que nunca se versiona</strong>:</p>
 <div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1">1</a></span>
 <span class="normal"><a href="#__codelineno-9-2">2</a></span>
 <span class="normal"><a href="#__codelineno-9-3">3</a></span>
-<span class="normal"><a href="#__codelineno-9-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="c1"># application-dev.yaml (SÍ se sube a Git)</span>
+<span class="normal"><a href="#__codelineno-9-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="c1"># application-dev.yml (SÍ se sube a Git)</span>
 <a id="__codelineno-9-2" name="__codelineno-9-2"></a><span class="nt">spring</span><span class="p">:</span>
 <a id="__codelineno-9-3" name="__codelineno-9-3"></a><span class="w">  </span><span class="nt">config</span><span class="p">:</span>
-<a id="__codelineno-9-4" name="__codelineno-9-4"></a><span class="w">    </span><span class="nt">import</span><span class="p">:</span><span class="w"> </span><span class="s">"optional:application-dev-local.yaml"</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4"></a><span class="w">    </span><span class="nt">import</span><span class="p">:</span><span class="w"> </span><span class="s">"optional:application-dev-local.yml"</span>
 </code></pre></div></td></tr></table></div>
 <div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-10-1">1</a></span>
 <span class="normal"><a href="#__codelineno-10-2">2</a></span>
 <span class="normal"><a href="#__codelineno-10-3">3</a></span>
-<span class="normal"><a href="#__codelineno-10-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1"></a><span class="c1"># application-dev-local.yaml (en .gitignore, NO se sube a Git)</span>
+<span class="normal"><a href="#__codelineno-10-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1"></a><span class="c1"># application-dev-local.yml (en .gitignore, NO se sube a Git)</span>
 <a id="__codelineno-10-2" name="__codelineno-10-2"></a><span class="nt">libreria</span><span class="p">:</span>
 <a id="__codelineno-10-3" name="__codelineno-10-3"></a><span class="w">  </span><span class="nt">admin</span><span class="p">:</span>
 <a id="__codelineno-10-4" name="__codelineno-10-4"></a><span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admin123</span>
 </code></pre></div></td></tr></table></div>
-<p>El prefijo <code>optional:</code> le dice a Spring Boot que, si ese fichero no existe (por ejemplo, en la máquina de un compañero que acaba de clonar el repositorio), arranque igualmente en vez de fallar. Y como <code>@Value("${libreria.admin.password}")</code> no lleva ningún valor por defecto, si de verdad falta la propiedad, la aplicación <strong>no arranca</strong> — con un error claro señalando qué falta, en vez de arrancar silenciosamente con una contraseña vacía o adivinada.</p>
+<p>El prefijo <code>optional:</code> indica que la ausencia del fichero no debe provocar por sí sola un error al procesar <code>spring.config.import</code>. Sin embargo, <code>@Value("${libreria.admin.password}")</code> exige que esa propiedad exista en alguna fuente de configuración.</p>
+<p>Por tanto, si el fichero local no existe y la propiedad tampoco se proporciona mediante una variable de entorno, un parámetro u otra fuente, la aplicación no podrá completar el arranque. El error señalará qué propiedad obligatoria falta, en lugar de utilizar silenciosamente una contraseña vacía o predeterminada.</p>
 <p>Para que cualquiera sepa qué tiene que rellenar sin tener que adivinarlo, se acompaña de una plantilla que sí se sube a Git:</p>
 <div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-11-1">1</a></span>
 <span class="normal"><a href="#__codelineno-11-2">2</a></span>
 <span class="normal"><a href="#__codelineno-11-3">3</a></span>
-<span class="normal"><a href="#__codelineno-11-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1"></a><span class="c1"># application-dev-local.yaml.example (SÍ se sube a Git — sin valores reales)</span>
+<span class="normal"><a href="#__codelineno-11-4">4</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1"></a><span class="c1"># application-dev-local.yml.example (SÍ se sube a Git — sin valores reales)</span>
 <a id="__codelineno-11-2" name="__codelineno-11-2"></a><span class="nt">libreria</span><span class="p">:</span>
 <a id="__codelineno-11-3" name="__codelineno-11-3"></a><span class="w">  </span><span class="nt">admin</span><span class="p">:</span>
 <a id="__codelineno-11-4" name="__codelineno-11-4"></a><span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pon-aqui-tu-propia-contraseña</span>
 </code></pre></div></td></tr></table></div>
-<p>Cada persona que clona el repositorio copia ese <code>.example</code> a <code>application-dev-local.yaml</code>, rellena sus propios valores, y ese fichero final se queda solo en su máquina. Es el mismo patrón, exactamente, que vas a reutilizar para el secreto de JWT más adelante en el tema.</p>
+<p>Cada persona que clona el repositorio copia ese <code>.example</code> a <code>application-dev-local.yml</code>, rellena sus propios valores, y ese fichero final se queda solo en su máquina. Es el mismo patrón, exactamente, que vas a reutilizar para el secreto de JWT más adelante en el tema.</p>
 <div class="admonition warning">
 <p class="admonition-title">Ese fichero no existe fuera de tu máquina — piénsalo cuando montes CI o un despliegue</p>
 <p>Poner un valor en <code>.gitignore</code> es la otra cara de una moneda: si no se sube a Git, <strong>no llega a ningún sitio por Git</strong>. Tu máquina lo tiene porque lo has rellenado a mano, pero cualquier entorno que arranque tu aplicación desde el repositorio limpio —un pipeline de integración continua, un servidor de despliegue, el ordenador de un compañero— no tiene ese fichero, y con él ausente la aplicación no arranca (por el <code>@Value</code> sin valor por defecto que acabas de ver). En esos entornos tienes que <strong>inyectar</strong> cada uno de esos valores por otra vía: una variable de entorno, un parámetro del comando, o un "secreto" del propio sistema de CI. No es un caso raro: es lo primero con lo que te vas a topar la primera vez que uno de estos secretos tenga que existir en algún sitio que no sea tu portátil.</p>
 </div>
 <div class="admonition example">
 <p class="admonition-title">Cómo se vería en GitHub Actions, el día que hiciera falta</p>
-<p>Tu CI actual (Actividad 1.3) no necesita este valor: solo ejecuta <code>*ControllerTest</code>, que mockean el servicio y nunca arrancan un <code>DataSource</code> ni leen <code>libreria.admin.password</code>. Pero si algún día un workflow sí lo necesitara —por ejemplo, para arrancar la aplicación completa contra una base de datos real—, el sitio para guardarlo no es el código ni el propio <code>ci.yml</code>, sino los secretos del repositorio: en GitHub, <strong>Settings → Secrets and variables → Actions → New repository secret</strong>, con un nombre en mayúsculas como <code>GAMEVAULT_ADMIN_PASSWORD</code> y el valor real. Ese secreto no aparece en ningún fichero versionado, y desde el workflow se referencia así:</p>
+<p>Tu CI actual (Actividad 1.3) no necesita este valor: solo ejecuta <code>*ControllerTest</code>, que mockean el servicio y nunca arrancan un <code>DataSource</code> ni leen la contraseña inicial del administrador.</p>
+<p>Pero si algún día un workflow sí lo necesitara —por ejemplo, para arrancar la aplicación completa contra una base de datos real—, el sitio para guardarlo no sería el código ni el propio <code>ci.yml</code>, sino los secretos del repositorio: en GitHub, <strong>Settings → Secrets and variables → Actions → New repository secret</strong>, con un nombre como <code>GAMEVAULT_ADMIN_PASSWORD</code>.</p>
+<p>En GameVault, la propiedad equivalente se habrá adaptado a <code>gamevault.admin.password</code>, siguiendo el nombre del proyecto. Por eso el workflow la proporciona con ese nombre:</p>
 <div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-12-1">1</a></span>
 <span class="normal"><a href="#__codelineno-12-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ejecutar los tests</span>
 <a id="__codelineno-12-2" name="__codelineno-12-2"></a><span class="w">  </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./mvnw test -Dgamevault.admin.password=${{ secrets.GAMEVAULT_ADMIN_PASSWORD }}</span>
 </code></pre></div></td></tr></table></div>
-<p>Es solo referencia para el día que haga falta desplegar de verdad — no tienes que tocar nada de esto ahora.</p>
+<p>Es solo una referencia para el día que haga falta desplegar o ejecutar pruebas de integración completas — no tienes que tocar nada de esto ahora.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">¿No es esto lo mismo que la contraseña de Postgres, que has dejado en el fichero versionado?</p>
@@ -3104,8 +3126,8 @@
 </div>
 <hr>
 <h2 id="lo-que-aun-falta">🧭 Lo que aún falta<a class="headerlink" href="#lo-que-aun-falta" title="Permanent link">¶</a></h2>
-<p>Ya no hay usuarios hardcodeados que desaparezcan al reiniciar — están en PostgreSQL, con contraseñas que ni tú mismo puedes leer. Pero sigue quedando el segundo problema del apartado anterior: las credenciales viajan en <strong>cada</strong> petición, aunque sea con HTTP Basic. En el próximo apartado lo resuelve JWT: autenticarte una vez, y presentar un token en las peticiones siguientes.</p>
-<hr>
+<p>Los usuarios ya no están definidos directamente en el código: viven en PostgreSQL y sus contraseñas se almacenan mediante hashes que no permiten recuperar el texto original. Pero sigue quedando el segundo problema del apartado anterior: HTTP Basic envía las credenciales en <strong>cada</strong> petición.</p>
+<h2 id="en-el-proximo-apartado-jwt-permitira-autenticarse-una-vez-y-presentar-un-token-en-las-peticiones-siguientes">En el próximo apartado, JWT permitirá autenticarse una vez y presentar un token en las peticiones siguientes.<a class="headerlink" href="#en-el-proximo-apartado-jwt-permitira-autenticarse-una-vez-y-presentar-un-token-en-las-peticiones-siguientes" title="Permanent link">¶</a></h2>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
 <details class="tip">
 <summary>Abrir resumen</summary>
@@ -3115,9 +3137,9 @@
 <li><strong>BCrypt</strong> es deliberadamente lento (factor de coste configurable), lo que lo hace resistente a fuerza bruta frente a un hash rápido como SHA-256 a secas.</li>
 <li><code>DelegatingPasswordEncoder</code> antepone un prefijo (<code>{bcrypt}</code>) al hash, indicando el algoritmo usado — el mismo bean codifica y verifica.</li>
 <li>Un <code>UserDetailsService</code> propio sustituye al <code>InMemoryUserDetailsManager</code>: busca los usuarios en la base de datos real.</li>
-<li>Spring Security detecta solo el <code>UserDetailsService</code> y el <code>PasswordEncoder</code> del contexto y los conecta por su cuenta — <code>securityFilterChain</code> no cambia ni una línea.</li>
+<li>Spring Security utiliza el <code>UserDetailsService</code> y el <code>PasswordEncoder</code> del contexto para autenticar mediante usuario y contraseña; cambiar el almacén de usuarios no obliga por sí mismo a modificar <code>securityFilterChain</code>.</li>
 <li>Un endpoint de registro público crea usuarios reales, siempre con rol <code>USER</code> fijado en el servidor — nunca confíes en que el cliente decida sus propios privilegios. El primer <code>ADMIN</code> no puede salir de ahí: hace falta un <em>seed</em> aparte.</li>
-<li>Ese <em>seed</em> no debe llevar la contraseña escrita en el código ni en un fichero versionado: va en <code>application-dev-local.yaml</code> (en <code>.gitignore</code>), importado con <code>spring.config.import: optional:...</code>, acompañado de un <code>.example</code> sin valores reales que sí se sube a Git.</li>
+<li>Ese <em>seed</em> no debe llevar la contraseña escrita en el código ni en un fichero versionado: va en <code>application-dev-local.yml</code> (en <code>.gitignore</code>), importado con <code>spring.config.import: optional:...</code>, acompañado de un <code>.example</code> sin valores reales que sí se sube a Git.</li>
 </ul>
 </details></div>
 

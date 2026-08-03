@@ -2778,7 +2778,7 @@
 <td>¿? <em>(decide tú — piensa en quién necesita comprobar que el servicio está vivo)</em></td>
 </tr>
 <tr>
-<td><code>/swagger-ui/**</code>, <code>/v3/api-docs/**</code>, <code>/error</code></td>
+<td><code>/documentacion</code>, <code>/swagger-ui/**</code>, <code>/v3/api-docs/**</code>, <code>/error</code></td>
 <td>—</td>
 <td>Cualquiera</td>
 </tr>
@@ -2890,7 +2890,7 @@
 <a id="__codelineno-1-30" name="__codelineno-1-30"></a>| Ruta | Verbo | Quién puede |
 <a id="__codelineno-1-31" name="__codelineno-1-31"></a>|---|---|---|
 <a id="__codelineno-1-32" name="__codelineno-1-32"></a>| <span class="sb">`/actuator/health`</span> | GET | ??? |
-<a id="__codelineno-1-33" name="__codelineno-1-33"></a>| <span class="sb">`/swagger-ui/**`</span>, <span class="sb">`/v3/api-docs/**`</span>, <span class="sb">`/error`</span> | — | Cualquiera |
+<a id="__codelineno-1-33" name="__codelineno-1-33"></a>| <span class="sb">`/documentacion`</span>, <span class="sb">`/swagger-ui/**`</span>, <span class="sb">`/v3/api-docs/**`</span>, <span class="sb">`/error`</span> | — | Cualquiera |
 <a id="__codelineno-1-34" name="__codelineno-1-34"></a>| Todo lo demás | — | Nadie |
 </code></pre></div></td></tr></table></div>
 <p><strong>Captura</strong>: el fichero, con <code>EstudioController</code> ya rellena (la fila de <code>/actuator/health</code> la completas en el Paso 3).</p>
@@ -2899,7 +2899,7 @@
 <p>Prueba una ruta que, a propósito, no está en tu lista (por ejemplo, si tuvieras un <code>GET /api/v1/algo-inventado</code>, o cualquier verbo sobre una ruta real que no hayas cubierto explícitamente):</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a>curl<span class="w"> </span>-i<span class="w"> </span>http://localhost:8080/api/v1/algo-inventado
 </code></pre></div></td></tr></table></div>
-<p><strong>Comprueba</strong>: que la respuesta es un <code>401</code> (no un <code>404</code> amable) — no un <code>403</code>, aunque sea <code>denyAll()</code>: como el <code>curl</code> no lleva ningún token, Spring Security ni siquiera llega a evaluar la regla, y responde con tu <code>AuthenticationEntryPoint</code> de siempre.</p>
+<p><strong>Comprueba</strong>: que la respuesta es un <code>401</code> —no un <code>404</code> ni un <code>403</code>—. Spring Security evalúa <code>denyAll()</code> y rechaza la petición; como el <code>curl</code> no lleva ningún token válido, <code>ExceptionTranslationFilter</code> llama a tu <code>AuthenticationEntryPoint</code>. La misma petición con un JWT válido terminaría en <code>403</code>.</p>
 <p><strong>Captura</strong>: esta respuesta, con el <code>401</code>.</p>
 <p><strong>Pregunta</strong>: ¿por qué "cerrado por defecto" es la opción segura, comparado con "abierto por defecto, cerrado explícitamente donde haga falta"?</p>
 <hr>

@@ -2644,7 +2644,7 @@
 <p>Tiene sentido mantenerlos separados: <code>/actuator/health</code> no es un recurso del catálogo pensado para sus usuarios, sino información operativa para comprobar el estado de la aplicación.</p>
 <p>Springdoc permite incluir también los endpoints de Actuator mediante una propiedad de configuración, pero no la necesitas en esta actividad. Consultarás <code>/actuator/health</code> directamente desde el navegador o mediante <code>curl</code>.</p>
 </div>
-<p>Con solo esa dependencia, Spring Boot expone automáticamente <code>/actuator/health</code>. Para ver durante el desarrollo el detalle de cada dependencia —y no solo un <code>UP</code> o <code>DOWN</code> general— añade esta configuración en <code>application-dev.yaml</code>:</p>
+<p>Con solo esa dependencia, Spring Boot expone automáticamente <code>/actuator/health</code>. Para ver durante el desarrollo el detalle de cada dependencia —y no solo un <code>UP</code> o <code>DOWN</code> general— añade esta configuración en <code>application-dev.yml</code>:</p>
 <div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
 <span class="normal"><a href="#__codelineno-2-2">2</a></span>
 <span class="normal"><a href="#__codelineno-2-3">3</a></span>

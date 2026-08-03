@@ -2812,7 +2812,7 @@
 <p><code>/v3/api-docs</code> es la especificación en sí: el JSON (el <code>3</code> es por OpenAPI 3, la versión del estándar) que describe tus rutas, generado automáticamente por springdoc. Swagger UI no es más que una página que <strong>lee</strong> ese JSON y lo pinta como interfaz interactiva — no tiene información propia. Por eso las dos rutas van siempre juntas: si Swagger UI no puede llegar a <code>/v3/api-docs</code>, la página carga pero se queda vacía, sin nada que mostrar.</p>
 <div class="admonition tip">
 <p class="admonition-title">Cambiar la ruta de Swagger UI</p>
-<p>En tu <code>application-dev.yaml</code> puedes mover la documentación a otra ruta:
+<p>En tu <code>application-dev.yml</code> puedes mover la documentación a otra ruta:
 </p><div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
 <span class="normal"><a href="#__codelineno-2-2">2</a></span>
 <span class="normal"><a href="#__codelineno-2-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nt">springdoc</span><span class="p">:</span>

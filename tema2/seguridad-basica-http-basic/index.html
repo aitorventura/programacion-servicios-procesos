@@ -2705,7 +2705,7 @@
 <h1 id="2-seguridad-basica-usuarios-en-memoria-y-http-basic">🧩 2. Seguridad básica: usuarios en memoria y HTTP Basic<a class="headerlink" href="#2-seguridad-basica-usuarios-en-memoria-y-http-basic" title="Permanent link">¶</a></h1>
 <div class="admonition tip">
 <p class="admonition-title">¿Por qué empezar por algo que vas a sustituir?</p>
-<p>Lo que ves en este apartado —usuarios en memoria y HTTP Basic— no es la versión final: dentro de dos apartados no quedará ni rastro de ninguna de las dos piezas. Puede parecer que se pierde tiempo construyendo algo que se va a borrar, pero es al revés: los problemas concretos de esta versión (los vas a ver explícitamente más abajo) son justo los que motivan lo que viene después. Si empezaras directamente por la versión final —contraseñas cifradas, autenticación con token— tendrías un código que funciona, pero no sabrías responder a "¿por qué hace falta cifrar la contraseña?" o "¿por qué no basta con mandar usuario y contraseña en cada petición?": esas respuestas solo se entienden habiendo visto antes la versión sin esa pieza, y el problema real que causa. El camino completo es: usuarios en memoria y HTTP Basic (aquí), contraseñas cifradas con BCrypt en base de datos (próximo apartado), autenticación con JWT (dos apartados más adelante) — cada paso resuelve un problema concreto del anterior.</p>
+<p>Lo que ves en este apartado —usuarios en memoria y HTTP Basic— no es la versión final: dentro de dos apartados no quedará ni rastro de ninguna de las dos piezas. Puede parecer que se pierde tiempo construyendo algo que se va a borrar, pero es al revés: los problemas concretos de esta versión (los vas a ver explícitamente más abajo) son justo los que motivan lo que viene después. Si empezaras directamente por la versión final —contraseñas protegidas mediante hash, autenticación con token— tendrías un código que funciona, pero no sabrías responder a "¿por qué hace falta proteger la contraseña mediante un hash?" o "¿por qué no basta con mandar usuario y contraseña en cada petición?": esas respuestas solo se entienden habiendo visto antes la versión sin esa pieza, y el problema real que causa. El camino completo es: usuarios en memoria y HTTP Basic (aquí), contraseñas protegidas con BCrypt en base de datos (próximo apartado), autenticación con JWT (dos apartados más adelante) — cada paso resuelve un problema concreto del anterior.</p>
 </div>
 <hr>
 <h2 id="lo-primero-que-hace-spring-security-cerrarlo-todo">🔒 Lo primero que hace Spring Security: cerrarlo todo<a class="headerlink" href="#lo-primero-que-hace-spring-security-cerrarlo-todo" title="Permanent link">¶</a></h2>
@@ -2736,18 +2736,25 @@
     Filtro-&gt;&gt;Dispatcher: Deja pasar la petición
     Dispatcher-&gt;&gt;Controller: getAll()
     Controller--&gt;&gt;Cliente: 200 OK</code></pre>
-<p>El filtro intercepta la petición y decodifica la cabecera; el <code>AuthenticationManager</code> coordina la comprobación; el <code>UserDetailsService</code> es quien de verdad sabe si ese usuario existe y con qué contraseña y roles. Si todo eso sale bien, la petición llega al <code>DispatcherServlet</code> — la pieza de Spring MVC que recibe <strong>todas</strong> las peticiones de tu aplicación, sin excepción, y decide a qué método de qué controller mandar cada una, mirando la URL y el verbo HTTP contra las anotaciones <code>@GetMapping</code>/<code>@PostMapping</code> que ya conoces. Es el mismo mecanismo que llevas usando desde tu primer <code>@RestController</code>, solo que hasta ahora nunca lo habías visto actuar de forma explícita, porque siempre acertaba sin que hicieras nada especial. Con Spring Security delante, el <code>DispatcherServlet</code> sigue haciendo exactamente lo mismo que siempre — lo único que cambia es que, antes de llegar hasta él, la petición ahora tiene que pasar primero el control del filtro.</p>
+<p>El filtro intercepta la petición y decodifica la cabecera; el <code>AuthenticationManager</code> coordina la comprobación; el <code>UserDetailsService</code> es quien de verdad sabe si ese usuario existe y con qué contraseña y roles. Si todo eso sale bien, la petición llega al <code>DispatcherServlet</code> — la pieza de Spring MVC que recibe las peticiones que han alcanzado el circuito de Spring MVC, y decide a qué método de qué controller mandar cada una, mirando la URL y el verbo HTTP contra las anotaciones <code>@GetMapping</code>/<code>@PostMapping</code> que ya conoces. Es el mismo mecanismo que llevas usando desde tu primer <code>@RestController</code>, solo que hasta ahora nunca lo habías visto actuar de forma explícita, porque siempre acertaba sin que hicieras nada especial. Con Spring Security delante, el <code>DispatcherServlet</code> sigue haciendo exactamente lo mismo que siempre — lo único que cambia es que, antes de llegar hasta él, la petición ahora tiene que pasar primero el control del filtro.</p>
 <h3 id="2-sin-ninguna-cabecera-authorization">2. Sin ninguna cabecera <code>Authorization</code><a class="headerlink" href="#2-sin-ninguna-cabecera-authorization" title="Permanent link">¶</a></h3>
 <p>El fallo más simple: la petición no trae credenciales de ningún tipo.</p>
 <pre class="mermaid"><code>sequenceDiagram
     participant Cliente
-    participant Filtro as Filtro de seguridad&lt;br/&gt;(BasicAuthenticationFilter)
+    participant Basic as BasicAuthenticationFilter
+    participant Authorization as AuthorizationFilter
+    participant Exception as ExceptionTranslationFilter
+    participant EntryPoint as AuthenticationEntryPoint
     participant Dispatcher as DispatcherServlet
-    participant Controller
 
-    Cliente-&gt;&gt;Filtro: GET /libros&lt;br/&gt;(sin cabecera Authorization)
-    Filtro--&gt;&gt;Cliente: 401 Unauthorized&lt;br/&gt;(ni siquiera intenta autenticar)</code></pre>
-<p>Fíjate en quién falta en este diagrama: ni <code>AuthenticationManager</code> ni <code>UserDetailsService</code> llegan a aparecer. Sin nada que comprobar, el filtro ni se molesta en preguntar — corta directamente, antes de que la petición se acerque siquiera al <code>DispatcherServlet</code>.</p>
+    Cliente-&gt;&gt;Basic: GET /libros&lt;br/&gt;(sin cabecera Authorization)
+    Basic-&gt;&gt;Authorization: Continúa sin usuario autenticado
+    Authorization--&gt;&gt;Exception: Ruta protegida y usuario anónimo
+    Exception-&gt;&gt;EntryPoint: commence(...)
+    EntryPoint--&gt;&gt;Cliente: 401 Unauthorized
+
+    Note over Basic,Dispatcher: La petición nunca llega al DispatcherServlet</code></pre>
+<p>Ni <code>AuthenticationManager</code> ni <code>UserDetailsService</code> llegan a intervenir, porque no hay credenciales que comprobar. <code>BasicAuthenticationFilter</code> continúa sin autenticar al usuario; después, la autorización detecta que un usuario anónimo intenta acceder a una ruta protegida y <code>ExceptionTranslationFilter</code> activa el <code>AuthenticationEntryPoint</code>, que devuelve el <code>401</code>. Todo ocurre antes de llegar al <code>DispatcherServlet</code>.</p>
 <h3 id="3-credenciales-incorrectas">3. Credenciales incorrectas<a class="headerlink" href="#3-credenciales-incorrectas" title="Permanent link">¶</a></h3>
 <p>El caso menos evidente: la petición sí trae una cabecera <code>Authorization</code>, con forma correcta, pero el usuario no existe o la contraseña no coincide.</p>
 <pre class="mermaid"><code>sequenceDiagram
@@ -2766,7 +2773,7 @@
     AuthManager--&gt;&gt;Filtro: No, la contraseña no coincide
     Filtro--&gt;&gt;Cliente: 401 Unauthorized&lt;br/&gt;(nunca llega a Dispatcher ni a Controller)</code></pre>
 <p>Este es casi idéntico al del punto 1 hasta el penúltimo paso — el filtro sí pregunta, <code>AuthenticationManager</code> sí consulta al <code>UserDetailsService</code>, todo el circuito se recorre igual — y solo al final cambia la respuesta. El resultado es el mismo <code>401</code> que en el punto 2, pero el camino para llegar hasta ahí es bastante más largo.</p>
-<p>En los tres casos, algo no cambia nunca: el filtro de seguridad actúa <strong>antes</strong> que el <code>DispatcherServlet</code>. Cuando falla —le falten credenciales o le sobren credenciales equivocadas—, la petición nunca llega a pisar tu <code>Controller</code>, ni ningún otro código de la aplicación, y el <code>401</code> lo construye Spring Security por su cuenta.</p>
+<p>En los tres casos, la decisión de seguridad se produce antes del <code>DispatcherServlet</code>. Con credenciales incorrectas, falla la autenticación realizada por <code>BasicAuthenticationFilter</code>; sin credenciales, la petición continúa como anónima hasta que la autorización bloquea el acceso a la ruta protegida. En ambos casos, Spring Security activa un <code>AuthenticationEntryPoint</code> y la petición no llega al controller.</p>
 <div class="admonition note">
 <p class="admonition-title">Queda pendiente un tercer tipo de fallo: el <code>403</code></p>
 <p>Los tres diagramas de arriba son todos sobre <strong>autenticación</strong> (¿quién eres?): o se resuelve, o no. Pero hay un cuarto caso que no aparece aquí: credenciales perfectamente válidas, de un usuario real, que simplemente no tiene permiso para <em>esa</em> ruta en concreto — eso ya no es autenticación, es <strong>autorización</strong>, y da un <code>403 Forbidden</code>, no un <code>401</code>. Ese caso lo trabajarás a fondo más adelante en el tema, con su propia comparación <code>401</code> vs <code>403</code>.</p>
@@ -2796,7 +2803,8 @@
 </tbody>
 </table>
 <p>Puedes estar autenticado (Spring Security sabe quién eres) y aun así no autorizado para una acción concreta (no tienes el rol necesario). Son dos capas distintas, y las vas a ver aplicadas por separado.</p>
-<p>Piensa en la tarjeta de acceso de un edificio de oficinas: en la entrada, un lector comprueba que la tarjeta es tuya y está activa — eso es autenticación, y pasa una sola vez, al entrar. Pero esa misma tarjeta puede abrirte la puerta de tu planta y no la del laboratorio del piso de arriba — eso es autorización, y se comprueba cada vez que intentas abrir una puerta concreta, no solo al entrar al edificio. Spring Security separa las dos cosas igual: <code>httpBasic(...)</code> resuelve la autenticación (la petición trae credenciales válidas); <code>authorizeHttpRequests(...)</code>, que ves un poco más abajo, resuelve la autorización (esas credenciales, en concreto, tienen permiso para <em>esta</em> ruta).</p>
+<p>Piensa en la tarjeta de acceso de un edificio de oficinas. Cuando presentas la tarjeta, el lector comprueba quién eres y que la tarjeta sigue activa: eso es autenticación. Después, la puerta concreta comprueba si esa identidad tiene permiso para abrirla: eso es autorización.</p>
+<p>En una API, ambas comprobaciones se realizan sobre cada petición. Con HTTP Basic, además, el cliente vuelve a enviar el usuario y la contraseña cada vez. Spring Security separa igualmente las dos responsabilidades: <code>httpBasic(...)</code> configura el mecanismo de autenticación y <code>authorizeHttpRequests(...)</code> decide qué puede hacer el usuario autenticado en cada ruta.</p>
 <hr>
 <h2 id="http-basic-como-viaja-usuario-y-contrasena">📦 HTTP Basic: cómo viaja usuario y contraseña<a class="headerlink" href="#http-basic-como-viaja-usuario-y-contrasena" title="Permanent link">¶</a></h2>
 <p><strong>HTTP Basic</strong> es el mecanismo de autenticación más simple de HTTP: el cliente manda usuario y contraseña en una cabecera <code>Authorization</code>, codificados en <strong>Base64</strong> — un sistema que convierte cualquier secuencia de bytes en texto imprimible, para que quepa sin problemas dentro de una cabecera HTTP. La construcción es mecánica, sin ningún secreto de por medio:</p>
@@ -2840,7 +2848,7 @@
 <a id="__codelineno-3-13" name="__codelineno-3-13"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">InMemoryUserDetailsManager</span><span class="p">(</span><span class="n">user</span><span class="p">,</span><span class="w"> </span><span class="n">admin</span><span class="p">);</span>
 <a id="__codelineno-3-14" name="__codelineno-3-14"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p>El prefijo <code>{noop}</code> le dice a Spring Security "esta contraseña no está cifrada, compárala tal cual" — una simplificación deliberada para este paso intermedio (en el próximo apartado la sustituyes por contraseñas de verdad protegidas con BCrypt).</p>
+<p>El prefijo <code>{noop}</code> le dice a Spring Security "esta contraseña está almacenada en texto claro y no se le aplica ningún <code>PasswordEncoder</code>; compárala tal cual"</p>
 <div class="admonition tip">
 <p class="admonition-title"><code>.roles("USER")</code> no es literalmente el rol</p>
 <p>Por debajo, Spring Security le añade el prefijo <code>ROLE_</code>: el rol real que queda registrado es <code>ROLE_USER</code>, no <code>USER</code>. No tienes que escribir ese prefijo tú mismo —<code>.roles("USER")</code> ya se encarga de añadirlo—, pero si más adelante lo comparas a mano en algún sitio (o ves <code>ROLE_USER</code> en un log o en un test), ya sabes de dónde sale.</p>
@@ -2909,7 +2917,9 @@
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Por qué hace falta <code>.csrf(AbstractHttpConfigurer::disable)</code></p>
-<p>Sin esta línea, cualquier <code>POST</code>/<code>PUT</code>/<code>DELETE</code> te va a devolver un <code>401</code> desconcertante <strong>aunque mandes las credenciales correctas</strong> — incluso antes de que Spring Security llegue a comprobarlas. CSRF (<em>Cross-Site Request Forgery</em>) es una protección pensada para aplicaciones que autentican con cookies de sesión automáticas del navegador: evita que una web maliciosa aproveche que ya estás logueado en otra pestaña para enviar peticiones en tu nombre sin que te enteres. Como Spring Security crea sesión por defecto, esa protección está activa aunque tu API no la necesite —te autenticas con una cabecera <code>Authorization</code> explícita en cada petición, no con una cookie que el navegador manda solo—, y el filtro de CSRF actúa <em>antes</em> que el filtro de HTTP Basic en la cadena, así que corta la petición sin haber llegado siquiera a mirar tus credenciales. Desactivarlo es lo normal en una API REST como esta.</p>
+<p>Sin esta línea, una petición <code>POST</code>, <code>PUT</code> o <code>DELETE</code> sin un token CSRF válido devolverá normalmente un <code>403 Forbidden</code>, aunque incluya unas credenciales HTTP Basic correctas. El <code>CsrfFilter</code> se ejecuta antes que <code>BasicAuthenticationFilter</code>, por lo que puede rechazar la petición antes de que se comprueben esas credenciales.</p>
+<p>CSRF protege especialmente a las aplicaciones donde el navegador adjunta automáticamente las credenciales, como ocurre con las cookies de sesión. En esta actividad, las peticiones se realizan mediante clientes que añaden explícitamente la cabecera <code>Authorization</code> y no utilizamos autenticación basada en cookies, por lo que desactivamos CSRF para simplificar la API.</p>
+<p>Esto no significa que CSRF deba desactivarse en cualquier aplicación REST: depende de cómo se transporten y almacenen las credenciales.</p>
 </div>
 <p>Esta es una versión simplificada — lectura del catálogo pública, todo lo demás exige estar autenticado — de la matriz de rutas completa que construirás más adelante en el tema. Los roles <code>ADMIN</code> y <code>USER</code> que acabas de usar son los mismos que vas a formalizar más adelante como un enum <code>RolUsuario</code> — solo esos dos valores, sin más complicación.</p>
 <hr>
@@ -3009,7 +3019,7 @@
 <h2 id="las-limitaciones-de-esta-version-a-proposito">⚠️ Las limitaciones de esta versión — a propósito<a class="headerlink" href="#las-limitaciones-de-esta-version-a-proposito" title="Permanent link">¶</a></h2>
 <p>Esta configuración tiene dos problemas serios, y son intencionados: sirven de motivación para lo que viene.</p>
 <ol>
-<li><strong>Usuarios hardcodeados</strong>: vivirían en el propio código Java, se perderían cada vez que se reiniciara la aplicación, y cualquiera con acceso al código vería las contraseñas. El próximo apartado los mueve a PostgreSQL, con contraseñas protegidas por BCrypt.</li>
+<li><strong>Usuarios definidos en código y sin persistencia</strong>: <code>user</code> y <code>admin</code> se reconstruyen con los mismos valores cada vez que arranca la aplicación. Cualquier modificación realizada durante la ejecución se perdería al reiniciar y cualquiera con acceso al repositorio podría ver sus contraseñas.</li>
 <li><strong>Credenciales que viajan en cada petición</strong>: con HTTP Basic, cada única petición volvería a mandar usuario y contraseña, apenas ofuscados en Base64. Más adelante en el tema esto se sustituye por JWT: te autenticas una vez, y presentas un token en las peticiones siguientes.</li>
 </ol>
 <hr>
@@ -3020,10 +3030,10 @@
 <li>Spring Security, nada más añadirse, cierra <strong>todo</strong> por defecto — mínima exposición llevada al extremo — insertando un filtro que examina cada petición antes de que llegue a tu <code>DispatcherServlet</code>.</li>
 <li><strong>Autenticación</strong> (¿quién eres?) y <strong>autorización</strong> (¿puedes hacer esto?) son capas distintas — la tarjeta de acceso de un edificio ilustra las dos: te identifica en la entrada, pero no todas las puertas se abren con ella.</li>
 <li><strong>HTTP Basic</strong> manda <code>usuario:contraseña</code> codificado en Base64 en la cabecera <code>Authorization</code> — Base64 no es cifrado, así que Basic solo es seguro sobre HTTPS.</li>
-<li><code>InMemoryUserDetailsManager</code> es tu <code>UserDetailsService</code> — declara usuarios directamente en código, útil para empezar, pero se pierden al reiniciar.</li>
+<li><code>InMemoryUserDetailsManager</code> es tu <code>UserDetailsService</code>: declara los usuarios directamente en código y los reconstruye en cada arranque, pero no conserva modificaciones realizadas durante la ejecución.</li>
 <li>En <code>authorizeHttpRequests</code>, las reglas se evalúan de arriba abajo y gana la primera que encaje — las rutas concretas van siempre antes que <code>anyRequest()</code>.</li>
 <li><code>.roles("USER")</code> registra internamente <code>ROLE_USER</code>, con el prefijo <code>ROLE_</code> añadido por Spring Security.</li>
-<li>Sin <code>.csrf(AbstractHttpConfigurer::disable)</code>, cualquier <code>POST</code>/<code>PUT</code>/<code>DELETE</code> da <code>401</code> aunque las credenciales sean correctas — el filtro de CSRF actúa antes que el de HTTP Basic. Es normal desactivarlo en una API que se autentica por cabecera, no por cookie de sesión.</li>
+<li>Sin <code>.csrf(AbstractHttpConfigurer::disable)</code>, un <code>POST</code>/<code>PUT</code>/<code>DELETE</code> sin token CSRF devuelve normalmente <code>403</code>, incluso aunque incluya credenciales HTTP Basic correctas, porque el filtro de CSRF actúa antes que el de autenticación. En esta API se desactiva porque no utilizamos autenticación basada en cookies.    </li>
 <li>El <code>401</code> que genera Spring Security no pasa por tu <code>GlobalExceptionHandler</code> — lo lanza un filtro, antes de llegar al <code>DispatcherServlet</code>, así que no tiene el formato de tu <code>ErrorResponse</code>. Un <code>AuthenticationEntryPoint</code> a medida (Actividad 2.2) lo arregla, porque un <code>@ExceptionHandler</code> no puede.</li>
 <li>Esta configuración es un estado <strong>intermedio</strong> deliberado: más adelante en el tema se resuelven, por separado, los usuarios hardcodeados (BCrypt + PostgreSQL) y las credenciales viajando en cada petición (JWT).</li>
 </ul>

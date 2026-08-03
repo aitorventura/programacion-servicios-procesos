@@ -2846,7 +2846,7 @@
 </div>
 <div class="admonition info">
 <p class="admonition-title">Práctica guiada</p>
-<p>Vas a construir en tu GameVault la gestión centralizada de errores. Primero provocas, a propósito, los cinco tipos de error que puede devolver tu API tal como está hoy — sin gestionar nada. Después construyes un <code>GlobalExceptionHandler</code> completo. Al final, repites exactamente los mismos cinco errores para comprobar cómo cambia cada respuesta.</p>
+<p>Vas a construir en tu GameVault la gestión centralizada de errores. Primero provocas cinco escenarios de error representativos antes de gestionarlos: algunos aparecen de forma natural en la API y otros se simulan temporalmente para poder observar su comportamiento.</p>
 </div>
 <h2 id="que-vas-a-practicar">Qué vas a practicar<a class="headerlink" href="#que-vas-a-practicar" title="Permanent link">¶</a></h2>
 <ul>
@@ -2912,7 +2912,8 @@
 <p><strong>Captura</strong>: la respuesta. Ya es un <code>404</code> razonable —lo construiste en Acceso a Datos, Tema 1, con <code>ResponseStatusException</code>—, pero fíjate en su formato: ¿se parece en algo al que acabas de capturar en el paso anterior?</p>
 <h3 id="3-un-parametro-de-consulta-que-spring-data-no-entiende">3. Un parámetro de consulta que Spring Data no entiende<a class="headerlink" href="#3-un-parametro-de-consulta-que-spring-data-no-entiende" title="Permanent link">¶</a></h3>
 <p>En el formulario de <code>GET /videojuegos</code>, escribe <code>noExiste,asc</code> en el campo <code>sort</code> (un campo que no existe en la entidad).</p>
-<p><strong>Captura</strong>: la respuesta. Deberías obtener un <code>500 Internal Server Error</code> con una traza de pila completa.</p>
+<p><strong>Captura</strong>: la respuesta. Deberías obtener un <code>500 Internal Server Error</code> con el formato de error predeterminado de Spring. Consulta también la consola de la aplicación, donde podrás ver la excepción y su traza completa.</p>
+<p>Por defecto, Spring Boot no incluye la traza en el cuerpo de la respuesta HTTP, aunque sí registre el error en el servidor.</p>
 <h3 id="4-una-restriccion-que-solo-existe-en-la-base-de-datos">4. Una restricción que solo existe en la base de datos<a class="headerlink" href="#4-una-restriccion-que-solo-existe-en-la-base-de-datos" title="Permanent link">¶</a></h3>
 <p>Este caso tiene una particularidad: si tu entidad <code>Estudio</code> tiene su relación con <code>Videojuego</code> marcada como <code>@OneToMany(mappedBy = "estudio", cascade = CascadeType.ALL, orphanRemoval = true)</code>, borrar un <code>Estudio</code> con <code>Videojuego</code>s asociados los borra también a ellos automáticamente — la clave foránea nunca llega a quejarse, porque JPA resuelve el problema por ti antes de que la base de datos tenga ocasión de hacerlo.</p>
 <p>Para verla de verdad, comenta <strong>temporalmente</strong> el <code>cascade</code> y el <code>orphanRemoval</code> de esa anotación en <code>Estudio.java</code>, dejándola así:</p>
@@ -2927,8 +2928,10 @@
 <p>Añade una línea al principio de cualquier método de tu <code>VideojuegoController</code> o <code>VideojuegoService</code> —por ejemplo, <code>getById</code>—:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RuntimeException</span><span class="p">(</span><span class="s">"Fallo simulado"</span><span class="p">);</span>
 </code></pre></div></td></tr></table></div>
-<p>Prueba ese endpoint desde Swagger UI. Ninguno de tus cuatro handlers está pensado para una <code>RuntimeException</code> genérica, así que se escapa igual que se escaparía un bug real que no hubieras previsto.</p>
+<p>Prueba ese endpoint desde Swagger UI. Como todavía no has construido el <code>GlobalExceptionHandler</code>, esta <code>RuntimeException</code> termina en el manejo predeterminado de Spring, igual que ocurriría con un fallo interno no previsto. Cuando construyas los handlers, será el handler genérico el encargado de convertirla en una respuesta controlada.</p>
 <p><strong>Captura</strong>: la respuesta.</p>
+<p>Quita ahora esta línea antes de continuar con el Paso 3. Más adelante, cuando ya tengas el <code>GlobalExceptionHandler</code>, volverás a añadirla temporalmente para comprobar el comportamiento del handler genérico.</p>
+<p>Si la dejas puesta, puede interferir con las demás pruebas —por ejemplo, impedir que <code>getById()</code> llegue a lanzar el <code>404</code> correspondiente a un recurso inexistente—.</p>
 <hr>
 <h2 id="paso-3-globalexceptionhandler-completo">Paso 3 — <code>GlobalExceptionHandler</code>, completo<a class="headerlink" href="#paso-3-globalexceptionhandler-completo" title="Permanent link">¶</a></h2>
 <p>Crea el paquete <code>exception</code> (<code>src/main/java/com/tunombre/gamevault/exception/</code>) con <code>ErrorResponse</code>:</p>
@@ -3159,7 +3162,7 @@
 <a id="__codelineno-5-95" name="__codelineno-5-95"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-5-96" name="__codelineno-5-96"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p><code>@RestControllerAdvice</code> hace que esta clase intercepte excepciones de <strong>todos</strong> tus controllers, no solo de uno. Cada <code>@ExceptionHandler</code> decide qué tipo de excepción atrapa y cómo la convierte en un <code>ErrorResponse</code> uniforme — en orden, del más específico (una validación concreta) al más genérico (cualquier excepción no prevista).</p>
+<p><code>@RestControllerAdvice</code> hace que esta clase intercepte excepciones de <strong>todos</strong> tus controllers, no solo de uno. Cada <code>@ExceptionHandler</code> decide qué tipo de excepción atrapa y cómo la convierte en un <code>ErrorResponse</code> uniforme. Spring selecciona el handler compatible más específico según el tipo de excepción; el orden en que aparezcan los métodos no determina cuál se ejecuta.</p>
 <hr>
 <h2 id="paso-4-repite-los-cinco-errores-y-compara">Paso 4 — Repite los cinco errores y compara<a class="headerlink" href="#paso-4-repite-los-cinco-errores-y-compara" title="Permanent link">¶</a></h2>
 <p>Con el <code>GlobalExceptionHandler</code> ya en marcha, repite exactamente las mismas cinco peticiones del Paso 2, en el mismo orden, y compara cada respuesta nueva con la que has capturado entonces.</p>
@@ -3173,13 +3176,14 @@
 <p><strong>Responde</strong>: aunque el código de estado no cambia (sigue siendo un <code>404</code>), ¿qué ha cambiado en el formato de la respuesta?</p>
 <h3 id="3-el-parametro-que-spring-data-no-entiende">3. El parámetro que Spring Data no entiende<a class="headerlink" href="#3-el-parametro-que-spring-data-no-entiende" title="Permanent link">¶</a></h3>
 <p>Repite la misma petición a <code>GET /videojuegos</code> con <code>sort=noExiste,asc</code>.</p>
-<p><strong>Captura</strong>: la respuesta nueva — comprueba que ahora obtienes un <code>400</code> con tu formato de <code>ErrorResponse</code>, no la traza de pila de antes.</p>
+<p><strong>Captura</strong>: la respuesta nueva — comprueba que ahora obtienes un <code>400</code> con tu formato de <code>ErrorResponse</code>, no el <code>500</code> con el formato predeterminado de Spring que obtenías antes.</p>
 <p><strong>Pregunta</strong>: ¿por qué un <code>500</code> era la respuesta equivocada para este caso, aunque técnicamente la aplicación "haya fallado" al intentar ordenar por ese campo? Piensa en quién ha cometido el error — el cliente, al pedir un campo que no existe, o el servidor, al no saber gestionarlo.</p>
 <h3 id="4-la-restriccion-de-la-base-de-datos">4. La restricción de la base de datos<a class="headerlink" href="#4-la-restriccion-de-la-base-de-datos" title="Permanent link">¶</a></h3>
 <p>Con el <code>cascade</code>/<code>orphanRemoval</code> todavía comentado en <code>Estudio.java</code>, repite el mismo <code>DELETE /estudios/{id}</code> sobre un <code>Estudio</code> que tenga <code>Videojuego</code>s asociados.</p>
 <p><strong>Captura</strong>: la respuesta nueva — comprueba que ahora obtienes un <code>409</code> con tu formato de <code>ErrorResponse</code>.</p>
 <p><strong>Pregunta</strong>: ¿por qué <code>409 Conflict</code> encaja mejor aquí que <code>400 Bad Request</code>? Piensa en la diferencia entre "esta petición está mal construida" y "esta petición está bien construida, pero no encaja con el estado actual de tus datos".</p>
-<p>Descomenta ahora <code>cascade = CascadeType.ALL, orphanRemoval = true</code> en <code>Estudio.java</code> — no debe quedarse desactivado. El handler que acabas de construir es la segunda barrera, no un sustituto de la primera.</p>
+<p>Descomenta ahora <code>cascade = CascadeType.ALL, orphanRemoval = true</code> en <code>Estudio.java</code> para recuperar la configuración original del proyecto. Solo lo habías desactivado temporalmente para provocar una violación de clave foránea.</p>
+<p>El <code>cascade</code> y el handler no son dos barreras equivalentes: el primero decide qué debe ocurrir con los videojuegos asociados cuando se elimina un estudio; el segundo únicamente da un formato controlado a las operaciones que la base de datos rechaza.</p>
 <h3 id="5-el-error-que-no-era-ninguno-de-los-anteriores">5. El error que no era ninguno de los anteriores<a class="headerlink" href="#5-el-error-que-no-era-ninguno-de-los-anteriores" title="Permanent link">¶</a></h3>
 <p>Vuelve a añadir temporalmente la misma línea (<code>throw new RuntimeException("Fallo simulado");</code>) y repite la misma petición.</p>
 <p><strong>Captura</strong>: la respuesta nueva.</p>
@@ -3187,7 +3191,7 @@
 <p>Ahora sí, quita esa línea de tu código — no debe quedarse ahí. Era solo para provocar el error a propósito, y ya has hecho las dos capturas que necesitabas.</p>
 <hr>
 <h2 id="pregunta-final">Pregunta final<a class="headerlink" href="#pregunta-final" title="Permanent link">¶</a></h2>
-<p>¿Por qué conviene que <strong>todas</strong> las excepciones de la aplicación pasen por un único punto (<code>GlobalExceptionHandler</code>) antes de convertirse en respuesta HTTP, en vez de gestionar cada error donde ocurre? Nombra un dato interno concreto de tu propio proyecto (una clase, una tabla, una ruta de fichero) que este handler evita que se filtre a quien esté probando tu API desde fuera.</p>
+<p>¿Por qué conviene que las excepciones que llegan al circuito normal de Spring MVC pasen por un único punto (<code>GlobalExceptionHandler</code>) antes de convertirse en respuesta HTTP...?</p>
 <hr>
 <h2 id="cierre">✅ Cierre<a class="headerlink" href="#cierre" title="Permanent link">¶</a></h2>
 <div class="admonition warning">

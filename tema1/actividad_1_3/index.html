@@ -2962,7 +2962,7 @@
 <a id="__codelineno-3-8" name="__codelineno-3-8"></a>
 <a id="__codelineno-3-9" name="__codelineno-3-9"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-Sin esta anotación, ese test falla en local con el mismo error de arriba en cuanto quites el filtro — no porque te falte una PostgreSQL real (la tienes corriendo), sino porque sin ningún perfil activo Spring Boot ni siquiera llega a leer <code>application-dev.yaml</code>, así que no encuentra el <code>DataSource</code>.
+Sin esta anotación, ese test falla en local con el mismo error de arriba en cuanto quites el filtro — no porque te falte una PostgreSQL real (la tienes corriendo), sino porque sin ningún perfil activo Spring Boot ni siquiera llega a leer <code>application-dev.yml</code>, así que no encuentra el <code>DataSource</code>.
 </div>
 <p><strong>Pregunta</strong>: tu <code>pom.xml</code> de GameVault viene con un <em>wrapper</em> (<code>mvnw</code>/<code>mvnw.cmd</code>), generado automáticamente por Spring Initializr — a diferencia de <code>validador-dni-ci</code>, donde no había ninguno. El workflow de arriba usa <code>./mvnw test</code>, no <code>mvn test</code>. ¿Qué garantiza usar el <em>wrapper</em> en vez del <code>mvn</code> que esté instalado en el runner de GitHub? Relaciónalo con por qué el Dev Container fija siempre las mismas versiones (Actividad 1.1).</p>
 <p><strong>Predicción</strong>: antes de hacer push, ¿cuántos tests esperas que se ejecuten en total, sumando <code>VideojuegoControllerTest</code> y <code>EstudioControllerTest</code>?</p>

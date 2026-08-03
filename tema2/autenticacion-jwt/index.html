@@ -1592,9 +1592,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#por-fin-un-boton-authorize-de-verdad-en-swagger" class="md-nav__link">
+  <a href="#configurar-authorize-en-swagger-para-el-token-bearer" class="md-nav__link">
     <span class="md-ellipsis">
-      Por fin, un botón "Authorize" de verdad en Swagger
+      Configurar "Authorize" en Swagger para el token Bearer
     </span>
   </a>
   
@@ -2729,9 +2729,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#por-fin-un-boton-authorize-de-verdad-en-swagger" class="md-nav__link">
+  <a href="#configurar-authorize-en-swagger-para-el-token-bearer" class="md-nav__link">
     <span class="md-ellipsis">
-      Por fin, un botón "Authorize" de verdad en Swagger
+      Configurar "Authorize" en Swagger para el token Bearer
     </span>
   </a>
   
@@ -2788,7 +2788,7 @@
 <div><p><a id="autenticacion-jwt"></a></p>
 <h1 id="4-autenticacion-con-jwt">🧩 4. Autenticación con JWT<a class="headerlink" href="#4-autenticacion-con-jwt" title="Permanent link">¶</a></h1>
 <p>Al terminar el apartado anterior, tus usuarios ya eran reales —persistidos en PostgreSQL, con la contraseña protegida por BCrypt— y hasta los secretos vivían ya fuera del código. Pero seguía quedando el problema señalado desde entonces: con HTTP Basic, cada petición —absolutamente todas— volvía a mandar usuario y contraseña, aunque fuera solo codificados en Base64, no cifrados.</p>
-<p>De paso, hoy también cierras algo pendiente desde antes: Swagger nunca ha tenido una forma cómoda de autenticarte desde su propia interfaz — hoy consigue, por fin, un botón "Authorize" de verdad.</p>
+<p>De paso, hoy documentas en OpenAPI el nuevo mecanismo Bearer. Swagger UI podrá guardar el token desde su botón "Authorize" y añadirlo automáticamente a las peticiones que ejecutes desde la documentación.</p>
 <p>HTTP es un protocolo <strong>sin estado</strong>: cada petición llega sola, sin memoria de la anterior. El servidor no "recuerda" que hace un segundo te has autenticado — por eso, hasta ahora, cada petición ha tenido que volver a mandar usuario y contraseña. Hoy sustituyes eso por algo mejor.</p>
 <hr>
 <h2 id="dos-soluciones-historicas-al-problema-de-recordar-quien-eres">🍪 Dos soluciones históricas al problema de "recordar quién eres"<a class="headerlink" href="#dos-soluciones-historicas-al-problema-de-recordar-quien-eres" title="Permanent link">¶</a></h2>
@@ -2802,7 +2802,7 @@
     E -.-&gt; F["🖥️ Servidor 2&lt;br/&gt;❌ no te reconoce"]</code></pre>
 <p>Tu sesión vive solo en la memoria del Servidor 1 — si la siguiente petición cae en el Servidor 2, es como si no hubieras iniciado sesión nunca. Arreglarlo exige que todas las copias compartan el mismo almacén de sesiones, o forzar al balanceador a mandarte siempre contra la misma copia — ninguna de las dos es gratis.</p>
 <h3 id="token-autocontenido">Token autocontenido<a class="headerlink" href="#token-autocontenido" title="Permanent link">¶</a></h3>
-<p>El servidor no guarda nada. En el login, te entrega un <strong>token</strong>: un "carné" firmado que contiene, dentro de sí mismo, quién eres y qué puedes hacer. En cada petición posterior, presentas ese token, y el servidor solo necesita <strong>verificar la firma</strong> — no consultar ningún almacén de sesiones, porque toda la información ya viaja dentro del propio token.</p>
+<p>El servidor no necesita guardar el estado de autenticación de cada sesión. En el login, te entrega un <strong>token</strong>: un "carné" protegido criptográficamente que contiene, dentro de sí mismo, quién eres y qué puedes hacer. En cada petición posterior, presentas ese token, y el servidor puede validarlo sin consultar ningún almacén de sesiones, porque la información necesaria viaja dentro del propio token.</p>
 <pre class="mermaid"><code>sequenceDiagram
     participant Cliente
     participant Servidor
@@ -2814,18 +2814,18 @@
     Note over Cliente,Servidor: Peticiones siguientes:&lt;br/&gt;ninguna consulta a ningún almacén
 
     Cliente-&gt;&gt;Servidor: Petición + token
-    Servidor-&gt;&gt;Servidor: Solo verifica la firma
+    Servidor-&gt;&gt;Servidor: Valida el token
     Servidor--&gt;&gt;Cliente: Respuesta</code></pre>
 <p>Fíjate en que el login (el primer paso del diagrama) <strong>sigue</strong> mandando usuario y contraseña — eso no desaparece, y ahí sigues expuesto exactamente igual que con HTTP Basic. Lo que cambia es la frecuencia: en vez de en todas y cada una de las peticiones, viajan una única vez, contra un único endpoint (<code>/login</code>) que puedes proteger a fondo. Todas las peticiones posteriores —pueden ser cientos, durante toda tu sesión de trabajo— ya no llevan la contraseña en ningún sitio, solo el token.</p>
-<p>De las dos, esta —el token autocontenido— es la que vas a construir en tu API: resuelve justo el problema que acabas de ver con la sesión en servidor (no hay ningún almacén que compartir ni coordinar entre copias, porque no hay nada que guardar), y encaja con una API pensada para poder escalar en varias instancias. <strong>JWT</strong> (<em>JSON Web Token</em>) es el formato estándar de ese token autocontenido, y es lo que vas a implementar hoy.</p>
+<p>De las dos, esta —el token autocontenido— es la que vas a construir en tu API: resuelve justo el problema que acabas de ver con la sesión en servidor, porque no hay que compartir ni coordinar un almacén de sesiones entre las distintas copias de la aplicación, y encaja con una API pensada para poder escalar en varias instancias. <strong>JWT</strong> (<em>JSON Web Token</em>) es el formato estándar de ese token autocontenido, y es lo que vas a implementar hoy.</p>
 <hr>
 <h2 id="que-significa-firmado">✍️ Qué significa "firmado"<a class="headerlink" href="#que-significa-firmado" title="Permanent link">¶</a></h2>
-<p>Retoma la criptografía del apartado anterior: <strong>firmar no es lo mismo que cifrar</strong>. Firmar un dato no oculta su contenido — sigue siendo legible por cualquiera — pero garantiza dos cosas: que no se ha modificado desde que se firmó, y quién lo firmó (si conoces la clave de verificación). Un JWT está firmado, no cifrado: su contenido es legible por cualquiera que lo intercepte, pero nadie puede modificarlo sin invalidar la firma.</p>
-<p>El algoritmo concreto que vas a usar se llama <strong>HMAC</strong> (<em>Hash-based Message Authentication Code</em>): parte de la misma idea de función hash que ya conoces de BCrypt —una función que reduce unos datos de entrada, aquí el header y el payload del JWT, a una huella de longitud fija—, pero le añade un segundo ingrediente: un secreto compartido, sin el cual es imposible calcular esa huella.</p>
-<p><code>HS256</code>, el nombre que verás en el código, es HMAC combinado con <strong>SHA-256</strong>, la misma función hash rápida que has descartado para contraseñas en el apartado anterior por ser demasiado rápida ante la fuerza bruta. Aquí sí es la elección correcta: no estás protegiendo una contraseña de un atacante que prueba millones de combinaciones, sino verificando que un mensaje no se ha tocado, con una clave que solo tiene el servidor.</p>
+<p><strong>Firmar no es lo mismo que cifrar</strong>. Proteger un dato mediante una firma o un código de autenticación no oculta su contenido: sigue siendo legible por cualquiera. Lo que permite es comprobar que no se ha modificado y que fue generado por alguien que conocía la clave necesaria.</p>
+<p>En este proyecto utilizarás <strong>HMAC</strong> (<em>Hash-based Message Authentication Code</em>) con el algoritmo <code>HS256</code>. HMAC combina una función hash —SHA-256 en este caso— con un secreto compartido. Solo quien conoce ese secreto puede generar un código válido para el contenido del token.</p>
+<p>Aunque habitualmente se hable de «firmar un JWT», <code>HS256</code> utiliza técnicamente un código MAC simétrico: la misma clave sirve para generar y para verificar el token. Su finalidad es comprobar la integridad y autenticidad del mensaje, no proteger contraseñas como hace BCrypt.</p>
 <hr>
 <h2 id="anatomia-de-un-jwt">🧬 Anatomía de un JWT<a class="headerlink" href="#anatomia-de-un-jwt" title="Permanent link">¶</a></h2>
-<p>Un JWT tiene tres partes separadas por puntos: <code>header.payload.signature</code>. Cada parte va codificada en Base64:</p>
+<p>El JWT firmado que utilizarás en este proyecto sigue la serialización compacta JWS y tiene tres partes separadas por puntos: <code>header.payload.signature</code>. Las tres se codifican mediante <strong>Base64URL</strong>, una variante de Base64 segura para URLs y sin el relleno final <code>=</code>.</p>
 <div class="language-text highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Text Only</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a>eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGVzIjpbIkFETUlOIl0sImlhdCI6MTczMDAwMDAwMCwiZXhwIjoxNzMwMDAzNjAwfQ.SflKxwRJ...
 </code></pre></div></td></tr></table></div>
 <table>
@@ -2839,7 +2839,7 @@
 <tbody>
 <tr>
 <td><code>header</code></td>
-<td>Metadatos sobre el propio token: qué algoritmo de firma se ha usado (<code>alg</code>) y el tipo de token, siempre <code>"JWT"</code> (<code>typ</code>)</td>
+<td>Metadatos sobre la protección del token, como el algoritmo utilizado (<code>alg</code>). También puede incluir <code>typ</code>, normalmente con el valor <code>"JWT"</code>, pero este campo es opcional.</td>
 <td><code>eyJhbGciOiJIUzI1NiJ9</code></td>
 </tr>
 <tr>
@@ -2849,12 +2849,12 @@
 </tr>
 <tr>
 <td><code>signature</code></td>
-<td>El resultado de firmar <code>header + payload</code> con el algoritmo indicado y el secreto del servidor — lo que garantiza que nadie los ha tocado</td>
+<td>El código HMAC calculado sobre el <code>header</code> y el <code>payload</code> codificados, utilizando el secreto del servidor. Permite detectar cualquier modificación del contenido.</td>
 <td><code>SflKxwRJ...</code></td>
 </tr>
 </tbody>
 </table>
-<p>Decodifica el <code>payload</code> de cualquier JWT (por ejemplo, en <a href="https://jwt.io">jwt.io</a> o con <code>base64 -d</code>) y verás algo como:</p>
+<p>Si decodificas el <code>payload</code> de un token de prueba con una herramienta para JWT, verás algo como:</p>
 <div class="language-json highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">JSON</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="p">{</span><span class="nt">"sub"</span><span class="p">:</span><span class="w"> </span><span class="s2">"admin"</span><span class="p">,</span><span class="w"> </span><span class="nt">"roles"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"ADMIN"</span><span class="p">],</span><span class="w"> </span><span class="nt">"iat"</span><span class="p">:</span><span class="w"> </span><span class="mi">1730000000</span><span class="p">,</span><span class="w"> </span><span class="nt">"exp"</span><span class="p">:</span><span class="w"> </span><span class="mi">1730003600</span><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>Tres de estos campos son estándar de JWT (los define la propia especificación, con ese nombre exacto); <code>roles</code> no lo es — te lo inventas tú, según lo que tu aplicación necesite saber de cada usuario:</p>
@@ -2892,8 +2892,8 @@
 <div class="admonition danger">
 <p class="admonition-title">El contenido NO va cifrado — y eso tiene dos consecuencias distintas</p>
 <p>Cualquiera que capture un JWT puede leer su payload completo, sin necesitar ninguna clave — igual que has decodificado HTTP Basic en la Actividad 2.2. De ahí salen dos escenarios que conviene no mezclar:</p>
-<p><strong>Si alguien roba un token válido y lo reenvía tal cual</strong>, sin tocarlo, el servidor lo acepta sin más — para el servidor es indistinguible de una petición tuya de verdad. La firma no protege de esto: el token sigue siendo perfectamente válido, solo que en manos equivocadas. (Es justo lo que resuelve HTTPS, más abajo: que nadie pueda interceptarlo por el camino.)</p>
-<p><strong>Si alguien intenta modificarlo, o fabricar uno nuevo desde cero</strong> —por ejemplo, cambiando tu rol de <code>USER</code> a <code>ADMIN</code> en un token robado—, ahí sí entra en juego la <strong>firma</strong> (la tercera parte del token): se calcula con HMAC, el algoritmo que acabas de ver, y un secreto que solo conoce el servidor. Sin ese secreto, no se puede calcular una firma válida para un contenido nuevo — así que cualquier cambio, por pequeño que sea, deja la firma sin coincidir, y el servidor lo rechaza al instante.</p>
+<p><strong>Si alguien roba un token válido y lo reenvía tal cual</strong>, sin tocarlo, el servidor lo acepta como credencial válida — para el servidor es indistinguible de una petición tuya de verdad. La firma no protege de esto: el token sigue siendo perfectamente válido, solo que en manos equivocadas. Por eso necesitas HTTPS: cifra el transporte para que quien observe el tráfico no pueda leer ni obtener el token.</p>
+<p><strong>Si alguien intenta modificarlo, o fabricar uno nuevo desde cero</strong> —por ejemplo, cambiando tu rol de <code>USER</code> a <code>ADMIN</code> en un token robado—, ahí sí entra en juego la <strong>firma</strong> (la tercera parte del token): se calcula con HMAC, el algoritmo que acabas de ver, y un secreto que solo conoce el servidor. Sin ese secreto, resulta computacionalmente inviable calcular un código válido.</p>
 </div>
 <hr>
 <h2 id="el-flujo-completo-pieza-a-pieza">🔑 El flujo completo, pieza a pieza<a class="headerlink" href="#el-flujo-completo-pieza-a-pieza" title="Permanent link">¶</a></h2>
@@ -2916,7 +2916,7 @@
     JwtEncoder--&gt;&gt;JwtService: token JWT
     JwtService--&gt;&gt;AuthController: token
     AuthController--&gt;&gt;Cliente: 200 + token</code></pre>
-<p>Ese token, en cada petición posterior, sigue un camino distinto —ya no pasa por el login, ni por <code>AuthenticationManager</code>—. Con un ejemplo concreto: un <code>POST /api/v1/libros</code>, una ruta que solo puede tocar <code>ADMIN</code>, con el token que acabas de obtener en el login:</p>
+<p>Ese token, en cada petición posterior, sigue un camino distinto —ya no pasa por el login ni por <code>AuthenticationManager</code>—. Retomando el tipo de regla que ya probaste de forma puntual con HTTP Basic, imagina que <code>POST /api/v1/libros</code> está protegido con <code>hasRole("ADMIN")</code>. El objetivo del diagrama es mostrar cómo el claim <code>roles</code> del token se transforma en una autoridad que Spring Security puede comprobar:</p>
 <pre class="mermaid"><code>sequenceDiagram
     participant Cliente
     participant SecurityFilterChain
@@ -2926,7 +2926,7 @@
 
     Cliente-&gt;&gt;SecurityFilterChain: POST /api/v1/libros&lt;br/&gt;Authorization: Bearer eyJhbGci...
     SecurityFilterChain-&gt;&gt;JwtDecoder: decode(token)
-    Note right of JwtDecoder: Verifica la firma con el secreto.&lt;br/&gt;Si es válida, extrae los claims:&lt;br/&gt;sub=admin, roles=["ADMIN"]
+    Note right of JwtDecoder: Verifica la firma y la caducidad&lt;br/&gt;del token.&lt;br/&gt;Si el token es válido, extrae los claims:&lt;br/&gt;sub=admin, roles=["ADMIN"]
     JwtDecoder--&gt;&gt;SecurityFilterChain: claims validados
     SecurityFilterChain-&gt;&gt;JwtAuthenticationConverter: lee el claim roles=["ADMIN"]
     Note right of JwtAuthenticationConverter: Añade el prefijo ROLE_ →&lt;br/&gt;autoridad "ROLE_ADMIN"
@@ -2979,8 +2979,10 @@
 <a id="__codelineno-3-13" name="__codelineno-3-13"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <div class="admonition warning">
-<p class="admonition-title">El secreto tiene que ser largo, no solo secreto</p>
-<p>HS256 exige una clave de al menos 256 bits (32 caracteres). Si usas algo corto, tipo <code>"clave123"</code>, Spring lanza una excepción al arrancar la aplicación — no es un capricho de seguridad, es un requisito matemático del propio algoritmo: una clave corta es más fácil de adivinar por fuerza bruta, así que HMAC-SHA256 se niega a trabajar con una. Una cadena aleatoria larga, como la que ya has generado para <code>application-dev-local.yaml</code>, cumple de sobra.</p>
+<p class="admonition-title">El secreto tiene que ser largo y aleatorio</p>
+<p>HS256 requiere una clave de al menos <strong>256 bits (32 bytes)</strong>. Como en este código conviertes directamente el texto a bytes UTF-8, una cadena ASCII de 32 caracteres ocupa esos 32 bytes mínimos.</p>
+<p>La longitud no basta por sí sola: <code>"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"</code> tiene 32 caracteres, pero sigue siendo una clave predecible. Utiliza una cadena generada aleatoriamente y guardada fuera del repositorio.</p>
+<p>Una clave demasiado corta será rechazada cuando la biblioteca intente utilizarla para firmar o validar el token.</p>
 </div>
 <p>Aprovecha esta misma clase para exponer una pieza más, que no tiene que ver con el secreto pero sí hace falta para el login: el <code>AuthenticationManager</code>. Es la interfaz de Spring Security con un único trabajo: recibir unas credenciales todavía sin comprobar y, si son correctas, devolver un <code>Authentication</code> ya validado —o lanzar una excepción si no lo son—. Es justo lo que necesitas en tu endpoint de login para verificar <code>usuario</code>/<code>contraseña</code>.</p>
 <p>Por debajo, el <code>AuthenticationManager</code> usa dos piezas que ya tienes en tu contexto desde el apartado anterior: tu <code>UserDetailsService</code> (busca al usuario) y tu <code>PasswordEncoder</code> (compara la contraseña con el hash BCrypt guardado). No conectas nada de esto a mano — es el mismo mecanismo que ya has visto entonces: como en tu contexto de Spring solo existe <strong>un</strong> bean de cada tipo (tu única clase <code>BdUserDetailsService</code>, tu único <code>@Bean PasswordEncoder</code>), no hay ambigüedad que resolver, y Spring Boot los detecta y los usa sin que se lo indiques por nombre.</p>
@@ -3183,7 +3185,7 @@
 </tr>
 <tr>
 <td>Ejemplo concreto</td>
-<td><code>GET /api/v1/libros/1</code> sin token, o con uno caducado</td>
+<td><code>GET /api/v1/libros/1</code> sin token</td>
 <td><code>POST /api/v1/auth/login</code> con la contraseña equivocada</td>
 </tr>
 <tr>
@@ -3242,7 +3244,7 @@
 <a id="__codelineno-9-17" name="__codelineno-9-17"></a><span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
 <a id="__codelineno-9-18" name="__codelineno-9-18"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p><code>SessionCreationPolicy.STATELESS</code> es la consecuencia directa de usar tokens autocontenidos: con JWT no hace falta que el servidor guarde ninguna sesión, así que se lo dices explícitamente a Spring Security. <code>oauth2ResourceServer(oauth2 -&gt; oauth2.jwt(...))</code> activa la validación de JWT en cada petición protegida — Spring verifica la firma automáticamente, usando el <code>JwtDecoder</code> que ya has visto más arriba. <code>httpBasic(AbstractHttpConfigurer::disable)</code> retira oficialmente el mecanismo provisional de los apartados anteriores: JWT es ahora el único mecanismo de autenticación.</p>
+<p><code>SessionCreationPolicy.STATELESS</code> es la consecuencia directa de usar tokens autocontenidos: con JWT no hace falta que el servidor guarde ninguna sesión, así que se lo dices explícitamente a Spring Security. <code>oauth2ResourceServer(oauth2 -&gt; oauth2.jwt(...))</code> activa la autenticación mediante JWT en las peticiones que incluyen un token Bearer. Spring utiliza el <code>JwtDecoder</code> configurado para comprobar el token y extraer sus claims. <code>httpBasic(AbstractHttpConfigurer::disable)</code> retira oficialmente el mecanismo provisional de los apartados anteriores: JWT es ahora el único mecanismo de autenticación.</p>
 <p>La regla de <code>/v3/api-docs/**</code>, <code>/swagger-ui/**</code> y <code>/documentacion</code> también es nueva: desde la seguridad básica, Swagger ha estado bloqueado detrás de autenticación, igual que el resto de la API. Sin ella, el navegador no podría ni cargar <code>/documentacion</code> —<code>STATELESS</code> no manda ningún token solo por navegar a una URL—, y el botón "Authorize" que ves un poco más abajo no sería alcanzable.</p>
 <p>Hay una pieza más en esa misma línea que merece explicación aparte: <code>jwtAuthenticationConverter()</code>. Por defecto, Spring Security espera encontrar los roles en un claim llamado <code>scope</code> o <code>scp</code> —el habitual en OAuth2—, pero tú los guardas en un claim propio, <code>roles</code>.</p>
 <p>Sin decírselo explícitamente, Spring no sabría traducir tu token en autoridades utilizables por <code>hasRole(...)</code>, y todas tus reglas de autorización dejarían de reconocer ningún rol, aunque el token en sí fuera perfectamente válido:</p>
@@ -3267,7 +3269,7 @@
 <a id="__codelineno-10-10" name="__codelineno-10-10"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p><code>setAuthoritiesClaimName("roles")</code> le dice dónde mirar; <code>setAuthorityPrefix("ROLE_")</code> reconstruye el prefijo que ya conoces de la seguridad básica —recuerda que <code>JwtService</code> te lo quitó al generar el token, precisamente para no guardarlo por duplicado dentro del JWT—.</p>
-<p>Con eso, tus reglas <code>hasRole("ADMIN")</code> de siempre siguen funcionando sin tocar ni una línea.</p>
+<p>Con eso, cuando declares reglas como <code>hasRole("ADMIN")</code>, Spring Security podrá reconocer los roles almacenados en el claim <code>roles</code>.</p>
 <h3 id="get-apiv1authme"><code>GET /api/v1/auth/me</code><a class="headerlink" href="#get-apiv1authme" title="Permanent link">¶</a></h3>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-11-1">1</a></span>
 <span class="normal"><a href="#__codelineno-11-2">2</a></span>
@@ -3280,8 +3282,8 @@
 <a id="__codelineno-11-5" name="__codelineno-11-5"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>Un endpoint sencillo para verificar qué información viaja dentro de tu propio token: útil tanto para probar como para entender qué sabe el servidor de ti en cada petición autenticada.</p>
-<h3 id="por-fin-un-boton-authorize-de-verdad-en-swagger">Por fin, un botón "Authorize" de verdad en Swagger<a class="headerlink" href="#por-fin-un-boton-authorize-de-verdad-en-swagger" title="Permanent link">¶</a></h3>
-<p>En "Seguridad básica" has visto que Swagger no sabía pedirte credenciales por su cuenta —con HTTP Basic, o lo hacía el propio navegador, o no había forma cómoda de autenticarte desde la interfaz—. Con JWT eso se resuelve de raíz: le declaras a Swagger que tu API usa un esquema de seguridad <code>bearer</code>, y a cambio te da un botón "Authorize" real, donde pegas tu token una sola vez.</p>
+<h3 id="configurar-authorize-en-swagger-para-el-token-bearer">Configurar "Authorize" en Swagger para el token Bearer<a class="headerlink" href="#configurar-authorize-en-swagger-para-el-token-bearer" title="Permanent link">¶</a></h3>
+<p>Swagger UI puede trabajar con distintos mecanismos de autenticación, entre ellos HTTP Basic y Bearer, siempre que estén declarados en la especificación OpenAPI. En el apartado anterior no configuraste un esquema para HTTP Basic; ahora sí declararás el nuevo esquema Bearer para poder pegar el JWT una sola vez y reutilizarlo en las peticiones posteriores.</p>
 <p>Se declara en el mismo <code>OpenApiConfig</code> que ya tienes, añadiendo un <code>SecurityScheme</code>:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-12-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-12-2"> 2</a></span>
@@ -3324,6 +3326,7 @@
 <hr>
 <h2 id="lo-que-jwt-tampoco-resuelve-revocar-un-token">🔁 Lo que JWT tampoco resuelve: revocar un token<a class="headerlink" href="#lo-que-jwt-tampoco-resuelve-revocar-un-token" title="Permanent link">¶</a></h2>
 <p>Hay otra pregunta que probablemente te has hecho ya: si un usuario cierra sesión, o un administrador quiere echarlo del sistema ahora mismo, ¿cómo se invalida su token? La respuesta incómoda es que, con JWT tal y como lo has construido hoy, <strong>no se puede</strong>: el servidor no guarda ningún registro de qué tokens ha emitido —es justo lo que lo hace <em>stateless</em>—, así que un token firmado sigue siendo válido para el servidor hasta que caduca por su cuenta (<code>exp</code>), pase lo que pase mientras tanto.</p>
+<p>Esto afecta también al campo <code>activo</code> que añadiste al usuario: marcarlo como <code>activo = false</code> impedirá que vuelva a autenticarse y obtenga tokens nuevos, pero no invalida automáticamente un JWT que ya tenía emitido. Como las peticiones posteriores se autentican a partir del propio token y no vuelven a consultar al usuario en PostgreSQL, ese JWT seguirá funcionando hasta que caduque.</p>
 <p>No vas a implementar una solución en este curso, pero merece la pena saber que el problema existe y cómo se aborda en un proyecto real: o bien el servidor mantiene una lista negra de tokens revocados que consulta en cada petición (lo que reintroduce parte del estado que JWT prometía evitar), o bien se usan tokens de vida muy corta —minutos, no horas— combinados con un <em>refresh token</em> aparte, de forma que un token robado o que haya que revocar deja de ser útil por sí solo, sin más que esperar.</p>
 <hr>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
@@ -3331,13 +3334,13 @@
 <summary>Abrir resumen</summary>
 <ul>
 <li>HTTP es sin estado; la <strong>sesión en servidor</strong> (cookie + almacén) y el <strong>token autocontenido</strong> (JWT) son las dos soluciones clásicas para "recordar quién eres".</li>
-<li><strong>Firmar ≠ cifrar</strong>: un JWT es legible por cualquiera, pero su firma impide modificarlo sin que se detecte.</li>
-<li>Un JWT tiene tres partes (<code>header.payload.signature</code>); los <strong>claims</strong> del payload llevan quién eres, tus roles y la expiración.</li>
+<li><strong>Proteger ≠ cifrar</strong>: el contenido de un JWT es legible, pero HMAC permite detectar modificaciones y comprobar que fue generado utilizando el secreto compartido.</li>
+<li>El JWT firmado utilizado en este proyecto tiene tres partes (<code>header.payload.signature</code>); los <strong>claims</strong> del payload llevan quién eres, tus roles y la expiración.</li>
 <li><code>SessionCreationPolicy.STATELESS</code> + <code>oauth2ResourceServer(...).jwt(...)</code> activan la validación automática de JWT; <code>httpBasic(disable)</code> retira el mecanismo provisional.</li>
-<li>El <code>AuthenticationManager</code> y el <code>jwtAuthenticationConverter()</code> no vienen listos de fábrica: hay que declararlos tú mismo como beans en <code>SecurityConfig</code> — el primero para poder inyectarlo en el login, el segundo para que Spring sepa leer tus roles desde el claim <code>roles</code> en vez del <code>scope</code> por defecto.</li>
+<li>Spring construye internamente el <code>AuthenticationManager</code>, pero debes exponerlo como bean para poder inyectarlo en el login. También defines un <code>JwtAuthenticationConverter</code> propio porque tus roles están en el claim <code>roles</code>, no en los claims <code>scope</code> o <code>scp</code> que Spring utiliza por defecto.</li>
 <li>JWT resuelve el reenvío de contraseña en cada petición, pero <strong>no</strong> sustituye a HTTPS — la firma da integridad, no confidencialidad del canal.</li>
 <li><code>authenticate(...)</code> se llama dentro de tu controller, no en un filtro — por eso, a diferencia del <code>401</code> de HTTP Basic, su excepción sí llega a tu <code>GlobalExceptionHandler</code>: un sexto <code>@ExceptionHandler(AuthenticationException.class)</code> le da el mismo formato que al resto de errores.</li>
-<li>Un <code>SecurityScheme</code> en <code>OpenApiConfig</code> le da a Swagger un botón "Authorize" real — pegas el token una vez, y se añade solo a cada "Try it out" siguiente.</li>
+<li>Un <code>SecurityScheme</code> Bearer en <code>OpenApiConfig</code> configura el botón "Authorize" de Swagger UI: pegas el token una vez y la interfaz lo añade automáticamente a las peticiones posteriores.</li>
 <li>JWT tampoco resuelve la revocación: un token firmado es válido hasta que caduca, sin importar si el usuario cierra sesión — se aborda con listas negras o con tokens de vida corta + <em>refresh token</em>, ninguna implementada en este curso.</li>
 </ul>
 </details></div>
