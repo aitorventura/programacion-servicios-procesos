@@ -301,7 +301,7 @@ Ahora sí, quita esa línea de tu código — no debe quedarse ahí. Era solo pa
 
 ## Pregunta final
 
-¿Por qué conviene que las excepciones que llegan al circuito normal de Spring MVC pasen por un único punto (`GlobalExceptionHandler`) antes de convertirse en respuesta HTTP...?
+¿Por qué conviene que todas las excepciones de la aplicación pasen por un único punto (`GlobalExceptionHandler`) antes de convertirse en respuesta HTTP, en vez de gestionar cada error donde ocurre? Nombra un dato interno concreto de tu propio proyecto (una clase, una tabla, una ruta de fichero) que este handler evita que se filtre a quien esté probando tu API desde fuera.
 
 ---
 
