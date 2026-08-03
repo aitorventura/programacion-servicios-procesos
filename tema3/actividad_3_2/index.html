@@ -2788,127 +2788,97 @@ No necesita ningún comportamiento real: ningún código de estos tests llega a 
 <a id="__codelineno-6-5" name="__codelineno-6-5"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>Repite <code>@CacheEvict(value = "topNovedades", allEntries = true, beforeInvocation = true)</code> en <code>update()</code> y en <code>delete()</code>. <code>@Cacheable</code> guarda el resultado la primera vez que se llama y lo devuelve directamente en las siguientes, sin ejecutar el método; <code>@CacheEvict</code> borra ese resultado guardado cuando algo cambia, para que la próxima llamada vuelva a calcularlo.</p>
+<div class="admonition warning">
+<p class="admonition-title"><code>VideojuegoApiIntegrationTest</code> necesita Redis a partir de ahora (o la caché deshabilitada en test)</p>
+<p>A diferencia de <code>VideojuegoControllerTest</code> (que ya has arreglado arriba mockeando <code>CacheManager</code>), <code>VideojuegoApiIntegrationTest</code> (Acceso a Datos, Actividad 2.3) levanta el contexto completo de Spring, sin ningún mock — así que en cuanto <code>create</code>/<code>update</code>/<code>delete</code> lleven <code>@CacheEvict</code> de verdad, ese test necesita hablar con un Redis real o falla con <code>RedisConnectionFailureException</code>. Y como <code>beforeInvocation = true</code> evict <em>antes</em> de ejecutar el método, hasta un test que solo comprueba un <code>404</code> (que nunca llega a tocar la caché en <code>getTopNovedades()</code>) puede fallar por esto.</p>
+<p>Aquí no merece la pena montar un contenedor de Redis solo para este test: no es objeto de <code>VideojuegoApiIntegrationTest</code> comprobar el comportamiento de la caché en sí (para eso ya tienes el <code>curl</code> a <code>/top</code> de más arriba, contra tu Redis real de desarrollo). Deshabilita la caché en el perfil de test, en tu <code>application-test.yml</code>:</p>
+<div class="language-yaml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">YAML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span>
+<span class="normal"><a href="#__codelineno-7-2">2</a></span>
+<span class="normal"><a href="#__codelineno-7-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="nt">spring</span><span class="p">:</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2"></a><span class="w">  </span><span class="nt">cache</span><span class="p">:</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3"></a><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
+</code></pre></div></td></tr></table></div>
+<p>Con <code>type: none</code>, Spring registra un <code>CacheManager</code> que no hace absolutamente nada — <code>@Cacheable</code>/<code>@CacheEvict</code> siguen ahí, pero se convierten en no-ops durante los tests, sin que necesites tocar ni una línea de <code>VideojuegoApiIntegrationTest</code>.</p>
+<p><strong>Ejecuta también</strong> <code>VideojuegoApiIntegrationTest</code> y comprueba que sigue pasando (no hace falta captura, esto es solo para que tu batería de tests no se quede rota).</p>
+</div>
 <p><code>beforeInvocation = true</code> no es opcional aquí: sin él, Spring evita <strong>después</strong> de que <code>create()</code>/<code>update()</code>/<code>delete()</code> terminen del todo (incluido el <code>commit</code>, que llega en el próximo apartado) — justo el mismo instante en que vas a disparar un aviso de "recalienta ya". Con el orden por defecto, ese aviso podría llegar antes de que el evict haya limpiado nada, encontrar la caché todavía con el valor viejo, y no recalcular nada de verdad.</p>
 <p>Antes de probarlo, un detalle que si no lo añades ahora te va a dar un <code>500</code> en cuanto pidas <code>/top</code>: por defecto, Spring guarda en Redis usando la serialización estándar de Java, que exige que la clase sea <code>Serializable</code> — y <code>VideojuegoResponseDTO</code>, al ser un <code>record</code>, no lo es por defecto. Añádeselo:</p>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1">1</a></span>
-<span class="normal"><a href="#__codelineno-7-2">2</a></span>
-<span class="normal"><a href="#__codelineno-7-3">3</a></span>
-<span class="normal"><a href="#__codelineno-7-4">4</a></span>
-<span class="normal"><a href="#__codelineno-7-5">5</a></span>
-<span class="normal"><a href="#__codelineno-7-6">6</a></span>
-<span class="normal"><a href="#__codelineno-7-7">7</a></span>
-<span class="normal"><a href="#__codelineno-7-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">record</span> <span class="nc">VideojuegoResponseDTO</span><span class="p">(</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2"></a><span class="w">    </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3"></a><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">titulo</span><span class="p">,</span>
-<a id="__codelineno-7-4" name="__codelineno-7-4"></a><span class="w">    </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">precio</span><span class="p">,</span>
-<a id="__codelineno-7-5" name="__codelineno-7-5"></a><span class="w">    </span><span class="n">LocalDate</span><span class="w"> </span><span class="n">fechaLanzamiento</span><span class="p">,</span>
-<a id="__codelineno-7-6" name="__codelineno-7-6"></a><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">nombreEstudio</span><span class="p">,</span>
-<a id="__codelineno-7-7" name="__codelineno-7-7"></a><span class="w">    </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">detallesPlataforma</span>
-<a id="__codelineno-7-8" name="__codelineno-7-8"></a><span class="p">)</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Serializable</span><span class="w"> </span><span class="p">{}</span>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1">1</a></span>
+<span class="normal"><a href="#__codelineno-8-2">2</a></span>
+<span class="normal"><a href="#__codelineno-8-3">3</a></span>
+<span class="normal"><a href="#__codelineno-8-4">4</a></span>
+<span class="normal"><a href="#__codelineno-8-5">5</a></span>
+<span class="normal"><a href="#__codelineno-8-6">6</a></span>
+<span class="normal"><a href="#__codelineno-8-7">7</a></span>
+<span class="normal"><a href="#__codelineno-8-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">record</span> <span class="nc">VideojuegoResponseDTO</span><span class="p">(</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2"></a><span class="w">    </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3"></a><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">titulo</span><span class="p">,</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4"></a><span class="w">    </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">precio</span><span class="p">,</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5"></a><span class="w">    </span><span class="n">LocalDate</span><span class="w"> </span><span class="n">fechaLanzamiento</span><span class="p">,</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6"></a><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">nombreEstudio</span><span class="p">,</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7"></a><span class="w">    </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">detallesPlataforma</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8"></a><span class="p">)</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Serializable</span><span class="w"> </span><span class="p">{}</span>
 </code></pre></div></td></tr></table></div>
 <p>Un <code>record</code> puede implementar <code>Serializable</code> sin ningún cambio más en su definición — sigue siendo inmutable, sigue generando <code>equals</code>/<code>hashCode</code>/<code>toString</code> automáticamente, solo que ahora también sabe convertirse a bytes y de vuelta.</p>
 <p><strong>Comprueba</strong> que funciona: pide <code>/api/v1/videojuegos/top</code> dos veces seguidas (la segunda debería ser instantánea) y confírmalo mirando dentro de Redis:</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1">1</a></span>
-<span class="normal"><a href="#__codelineno-8-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>&lt;tu-contenedor-redis&gt;<span class="w"> </span>redis-cli
-<a id="__codelineno-8-2" name="__codelineno-8-2"></a>&gt;<span class="w"> </span>KEYS<span class="w"> </span>*
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1">1</a></span>
+<span class="normal"><a href="#__codelineno-9-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>&lt;tu-contenedor-redis&gt;<span class="w"> </span>redis-cli
+<a id="__codelineno-9-2" name="__codelineno-9-2"></a>&gt;<span class="w"> </span>KEYS<span class="w"> </span>*
 </code></pre></div></td></tr></table></div>
 <p><strong>Captura</strong>: la clave que aparece en Redis tras la segunda petición a <code>/top</code>.</p>
 <hr>
 <h2 id="paso-1-medir-el-problema-que-vas-a-resolver">Paso 1 — Medir el problema que vas a resolver<a class="headerlink" href="#paso-1-medir-el-problema-que-vas-a-resolver" title="Permanent link">¶</a></h2>
 <p>Tras las pruebas del Paso 0, la caché ya está caliente — si mides ahora, la "primera llamada" saldría instantánea, sin decir nada del problema real. Vacíala antes de empezar:</p>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1">1</a></span>
-<span class="normal"><a href="#__codelineno-9-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>&lt;tu-contenedor-redis&gt;<span class="w"> </span>redis-cli
-<a id="__codelineno-9-2" name="__codelineno-9-2"></a>&gt;<span class="w"> </span>FLUSHALL
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-10-1">1</a></span>
+<span class="normal"><a href="#__codelineno-10-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>&lt;tu-contenedor-redis&gt;<span class="w"> </span>redis-cli
+<a id="__codelineno-10-2" name="__codelineno-10-2"></a>&gt;<span class="w"> </span>FLUSHALL
 </code></pre></div></td></tr></table></div>
-<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-10-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-10-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-10-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-10-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-10-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-10-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-10-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-10-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-10-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-10-10">10</a></span>
-<span class="normal"><a href="#__codelineno-10-11">11</a></span>
-<span class="normal"><a href="#__codelineno-10-12">12</a></span>
-<span class="normal"><a href="#__codelineno-10-13">13</a></span>
-<span class="normal"><a href="#__codelineno-10-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1"></a><span class="c1"># Primera llamada: paga el Thread.sleep(2000)</span>
-<a id="__codelineno-10-2" name="__codelineno-10-2"></a><span class="nb">time</span><span class="w"> </span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/videojuegos/top<span class="w"> </span>&gt;<span class="w"> </span>/dev/null
-<a id="__codelineno-10-3" name="__codelineno-10-3"></a>
-<a id="__codelineno-10-4" name="__codelineno-10-4"></a><span class="c1"># Segunda llamada: sale de caché, instantánea</span>
-<a id="__codelineno-10-5" name="__codelineno-10-5"></a><span class="nb">time</span><span class="w"> </span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/videojuegos/top<span class="w"> </span>&gt;<span class="w"> </span>/dev/null
-<a id="__codelineno-10-6" name="__codelineno-10-6"></a>
-<a id="__codelineno-10-7" name="__codelineno-10-7"></a><span class="c1"># Crea un videojuego (invalida la caché con @CacheEvict) — recuerda: exige rol ADMIN</span>
-<a id="__codelineno-10-8" name="__codelineno-10-8"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/videojuegos<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-10-9" name="__codelineno-10-9"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN_ADMIN</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-10-10" name="__codelineno-10-10"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-10-11" name="__codelineno-10-11"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"titulo":"Test","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'</span>
-<a id="__codelineno-10-12" name="__codelineno-10-12"></a>
-<a id="__codelineno-10-13" name="__codelineno-10-13"></a><span class="c1"># Tercera llamada: ha vuelto a pagar los 2 segundos</span>
-<a id="__codelineno-10-14" name="__codelineno-10-14"></a><span class="nb">time</span><span class="w"> </span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/videojuegos/top<span class="w"> </span>&gt;<span class="w"> </span>/dev/null
+<div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-11-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-11-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-11-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-11-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-11-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-11-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-11-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-11-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-11-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-11-10">10</a></span>
+<span class="normal"><a href="#__codelineno-11-11">11</a></span>
+<span class="normal"><a href="#__codelineno-11-12">12</a></span>
+<span class="normal"><a href="#__codelineno-11-13">13</a></span>
+<span class="normal"><a href="#__codelineno-11-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1"></a><span class="c1"># Primera llamada: paga el Thread.sleep(2000)</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2"></a><span class="nb">time</span><span class="w"> </span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/videojuegos/top<span class="w"> </span>&gt;<span class="w"> </span>/dev/null
+<a id="__codelineno-11-3" name="__codelineno-11-3"></a>
+<a id="__codelineno-11-4" name="__codelineno-11-4"></a><span class="c1"># Segunda llamada: sale de caché, instantánea</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5"></a><span class="nb">time</span><span class="w"> </span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/videojuegos/top<span class="w"> </span>&gt;<span class="w"> </span>/dev/null
+<a id="__codelineno-11-6" name="__codelineno-11-6"></a>
+<a id="__codelineno-11-7" name="__codelineno-11-7"></a><span class="c1"># Crea un videojuego (invalida la caché con @CacheEvict) — recuerda: exige rol ADMIN</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/videojuegos<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN_ADMIN</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-11-10" name="__codelineno-11-10"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-11-11" name="__codelineno-11-11"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"titulo":"Test","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'</span>
+<a id="__codelineno-11-12" name="__codelineno-11-12"></a>
+<a id="__codelineno-11-13" name="__codelineno-11-13"></a><span class="c1"># Tercera llamada: ha vuelto a pagar los 2 segundos</span>
+<a id="__codelineno-11-14" name="__codelineno-11-14"></a><span class="nb">time</span><span class="w"> </span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/videojuegos/top<span class="w"> </span>&gt;<span class="w"> </span>/dev/null
 </code></pre></div></td></tr></table></div>
 <p><strong>Captura</strong>: la terminal con los tres tiempos medidos (<code>real</code> de cada <code>time curl</code>). Ese "tercer usuario que paga otra vez los 2 segundos, justo después de una escritura" es exactamente lo que el warm-up de esta y la próxima actividad va a eliminar.</p>
 <hr>
 <h2 id="paso-2-la-clase-de-evento">Paso 2 — La clase de evento<a class="headerlink" href="#paso-2-la-clase-de-evento" title="Permanent link">¶</a></h2>
 <p>Decide junto con el enunciado qué información debe transportar: para este warm-up basta con saber <strong>cuándo</strong> ocurrió la invalidación (no necesitas saber qué operación la causó, ni sobre qué videojuego).</p>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-11-1">1</a></span>
-<span class="normal"><a href="#__codelineno-11-2">2</a></span>
-<span class="normal"><a href="#__codelineno-11-3">3</a></span>
-<span class="normal"><a href="#__codelineno-11-4">4</a></span>
-<span class="normal"><a href="#__codelineno-11-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.tunombre.gamevault.catalogo.eventos</span><span class="p">;</span>
-<a id="__codelineno-11-2" name="__codelineno-11-2"></a>
-<a id="__codelineno-11-3" name="__codelineno-11-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">java.time.Instant</span><span class="p">;</span>
-<a id="__codelineno-11-4" name="__codelineno-11-4"></a>
-<a id="__codelineno-11-5" name="__codelineno-11-5"></a><span class="kd">public</span><span class="w"> </span><span class="kd">record</span> <span class="nc">TopNovedadesInvalidadoEvent</span><span class="p">(</span><span class="n">Instant</span><span class="w"> </span><span class="n">momento</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-12-1">1</a></span>
+<span class="normal"><a href="#__codelineno-12-2">2</a></span>
+<span class="normal"><a href="#__codelineno-12-3">3</a></span>
+<span class="normal"><a href="#__codelineno-12-4">4</a></span>
+<span class="normal"><a href="#__codelineno-12-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.tunombre.gamevault.catalogo.eventos</span><span class="p">;</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2"></a>
+<a id="__codelineno-12-3" name="__codelineno-12-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">java.time.Instant</span><span class="p">;</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4"></a>
+<a id="__codelineno-12-5" name="__codelineno-12-5"></a><span class="kd">public</span><span class="w"> </span><span class="kd">record</span> <span class="nc">TopNovedadesInvalidadoEvent</span><span class="p">(</span><span class="n">Instant</span><span class="w"> </span><span class="n">momento</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
 </code></pre></div></td></tr></table></div>
 <p><strong>Pregunta</strong>: ¿por qué este evento vive en un paquete <code>catalogo.eventos</code> (interno) y no en <code>catalogo.api.eventos</code> (si tu proyecto ya tiene ese paquete, del <code>VideojuegoEvent</code> de RabbitMQ)? Relaciona tu respuesta con la distinción que has visto en la teoría entre eventos internos de Spring y mensajería RabbitMQ entre módulos.</p>
 <hr>
 <h2 id="paso-3-la-publicacion-guiada-al-completo">Paso 3 — La publicación, guiada al completo<a class="headerlink" href="#paso-3-la-publicacion-guiada-al-completo" title="Permanent link">¶</a></h2>
 <p>En <code>VideojuegoService</code>, añade <code>ApplicationEventPublisher</code> a tus dependencias:</p>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-12-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-12-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-12-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-12-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-12-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-12-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-12-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-12-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-12-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-12-10">10</a></span>
-<span class="normal"><a href="#__codelineno-12-11">11</a></span>
-<span class="normal"><a href="#__codelineno-12-12">12</a></span>
-<span class="normal"><a href="#__codelineno-12-13">13</a></span>
-<span class="normal"><a href="#__codelineno-12-14">14</a></span>
-<span class="normal"><a href="#__codelineno-12-15">15</a></span>
-<span class="normal"><a href="#__codelineno-12-16">16</a></span>
-<span class="normal"><a href="#__codelineno-12-17">17</a></span>
-<span class="normal"><a href="#__codelineno-12-18">18</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1"></a><span class="nd">@Service</span>
-<a id="__codelineno-12-2" name="__codelineno-12-2"></a><span class="nd">@RequiredArgsConstructor</span>
-<a id="__codelineno-12-3" name="__codelineno-12-3"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">VideojuegoService</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-12-4" name="__codelineno-12-4"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">VideojuegoRepository</span><span class="w"> </span><span class="n">videojuegoRepository</span><span class="p">;</span>
-<a id="__codelineno-12-5" name="__codelineno-12-5"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">EstudioRepository</span><span class="w"> </span><span class="n">estudioRepository</span><span class="p">;</span>
-<a id="__codelineno-12-6" name="__codelineno-12-6"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ApplicationEventPublisher</span><span class="w"> </span><span class="n">eventPublisher</span><span class="p">;</span>
-<a id="__codelineno-12-7" name="__codelineno-12-7"></a>
-<a id="__codelineno-12-8" name="__codelineno-12-8"></a><span class="w">    </span><span class="nd">@CacheEvict</span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"topNovedades"</span><span class="p">,</span><span class="w"> </span><span class="n">allEntries</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="n">beforeInvocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
-<a id="__codelineno-12-9" name="__codelineno-12-9"></a><span class="w">    </span><span class="nd">@Transactional</span>
-<a id="__codelineno-12-10" name="__codelineno-12-10"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">VideojuegoResponseDTO</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="n">VideojuegoCreateDTO</span><span class="w"> </span><span class="n">dto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-12-11" name="__codelineno-12-11"></a><span class="w">        </span><span class="c1">// ... tu lógica de creación ya existente ...</span>
-<a id="__codelineno-12-12" name="__codelineno-12-12"></a><span class="w">        </span><span class="n">Videojuego</span><span class="w"> </span><span class="n">savedVideojuego</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">videojuegoRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">videojuego</span><span class="p">);</span>
-<a id="__codelineno-12-13" name="__codelineno-12-13"></a>
-<a id="__codelineno-12-14" name="__codelineno-12-14"></a><span class="w">        </span><span class="n">eventPublisher</span><span class="p">.</span><span class="na">publishEvent</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">TopNovedadesInvalidadoEvent</span><span class="p">(</span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">()));</span>
-<a id="__codelineno-12-15" name="__codelineno-12-15"></a>
-<a id="__codelineno-12-16" name="__codelineno-12-16"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mapToDTO</span><span class="p">(</span><span class="n">savedVideojuego</span><span class="p">);</span>
-<a id="__codelineno-12-17" name="__codelineno-12-17"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-12-18" name="__codelineno-12-18"></a><span class="p">}</span>
-</code></pre></div></td></tr></table></div>
-<p><code>eventPublisher.publishEvent(...)</code> dispara el evento. Ahora mismo no pasa nada visible — no hay nadie escuchando todavía.</p>
-<hr>
-<h2 id="paso-4-repite-en-update-y-delete">Paso 4 — Repite en <code>update()</code> y <code>delete()</code><a class="headerlink" href="#paso-4-repite-en-update-y-delete" title="Permanent link">¶</a></h2>
-<p>Sin más código dado, añade la misma línea de publicación (<code>eventPublisher.publishEvent(new TopNovedadesInvalidadoEvent(Instant.now()))</code>) en <code>update()</code> y en <code>delete()</code> de <code>VideojuegoService</code> — en el mismo punto relativo donde ya está en <code>create()</code> (justo antes de devolver el resultado).</p>
-<hr>
-<h2 id="paso-5-comprobar-que-se-publica-con-un-listener-trivial-temporal">Paso 5 — Comprobar que se publica, con un listener trivial temporal<a class="headerlink" href="#paso-5-comprobar-que-se-publica-con-un-listener-trivial-temporal" title="Permanent link">¶</a></h2>
-<p>Añade, <strong>temporalmente</strong>, esta clase para verificar que tu evento realmente se dispara:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-13-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-13-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-13-3"> 3</a></span>
@@ -2922,25 +2892,68 @@ No necesita ningún comportamiento real: ningún código de estos tests llega a 
 <span class="normal"><a href="#__codelineno-13-11">11</a></span>
 <span class="normal"><a href="#__codelineno-13-12">12</a></span>
 <span class="normal"><a href="#__codelineno-13-13">13</a></span>
-<span class="normal"><a href="#__codelineno-13-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.tunombre.gamevault.catalogo.eventos</span><span class="p">;</span>
-<a id="__codelineno-13-2" name="__codelineno-13-2"></a>
-<a id="__codelineno-13-3" name="__codelineno-13-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.context.event.EventListener</span><span class="p">;</span>
-<a id="__codelineno-13-4" name="__codelineno-13-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.stereotype.Component</span><span class="p">;</span>
-<a id="__codelineno-13-5" name="__codelineno-13-5"></a>
-<a id="__codelineno-13-6" name="__codelineno-13-6"></a><span class="nd">@Component</span>
-<a id="__codelineno-13-7" name="__codelineno-13-7"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ListenerDePruebaTemporal</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-13-8" name="__codelineno-13-8"></a>
-<a id="__codelineno-13-9" name="__codelineno-13-9"></a><span class="w">    </span><span class="nd">@EventListener</span>
-<a id="__codelineno-13-10" name="__codelineno-13-10"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onTopNovedadesInvalidado</span><span class="p">(</span><span class="n">TopNovedadesInvalidadoEvent</span><span class="w"> </span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-13-11" name="__codelineno-13-11"></a><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"[TRAZA] Evento recibido en hilo: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">().</span><span class="na">getName</span><span class="p">()</span>
-<a id="__codelineno-13-12" name="__codelineno-13-12"></a><span class="w">                </span><span class="o">+</span><span class="w"> </span><span class="s">" - momento: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="na">momento</span><span class="p">());</span>
-<a id="__codelineno-13-13" name="__codelineno-13-13"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-13-14" name="__codelineno-13-14"></a><span class="p">}</span>
+<span class="normal"><a href="#__codelineno-13-14">14</a></span>
+<span class="normal"><a href="#__codelineno-13-15">15</a></span>
+<span class="normal"><a href="#__codelineno-13-16">16</a></span>
+<span class="normal"><a href="#__codelineno-13-17">17</a></span>
+<span class="normal"><a href="#__codelineno-13-18">18</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1"></a><span class="nd">@Service</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2"></a><span class="nd">@RequiredArgsConstructor</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">VideojuegoService</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">VideojuegoRepository</span><span class="w"> </span><span class="n">videojuegoRepository</span><span class="p">;</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">EstudioRepository</span><span class="w"> </span><span class="n">estudioRepository</span><span class="p">;</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ApplicationEventPublisher</span><span class="w"> </span><span class="n">eventPublisher</span><span class="p">;</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7"></a>
+<a id="__codelineno-13-8" name="__codelineno-13-8"></a><span class="w">    </span><span class="nd">@CacheEvict</span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"topNovedades"</span><span class="p">,</span><span class="w"> </span><span class="n">allEntries</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="n">beforeInvocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+<a id="__codelineno-13-9" name="__codelineno-13-9"></a><span class="w">    </span><span class="nd">@Transactional</span>
+<a id="__codelineno-13-10" name="__codelineno-13-10"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">VideojuegoResponseDTO</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="n">VideojuegoCreateDTO</span><span class="w"> </span><span class="n">dto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-13-11" name="__codelineno-13-11"></a><span class="w">        </span><span class="c1">// ... tu lógica de creación ya existente ...</span>
+<a id="__codelineno-13-12" name="__codelineno-13-12"></a><span class="w">        </span><span class="n">Videojuego</span><span class="w"> </span><span class="n">savedVideojuego</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">videojuegoRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">videojuego</span><span class="p">);</span>
+<a id="__codelineno-13-13" name="__codelineno-13-13"></a>
+<a id="__codelineno-13-14" name="__codelineno-13-14"></a><span class="w">        </span><span class="n">eventPublisher</span><span class="p">.</span><span class="na">publishEvent</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">TopNovedadesInvalidadoEvent</span><span class="p">(</span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">()));</span>
+<a id="__codelineno-13-15" name="__codelineno-13-15"></a>
+<a id="__codelineno-13-16" name="__codelineno-13-16"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mapToDTO</span><span class="p">(</span><span class="n">savedVideojuego</span><span class="p">);</span>
+<a id="__codelineno-13-17" name="__codelineno-13-17"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-13-18" name="__codelineno-13-18"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><code>eventPublisher.publishEvent(...)</code> dispara el evento. Ahora mismo no pasa nada visible — no hay nadie escuchando todavía.</p>
+<hr>
+<h2 id="paso-4-repite-en-update-y-delete">Paso 4 — Repite en <code>update()</code> y <code>delete()</code><a class="headerlink" href="#paso-4-repite-en-update-y-delete" title="Permanent link">¶</a></h2>
+<p>Sin más código dado, añade la misma línea de publicación (<code>eventPublisher.publishEvent(new TopNovedadesInvalidadoEvent(Instant.now()))</code>) en <code>update()</code> y en <code>delete()</code> de <code>VideojuegoService</code> — en el mismo punto relativo donde ya está en <code>create()</code> (justo antes de devolver el resultado).</p>
+<hr>
+<h2 id="paso-5-comprobar-que-se-publica-con-un-listener-trivial-temporal">Paso 5 — Comprobar que se publica, con un listener trivial temporal<a class="headerlink" href="#paso-5-comprobar-que-se-publica-con-un-listener-trivial-temporal" title="Permanent link">¶</a></h2>
+<p>Añade, <strong>temporalmente</strong>, esta clase para verificar que tu evento realmente se dispara:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-14-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-14-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-14-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-14-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-14-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-14-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-14-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-14-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-14-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-14-10">10</a></span>
+<span class="normal"><a href="#__codelineno-14-11">11</a></span>
+<span class="normal"><a href="#__codelineno-14-12">12</a></span>
+<span class="normal"><a href="#__codelineno-14-13">13</a></span>
+<span class="normal"><a href="#__codelineno-14-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.tunombre.gamevault.catalogo.eventos</span><span class="p">;</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2"></a>
+<a id="__codelineno-14-3" name="__codelineno-14-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.context.event.EventListener</span><span class="p">;</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.stereotype.Component</span><span class="p">;</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5"></a>
+<a id="__codelineno-14-6" name="__codelineno-14-6"></a><span class="nd">@Component</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ListenerDePruebaTemporal</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8"></a>
+<a id="__codelineno-14-9" name="__codelineno-14-9"></a><span class="w">    </span><span class="nd">@EventListener</span>
+<a id="__codelineno-14-10" name="__codelineno-14-10"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onTopNovedadesInvalidado</span><span class="p">(</span><span class="n">TopNovedadesInvalidadoEvent</span><span class="w"> </span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-14-11" name="__codelineno-14-11"></a><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"[TRAZA] Evento recibido en hilo: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">().</span><span class="na">getName</span><span class="p">()</span>
+<a id="__codelineno-14-12" name="__codelineno-14-12"></a><span class="w">                </span><span class="o">+</span><span class="w"> </span><span class="s">" - momento: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="na">momento</span><span class="p">());</span>
+<a id="__codelineno-14-13" name="__codelineno-14-13"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-14-14" name="__codelineno-14-14"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>Para poder comparar de verdad, también necesitas saber en qué hilo se publica el evento — sin eso, no tienes contra qué comparar la traza de arriba. Añade, también <strong>temporalmente</strong>, una segunda traza en <code>VideojuegoService.create()</code>, justo antes de <code>eventPublisher.publishEvent(...)</code>:</p>
-<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-14-1">1</a></span>
-<span class="normal"><a href="#__codelineno-14-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1"></a><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"[TRAZA] Publicando evento en hilo: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">().</span><span class="na">getName</span><span class="p">());</span>
-<a id="__codelineno-14-2" name="__codelineno-14-2"></a><span class="n">eventPublisher</span><span class="p">.</span><span class="na">publishEvent</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">TopNovedadesInvalidadoEvent</span><span class="p">(</span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">()));</span>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-15-1">1</a></span>
+<span class="normal"><a href="#__codelineno-15-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1"></a><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"[TRAZA] Publicando evento en hilo: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">().</span><span class="na">getName</span><span class="p">());</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2"></a><span class="n">eventPublisher</span><span class="p">.</span><span class="na">publishEvent</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">TopNovedadesInvalidadoEvent</span><span class="p">(</span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">()));</span>
 </code></pre></div></td></tr></table></div>
 <p>Crea un videojuego y mira la consola. <strong>Comprueba</strong> que aparecen las dos trazas, una detrás de otra.</p>
 <p><strong>Captura</strong>: las dos líneas de traza en la consola — <code>[TRAZA] Publicando evento en hilo: ...</code> y <code>[TRAZA] Evento recibido en hilo: ...</code>.</p>
