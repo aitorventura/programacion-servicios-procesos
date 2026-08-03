@@ -20,9 +20,9 @@
 Tu `SecurityConfig` con usuarios en memoria de la Actividad 2.2.
 
 !!! warning "Revisa tu `data.sql`, o perderás los usuarios que crees hoy"
-    Si desde Acceso a Datos sigues teniendo `spring.sql.init.mode: always` en tu `application-dev.yaml`, tu `data.sql` se vuelve a ejecutar en **cada** arranque de la aplicación — y si sigue el patrón habitual de borrar e insertar datos de prueba para dejar la base de datos en un estado repetible, cualquier usuario que crees hoy con `/register` (o el `admin` del *seed*) desaparecerá la próxima vez que reinicies, sin que hayas hecho nada mal.
+    Si desde Acceso a Datos sigues teniendo `spring.sql.init.mode: always` en tu `application-dev.yml`, tu `data.sql` se vuelve a ejecutar en **cada** arranque de la aplicación — y si sigue el patrón habitual de borrar e insertar datos de prueba para dejar la base de datos en un estado repetible, cualquier usuario que crees hoy con `/register` (o el `admin` del *seed*) desaparecerá la próxima vez que reinicies, sin que hayas hecho nada mal.
 
-    Para evitarlo, cambia en tu `application-dev.yaml`:
+    Para evitarlo, cambia en tu `application-dev.yml`:
     ```yaml
     spring:
       sql:

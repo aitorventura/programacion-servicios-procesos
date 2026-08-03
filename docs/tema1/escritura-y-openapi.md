@@ -125,7 +125,7 @@ Con solo esa dependencia y esa clase, springdoc escanea todos los `@RestControll
 `/v3/api-docs` es la especificación en sí: el JSON (el `3` es por OpenAPI 3, la versión del estándar) que describe tus rutas, generado automáticamente por springdoc. Swagger UI no es más que una página que **lee** ese JSON y lo pinta como interfaz interactiva — no tiene información propia. Por eso las dos rutas van siempre juntas: si Swagger UI no puede llegar a `/v3/api-docs`, la página carga pero se queda vacía, sin nada que mostrar.
 
 !!! tip "Cambiar la ruta de Swagger UI"
-    En tu `application-dev.yaml` puedes mover la documentación a otra ruta:
+    En tu `application-dev.yml` puedes mover la documentación a otra ruta:
     ```yaml
     springdoc:
       swagger-ui:

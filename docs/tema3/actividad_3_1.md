@@ -53,7 +53,7 @@ En tu `pom.xml`:
 </dependency>
 ```
 
-Y en `application-dev.yaml`:
+Y en `application-dev.yml`:
 
 ```yaml
 spring:
@@ -67,7 +67,7 @@ spring:
 Como ya viste con `postgres` en Acceso a Datos: `rabbitmq` es el nombre del servicio en `.devcontainer/docker-compose.yml`, no `localhost` — tu aplicación corre dentro de `app`, y RabbitMQ es un contenedor hermano más en la misma red.
 
 !!! tip "¿No debería ir `guest`/`guest` a un fichero que no se commitea?"
-    `guest` es la cuenta por defecto de RabbitMQ, y RabbitMQ la bloquea por diseño para cualquier conexión que no venga de `localhost` — no importa qué configures, esa cuenta no sirve en remoto. Como todo esto corre dentro de tu Dev Container, en tu propia máquina, no hay riesgo real en dejarla en `application-dev.yaml`. Es distinto del secreto de JWT o la contraseña de `admin` que ya proteges en `application-dev-local.yml`: si esos se filtraran, servirían para hacerse pasar por alguien en tu API real — `guest`/`guest`, fuera de tu propia máquina, no abre nada.
+    `guest` es la cuenta por defecto de RabbitMQ, y RabbitMQ la bloquea por diseño para cualquier conexión que no venga de `localhost` — no importa qué configures, esa cuenta no sirve en remoto. Como todo esto corre dentro de tu Dev Container, en tu propia máquina, no hay riesgo real en dejarla en `application-dev.yml`. Es distinto del secreto de JWT o la contraseña de `admin` que ya proteges en `application-dev-local.yml`: si esos se filtraran, servirían para hacerse pasar por alguien en tu API real — `guest`/`guest`, fuera de tu propia máquina, no abre nada.
 
 ---
 

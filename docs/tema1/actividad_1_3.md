@@ -189,7 +189,7 @@ jobs:
 
     }
     ```
-    Sin esta anotación, ese test falla en local con el mismo error de arriba en cuanto quites el filtro — no porque te falte una PostgreSQL real (la tienes corriendo), sino porque sin ningún perfil activo Spring Boot ni siquiera llega a leer `application-dev.yaml`, así que no encuentra el `DataSource`.
+    Sin esta anotación, ese test falla en local con el mismo error de arriba en cuanto quites el filtro — no porque te falte una PostgreSQL real (la tienes corriendo), sino porque sin ningún perfil activo Spring Boot ni siquiera llega a leer `application-dev.yml`, así que no encuentra el `DataSource`.
 
 **Pregunta**: tu `pom.xml` de GameVault viene con un *wrapper* (`mvnw`/`mvnw.cmd`), generado automáticamente por Spring Initializr — a diferencia de `validador-dni-ci`, donde no había ninguno. El workflow de arriba usa `./mvnw test`, no `mvn test`. ¿Qué garantiza usar el *wrapper* en vez del `mvn` que esté instalado en el runner de GitHub? Relaciónalo con por qué el Dev Container fija siempre las mismas versiones (Actividad 1.1).
 

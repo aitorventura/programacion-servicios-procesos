@@ -59,7 +59,7 @@ public class OpenApiConfig {
 
 `@Bean` le dice a Spring que este método construye un objeto que debe gestionar como bean — en este caso, la configuración que springdoc va a usar para generar la documentación. No tienes que llamarlo tú en ningún sitio: Spring lo detecta y lo usa automáticamente.
 
-De paso, añade esto a tu `application-dev.yaml`: sirve la interfaz en `/documentacion` en vez de la ruta por defecto (`/swagger-ui.html`), y ordena los endpoints alfabéticamente por verbo en vez de por el orden de declaración:
+De paso, añade esto a tu `application-dev.yml`: sirve la interfaz en `/documentacion` en vez de la ruta por defecto (`/swagger-ui.html`), y ordena los endpoints alfabéticamente por verbo en vez de por el orden de declaración:
 
 ```yaml
 springdoc:

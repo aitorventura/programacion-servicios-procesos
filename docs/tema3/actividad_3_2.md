@@ -49,7 +49,7 @@ En tu `pom.xml`:
 </dependency>
 ```
 
-Y en `application-dev.yaml`:
+Y en `application-dev.yml`:
 
 ```yaml
 spring:

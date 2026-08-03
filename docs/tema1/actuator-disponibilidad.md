@@ -90,7 +90,7 @@ Tu propio proyecto no incluye Actuator todavía (revisa tu `pom.xml`: no está l
     Springdoc permite incluir también los endpoints de Actuator mediante una propiedad de configuración, pero no la necesitas en esta actividad. Consultarás `/actuator/health` directamente desde el navegador o mediante `curl`.
     
 
-Con solo esa dependencia, Spring Boot expone automáticamente `/actuator/health`. Para ver durante el desarrollo el detalle de cada dependencia —y no solo un `UP` o `DOWN` general— añade esta configuración en `application-dev.yaml`:
+Con solo esa dependencia, Spring Boot expone automáticamente `/actuator/health`. Para ver durante el desarrollo el detalle de cada dependencia —y no solo un `UP` o `DOWN` general— añade esta configuración en `application-dev.yml`:
 
 ```yaml
 management:

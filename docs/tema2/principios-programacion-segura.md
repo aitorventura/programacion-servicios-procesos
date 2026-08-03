@@ -46,7 +46,7 @@ La regla de oro de antes no se queda en una frase bonita: se traduce en varias d
 - **No guardar secretos en el código**: contraseñas, claves, tokens — nunca escritos directamente en una clase Java; viven en configuración externa.
 - **Defensa en profundidad**: varias capas de protección, no una sola barrera — si una falla, las siguientes siguen ahí.
 
-!!! tip "¿Y la contraseña de PostgreSQL en `application-dev.yaml`?"
+!!! tip "¿Y la contraseña de PostgreSQL en `application-dev.yml`?"
     En el entorno local de GameVault usamos una contraseña sencilla y versionada porque solo pertenece a una base de datos de desarrollo creada dentro de Docker y no se reutiliza en ningún entorno real.
 
     Esto es aceptable para una credencial local y desechable, pero no para una base de datos desplegada ni para ningún secreto real. En esos casos, las credenciales deben quedar fuera del repositorio y proporcionarse mediante variables de entorno u otro sistema de configuración externa.

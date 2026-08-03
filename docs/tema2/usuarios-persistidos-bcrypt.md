@@ -239,17 +239,17 @@ Fíjate en que la contraseña ya no está escrita directamente en el código: vi
 
 ### Esa contraseña tampoco debería estar en tu repositorio
 
-Aunque `admin123` ya no viva en ningún `.java`, si la escribieras tal cual en `application-dev.yaml` seguirías teniendo el mismo problema: ese fichero se sube a Git, así que cualquiera con acceso al repositorio la vería igual. La solución es un fichero de propiedades **aparte, que nunca se versiona**:
+Aunque `admin123` ya no viva en ningún `.java`, si la escribieras tal cual en `application-dev.yml` seguirías teniendo el mismo problema: ese fichero se sube a Git, así que cualquiera con acceso al repositorio la vería igual. La solución es un fichero de propiedades **aparte, que nunca se versiona**:
 
 ```yaml
-# application-dev.yaml (SÍ se sube a Git)
+# application-dev.yml (SÍ se sube a Git)
 spring:
   config:
-    import: "optional:application-dev-local.yaml"
+    import: "optional:application-dev-local.yml"
 ```
 
 ```yaml
-# application-dev-local.yaml (en .gitignore, NO se sube a Git)
+# application-dev-local.yml (en .gitignore, NO se sube a Git)
 libreria:
   admin:
     password: admin123
@@ -262,13 +262,13 @@ Por tanto, si el fichero local no existe y la propiedad tampoco se proporciona m
 Para que cualquiera sepa qué tiene que rellenar sin tener que adivinarlo, se acompaña de una plantilla que sí se sube a Git:
 
 ```yaml
-# application-dev-local.yaml.example (SÍ se sube a Git — sin valores reales)
+# application-dev-local.yml.example (SÍ se sube a Git — sin valores reales)
 libreria:
   admin:
     password: pon-aqui-tu-propia-contraseña
 ```
 
-Cada persona que clona el repositorio copia ese `.example` a `application-dev-local.yaml`, rellena sus propios valores, y ese fichero final se queda solo en su máquina. Es el mismo patrón, exactamente, que vas a reutilizar para el secreto de JWT más adelante en el tema.
+Cada persona que clona el repositorio copia ese `.example` a `application-dev-local.yml`, rellena sus propios valores, y ese fichero final se queda solo en su máquina. Es el mismo patrón, exactamente, que vas a reutilizar para el secreto de JWT más adelante en el tema.
 
 !!! warning "Ese fichero no existe fuera de tu máquina — piénsalo cuando montes CI o un despliegue"
     Poner un valor en `.gitignore` es la otra cara de una moneda: si no se sube a Git, **no llega a ningún sitio por Git**. Tu máquina lo tiene porque lo has rellenado a mano, pero cualquier entorno que arranque tu aplicación desde el repositorio limpio —un pipeline de integración continua, un servidor de despliegue, el ordenador de un compañero— no tiene ese fichero, y con él ausente la aplicación no arranca (por el `@Value` sin valor por defecto que acabas de ver). En esos entornos tienes que **inyectar** cada uno de esos valores por otra vía: una variable de entorno, un parámetro del comando, o un "secreto" del propio sistema de CI. No es un caso raro: es lo primero con lo que te vas a topar la primera vez que uno de estos secretos tenga que existir en algún sitio que no sea tu portátil.
@@ -312,4 +312,4 @@ En el próximo apartado, JWT permitirá autenticarse una vez y presentar un toke
     - Un `UserDetailsService` propio sustituye al `InMemoryUserDetailsManager`: busca los usuarios en la base de datos real.
     - Spring Security utiliza el `UserDetailsService` y el `PasswordEncoder` del contexto para autenticar mediante usuario y contraseña; cambiar el almacén de usuarios no obliga por sí mismo a modificar `securityFilterChain`.
     - Un endpoint de registro público crea usuarios reales, siempre con rol `USER` fijado en el servidor — nunca confíes en que el cliente decida sus propios privilegios. El primer `ADMIN` no puede salir de ahí: hace falta un *seed* aparte.
-    - Ese *seed* no debe llevar la contraseña escrita en el código ni en un fichero versionado: va en `application-dev-local.yaml` (en `.gitignore`), importado con `spring.config.import: optional:...`, acompañado de un `.example` sin valores reales que sí se sube a Git.
+    - Ese *seed* no debe llevar la contraseña escrita en el código ni en un fichero versionado: va en `application-dev-local.yml` (en `.gitignore`), importado con `spring.config.import: optional:...`, acompañado de un `.example` sin valores reales que sí se sube a Git.

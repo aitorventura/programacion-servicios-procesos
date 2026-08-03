@@ -99,7 +99,7 @@ En tu `pom.xml`:
 
 ### Paso 4 — Exponer el detalle de salud
 
-En `application.yml` (la configuración común, la que se carga siempre — no la confundas con `application-dev.yaml`, que solo se activa con el perfil `dev`):
+En `application.yml` (la configuración común, la que se carga siempre — no la confundas con `application-dev.yml`, que solo se activa con el perfil `dev`):
 
 ```yaml
 management:
