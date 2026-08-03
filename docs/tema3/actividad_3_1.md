@@ -163,6 +163,31 @@ public class VideojuegoEventPublisher {
 
 Inyecta `VideojuegoEventPublisher` en `VideojuegoService` (constructor, como todo lo demás) y llama a `publicar(...)` al final de `create`, `update` y `delete`, con el tipo correspondiente y el `id` del videojuego.
 
+!!! warning "`VideojuegoApiIntegrationTest` necesita RabbitMQ a partir de ahora"
+    Antes de esta actividad, `VideojuegoApiIntegrationTest` (Acceso a Datos, Actividad 2.3) solo tocaba PostgreSQL — nunca pasaba por mensajería. Desde ahora, `create`/`update`/`delete` llaman a `videojuegoEventPublisher.publicar(...)` en **cada** petición de escritura sobre `Videojuego`, así que ese test también necesita un contenedor de RabbitMQ real, o falla con `AmqpConnectException` en cuanto ejecutes cualquier test que cree, modifique o borre un videojuego.
+
+    Añade la dependencia a tu `pom.xml`, junto a la de `postgresql` que ya tienes:
+
+    ```xml
+    <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>rabbitmq</artifactId>
+        <scope>test</scope>
+    </dependency>
+    ```
+
+    Y el contenedor, junto al de `postgres` que ya tienes en `VideojuegoApiIntegrationTest` (mismo patrón `@Container`/`@ServiceConnection`, no hace falta tocar nada más):
+
+    ```java
+    @Container
+    @ServiceConnection
+    static RabbitMQContainer rabbitmq = new RabbitMQContainer("rabbitmq:4-management");
+    ```
+
+    No olvides el `import org.testcontainers.containers.RabbitMQContainer;`.
+
+    **Ejecuta también** `VideojuegoApiIntegrationTest` y comprueba que sigue pasando (no hace falta captura, esto es solo para que tu batería de tests no se quede rota).
+
 **Pregunta**: `VideojuegoService` ahora depende de `VideojuegoEventPublisher`, pero no de nada de RabbitMQ directamente (ni `RabbitTemplate` aparece en `VideojuegoService`). ¿Por qué esa capa intermedia, en vez de inyectar `RabbitTemplate` directamente en `VideojuegoService`?
 
 ---

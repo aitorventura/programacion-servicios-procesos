@@ -106,6 +106,21 @@ public VideojuegoResponseDTO create(VideojuegoCreateDTO dto) {
 
 Repite `@CacheEvict(value = "topNovedades", allEntries = true, beforeInvocation = true)` en `update()` y en `delete()`. `@Cacheable` guarda el resultado la primera vez que se llama y lo devuelve directamente en las siguientes, sin ejecutar el método; `@CacheEvict` borra ese resultado guardado cuando algo cambia, para que la próxima llamada vuelva a calcularlo.
 
+!!! warning "`VideojuegoApiIntegrationTest` necesita Redis a partir de ahora (o la caché deshabilitada en test)"
+    A diferencia de `VideojuegoControllerTest` (que ya has arreglado arriba mockeando `CacheManager`), `VideojuegoApiIntegrationTest` (Acceso a Datos, Actividad 2.3) levanta el contexto completo de Spring, sin ningún mock — así que en cuanto `create`/`update`/`delete` lleven `@CacheEvict` de verdad, ese test necesita hablar con un Redis real o falla con `RedisConnectionFailureException`. Y como `beforeInvocation = true` evict *antes* de ejecutar el método, hasta un test que solo comprueba un `404` (que nunca llega a tocar la caché en `getTopNovedades()`) puede fallar por esto.
+
+    Aquí no merece la pena montar un contenedor de Redis solo para este test: no es objeto de `VideojuegoApiIntegrationTest` comprobar el comportamiento de la caché en sí (para eso ya tienes el `curl` a `/top` de más arriba, contra tu Redis real de desarrollo). Deshabilita la caché en el perfil de test, en tu `application-test.yml`:
+
+    ```yaml
+    spring:
+      cache:
+        type: none
+    ```
+
+    Con `type: none`, Spring registra un `CacheManager` que no hace absolutamente nada — `@Cacheable`/`@CacheEvict` siguen ahí, pero se convierten en no-ops durante los tests, sin que necesites tocar ni una línea de `VideojuegoApiIntegrationTest`.
+
+    **Ejecuta también** `VideojuegoApiIntegrationTest` y comprueba que sigue pasando (no hace falta captura, esto es solo para que tu batería de tests no se quede rota).
+
 `beforeInvocation = true` no es opcional aquí: sin él, Spring evita **después** de que `create()`/`update()`/`delete()` terminen del todo (incluido el `commit`, que llega en el próximo apartado) — justo el mismo instante en que vas a disparar un aviso de "recalienta ya". Con el orden por defecto, ese aviso podría llegar antes de que el evict haya limpiado nada, encontrar la caché todavía con el valor viejo, y no recalcular nada de verdad.
 
 Antes de probarlo, un detalle que si no lo añades ahora te va a dar un `500` en cuanto pidas `/top`: por defecto, Spring guarda en Redis usando la serialización estándar de Java, que exige que la clase sea `Serializable` — y `VideojuegoResponseDTO`, al ser un `record`, no lo es por defecto. Añádeselo:
