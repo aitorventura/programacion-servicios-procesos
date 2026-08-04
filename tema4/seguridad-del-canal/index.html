@@ -20,7 +20,7 @@
     
     
       
-        <title>Actividad en vivo y seguridad del canal - Programación de Servicios y Procesos</title>
+        <title>Seguridad del canal - Programación de Servicios y Procesos</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#3-actividad-en-vivo-y-seguridad-del-canal" class="md-skip">
+        <a href="#3-seguridad-del-canal" class="md-skip">
           Saltar a contenido
         </a>
       
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Actividad en vivo y seguridad del canal
+              Seguridad del canal
             
           </span>
         </div>
@@ -2265,7 +2265,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 4.2 - El endpoint /ws-actividad con STOMP
+    Actividad 4.2 - El canal /ws-actividad, conectado a ActividadService
     
   </span>
   
@@ -2309,7 +2309,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad en vivo y seguridad del canal
+    Seguridad del canal
     
   </span>
   
@@ -2320,7 +2320,7 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_6_4">
             <span class="md-nav__icon md-icon"></span>
-            Actividad en vivo y seguridad del canal
+            Seguridad del canal
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -2345,7 +2345,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad en vivo y seguridad del canal
+    Seguridad del canal
     
   </span>
   
@@ -2358,7 +2358,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad en vivo y seguridad del canal
+    Seguridad del canal
     
   </span>
   
@@ -2379,24 +2379,6 @@
       Tabla de contenidos
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#el-punto-de-emision-actividadservice" class="md-nav__link">
-    <span class="md-ellipsis">
-      📡 El punto de emisión: ActividadService
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#hilos-y-clientes-simultaneos" class="md-nav__link">
-    <span class="md-ellipsis">
-      🧵 Hilos y clientes simultáneos
-    </span>
-  </a>
-  
-</li>
       
         <li class="md-nav__item">
   <a href="#el-aviso-de-seguridad-del-handshake" class="md-nav__link">
@@ -2461,7 +2443,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 4.3 - Actividad en vivo, cierre de RA3
+    Actividad 4.3 - Seguridad del canal, cierre de RA3
     
   </span>
   
@@ -2536,24 +2518,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#el-punto-de-emision-actividadservice" class="md-nav__link">
-    <span class="md-ellipsis">
-      📡 El punto de emisión: ActividadService
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#hilos-y-clientes-simultaneos" class="md-nav__link">
-    <span class="md-ellipsis">
-      🧵 Hilos y clientes simultáneos
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#el-aviso-de-seguridad-del-handshake" class="md-nav__link">
     <span class="md-ellipsis">
       🔓 El aviso de seguridad del handshake
@@ -2611,23 +2575,9 @@
 
 
 
-<div><p><a id="actividad-en-vivo-cierre"></a></p>
-<h1 id="3-actividad-en-vivo-y-seguridad-del-canal">🧩 3. Actividad en vivo y seguridad del canal<a class="headerlink" href="#3-actividad-en-vivo-y-seguridad-del-canal" title="Permanent link">¶</a></h1>
-<p>Último apartado del módulo. Hoy conectas el canal <code>/ws-actividad</code> con los datos reales del proyecto, y afrontas algo que has dejado pendiente a propósito: qué implica en seguridad haber abierto ese canal sin autenticación.</p>
-<hr>
-<h2 id="el-punto-de-emision-actividadservice">📡 El punto de emisión: <code>ActividadService</code><a class="headerlink" href="#el-punto-de-emision-actividadservice" title="Permanent link">¶</a></h2>
-<p><code>ActividadService.registrar()</code> ya recibe cada evento del catálogo (a través del consumer de RabbitMQ, analizado en el Tema 3) y lo guarda en PostgreSQL. El plan de hoy: inyectar ahí <code>SimpMessagingTemplate</code> y, además de guardar, publicar el mismo registro en <code>/topic/actividad</code>.</p>
-<p>El viaje completo de un dato, de principio a fin — el broche de todo el módulo, porque atraviesa <strong>todo</strong> lo construido en el curso:</p>
-<pre class="mermaid"><code>flowchart LR
-    A["🌐 Petición HTTP&lt;br/&gt;(hilo de Tomcat)"] --&gt; B["VideojuegoService"]
-    B --&gt;|"publica evento"| C["RabbitMQ"]
-    C -.-&gt;|"consume&lt;br/&gt;(hilo del listener)"| D["ActividadService.registrar()"]
-    D --&gt; E["💾 PostgreSQL"]
-    D --&gt; F["📡 push por WebSocket"]
-    F -.-&gt; G["🖥️ Navegadores suscritos"]</code></pre>
-<hr>
-<h2 id="hilos-y-clientes-simultaneos">🧵 Hilos y clientes simultáneos<a class="headerlink" href="#hilos-y-clientes-simultaneos" title="Permanent link">¶</a></h2>
-<p>¿En qué hilo se ejecuta el <em>push</em> hacia WebSocket? En el mismo hilo del <strong>listener de RabbitMQ</strong> que procesa el evento — el mismo hilo que ya identificaste en el Tema 3, ahora con una responsabilidad más. ¿Y quién gestiona los N clientes WebSocket conectados a la vez? El propio <strong>contenedor</strong> de Spring, exactamente igual que Tomcat gestiona las peticiones HTTP — es el mismo patrón "un hilo por cliente/conexión" que has programado <strong>a mano</strong> en la Actividad 4.1, aquí resuelto por el framework.</p>
+<div><p><a id="seguridad-del-canal"></a></p>
+<h1 id="3-seguridad-del-canal">🧩 3. Seguridad del canal<a class="headerlink" href="#3-seguridad-del-canal" title="Permanent link">¶</a></h1>
+<p>Último apartado del módulo. Tu canal <code>/ws-actividad</code> ya emite datos reales, conectado a <code>ActividadService</code> desde la Actividad 4.2. Hoy afrontas algo que has dejado pendiente a propósito: qué implica en seguridad haberlo abierto sin autenticación.</p>
 <hr>
 <h2 id="el-aviso-de-seguridad-del-handshake">🔓 El aviso de seguridad del handshake<a class="headerlink" href="#el-aviso-de-seguridad-del-handshake" title="Permanent link">¶</a></h2>
 <p>Aquí llega el momento de mirar atrás con ojo crítico. En la Actividad 4.2 has abierto <code>/ws-actividad</code> con <code>permitAll()</code> — sin exigir ninguna autenticación. Pero <code>GET /api/v1/actividad</code> (la misma información, por REST) exige rol <code>ADMIN</code>. Hay una incoherencia real: <strong>¿puede un usuario anónimo suscribirse al topic y ver en vivo exactamente lo que por REST está protegido?</strong></p>
@@ -2642,7 +2592,7 @@
 <p>Terminar el módulo con un agujero de seguridad real, detectado y descrito por escrito pero sin corregir, transmite el mensaje contrario a todo lo que has construido en programación segura. La remediación <strong>mínima</strong> es obligatoria, no opcional — la vas a aplicar tú mismo en la Actividad 4.3.</p>
 </div>
 <h3 id="la-remediacion-minima-jwt-en-el-handshake">La remediación mínima: JWT en el handshake<a class="headerlink" href="#la-remediacion-minima-jwt-en-el-handshake" title="Permanent link">¶</a></h3>
-<p>La forma más simple de exigir el token en el handshake es pasarlo como parámetro de consulta en la propia URL de conexión (<code>/ws-actividad?token=...</code>), y validarlo con un interceptor antes de aceptar:</p>
+<p>La forma más simple de exigir el token en el handshake es pasarlo como parámetro de consulta en la propia URL de conexión (<code>/ws-actividad?token=...</code>), y validarlo con un <strong>interceptor</strong> antes de aceptar — un gancho que Spring ejecuta justo antes (y justo después) de que la conexión se establezca, y en el que tu código decide, con un simple <code>true</code>/<code>false</code>, si esa conexión sigue adelante o se corta ahí mismo:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
@@ -2759,13 +2709,12 @@
 <p><code>beforeHandshake</code> se ejecuta <strong>antes</strong> de que la conexión WebSocket se establezca — si devuelve <code>false</code>, el <em>handshake</em> se rechaza y la conexión nunca llega a completarse. Reutilizas el mismo <code>JwtDecoder</code> que ya tenías configurado desde el Tema 2 para validar el token — no hace falta ninguna pieza criptográfica nueva, ni tampoco instanciar el interceptor a mano: al llevar <code>@RequiredArgsConstructor</code> en ambas clases, Spring construye y conecta las dos piezas solo.</p>
 <hr>
 <h2 id="depuracion-y-documentacion">📝 Depuración y documentación<a class="headerlink" href="#depuracion-y-documentacion" title="Permanent link">¶</a></h2>
-<p>Con trazas de nombre de hilo en todo el camino (herencia del Tema 3: HTTP → listener de RabbitMQ → push WebSocket), puedes seguir el recorrido completo de un dato en el log. Y documentar el canal — endpoint, topic, formato del mensaje, política de acceso — de la misma forma en que documentaste la API REST con OpenAPI. Con una salvedad: WebSocket no aparece en Swagger (que solo describe HTTP tradicional), así que este canal se documenta <strong>a mano</strong>, en un fichero aparte.</p>
+<p>Documenta el canal — endpoint, topic, formato del mensaje, política de acceso — de la misma forma en que has documentado la API REST con OpenAPI. Con una salvedad: WebSocket no aparece en Swagger (que solo describe HTTP tradicional), así que este canal se documenta <strong>a mano</strong>, en un fichero aparte.</p>
 <hr>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
 <details class="tip">
 <summary>Abrir resumen</summary>
 <ul>
-<li>El push por WebSocket se ejecuta en el mismo hilo del listener de RabbitMQ que procesa el evento; el contenedor gestiona los clientes WebSocket simultáneos, igual que Tomcat con HTTP.</li>
 <li>Un canal abierto sin autenticación puede exponer, por WebSocket, información que por REST está protegida — una incoherencia real que hay que resolver, no solo señalar.</li>
 <li>Un <code>HandshakeInterceptor</code> puede rechazar la conexión WebSocket antes de establecerse, validando un token pasado como parámetro de consulta.</li>
 <li>Documentar y detectar un agujero de seguridad no sustituye corregirlo — la remediación mínima es parte obligatoria de la entrega.</li>
@@ -2807,7 +2756,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Pie" >
         
           
-          <a href="../actividad_4_2/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Actividad 4.2 - El endpoint /ws-actividad con STOMP">
+          <a href="../actividad_4_2/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Actividad 4.2 - El canal /ws-actividad, conectado a ActividadService">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -2817,20 +2766,20 @@
                 Anterior
               </span>
               <div class="md-ellipsis">
-                Actividad 4.2 - El endpoint /ws-actividad con STOMP
+                Actividad 4.2 - El canal /ws-actividad, conectado a ActividadService
               </div>
             </div>
           </a>
         
         
           
-          <a href="../actividad_4_3/" class="md-footer__link md-footer__link--next" aria-label="Siguiente: Actividad 4.3 - Actividad en vivo, cierre de RA3">
+          <a href="../actividad_4_3/" class="md-footer__link md-footer__link--next" aria-label="Siguiente: Actividad 4.3 - Seguridad del canal, cierre de RA3">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Siguiente
               </span>
               <div class="md-ellipsis">
-                Actividad 4.3 - Actividad en vivo, cierre de RA3
+                Actividad 4.3 - Seguridad del canal, cierre de RA3
               </div>
             </div>
             <div class="md-footer__button md-icon">

@@ -2408,7 +2408,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 4.2 - El endpoint /ws-actividad con STOMP
+    Actividad 4.2 - El canal /ws-actividad, conectado a ActividadService
     
   </span>
   
@@ -2450,7 +2450,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad en vivo y seguridad del canal
+    Seguridad del canal
     
   </span>
   
@@ -2461,7 +2461,7 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6_4">
             <span class="md-nav__icon md-icon"></span>
-            Actividad en vivo y seguridad del canal
+            Seguridad del canal
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -2472,12 +2472,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../actividad-en-vivo-cierre/" class="md-nav__link">
+      <a href="../seguridad-del-canal/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad en vivo y seguridad del canal
+    Seguridad del canal
     
   </span>
   
@@ -2500,7 +2500,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 4.3 - Actividad en vivo, cierre de RA3
+    Actividad 4.3 - Seguridad del canal, cierre de RA3
     
   </span>
   
@@ -2985,7 +2985,7 @@
 <a id="__codelineno-4-35" name="__codelineno-4-35"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p>Un <code>ExecutorService</code> (el pool de hilos que ya conoces del Tema 3) atiende cada conexión en su propio hilo, en vez de bloquear el bucle principal — y como <code>ConexionEco</code> sigue siendo <em>try-with-resources</em>, cada hilo cierra su propia conexión al terminar, sin pisarse con los demás.</p>
-<p><code>Executors.newCachedThreadPool()</code> es un tipo concreto de <code>ExecutorService</code> que no habías visto en código todavía. En el Tema 3 lo pensaste como "una plantilla fija de operarios" — pero fija es solo una de las formas posibles de montar un pool, no la única. <code>newCachedThreadPool()</code> no tiene un tamaño fijo: crea un hilo nuevo cada vez que hace falta uno y no hay ninguno libre, reutiliza los que quedan libres, y cierra los que llevan un rato sin trabajo. Encaja bien aquí porque no sabes de antemano cuántos clientes se van a conectar a la vez — a diferencia de la cola de tareas de warm-up del Tema 3, donde un número fijo de operarios ya bastaba.</p>
+<p><code>Executors.newCachedThreadPool()</code> es un tipo concreto de <code>ExecutorService</code> que no habías visto en código todavía. En el Tema 3 lo has pensado como "una plantilla fija de operarios" — pero fija es solo una de las formas posibles de montar un pool, no la única. <code>newCachedThreadPool()</code> no tiene un tamaño fijo: crea un hilo nuevo cada vez que hace falta uno y no hay ninguno libre, reutiliza los que quedan libres, y cierra los que llevan un rato sin trabajo. Encaja bien aquí porque no sabes de antemano cuántos clientes se van a conectar a la vez — a diferencia de la cola de tareas de warm-up del Tema 3, donde un número fijo de operarios ya bastaba.</p>
 <p>Cierra <code>ServidorEco</code> (Paso 2) y arranca <code>ServidorEcoMultihilo</code> en su lugar (mismo puerto 5000). Repite la prueba del Paso 4: conecta dos <code>ClienteEco</code> a la vez, y comprueba que <strong>ambos</strong> funcionan simultáneamente.</p>
 <p><strong>Captura</strong>: la consola de <code>ServidorEcoMultihilo</code> mostrando dos trazas <code>Atendiendo en hilo: ...</code> con nombres de hilo distintos, y los dos <code>ClienteEco</code> recibiendo eco a la vez.</p>
 <p><strong>Responde</strong>: fíjate en <code>pool.submit(() -&gt; atenderClienteConTraza(cliente))</code> — la variable <code>cliente</code> se declara dentro del <code>while (true)</code>, una vez por cada vuelta, y se usa dentro de una lambda que no se ejecuta necesariamente de inmediato. Si dos clientes se conectan casi a la vez, ¿podría el hilo que atiende al primero acabar usando, por error, el <code>Socket</code> del segundo? Explica por qué sí o por qué no, en función de dónde está declarada la variable <code>cliente</code>.</p>
@@ -3015,7 +3015,7 @@
 </ol>
 <hr>
 <h2 id="pregunta-de-comprension">Pregunta de comprensión<a class="headerlink" href="#pregunta-de-comprension" title="Permanent link">¶</a></h2>
-<p>¿Qué relación hay entre este "un hilo por cliente" que acabas de ver y lo que hace Tomcat con las peticiones HTTP de tu GameVault? ¿Y con el pool de hilos configurado que construiste en el Tema 3 (<code>ThreadPoolTaskExecutor</code>)? Explica con tus palabras por qué es, en el fondo, el mismo patrón — gestionado a mano aquí, y por el framework allí.</p>
+<p>¿Qué relación hay entre este "un hilo por cliente" que acabas de ver y lo que hace Tomcat con las peticiones HTTP de tu GameVault? ¿Y con el pool de hilos configurado que has construido en el Tema 3 (<code>ThreadPoolTaskExecutor</code>)? Explica con tus palabras por qué es, en el fondo, el mismo patrón — gestionado a mano aquí, y por el framework allí.</p>
 <hr>
 <h2 id="cierre">✅ Cierre<a class="headerlink" href="#cierre" title="Permanent link">¶</a></h2>
 <p>Has visto un servidor y un cliente TCP reales funcionando, y el mismo problema que Tomcat resuelve por ti en cada petición HTTP resuelto a mano, con hilos. Las próximas actividades amplían este mismo tema con WebSocket, sobre un caso de aplicación real de tu GameVault.</p></div>

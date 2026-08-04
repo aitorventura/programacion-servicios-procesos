@@ -2326,27 +2326,36 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#la-configuracion" class="md-nav__link">
+  <a href="#las-tres-piezas-base-de-la-configuracion" class="md-nav__link">
     <span class="md-ellipsis">
-      La configuración
+      Las tres piezas base de la configuración
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#el-flujo-completo" class="md-nav__link">
+  <a href="#donde-aparece-el-destino-concreto-y-quien-lo-pone" class="md-nav__link">
     <span class="md-ellipsis">
-      El flujo completo
+      Dónde aparece el destino concreto, y quién lo pone
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#comparado-con-rest" class="md-nav__link">
+  <a href="#dos-mundos-distintos-y-donde-vive-cada-linea-de-codigo" class="md-nav__link">
     <span class="md-ellipsis">
-      Comparado con REST
+      Dos mundos distintos, y dónde vive cada línea de código
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comparado-con-lo-que-ya-conoces" class="md-nav__link">
+    <span class="md-ellipsis">
+      Comparado con lo que ya conoces
     </span>
   </a>
   
@@ -2354,15 +2363,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#como-probar-un-websocket-sin-escribir-un-frontend-entero" class="md-nav__link">
-    <span class="md-ellipsis">
-      🧪 Cómo probar un WebSocket sin escribir un frontend entero
-    </span>
-  </a>
   
 </li>
       
@@ -2396,7 +2396,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 4.2 - El endpoint /ws-actividad con STOMP
+    Actividad 4.2 - El canal /ws-actividad, conectado a ActividadService
     
   </span>
   
@@ -2438,7 +2438,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad en vivo y seguridad del canal
+    Seguridad del canal
     
   </span>
   
@@ -2449,7 +2449,7 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6_4">
             <span class="md-nav__icon md-icon"></span>
-            Actividad en vivo y seguridad del canal
+            Seguridad del canal
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -2460,12 +2460,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../actividad-en-vivo-cierre/" class="md-nav__link">
+      <a href="../seguridad-del-canal/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Actividad en vivo y seguridad del canal
+    Seguridad del canal
     
   </span>
   
@@ -2488,7 +2488,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 4.3 - Actividad en vivo, cierre de RA3
+    Actividad 4.3 - Seguridad del canal, cierre de RA3
     
   </span>
   
@@ -2600,27 +2600,36 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#la-configuracion" class="md-nav__link">
+  <a href="#las-tres-piezas-base-de-la-configuracion" class="md-nav__link">
     <span class="md-ellipsis">
-      La configuración
+      Las tres piezas base de la configuración
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#el-flujo-completo" class="md-nav__link">
+  <a href="#donde-aparece-el-destino-concreto-y-quien-lo-pone" class="md-nav__link">
     <span class="md-ellipsis">
-      El flujo completo
+      Dónde aparece el destino concreto, y quién lo pone
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#comparado-con-rest" class="md-nav__link">
+  <a href="#dos-mundos-distintos-y-donde-vive-cada-linea-de-codigo" class="md-nav__link">
     <span class="md-ellipsis">
-      Comparado con REST
+      Dos mundos distintos, y dónde vive cada línea de código
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comparado-con-lo-que-ya-conoces" class="md-nav__link">
+    <span class="md-ellipsis">
+      Comparado con lo que ya conoces
     </span>
   </a>
   
@@ -2628,15 +2637,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#como-probar-un-websocket-sin-escribir-un-frontend-entero" class="md-nav__link">
-    <span class="md-ellipsis">
-      🧪 Cómo probar un WebSocket sin escribir un frontend entero
-    </span>
-  </a>
   
 </li>
       
@@ -2667,37 +2667,73 @@
 
 <div><p><a id="websocket-stomp"></a></p>
 <h1 id="2-websocket-con-stomp-el-canal-de-actividad-en-vivo">🧩 2. WebSocket con STOMP: el canal de actividad en vivo<a class="headerlink" href="#2-websocket-con-stomp-el-canal-de-actividad-en-vivo" title="Permanent link">¶</a></h1>
-<div class="admonition warning">
-<p class="admonition-title">Una pieza construida enteramente aquí, paso a paso</p>
-<p>Lo que ves en este apartado no es un patrón estándar de un manual de Spring — es una funcionalidad concreta que vas a construir completamente guiado, sin nada previo sobre lo que apoyarte. Lo que ya has visto con sockets Java reales (Actividad 4.1) queda cubierto de forma completa — este apartado lo <strong>amplía</strong> sobre un protocolo de nivel más alto, pero no es un punto de partida obligatorio para lo anterior.</p>
-</div>
+<p>Con sockets clásicos (Actividad 4.1) ya sabes, de principio a fin, cómo dos programas se comunican en red. En el apartado anterior has visto también tres modelos de comunicación, y has dejado uno pendiente para hoy: el canal bidireccional persistente. Este apartado lo construye, sobre un protocolo de nivel más alto, para resolver un problema muy concreto que todavía no has resuelto en el curso.</p>
 <hr>
 <h2 id="el-problema-como-se-entera-un-cliente-de-algo-que-acaba-de-pasar">🔔 El problema: ¿cómo se entera un cliente de algo que acaba de pasar?<a class="headerlink" href="#el-problema-como-se-entera-un-cliente-de-algo-que-acaba-de-pasar" title="Permanent link">¶</a></h2>
-<p>Con todo lo que has construido hasta ahora (REST puro), el cliente siempre pregunta primero. Pero ¿cómo se entera de algo que el servidor sabe y el cliente no ha preguntado todavía? Las soluciones históricas, en orden:</p>
+<p>Con todo lo que has construido hasta ahora (REST puro), el cliente siempre pregunta primero: manda una petición, el servidor responde, y ahí termina esa conversación. Pero ¿qué pasa cuando el servidor sabe algo que al cliente le interesa, y el cliente todavía no ha preguntado por ello? Con petición-respuesta puro no hay forma de que el servidor tome la iniciativa — solo puede reaccionar. Las soluciones históricas a este problema, en orden de aparición:</p>
 <ol>
-<li><strong>Recargar la página</strong> — a mano, o con un <code>setTimeout</code> que recarga entera. Brutal y lento.</li>
-<li><strong>Polling</strong>: el cliente pregunta cada X segundos, "¿ha cambiado algo?" — funciona, pero tiene un coste real: peticiones constantes, la mayoría con respuesta "no, nada nuevo", y un retraso de hasta X segundos en enterarse.</li>
-<li><strong>Long polling</strong>: una variante donde el servidor retiene la respuesta hasta que hay algo que contar (o hasta un timeout) — mejora el retraso, pero sigue siendo, en el fondo, peticiones repetidas.</li>
+<li><strong>Recargar la página</strong> — a mano, o con un <code>setTimeout</code> que recarga entera. Brutal y lento: el usuario ve parpadear toda la página por un dato que probablemente ni ha cambiado.</li>
+<li><strong>Polling</strong>: el cliente pregunta cada X segundos, "¿ha cambiado algo?" — funciona, pero tiene un coste real: peticiones constantes, la mayoría con respuesta "no, nada nuevo", y un retraso de hasta X segundos en enterarse de lo que sí ha cambiado.</li>
+<li><strong>Long polling</strong>: una variante donde el servidor retiene la respuesta hasta que hay algo que contar (o hasta que salta un <em>timeout</em>) — mejora el retraso, pero sigue siendo, en el fondo, peticiones repetidas, una detrás de otra.</li>
 </ol>
-<p>WebSocket no es tecnología caída del cielo — es la respuesta a este problema concreto.</p>
+<p>Las tres funcionan, pero las tres dan vueltas alrededor del mismo obstáculo: el cliente sigue siendo quien tiene que preguntar, una y otra vez, para enterarse de algo que el servidor ya sabía. WebSocket no es tecnología caída del cielo — es la respuesta directa a este problema: en vez de perfeccionar la pregunta, elimina la necesidad de preguntar.</p>
 <hr>
 <h2 id="websocket-el-canal-bidireccional-persistente">🔗 WebSocket: el canal bidireccional persistente<a class="headerlink" href="#websocket-el-canal-bidireccional-persistente" title="Permanent link">¶</a></h2>
-<p>Recuerda el tercer modelo de comunicación del apartado anterior: el canal bidireccional persistente. <strong>WebSocket</strong> es exactamente eso — un socket de verdad entre navegador y servidor, que empieza como una petición HTTP normal (el <em>handshake</em>, con una cabecera especial <code>Upgrade</code>) y se convierte en una conexión <strong>permanente</strong>, donde el servidor puede enviar datos sin que el cliente pregunte antes.</p>
+<p>Recuerda los tres modelos de comunicación del apartado anterior: petición-respuesta síncrono (REST), cola de mensajes asíncrona (RabbitMQ), y canal bidireccional persistente — el que quedó pendiente de ver en detalle. <strong>WebSocket</strong> es exactamente eso: un socket de verdad entre navegador y servidor, abierto todo el tiempo que haga falta, por el que cualquiera de los dos lados puede enviar datos en cualquier momento.</p>
+<p>Para llegar a esa conexión persistente, el navegador manda una única petición HTTP normal, la de siempre. Lo único distinto es una cabecera especial (<code>Upgrade</code>) que pide cambiar de protocolo desde ya, en esa misma petición. Si el servidor acepta, ocurre algo que no pasa con ninguna otra petición HTTP: la conexión no se cierra al terminar de responder — se queda abierta de forma <strong>permanente</strong>, y a partir de ahí ya no habla HTTP, habla WebSocket:</p>
 <pre class="mermaid"><code>sequenceDiagram
     participant C as Cliente
     participant S as Servidor
-    C-&gt;&gt;S: HTTP GET /ws-actividad (cabecera Upgrade: websocket)
+    C-&gt;&gt;S: HTTP GET /canal (cabecera Upgrade: websocket)
     S--&gt;&gt;C: 101 Switching Protocols
     Note over C,S: Conexión permanente establecida
     S-&gt;&gt;C: mensaje (sin que el cliente pregunte)
     S-&gt;&gt;C: otro mensaje, más tarde</code></pre>
+<p>Fíjate en las dos últimas líneas del diagrama: el servidor manda mensajes sin que nada los haya provocado desde el cliente. Y el cliente, en su lado, tampoco se queda bloqueado esperándolos, parado hasta que llegue algo — eso desperdiciaría exactamente la ventaja que acabas de ganar. Lo que hace es dejar registrado un aviso —un <em>callback</em>— y seguir a lo suyo; en cuanto llega un mensaje por ese canal, se ejecuta ese aviso automáticamente, tantas veces como mensajes lleguen, sin que el cliente tenga que estar pendiente de nada mientras tanto. Por eso el diagrama muestra varios mensajes seguidos: no son respuestas a nada que el cliente haya vuelto a pedir, son avisos que van llegando cada vez que el servidor tiene algo nuevo que contar. Es el mismo patrón <code>onConnect</code>/<code>subscribe</code> que vas a usar en la Actividad 4.2.</p>
 <hr>
 <h2 id="que-es-stomp">📨 Qué es STOMP<a class="headerlink" href="#que-es-stomp" title="Permanent link">¶</a></h2>
-<p>WebSocket, por sí solo, solo da un tubo de bytes/mensajes sin formato — no sabe nada de "canales" o "suscripciones". <strong>STOMP</strong> (<em>Simple Text Oriented Messaging Protocol</em>) es un protocolo sencillo que se monta por encima, añadiendo la semántica de mensajería que ya conoces: destinos con nombre (<code>/topic/algo</code>), suscribirse a un destino, enviar a un destino. Es el mismo patrón de publicación-suscripción que ya viste con <code>ApplicationEventPublisher</code> en el Tema 3: un destino puede tener varios suscriptores a la vez, y todos reciben su propia copia de cada mensaje — a diferencia de la cola de RabbitMQ, también del Tema 3, donde cada mensaje concreto lo procesa un único consumidor.</p>
+<p>Imagina una librería online, con su catálogo de <code>Libro</code>/<code>Editorial</code> y sus notas de lectura de <code>NotaLectura</code> — el mismo dominio de ejemplo que ya conoces de otros apartados. Con WebSocket ya tienes el canal abierto — pero fíjate en qué es exactamente lo que has conseguido: un tubo por el que viajan mensajes sueltos, sin ninguna estructura encima. Todo lo que envíes por ahí llega mezclado, tal cual, sin ninguna etiqueta que diga de qué trata.</p>
+<p>Imagina que por ese mismo canal quisieras mandar dos cosas distintas —por ejemplo, un aviso cada vez que alguien publica una <code>NotaLectura</code> nueva, y una alerta cuando un <code>Libro</code> se queda sin ejemplares disponibles— a la vez. Con WebSocket a secas, el cliente que recibe no tiene ninguna forma de distinguir uno de otro más que mirando el propio contenido del mensaje a mano, ni de decir "a mí solo me interesan las alertas de stock, no las notas de lectura".</p>
+<p>Eso es justo lo que le falta a WebSocket y lo que añade <strong>STOMP</strong> (<em>Simple Text Oriented Messaging Protocol</em>), un protocolo sencillo que se monta encima: la posibilidad de dar un nombre a cada tipo de mensaje —un <strong>destino</strong>, como <code>/topic/notas</code> o <code>/topic/alertas-stock</code>— y de que cada cliente se <strong>suscriba</strong> solo a los destinos que le interesan, sin que le lleguen los demás. Nada de esto te lo inventas tú a mano: es el mismo patrón de publicación-suscripción que ya has visto con <code>ApplicationEventPublisher</code> en el Tema 3, ahora con el protocolo poniendo las reglas.</p>
+<div class="admonition tip">
+<p class="admonition-title">Quién participa: la diferencia con <code>ApplicationEventPublisher</code></p>
+<p>Con <code>ApplicationEventPublisher</code>, los suscriptores eran otros <em>beans</em>, dentro de la misma aplicación. Aquí el suscriptor es un cliente de verdad, fuera del servidor — típicamente un navegador.</p>
+</div>
+<p>El reparto de los mensajes también es distinto al de la cola de RabbitMQ, también del Tema 3 — y esta vez la diferencia sí importa para lo que vas a construir:</p>
+<pre class="mermaid"><code>flowchart LR
+    subgraph RabbitMQ["Cola de RabbitMQ (Tema 3)"]
+    M1["mensaje"] --&gt; Q["cola"] --&gt; Con["un único consumidor&lt;br/&gt;se lo queda"]
+    end
+    subgraph STOMP["Topic de STOMP"]
+    M2["mensaje"] --&gt; T["/topic/actividad"]
+    T --&gt; S1["suscriptor 1&lt;br/&gt;recibe su copia"]
+    T --&gt; S2["suscriptor 2&lt;br/&gt;recibe su copia"]
+    T --&gt; S3["suscriptor N&lt;br/&gt;recibe su copia"]
+    end</code></pre>
+<p>Un destino STOMP puede tener varios suscriptores a la vez, y todos reciben su propia copia de cada mensaje — justo lo contrario de una cola de RabbitMQ, donde cada mensaje concreto lo procesa un único consumidor y desaparece de ahí. Piensa otra vez en la alerta de stock: si tienes varias personas de la librería con el panel de administración abierto a la vez, quieres que la reciban <strong>todas</strong>, no que se la quede solo la primera que la pida — exactamente el reparto que da un destino STOMP, y exactamente lo contrario de lo que haría una cola.</p>
 <hr>
 <h2 id="el-caso-de-uso-actividad-en-vivo">🎯 El caso de uso: actividad en vivo<a class="headerlink" href="#el-caso-de-uso-actividad-en-vivo" title="Permanent link">¶</a></h2>
-<p>El punto de partida: imagina que <code>ActividadService.registrar()</code> ya guarda cada evento del catálogo en la base de datos — hoy solo puede consultarse con <code>GET /api/v1/actividad</code>, en frío, y solo por <code>ADMIN</code>. Vas a construir un canal que emita esos mismos registros <strong>en vivo</strong>, según ocurren.</p>
-<h3 id="la-configuracion">La configuración<a class="headerlink" href="#la-configuracion" title="Permanent link">¶</a></h3>
+<p>Ya sabes qué resuelve WebSocket (el canal persistente) y qué añade STOMP encima (destinos y suscripciones). Toca ver las dos cosas juntas, aplicadas a un caso concreto de tu propio proyecto.</p>
+<p>Sigue con el mismo ejemplo de la librería online. El punto de partida: cada vez que se crea, modifica o borra un <code>Libro</code> en el catálogo, <code>ActividadService.registrar()</code> ya guarda ese registro en la base de datos — hoy solo puede consultarse con <code>GET /api/v1/actividad</code>, en frío, y solo por <code>ADMIN</code>. La pieza que falta es publicar esos mismos registros <strong>en vivo</strong>, según ocurren, a quien esté mirando en ese momento. Antes de entrar en la configuración pieza a pieza, esta es la foto completa de lo que vas a construir:</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant N1 as Navegador 1
+    participant N2 as Navegador 2
+    participant S as Servidor
+    participant DB as Base de datos
+
+    N1-&gt;&gt;S: Conecta a /ws-actividad
+    N1-&gt;&gt;S: Se suscribe a /topic/actividad
+    N2-&gt;&gt;S: Conecta a /ws-actividad
+    N2-&gt;&gt;S: Se suscribe a /topic/actividad
+
+    Note over S,DB: Alguien crea un Libro
+    S-&gt;&gt;DB: ActividadService.registrar() (ya existe)
+    S-&gt;&gt;S: Publica en /topic/actividad (pieza nueva de hoy)
+    S-&gt;&gt;N1: Le llega al instante
+    S-&gt;&gt;N2: Le llega al instante, también</code></pre>
+<p>Dos navegadores, conectados por separado, reciben el mismo aviso a la vez — sin que ninguno de los dos haya vuelto a preguntar nada. Todo lo que viene ahora, paso a paso, es cómo se construye esto.</p>
+<h3 id="las-tres-piezas-base-de-la-configuracion">Las tres piezas base de la configuración<a class="headerlink" href="#las-tres-piezas-base-de-la-configuracion" title="Permanent link">¶</a></h3>
+<p>Montar esto en Spring exige tres piezas: activar el soporte de mensajería WebSocket, declarar a qué URL se conecta el cliente, y decidir cómo se reparten los mensajes una vez dentro. Las tres caben en una única clase de configuración:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
@@ -2728,17 +2764,140 @@
 <a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p><code>@EnableWebSocketMessageBroker</code> activa el soporte de mensajería WebSocket con STOMP. <code>registerStompEndpoints</code> declara la URL del <em>handshake</em> (<code>/ws-actividad</code> — es la dirección a la que el cliente se conecta inicialmente). <code>configureMessageBroker</code> activa un broker simple en memoria (<code>enableSimpleBroker("/topic")</code>, suficiente para este caso — un broker externo como RabbitMQ también podría hacer de intermediario STOMP, pero no es necesario aquí) y fija el prefijo <code>/app</code> para los mensajes que el cliente envíe hacia el servidor (no lo vas a necesitar en este caso de uso, que es solo de servidor hacia cliente, pero forma parte de la configuración estándar).</p>
-<h3 id="el-flujo-completo">El flujo completo<a class="headerlink" href="#el-flujo-completo" title="Permanent link">¶</a></h3>
-<pre class="mermaid"><code>sequenceDiagram
-    participant N as Navegador
-    participant S as Servidor
-    N-&gt;&gt;S: Conecta a /ws-actividad (handshake)
-    N-&gt;&gt;S: Se suscribe a /topic/actividad
-    Note over S: Ocurre un evento en el catálogo
-    S-&gt;&gt;N: Publica en /topic/actividad
-    Note over N: TODOS los suscritos lo reciben al instante</code></pre>
-<h3 id="comparado-con-rest">Comparado con REST<a class="headerlink" href="#comparado-con-rest" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Método</th>
+<th>Responsabilidad</th>
+<th>En el diagrama de arriba</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@EnableWebSocketMessageBroker</code></td>
+<td>Activa el soporte de mensajería WebSocket con STOMP sobre toda la aplicación</td>
+<td>La pieza que hace posible todo lo demás</td>
+</tr>
+<tr>
+<td><code>registerStompEndpoints</code></td>
+<td>Declara la URL a la que el cliente se conecta inicialmente</td>
+<td>El <code>/ws-actividad</code> de "Conecta a..."</td>
+</tr>
+<tr>
+<td><code>configureMessageBroker</code></td>
+<td>Activa el <strong>broker</strong> —el mismo concepto que ya conoces de RabbitMQ (Tema 3), el intermediario que recibe los mensajes y los reparte a quien corresponda— y decide qué prefijos gestiona</td>
+<td>El <code>/topic</code> de "Se suscribe a..." y de "Publica en..."</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">Aquí no hace falta ningún <code>@RestController</code></p>
+<p><code>registerStompEndpoints</code> es, en sí misma, la declaración del endpoint — a diferencia de REST, no hace falta ningún <code>@GetMapping("/ws-actividad")</code>. Esta llamada le dice a Spring que las peticiones a esa URL no pasan por el despachador normal de controllers: las trata como negociación de WebSocket desde el principio. El <code>@MessageMapping</code> de más abajo (para <code>/app</code>) sí es el equivalente de <code>@RequestMapping</code>, pero solo para mensajes que llegan <strong>después</strong> de que la conexión ya esté establecida — el <em>handshake</em> inicial lo gestiona directamente esta configuración, sin ningún método de controller de por medio.</p>
+</div>
+<p>Fíjate también en <code>.setAllowedOriginPatterns("*")</code>, justo detrás de <code>addEndpoint(...)</code>. Por defecto, un navegador no puede abrir una conexión hacia un dominio distinto del que sirve la propia página, sin que el servidor lo autorice explícitamente — <code>setAllowedOriginPatterns</code> es esa autorización, para WebSocket. <code>*</code> acepta cualquier origen, cómodo para probar mientras desarrollas; en una aplicación real restringirías esto al dominio concreto de tu frontend.</p>
+<p>El broker que activas aquí, <code>enableSimpleBroker("/topic")</code>, es uno simple, en memoria — suficiente para este caso; un broker externo como el propio RabbitMQ también podría hacer de intermediario STOMP, pero no hace falta para lo que vas a construir.</p>
+<div class="admonition tip">
+<p class="admonition-title">¿Y para qué sirve <code>/app</code>?</p>
+<p>La misma llamada fija también <code>/app</code>, un segundo prefijo para la dirección contraria: mensajes que el cliente manda <strong>hacia</strong> el servidor, no solo al revés. No lo vas a necesitar hoy, que es solo de servidor hacia cliente, pero para que no se quede en el aire: imagina que quisieras que cada cliente de la librería eligiera qué avisos le interesan (por ejemplo, "solo alertas de stock, las notas de lectura no me hacen falta"). El cliente mandaría esa preferencia a <code>/app/preferencias</code>, y un método del servidor anotado <code>@MessageMapping("/preferencias")</code> la recibiría y la guardaría — el mismo papel que hace <code>@RequestMapping</code> con REST, pero para mensajes STOMP en vez de peticiones HTTP.</p>
+</div>
+<h3 id="donde-aparece-el-destino-concreto-y-quien-lo-pone">Dónde aparece el destino concreto, y quién lo pone<a class="headerlink" href="#donde-aparece-el-destino-concreto-y-quien-lo-pone" title="Permanent link">¶</a></h3>
+<p>Fíjate otra vez en el código de la configuración: en ningún sitio dice <code>/topic/actividad</code>, solo aparece <code>/topic</code>, a secas — el prefijo, no el destino final. El destino concreto no se declara ahí. Aparece en otros dos sitios, cada uno responsable de su propio lado.</p>
+<p><strong>En el servidor</strong>, cuando quieras publicar algo (esto lo escribirás en la Actividad 4.2):</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="n">messagingTemplate</span><span class="p">.</span><span class="na">convertAndSend</span><span class="p">(</span><span class="s">"/topic/actividad"</span><span class="p">,</span><span class="w"> </span><span class="s">"Se ha añadido un Libro nuevo al catálogo"</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>En el cliente</strong>, cuando quieras recibirlo:</p>
+<div class="language-javascript highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">JavaScript</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
+<span class="normal"><a href="#__codelineno-2-2">2</a></span>
+<span class="normal"><a href="#__codelineno-2-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nx">client</span><span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="s1">'/topic/actividad'</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">mensaje</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Ha llegado un aviso:'</span><span class="p">,</span><span class="w"> </span><span class="nx">mensaje</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="p">});</span>
+</code></pre></div></td></tr></table></div>
+<p>Fíjate en esa segunda pieza, <code>function (mensaje) { ... }</code>: es el <strong><em>callback</em></strong> del que hablábamos más arriba, ahora con código delante. Es una función que tú escribes, pero que <strong>no llamas tú</strong>. Se la entregas a <code>subscribe(...)</code> como quien dice "cuando llegue algo por aquí, ejecuta esto" — y ahí termina tu trabajo. La ejecuta el propio cliente STOMP, automáticamente, cada vez que llega un mensaje nuevo a <code>/topic/actividad</code>, ni una vez menos ni una vez más.</p>
+<p>Con las dos piezas de código delante, ya se puede responder a "por qué no aparece en la configuración": el destino concreto no se <strong>declara</strong> en un sitio central, se <strong>usa</strong> por separado en quien publica y en quien se suscribe — y ambos tienen que escribir el mismo nombre, carácter a carácter, para encontrarse. Es la diferencia clave con RabbitMQ:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>RabbitMQ (Tema 3)</th>
+<th>STOMP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Qué declaras en la configuración</td>
+<td>Cada cola, con su propio <code>@Bean</code></td>
+<td>Solo el prefijo (<code>"/topic"</code>)</td>
+</tr>
+<tr>
+<td>Dónde aparece el nombre concreto</td>
+<td>En la propia declaración de la cola</td>
+<td>Solo donde se publica y donde se suscribe</td>
+</tr>
+<tr>
+<td>Si el nombre no coincide en algún lado</td>
+<td>Error claro al arrancar — la cola no existe</td>
+<td>Ningún error — el mensaje simplemente no le llega a nadie</td>
+</tr>
+</tbody>
+</table>
+<p>Y esa misma coincidencia de nombres decide, además, <strong>qué recibe cada cliente</strong>, no solo que lo reciba. Imagina un segundo cliente que hiciera esto:</p>
+<div class="language-javascript highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">JavaScript</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="nx">client</span><span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="s1">'/topic/alertas-stock'</span><span class="p">,</span><span class="w"> </span><span class="nx">otroCallback</span><span class="p">);</span>
+</code></pre></div></td></tr></table></div>
+<p>Ese cliente recibiría solo las alertas de stock — nunca los avisos de <code>/topic/actividad</code>, aunque los gestione el mismo broker. Cada <code>subscribe(...)</code> apunta a un único destino. No existe un "suscríbeme a todo lo que empiece por <code>/topic/</code>": para recibir las dos cosas harían falta dos llamadas, una por destino.</p>
+<h3 id="dos-mundos-distintos-y-donde-vive-cada-linea-de-codigo">Dos mundos distintos, y dónde vive cada línea de código<a class="headerlink" href="#dos-mundos-distintos-y-donde-vive-cada-linea-de-codigo" title="Permanent link">¶</a></h3>
+<p>Antes de seguir, para el golpe de vista: hasta ahora has visto código Java y código JavaScript mezclados, y es fácil perder de vista que <strong>no corren en el mismo sitio, ni tú los ejecutas de la misma forma</strong>:</p>
+<pre class="mermaid"><code>flowchart LR
+    subgraph Servidor["Tu servidor Spring (Java)"]
+        direction TB
+        A["WebSocketConfig"]
+        B["Tu servicio&lt;br/&gt;messagingTemplate.convertAndSend(...)"]
+    end
+    subgraph Navegador["Navegador de quien mira (JavaScript)"]
+        direction TB
+        C["actividad.html&lt;br/&gt;client.subscribe(...)"]
+    end
+    Servidor &lt;--&gt;|"WebSocket"| Navegador</code></pre>
+<ul>
+<li>El código <strong>Java</strong> —<code>WebSocketConfig</code>, y el <code>messagingTemplate.convertAndSend(...)</code> de más abajo— vive dentro de tu propio proyecto Spring: se compila con Maven y se despliega junto con todo lo demás, el mismo servidor que ya tienes corriendo.</li>
+<li>El código <strong>JavaScript</strong> del cliente no lo ejecutas tú, ni corre en tu servidor: es un fichero HTML con su <code>&lt;script&gt;</code> dentro, que tú guardas en <code>src/main/resources/static/</code> (Spring lo sirve como un recurso estático más, igual que serviría una imagen) y que <strong>ejecuta el navegador</strong> de quien lo abra, como cualquier página web normal. No hay que "arrancarlo" ni compilarlo — basta con que exista ahí y con que alguien lo visite.</li>
+</ul>
+<p>Y la pregunta que queda: ¿dónde escribes tú, dentro de tu propio proyecto, una línea así? En cualquier bean donde ya tengas el evento que te interesa emitir — no hace falta ninguna clase nueva. <code>SimpMessagingTemplate</code> se inyecta por constructor exactamente igual que cualquier repositorio o servicio que ya conoces:</p>
+<div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-4-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-4-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-4-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-4-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-4-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-4-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-4-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-4-10">10</a></span>
+<span class="normal"><a href="#__codelineno-4-11">11</a></span>
+<span class="normal"><a href="#__codelineno-4-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="nd">@Service</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="nd">@RequiredArgsConstructor</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">NotaLecturaService</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">NotaLecturaRepository</span><span class="w"> </span><span class="n">notaLecturaRepository</span><span class="p">;</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">SimpMessagingTemplate</span><span class="w"> </span><span class="n">messagingTemplate</span><span class="p">;</span><span class="w"> </span><span class="c1">// pieza nueva</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6"></a>
+<a id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">NotaLectura</span><span class="w"> </span><span class="nf">crear</span><span class="p">(</span><span class="n">NotaLecturaCreateDTO</span><span class="w"> </span><span class="n">dto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="w">        </span><span class="n">NotaLectura</span><span class="w"> </span><span class="n">guardada</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">notaLecturaRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">mapToEntity</span><span class="p">(</span><span class="n">dto</span><span class="p">));</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="w">        </span><span class="n">messagingTemplate</span><span class="p">.</span><span class="na">convertAndSend</span><span class="p">(</span><span class="s">"/topic/notas"</span><span class="p">,</span><span class="w"> </span><span class="n">guardada</span><span class="p">);</span><span class="w"> </span><span class="c1">// pieza nueva</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">guardada</span><span class="p">;</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12"></a><span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>El mismo método que ya guardaba algo en base de datos, ahora, además, lo publica por WebSocket — una línea más, al lado de la que ya tenías. En la Actividad 4.2 ves esto aplicado al caso real de tu proyecto, conectado a <code>ActividadService</code> desde el primer momento — sin ningún mensaje de prueba de por medio.</p>
+<div class="admonition question">
+<p class="admonition-title">¿El cliente recibe ese objeto <code>guardada</code> tal cual?</p>
+<p>No. <code>convertAndSend(destino, objeto)</code> no manda el objeto Java por el cable —no podría, WebSocket solo transporta texto o bytes—: lo <strong>convierte</strong> primero (de ahí el nombre) a un formato de texto, JSON por defecto, exactamente igual que ya hace Spring con cualquier respuesta REST que devuelves como objeto. Lo que le llega al cliente, en <code>mensaje.body</code>, es una cadena de texto con ese JSON, no un objeto Java.</p>
+<p>En JavaScript, esa cadena no es todavía un objeto usable — hace falta convertirla tú mismo con <code>JSON.parse(mensaje.body)</code> antes de poder leer sus campos. Es el mismo paso que ya usa el cliente completo de la Actividad 4.2.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">¿En qué hilo se ejecuta ese <code>convertAndSend</code>?</p>
+<p>En tu proyecto real, <code>registrar(...)</code> no lo llamas tú directamente desde una petición HTTP — lo llama el consumer de RabbitMQ (Tema 3), en su propio hilo de escucha, no en el hilo del pool de Tomcat que atendió la petición original. El <code>push</code> hacia WebSocket se ejecuta ahí mismo, en ese hilo del listener, con una responsabilidad más de las que ya tenía.</p>
+</div>
+<h3 id="comparado-con-lo-que-ya-conoces">Comparado con lo que ya conoces<a class="headerlink" href="#comparado-con-lo-que-ya-conoces" title="Permanent link">¶</a></h3>
+<p>Para que el contraste con REST quede claro de un vistazo:</p>
 <table>
 <thead>
 <tr>
@@ -2751,7 +2910,7 @@
 <tr>
 <td>Quién inicia</td>
 <td>El cliente, cada vez</td>
-<td>El cliente, una vez (el handshake)</td>
+<td>El cliente, una vez (la conexión inicial)</td>
 </tr>
 <tr>
 <td>Respuestas por petición</td>
@@ -2770,21 +2929,21 @@
 </tr>
 </tbody>
 </table>
-<p>Y el paralelismo correcto no es con RabbitMQ (esa es una cola punto a punto, cada mensaje a un único consumidor) — es con los eventos internos de Spring del Tema 3: mismo modelo de publicación-suscripción, pero con distinto alcance. <code>ApplicationEventPublisher</code> llega a otros beans <strong>dentro</strong> de la misma JVM; STOMP llega a <strong>navegadores</strong>, fuera del propio servidor.</p>
-<hr>
-<h2 id="como-probar-un-websocket-sin-escribir-un-frontend-entero">🧪 Cómo probar un WebSocket sin escribir un frontend entero<a class="headerlink" href="#como-probar-un-websocket-sin-escribir-un-frontend-entero" title="Permanent link">¶</a></h2>
-<p>No hace falta una aplicación cliente completa para probar esto — basta con una página HTML mínima con un cliente STOMP en JavaScript (la librería <code>@stomp/stompjs</code>, servida desde un CDN o un fichero estático). La Actividad 4.2 te guía paso a paso por esa vía.</p>
+<p>Y dos matices más, ya con el diagrama completo delante:</p>
+<ul>
+<li><strong>El paralelismo correcto sigue siendo con <code>ApplicationEventPublisher</code></strong>, no con RabbitMQ (como ya has visto en el <code>tip</code> de más arriba): mismo modelo de publicación-suscripción. La única diferencia es quién es el suscriptor: con <code>ApplicationEventPublisher</code> era otro <em>bean</em>, dentro de la misma aplicación; aquí es un navegador, fuera del servidor por completo.</li>
+<li><strong>La concurrencia de los dos navegadores del diagrama la gestiona Spring, no tú.</strong> En la Actividad 4.1, cada cliente que se conectaba a tu servidor de sockets exigía que tú mismo lanzaras un hilo nuevo para atenderlo, a mano. Aquí no vas a escribir ni un <code>Thread</code> — Spring ya gestiona por ti, internamente, un hilo por cada cliente WebSocket conectado. La necesidad de atender varios clientes a la vez sigue siendo la misma, solo que esta capa más alta te la resuelve sin que tengas que programarla tú.</li>
+</ul>
 <hr>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
 <details class="tip">
 <summary>Abrir resumen</summary>
 <ul>
-<li>Antes de WebSocket: recargar, polling (coste de peticiones repetidas), long polling — soluciones parciales al mismo problema.</li>
-<li><strong>WebSocket</strong> es un canal bidireccional persistente: handshake HTTP con <code>Upgrade</code>, después conexión permanente donde el servidor envía sin que el cliente pregunte.</li>
-<li><strong>STOMP</strong> añade semántica de mensajería (destinos, suscripción) sobre el tubo de bytes desnudo de WebSocket.</li>
+<li>El problema de fondo: con petición-respuesta puro, el cliente siempre pregunta primero — no hay forma de que el servidor avise por iniciativa propia. Recargar, polling y long polling son soluciones parciales al mismo problema.</li>
+<li><strong>WebSocket</strong> es el tercer modelo de comunicación (canal bidireccional persistente): petición HTTP inicial con cabecera <code>Upgrade</code> para cambiar de protocolo, después conexión permanente donde el servidor envía sin que el cliente pregunte, y el cliente recibe por <em>callback</em>, sin quedarse bloqueado esperando.</li>
+<li><strong>STOMP</strong> añade semántica de mensajería (destinos, suscripción) sobre el tubo de bytes desnudo de WebSocket, para no tener que inventártela tú.</li>
 <li><code>@EnableWebSocketMessageBroker</code> + <code>registerStompEndpoints</code> + <code>configureMessageBroker</code> son las tres piezas de configuración base.</li>
-<li>Mismo modelo pub-sub que los eventos internos de Spring (<code>ApplicationEventPublisher</code>, Tema 3), distinto alcance: dentro de la JVM entre beans, o hacia navegadores. RabbitMQ, en cambio, es una cola punto a punto — cada mensaje a un único consumidor, no lo mismo.</li>
-<li>Se puede probar sin frontend completo: una página HTML mínima con STOMP.js basta.</li>
+<li>Mismo modelo pub-sub que los eventos internos de Spring (<code>ApplicationEventPublisher</code>, Tema 3), pero con el suscriptor fuera de la JVM, en el navegador. RabbitMQ, en cambio, es una cola punto a punto — cada mensaje a un único consumidor, no lo mismo.</li>
 </ul>
 </details></div>
 
@@ -2839,13 +2998,13 @@
         
         
           
-          <a href="../actividad_4_2/" class="md-footer__link md-footer__link--next" aria-label="Siguiente: Actividad 4.2 - El endpoint /ws-actividad con STOMP">
+          <a href="../actividad_4_2/" class="md-footer__link md-footer__link--next" aria-label="Siguiente: Actividad 4.2 - El canal /ws-actividad, conectado a ActividadService">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Siguiente
               </span>
               <div class="md-ellipsis">
-                Actividad 4.2 - El endpoint /ws-actividad con STOMP
+                Actividad 4.2 - El canal /ws-actividad, conectado a ActividadService
               </div>
             </div>
             <div class="md-footer__button md-icon">
