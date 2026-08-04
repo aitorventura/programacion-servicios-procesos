@@ -1,13 +1,14 @@
-# 🧪 Actividad 4.2: El endpoint `/ws-actividad` con STOMP
+# 🧪 Actividad 4.2: El canal `/ws-actividad`, conectado a `ActividadService`
 
-!!! warning "Se construye completamente guiado, desde cero"
-    No hay ningún ejemplo previo con el que comparar tu resultado — vas a seguir el enunciado paso a paso. Es una ampliación de profundidad sobre lo ya construido con sockets clásicos en la Actividad 4.1, no un punto de partida distinto.
+!!! warning "Descarga la plantilla"
+    📄 [Plantilla 4.2 — El canal /ws-actividad, conectado a ActividadService](plantillas/Actividad_4_2_PSP_Plantilla.docx){target="_blank" rel="noopener"}
 
 ## Qué vas a practicar
 
 - Configurar un endpoint WebSocket con STOMP en Spring.
 - Abrir esa ruta en tu política de seguridad.
-- Probar el canal con un cliente STOMP mínimo.
+- Conectar el canal a un dato real de tu proyecto — nada de mensajes de prueba.
+- Construir el cliente STOMP que lo recibe en vivo.
 
 ---
 
@@ -50,7 +51,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 }
 ```
 
-Reinicia tu aplicación.
+`setAllowedOriginPatterns("*")` es la autorización de origen que ya has visto en la teoría de este apartado — aquí, `*` acepta cualquier origen, cómodo para probar hoy desde tu propia máquina.
 
 ---
 
@@ -60,34 +61,65 @@ Con tu `anyRequest().denyAll()` del Tema 2, el handshake a `/ws-actividad` va a 
 
 ```java
 .requestMatchers("/ws-actividad/**").permitAll()
+.requestMatchers(HttpMethod.GET, "/actividad.html").permitAll()
 ```
+
+Necesitas las dos reglas, no solo la primera: `/ws-actividad/**` abre el *handshake* del canal WebSocket, pero el propio fichero `actividad.html` que vas a crear en el Paso 4 es una petición GET normal y corriente, distinta del *handshake* — y sigue cayendo bajo `anyRequest().denyAll()` si no la abres también. Sin esta segunda regla, el navegador ni siquiera llega a cargar la página: un 401 antes de que el cliente STOMP tenga ocasión de conectar.
 
 !!! tip "La discusión de fondo llega en la Actividad 4.3"
     Abrir esta ruta sin autenticación es, a propósito, una simplificación para poder probar el canal hoy. Si te preguntas si esto es sensato dejarlo así — buena intuición: es exactamente lo que vas a auditar y valorar en la última actividad del módulo.
 
 ---
 
-## Paso 3 — Un endpoint de prueba para emitir algo
+## Paso 3 — La emisión real, guiada al completo
 
-Para comprobar que el canal funciona antes de conectarlo al flujo real, añade un endpoint temporal:
+Nada de mensajes de prueba: vas a conectar el canal a un dato real de tu proyecto. Hasta ahora, `ActividadController.getAll()` devolvía la entidad `Actividad` directamente — el mismo problema que ya viste en Acceso a Datos (Tema 1, DTOs): expone tal cual algo pensado para que lo entienda Hibernate, no un cliente.
+
+No es que WebSocket lo exija técnicamente —es una mala práctica que ya arrastrabas—, pero ya que hoy tocas `registrar()` para añadir la emisión, es el momento de arreglarla: introduce un DTO de salida propio, y reutilízalo también para publicar cada registro por WebSocket.
 
 ```java
-@RestController
-@RequestMapping("/api/v1/test")
-@RequiredArgsConstructor
-public class WebSocketTestController {
+package com.tunombre.gamevault.actividad;
 
+import java.time.Instant;
+
+public record ActividadResponseDTO(Long id, String tipo, String entidad, String entidadId, Instant fecha) {}
+```
+
+`id` y `entidadId` no son lo mismo: `id` es el identificador propio de ese registro de actividad (autogenerado, uno distinto por cada evento que se guarda); `entidadId` es el id de la entidad sobre la que trata ese evento —el videojuego que se ha creado, actualizado o borrado—. `Actividad` es un registro genérico que sirve para cualquier tipo de entidad, así que `entidadId` se guarda como texto, no como una relación de verdad; `entidad` (el campo de al lado) es el que dice de qué tipo se trata en cada caso.
+
+Modifica `ActividadService`:
+
+```java
+@Service
+@RequiredArgsConstructor
+public class ActividadService {
+
+    private final ActividadRepository actividadRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
-    @PostMapping("/emitir")
-    public ResponseEntity<Void> emitir() {
-        messagingTemplate.convertAndSend("/topic/actividad", "Mensaje de prueba: " + java.time.Instant.now());
-        return ResponseEntity.ok().build();
+    public void registrar(String tipo, String entidad, String entidadId) {
+        Actividad actividad = actividadRepository.save(new Actividad(tipo, entidad, entidadId));
+        messagingTemplate.convertAndSend("/topic/actividad", mapToDTO(actividad));
+    }
+
+    public List<ActividadResponseDTO> listar() {
+        return actividadRepository.findAllByOrderByFechaDesc()
+                .stream()
+                .map(this::mapToDTO)
+                .toList();
+    }
+
+    private ActividadResponseDTO mapToDTO(Actividad a) {
+        return new ActividadResponseDTO(a.getId(), a.getTipo(), a.getEntidad(), a.getEntidadId(), a.getFecha());
     }
 }
 ```
 
-`SimpMessagingTemplate` es la pieza que te permite publicar manualmente en un destino STOMP, sin que tenga que originarse en un cliente. Añade también esta ruta a tu política de seguridad (`permitAll()`, temporal, solo para esta prueba).
+Fíjate en que `registrar(...)` sigue recibiendo los mismos tres parámetros de siempre (`tipo`, `entidad`, `entidadId`) — no le añades ninguno nuevo, así que `ActividadVideojuegoEventConsumer` (Actividad 3.1) sigue llamándolo exactamente igual, sin que tengas que tocarlo. Lo único que cambia es que, tras guardar, el mismo método también publica el registro en `/topic/actividad`, ya convertido a `ActividadResponseDTO`.
+
+Como `listar()` ahora devuelve `List<ActividadResponseDTO>` en vez de `List<Actividad>`, actualiza también el tipo genérico en `ActividadController.getAll()` (`ResponseEntity<List<ActividadResponseDTO>>`) — el cuerpo del método no cambia, sigue delegando en `listar()`.
+
+**Pregunta**: sin tocar nada más, crear, actualizar y borrar un videojuego deberían empezar los tres a aparecer en vivo por el canal. Sigue el flujo completo (RabbitMQ → consumer → `registrar()`, visto en el Tema 3) y razona por qué añadir la emisión dentro de `registrar()` basta para cubrir los tres tipos de evento, sin tener que tocar tres sitios distintos.
 
 ---
 
@@ -125,264 +157,47 @@ Esto es todo lo que hace falta para que funcione — tres piezas: conectar, susc
 </html>
 ```
 
-`new StompJs.Client({ brokerURL: ... })` crea el cliente apuntando a tu endpoint. `onConnect` es el callback que se dispara en cuanto el *handshake* termina — dentro, `client.subscribe(destino, callback)` te suscribe a `/topic/actividad`, y ese `callback` se ejecuta **cada vez** que llega un mensaje nuevo a ese destino, con el mensaje ya en `mensaje.body`. Lo único que haces con él aquí es crear un `<li>` y añadirlo a la lista — nada más.
+`new StompJs.Client({ brokerURL: ... })` crea el cliente apuntando a tu endpoint. `onConnect` es el callback que se dispara en cuanto el *handshake* termina — dentro, `client.subscribe(destino, callback)` te suscribe a `/topic/actividad`, y ese `callback` se ejecuta **cada vez** que llega un mensaje nuevo a ese destino, con el mensaje ya en `mensaje.body` (una cadena de texto en JSON — recuerda convertirla con `JSON.parse(...)` si quieres leer sus campos, en vez de pintarla tal cual). Lo único que hace este mecanismo mínimo es crear un `<li>` con ese texto y añadirlo a la lista — nada más.
 
-Guarda esto ya como `src/main/resources/static/actividad.html`, ábrelo en `http://localhost:8080/actividad.html`, y compruébalo con el endpoint de prueba del Paso 3 antes de seguir — así sabes que el mecanismo funciona antes de complicar el fichero con nada más.
+Guarda esto ya como `src/main/resources/static/actividad.html`. Con esto ya tienes todo el código en su sitio —el endpoint (Paso 1), la ruta abierta (Paso 2), la emisión real (Paso 3) y ahora el cliente—, así que es el momento de reiniciar tu aplicación por fin: hasta ahora no tenías con qué comprobar nada de lo anterior. Ábrelo en `http://localhost:8080/actividad.html`.
 
 ### La misma página, con algo más de cuidado visual
 
-El HTML/CSS de abajo no es contenido nuevo de la actividad —es solo para que la demostración se vea mejor—: sigue siendo exactamente el mismo `client`/`onConnect`/`subscribe` de arriba, palabra por palabra; lo único que cambia es que `pintar(...)` hace algo más elaborado que un `textContent` a secas (colorea según el tipo de evento, y muestra cuánto hace que ha llegado). La parte que de verdad importa sigue señalada en los comentarios. Sustituye el contenido del fichero por esta versión:
+!!! tip "Descarga el cliente con estilo"
+    📄 [actividad_4_2_cliente.html](recursos/actividad_4_2_cliente.html){target="_blank" rel="noopener"} — descárgalo y sustituye con él el contenido de tu `src/main/resources/static/actividad.html`.
 
-```html
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Actividad en vivo</title>
-<style>
-    :root {
-        --bg-0: #0a0c10;
-        --panel: rgba(24, 28, 38, 0.72);
-        --border: rgba(255,255,255,.08);
-        --texto: #eef0f5;
-        --tenue: #6f7686;
-        --tenue-2: #9aa1b3;
-        --brand: #7c8cff;
-        --brand-glow: rgba(124,140,255,.35);
-        --verde: #34d399;
-        --azul: #60a5fa;
-        --rojo: #fb7185;
-        --gris: #9aa1b3;
-    }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-        margin: 0; min-height: 100vh; padding: 3rem 1.25rem;
-        font-family: -apple-system, 'Segoe UI', Inter, system-ui, sans-serif;
-        color: var(--texto);
-        background:
-            radial-gradient(600px 400px at 15% -10%, rgba(124,140,255,.16), transparent 60%),
-            radial-gradient(500px 380px at 100% 0%, rgba(52,211,153,.10), transparent 55%),
-            var(--bg-0);
-        display: flex; flex-direction: column; align-items: center;
-        -webkit-font-smoothing: antialiased;
-    }
+El HTML/CSS de ese fichero no es contenido nuevo de la actividad —es solo para que la demostración se vea mejor—: sigue siendo exactamente el mismo `client`/`onConnect`/`subscribe` de arriba, palabra por palabra; lo único que cambia es que `pintar(...)` hace algo más elaborado que un `textContent` a secas (colorea según el tipo de evento, y muestra cuánto hace que ha llegado — y ya interpreta el JSON, no hace falta que lo hagas tú). La parte que de verdad importa sigue señalada en los comentarios, marcada con "El mismo mecanismo de la versión sin estilo, sin cambios".
 
-    .panel {
-        width: 100%; max-width: 560px;
-        background: var(--panel);
-        backdrop-filter: blur(18px);
-        border: 1px solid var(--border);
-        border-radius: 1.1rem;
-        padding: 1.6rem 1.5rem 1.1rem;
-        box-shadow: 0 30px 60px -20px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.04);
-    }
-
-    header { display: flex; align-items: center; gap: .75rem; }
-    .icono-app {
-        width: 2.35rem; height: 2.35rem; border-radius: .7rem; flex-shrink: 0;
-        display: flex; align-items: center; justify-content: center;
-        background: linear-gradient(155deg, var(--brand), #4c56c7);
-        box-shadow: 0 6px 16px -4px var(--brand-glow);
-    }
-    .icono-app svg { width: 1.15rem; height: 1.15rem; }
-    .titulos { flex: 1; min-width: 0; }
-    h1 { font-size: 1.05rem; font-weight: 650; margin: 0; letter-spacing: -.01em; }
-    .subtitulo { font-size: .78rem; color: var(--tenue); margin-top: .1rem; }
-
-    .en-vivo {
-        display: flex; align-items: center; gap: .4rem;
-        font-size: .68rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
-        color: var(--gris); background: rgba(154,161,179,.1);
-        border: 1px solid rgba(154,161,179,.2);
-        padding: .3rem .6rem .3rem .5rem; border-radius: 999px; flex-shrink: 0;
-        transition: color .2s ease, background .2s ease, border-color .2s ease;
-    }
-    .en-vivo.conectado { color: var(--verde); background: rgba(52,211,153,.12); border-color: rgba(52,211,153,.25); }
-    .punto { width: .4rem; height: .4rem; border-radius: 50%; background: currentColor; }
-    .en-vivo.conectado .punto { box-shadow: 0 0 0 0 rgba(52,211,153,.65); animation: pulso 1.8s infinite; }
-    @keyframes pulso {
-        0%   { box-shadow: 0 0 0 0 rgba(52,211,153,.55); }
-        70%  { box-shadow: 0 0 0 .45rem rgba(52,211,153,0); }
-        100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); }
-    }
-
-    .separador { height: 1px; background: var(--border); margin: 1.25rem 0 .9rem; }
-
-    #mensajes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .35rem; }
-    #mensajes li {
-        display: flex; align-items: center; gap: .8rem;
-        padding: .65rem .4rem; border-radius: .6rem;
-        animation: entra .4s cubic-bezier(.16,1,.3,1);
-        transition: background .15s ease;
-    }
-    #mensajes li:hover { background: rgba(255,255,255,.035); }
-    @keyframes entra { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
-
-    .chip {
-        width: 2.1rem; height: 2.1rem; border-radius: .6rem; flex-shrink: 0;
-        display: flex; align-items: center; justify-content: center;
-        background: color-mix(in srgb, var(--tipo-color) 16%, transparent);
-        border: 1px solid color-mix(in srgb, var(--tipo-color) 30%, transparent);
-    }
-    .chip svg { width: 1rem; height: 1rem; stroke: var(--tipo-color); }
-
-    .cuerpo { flex: 1; min-width: 0; }
-    .linea-1 { display: flex; align-items: baseline; gap: .45rem; flex-wrap: wrap; }
-    .entidad { font-size: .88rem; font-weight: 600; color: var(--texto); }
-    .entidad-id { font-size: .78rem; color: var(--tenue); font-weight: 400; }
-    .tipo-label { font-size: .72rem; font-weight: 600; color: var(--tipo-color); }
-    .detalle { font-size: .74rem; color: var(--tenue); margin-top: .1rem; }
-
-    .vacio { color: var(--tenue); font-style: italic; text-align: center; padding: 2rem 0; font-size: .85rem; }
-
-    footer { display: flex; justify-content: space-between; align-items: center; margin-top: .9rem; padding-top: .1rem; }
-    .contador { font-size: .72rem; color: var(--tenue); }
-    .contador b { color: var(--tenue-2); font-weight: 600; }
-</style>
-</head>
-<body>
-<div class="panel">
-    <header>
-        <div class="icono-app">
-            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="6" width="20" height="12" rx="6"/>
-                <circle cx="8.5" cy="12" r="1.5" fill="white" stroke="none"/>
-                <circle cx="15.5" cy="10.5" r="1" fill="white" stroke="none"/>
-                <circle cx="17" cy="13" r="1" fill="white" stroke="none"/>
-            </svg>
-        </div>
-        <div class="titulos">
-            <h1>Actividad en vivo</h1>
-            <div class="subtitulo">Cambios en el catálogo de GameVault</div>
-        </div>
-        <div class="en-vivo" id="indicador"><span class="punto"></span><span id="texto-estado">conectando</span></div>
-    </header>
-
-    <div class="separador"></div>
-
-    <ul id="mensajes"><li class="vacio">Esperando el primer evento…</li></ul>
-
-    <footer>
-        <span class="contador"><b id="num">0</b> eventos recibidos</span>
-    </footer>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
-<script>
-    // Todo este bloque es decoración: iconos, colores por tipo y tiempo relativo.
-    // La parte que enseña la actividad de verdad empieza en "A partir de aquí" más abajo.
-    const ICONOS = {
-        CREADO:      '<path d="M12 5v14M5 12h14"/>',
-        ACTUALIZADO: '<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>',
-        BORRADO:     '<path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>',
-    };
-    const COLORES = { CREADO: 'var(--verde)', ACTUALIZADO: 'var(--azul)', BORRADO: 'var(--rojo)' };
-
-    const lista = document.getElementById('mensajes');
-    const numEl = document.getElementById('num');
-    const indicador = document.getElementById('indicador');
-    const textoEstado = document.getElementById('texto-estado');
-    let esPrimero = true;
-    let total = 0;
-
-    function tiempoRelativo(fecha) {
-        const s = Math.max(0, Math.round((Date.now() - fecha.getTime()) / 1000));
-        if (s < 5) return 'justo ahora';
-        if (s < 60) return `hace ${s} s`;
-        return `hace ${Math.round(s / 60)} min`;
-    }
-
-    function pintar(cuerpoMensaje) {
-        if (esPrimero) { lista.innerHTML = ''; esPrimero = false; }
-        const li = document.createElement('li');
-
-        let datos = null;
-        try { datos = JSON.parse(cuerpoMensaje); } catch { /* el mensaje de prueba de hoy es solo texto plano */ }
-
-        if (datos && datos.tipo) {
-            const color = COLORES[datos.tipo] || 'var(--gris)';
-            const icono = ICONOS[datos.tipo] || '<circle cx="12" cy="12" r="3"/>';
-            const fecha = new Date(datos.fecha);
-            li.style.setProperty('--tipo-color', color);
-            li.innerHTML = `
-                <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icono}</svg></span>
-                <span class="cuerpo">
-                    <span class="linea-1">
-                        <span class="tipo-label">${datos.tipo}</span>
-                        <span class="entidad">${datos.entidad}</span>
-                        <span class="entidad-id">#${datos.entidadId}</span>
-                    </span>
-                    <div class="detalle" data-fecha="${fecha.toISOString()}">${tiempoRelativo(fecha)}</div>
-                </span>`;
-        } else {
-            li.style.setProperty('--tipo-color', 'var(--gris)');
-            li.innerHTML = `<span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/></svg></span>
-                <span class="cuerpo">${cuerpoMensaje}</span>`;
-        }
-
-        lista.prepend(li);
-        total++;
-        numEl.textContent = total;
-    }
-
-    setInterval(() => {
-        document.querySelectorAll('.detalle[data-fecha]').forEach(el => {
-            el.textContent = tiempoRelativo(new Date(el.dataset.fecha));
-        });
-    }, 1000);
-
-    // ── El mismo mecanismo de la versión sin estilo, sin cambios ───────────
-    const client = new StompJs.Client({
-        brokerURL: 'ws://localhost:8080/ws-actividad'  // conexión al endpoint
-    });
-
-    client.onConnect = () => {
-        indicador.classList.add('conectado');
-        textoEstado.textContent = 'en vivo';
-        client.subscribe('/topic/actividad', (mensaje) => {  // suscripción al topic
-            pintar(mensaje.body);  // pintar lo recibido
-        });
-    };
-
-    client.onWebSocketClose = () => {
-        indicador.classList.remove('conectado');
-        textoEstado.textContent = 'desconectado';
-    };
-
-    client.activate();
-</script>
-</body>
-</html>
-```
-
-Recarga `http://localhost:8080/actividad.html`.
-
-Con el cliente conectado y suscrito, dispara el mensaje de prueba:
+Recarga `http://localhost:8080/actividad.html`. Con el cliente conectado y suscrito, crea un videojuego desde Swagger o `curl` (con tu token de `ADMIN`):
 
 ```bash
-curl -X POST http://localhost:8080/api/v1/test/emitir
+curl -X POST http://localhost:8080/api/v1/videojuegos \
+  -H "Authorization: Bearer $ADMIN_TOKEN" -H "Content-Type: application/json" \
+  -d '{"titulo":"EnVivo","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'
 ```
 
-**Comprueba**: que el mensaje aparece en tu cliente (la página HTML) casi al instante.
+**Comprueba**: que el registro aparece en tu cliente (la página HTML) casi al instante, sin recargar nada.
+
+**Captura**: la respuesta del `curl` (o Swagger) junto al registro recién llegado en `actividad.html`.
 
 ---
 
 ## Paso 5 — Demostración del pub-sub
 
-Abre tu página `actividad.html` en **dos** pestañas del navegador a la vez (ambas deberían conectarse y suscribirse). Dispara de nuevo el mensaje de prueba.
+Abre tu página `actividad.html` en **dos** pestañas del navegador a la vez (ambas deberían conectarse y suscribirse).
 
-**Comprueba**: que el mensaje llega a **ambas** pestañas — esta es la diferencia clave con petición-respuesta, observada en directo: nadie ha vuelto a pedir nada, y aun así ambos clientes se han enterado.
+**Antes de crear nada, predícelo**: cuando crees un nuevo videojuego, ¿crees que el aviso va a llegar solo a la primera pestaña que se ha conectado, o a las dos? Razona tu respuesta apoyándote en el diagrama de "Cola de RabbitMQ vs. topic de STOMP" de la teoría de este apartado, antes de comprobarlo.
+
+Crea otro videojuego.
+
+**Comprueba**: que el aviso llega a **ambas** pestañas, tal y como has predicho (o no) — esta es la diferencia clave con petición-respuesta, observada en directo: nadie ha vuelto a pedir nada, y aun así ambos clientes se han enterado.
+
+**Captura**: las dos pestañas mostrando el mismo registro, una junto a la otra.
 
 ---
 
 ## Pregunta de comprensión
 
-Abre las herramientas de desarrollador del navegador (F12), pestaña de red, y localiza la petición del *handshake* hacia `/ws-actividad`. **Anota**: ¿qué código de estado tiene? ¿Qué cabecera de la respuesta lo delata como distinto de una petición HTTP normal? ¿En qué se diferencia esta petición de todas las que has hecho en el curso hasta hoy (piensa en cuánto dura la conexión después de recibir esa respuesta)?
+Abre las herramientas de desarrollador del navegador (F12) **antes** de cargar la página — el *handshake* solo ocurre una vez, al conectar, así que si abres la pestaña de red después ya no lo verás salvo que recargues. Con las herramientas ya abiertas, ve a la pestaña **Network** (Red) y recarga `actividad.html`: verás la lista habitual de peticiones (el propio HTML, el script de `stomp.umd.min.js`...) más una con nombre `ws-actividad`. Filtra por **WS** (arriba de la lista de peticiones, junto a "All"/"Fetch/XHR"/etc.) si te cuesta encontrarla entre el resto — ese filtro deja solo las conexiones WebSocket. Haz clic en esa petición y mira su pestaña **Headers**: ahí están el código de estado y las cabeceras que te pide la pregunta.
 
----
-
-## ✅ Cierre
-
-Tienes un canal WebSocket funcionando, probado con un mensaje manual. En la última actividad lo conectas al flujo real de `ActividadService` y auditas la seguridad del handshake que has dejado abierta hoy.
+**Anota**: ¿qué código de estado tiene? ¿Qué cabecera de la respuesta lo delata como distinto de una petición HTTP normal? ¿En qué se diferencia esta petición de todas las que has hecho en el curso hasta hoy (piensa en cuánto dura la conexión después de recibir esa respuesta)?

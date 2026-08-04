@@ -91,10 +91,10 @@ nav:
           - Actividad 4.1 - Cliente y servidor con sockets: tema4/actividad_4_1.md
       - WebSocket con STOMP:
           - WebSocket con STOMP: tema4/websocket-stomp.md
-          - Actividad 4.2 - El endpoint /ws-actividad con STOMP: tema4/actividad_4_2.md
-      - Actividad en vivo y seguridad del canal:
-          - Actividad en vivo y seguridad del canal: tema4/actividad-en-vivo-cierre.md
-          - Actividad 4.3 - Actividad en vivo, cierre de RA3: tema4/actividad_4_3.md
+          - Actividad 4.2 - El canal /ws-actividad, conectado a ActividadService: tema4/actividad_4_2.md
+      - Seguridad del canal:
+          - Seguridad del canal: tema4/seguridad-del-canal.md
+          - Actividad 4.3 - Seguridad del canal, cierre de RA3: tema4/actividad_4_3.md
   - Cierre del módulo: cierre.md
 
 markdown_extensions:

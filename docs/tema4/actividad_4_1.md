@@ -215,7 +215,7 @@ public class ServidorEcoMultihilo {
 
 Un `ExecutorService` (el pool de hilos que ya conoces del Tema 3) atiende cada conexión en su propio hilo, en vez de bloquear el bucle principal — y como `ConexionEco` sigue siendo *try-with-resources*, cada hilo cierra su propia conexión al terminar, sin pisarse con los demás.
 
-`Executors.newCachedThreadPool()` es un tipo concreto de `ExecutorService` que no habías visto en código todavía. En el Tema 3 lo pensaste como "una plantilla fija de operarios" — pero fija es solo una de las formas posibles de montar un pool, no la única. `newCachedThreadPool()` no tiene un tamaño fijo: crea un hilo nuevo cada vez que hace falta uno y no hay ninguno libre, reutiliza los que quedan libres, y cierra los que llevan un rato sin trabajo. Encaja bien aquí porque no sabes de antemano cuántos clientes se van a conectar a la vez — a diferencia de la cola de tareas de warm-up del Tema 3, donde un número fijo de operarios ya bastaba.
+`Executors.newCachedThreadPool()` es un tipo concreto de `ExecutorService` que no habías visto en código todavía. En el Tema 3 lo has pensado como "una plantilla fija de operarios" — pero fija es solo una de las formas posibles de montar un pool, no la única. `newCachedThreadPool()` no tiene un tamaño fijo: crea un hilo nuevo cada vez que hace falta uno y no hay ninguno libre, reutiliza los que quedan libres, y cierra los que llevan un rato sin trabajo. Encaja bien aquí porque no sabes de antemano cuántos clientes se van a conectar a la vez — a diferencia de la cola de tareas de warm-up del Tema 3, donde un número fijo de operarios ya bastaba.
 
 Cierra `ServidorEco` (Paso 2) y arranca `ServidorEcoMultihilo` en su lugar (mismo puerto 5000). Repite la prueba del Paso 4: conecta dos `ClienteEco` a la vez, y comprueba que **ambos** funcionan simultáneamente.
 
@@ -252,7 +252,7 @@ Con dos `ClienteEco` conectados a la vez, escribe `SALIR` en uno de ellos.
 
 ## Pregunta de comprensión
 
-¿Qué relación hay entre este "un hilo por cliente" que acabas de ver y lo que hace Tomcat con las peticiones HTTP de tu GameVault? ¿Y con el pool de hilos configurado que construiste en el Tema 3 (`ThreadPoolTaskExecutor`)? Explica con tus palabras por qué es, en el fondo, el mismo patrón — gestionado a mano aquí, y por el framework allí.
+¿Qué relación hay entre este "un hilo por cliente" que acabas de ver y lo que hace Tomcat con las peticiones HTTP de tu GameVault? ¿Y con el pool de hilos configurado que has construido en el Tema 3 (`ThreadPoolTaskExecutor`)? Explica con tus palabras por qué es, en el fondo, el mismo patrón — gestionado a mano aquí, y por el framework allí.
 
 ---
 

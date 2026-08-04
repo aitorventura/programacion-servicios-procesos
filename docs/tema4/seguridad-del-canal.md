@@ -1,32 +1,8 @@
-<a id="actividad-en-vivo-cierre"></a>
+<a id="seguridad-del-canal"></a>
 
-# 🧩 3. Actividad en vivo y seguridad del canal
+# 🧩 3. Seguridad del canal
 
-Último apartado del módulo. Hoy conectas el canal `/ws-actividad` con los datos reales del proyecto, y afrontas algo que has dejado pendiente a propósito: qué implica en seguridad haber abierto ese canal sin autenticación.
-
----
-
-## 📡 El punto de emisión: `ActividadService`
-
-`ActividadService.registrar()` ya recibe cada evento del catálogo (a través del consumer de RabbitMQ, analizado en el Tema 3) y lo guarda en PostgreSQL. El plan de hoy: inyectar ahí `SimpMessagingTemplate` y, además de guardar, publicar el mismo registro en `/topic/actividad`.
-
-El viaje completo de un dato, de principio a fin — el broche de todo el módulo, porque atraviesa **todo** lo construido en el curso:
-
-```mermaid
-flowchart LR
-    A["🌐 Petición HTTP<br/>(hilo de Tomcat)"] --> B["VideojuegoService"]
-    B -->|"publica evento"| C["RabbitMQ"]
-    C -.->|"consume<br/>(hilo del listener)"| D["ActividadService.registrar()"]
-    D --> E["💾 PostgreSQL"]
-    D --> F["📡 push por WebSocket"]
-    F -.-> G["🖥️ Navegadores suscritos"]
-```
-
----
-
-## 🧵 Hilos y clientes simultáneos
-
-¿En qué hilo se ejecuta el *push* hacia WebSocket? En el mismo hilo del **listener de RabbitMQ** que procesa el evento — el mismo hilo que ya identificaste en el Tema 3, ahora con una responsabilidad más. ¿Y quién gestiona los N clientes WebSocket conectados a la vez? El propio **contenedor** de Spring, exactamente igual que Tomcat gestiona las peticiones HTTP — es el mismo patrón "un hilo por cliente/conexión" que has programado **a mano** en la Actividad 4.1, aquí resuelto por el framework.
+Último apartado del módulo. Tu canal `/ws-actividad` ya emite datos reales, conectado a `ActividadService` desde la Actividad 4.2. Hoy afrontas algo que has dejado pendiente a propósito: qué implica en seguridad haberlo abierto sin autenticación.
 
 ---
 
@@ -45,7 +21,7 @@ La respuesta es sí, y el motivo técnico es concreto: el *handshake* de WebSock
 
 ### La remediación mínima: JWT en el handshake
 
-La forma más simple de exigir el token en el handshake es pasarlo como parámetro de consulta en la propia URL de conexión (`/ws-actividad?token=...`), y validarlo con un interceptor antes de aceptar:
+La forma más simple de exigir el token en el handshake es pasarlo como parámetro de consulta en la propia URL de conexión (`/ws-actividad?token=...`), y validarlo con un **interceptor** antes de aceptar — un gancho que Spring ejecuta justo antes (y justo después) de que la conexión se establezca, y en el que tu código decide, con un simple `true`/`false`, si esa conexión sigue adelante o se corta ahí mismo:
 
 ```java
 @Component
@@ -117,7 +93,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 ## 📝 Depuración y documentación
 
-Con trazas de nombre de hilo en todo el camino (herencia del Tema 3: HTTP → listener de RabbitMQ → push WebSocket), puedes seguir el recorrido completo de un dato en el log. Y documentar el canal — endpoint, topic, formato del mensaje, política de acceso — de la misma forma en que documentaste la API REST con OpenAPI. Con una salvedad: WebSocket no aparece en Swagger (que solo describe HTTP tradicional), así que este canal se documenta **a mano**, en un fichero aparte.
+Documenta el canal — endpoint, topic, formato del mensaje, política de acceso — de la misma forma en que has documentado la API REST con OpenAPI. Con una salvedad: WebSocket no aparece en Swagger (que solo describe HTTP tradicional), así que este canal se documenta **a mano**, en un fichero aparte.
 
 ---
 
@@ -125,7 +101,6 @@ Con trazas de nombre de hilo en todo el camino (herencia del Tema 3: HTTP → li
 
 ??? tip "Abrir resumen"
 
-    - El push por WebSocket se ejecuta en el mismo hilo del listener de RabbitMQ que procesa el evento; el contenedor gestiona los clientes WebSocket simultáneos, igual que Tomcat con HTTP.
     - Un canal abierto sin autenticación puede exponer, por WebSocket, información que por REST está protegida — una incoherencia real que hay que resolver, no solo señalar.
     - Un `HandshakeInterceptor` puede rechazar la conexión WebSocket antes de establecerse, validando un token pasado como parámetro de consulta.
     - Documentar y detectar un agujero de seguridad no sustituye corregirlo — la remediación mínima es parte obligatoria de la entrega.

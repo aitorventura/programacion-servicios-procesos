@@ -116,7 +116,7 @@ sequenceDiagram
     Note over C,S: conexión TCP establecida
 ```
 
-Tu código Java nunca escribe esos tres mensajes — los intercambia el propio sistema operativo, por debajo. Lo único que hace tu programa es llamar a `connect()`; a partir de ahí, es el sistema operativo quien envía y recibe el SYN, el SYN-ACK y el ACK por su cuenta, mientras tu llamada se queda esperando, sin continuar, hasta que ese intercambio termina — solo entonces te devuelve el `Socket`. Es el mismo tipo de espera que ya viste con `accept()` en el servidor — ninguno de los dos avanza hasta que la negociación termina.
+Tu código Java nunca escribe esos tres mensajes — los intercambia el propio sistema operativo, por debajo. Lo único que hace tu programa es llamar a `connect()`; a partir de ahí, es el sistema operativo quien envía y recibe el SYN, el SYN-ACK y el ACK por su cuenta, mientras tu llamada se queda esperando, sin continuar, hasta que ese intercambio termina — solo entonces te devuelve el `Socket`. Es el mismo tipo de espera que ya has visto con `accept()` en el servidor — ninguno de los dos avanza hasta que la negociación termina.
 
 Esa misma conexión, ya abierta, es la que TCP aprovecha después para cumplir su promesa de fiabilidad: cada paquete va numerado, y el otro lado responde con un **ACK** (de *acknowledgement*, "confirmación de recibido") por cada uno, para decir "este ya me ha llegado".
 

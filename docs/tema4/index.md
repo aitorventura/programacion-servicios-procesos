@@ -32,13 +32,13 @@
 
 1. [Sockets: la base de toda comunicación en red](sockets-cliente-servidor.md)
 2. [WebSocket con STOMP: el canal de actividad en vivo](websocket-stomp.md)
-3. [Actividad en vivo y seguridad del canal](actividad-en-vivo-cierre.md)
+3. [Seguridad del canal](seguridad-del-canal.md)
 
 **Actividades:**
 
 - [Actividad 4.1 — Cliente y servidor con sockets clásicos](actividad_4_1.md)
-- [Actividad 4.2 — El endpoint `/ws-actividad` con STOMP](actividad_4_2.md)
-- [Actividad 4.3 — Actividad en vivo desde `ActividadService`](actividad_4_3.md)
+- [Actividad 4.2 — El canal `/ws-actividad`, conectado a `ActividadService`](actividad_4_2.md)
+- [Actividad 4.3 — Seguridad del canal](actividad_4_3.md)
 
 ---
 
