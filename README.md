@@ -17,4 +17,4 @@ Abre la URL que te indique la terminal (por defecto `http://127.0.0.1:8000`).
 - **Tema 1 — Servicios en red**: protocolos estándar y REST, escritura en la API y OpenAPI/Swagger, tests con MockMvc, comunicación simultánea y disponibilidad con Actuator.
 - **Tema 2 — Programación segura**: principios de programación segura, seguridad básica con HTTP Basic, usuarios persistidos con BCrypt, autenticación JWT, roles y rutas protegidas.
 - **Tema 3 — Programación multihilo**: hilos en una aplicación real, eventos internos y *warm-up* de caché, listeners asíncronos, `TaskExecutor` propio.
-- **Tema 4 — Comunicaciones en red**: sockets cliente/servidor, WebSocket con STOMP, actividad en vivo.
+- **Tema 4 — Comunicaciones en red**: sockets cliente/servidor, WebSocket con STOMP, seguridad del canal.
