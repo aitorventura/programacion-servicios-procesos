@@ -94,7 +94,7 @@ nav:
           - Actividad 4.2 - El canal /ws-actividad, conectado a ActividadService: tema4/actividad_4_2.md
       - Seguridad del canal:
           - Seguridad del canal: tema4/seguridad-del-canal.md
-          - Actividad 4.3 - Seguridad del canal, cierre de RA3: tema4/actividad_4_3.md
+          - Actividad 4.3 - Seguridad del canal: tema4/actividad_4_3.md
   - Cierre del módulo: cierre.md
 
 markdown_extensions:
