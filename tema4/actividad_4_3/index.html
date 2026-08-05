@@ -20,7 +20,7 @@
     
     
       
-        <title>Actividad 4.3 - Seguridad del canal, cierre de RA3 - Programación de Servicios y Procesos</title>
+        <title>Actividad 4.3 - Seguridad del canal - Programación de Servicios y Procesos</title>
       
     
     
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Actividad 4.3 - Seguridad del canal, cierre de RA3
+              Actividad 4.3 - Seguridad del canal
             
           </span>
         </div>
@@ -2368,7 +2368,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 4.3 - Seguridad del canal, cierre de RA3
+    Actividad 4.3 - Seguridad del canal
     
   </span>
   
@@ -2381,7 +2381,7 @@
   
   
   <span class="md-ellipsis">
-    Actividad 4.3 - Seguridad del canal, cierre de RA3
+    Actividad 4.3 - Seguridad del canal
     
   </span>
   
@@ -2564,6 +2564,10 @@
 
 
 <div><h1 id="actividad-43-seguridad-del-canal">🧪 Actividad 4.3: Seguridad del canal<a class="headerlink" href="#actividad-43-seguridad-del-canal" title="Permanent link">¶</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Descarga la plantilla</p>
+<p>📄 <a href="../plantillas/Actividad_4_3_PSP_Plantilla.docx" rel="noopener" target="_blank">Plantilla 4.3 — Seguridad del canal</a></p>
+</div>
 <div class="admonition info">
 <p class="admonition-title">Práctica guiada — última actividad del módulo</p>
 <p>Auditas la seguridad del canal WebSocket que ya tienes funcionando desde la Actividad 4.2, y la corriges — no basta con detectarla.</p>
@@ -2580,6 +2584,7 @@
 <h2 id="paso-1-la-auditoria-de-seguridad">Paso 1 — La auditoría de seguridad<a class="headerlink" href="#paso-1-la-auditoria-de-seguridad" title="Permanent link">¶</a></h2>
 <p>Abre una ventana de <strong>incógnito</strong> (sin ninguna sesión iniciada, sin token) y conecta tu página <code>actividad.html</code> a <code>/ws-actividad</code> tal como está ahora mismo (sin la remediación todavía).</p>
 <p><strong>Comprueba</strong>: que, sin haber hecho login, ves en vivo exactamente los mismos registros que <code>GET /api/v1/actividad</code> solo permite consultar a <code>ADMIN</code>.</p>
+<p><strong>Captura</strong>: la ventana de incógnito mostrando esos registros en vivo, sin haber iniciado sesión.</p>
 <p><strong>Escribe el hallazgo</strong> como una mini-incidencia de seguridad: qué se expone (el contenido concreto), a quién (cualquiera, sin autenticar), y qué opciones de mitigación existen (las tres de la teoría: restringir el handshake, filtrar qué se emite, o documentarlo como decisión consciente).</p>
 <hr>
 <h2 id="paso-2-remediacion-minima-obligatoria">Paso 2 — Remediación mínima obligatoria<a class="headerlink" href="#paso-2-remediacion-minima-obligatoria" title="Permanent link">¶</a></h2>
@@ -2588,15 +2593,64 @@
 <li>Convierte también tu <code>WebSocketConfig</code> en <code>@RequiredArgsConstructor</code>, con un campo <code>JwtHandshakeInterceptor jwtHandshakeInterceptor</code> — hasta ahora no tenía ningún campo, y ahora necesita que Spring le inyecte el interceptor para poder registrarlo.</li>
 <li>En <code>registerStompEndpoints(...)</code>, añade <code>.addInterceptors(jwtHandshakeInterceptor)</code> a la cadena que ya tienes sobre <code>registry.addEndpoint(...)</code>.</li>
 </ul>
-<p>Actualiza tu cliente <code>actividad.html</code> para pasar el token en la conexión:</p>
-<div class="language-javascript highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">JavaScript</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
-<span class="normal"><a href="#__codelineno-0-2">2</a></span>
-<span class="normal"><a href="#__codelineno-0-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="kd">const</span><span class="w"> </span><span class="nx">client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">StompJs</span><span class="p">.</span><span class="nx">Client</span><span class="p">({</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="w">    </span><span class="nx">brokerURL</span><span class="o">:</span><span class="w"> </span><span class="sb">`ws://localhost:8080/ws-actividad?token=</span><span class="si">${</span><span class="nx">miToken</span><span class="si">}</span><span class="sb">`</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="p">});</span>
+<p>Con el interceptor y la configuración ya escritos, reinicia tu aplicación — es el único reinicio que hace falta en toda la actividad, y es por ese código Java, que Spring no recarga solo.</p>
+<p>Actualiza también tu cliente <code>actividad.html</code>: en vez de dejar el token fijo en el código (tendrías que editar el fichero cada vez que quisieras probar con otro), añade un campo de texto y un botón, y pega el token ahí en cada prueba — el mismo patrón que ya conoces del botón "Authorize" de Swagger:</p>
+<div class="language-html highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">HTML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
+<span class="normal"><a href="#__codelineno-0-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">"text"</span> <span class="na">id</span><span class="o">=</span><span class="s">"token-input"</span> <span class="na">placeholder</span><span class="o">=</span><span class="s">"Pega tu token JWT..."</span><span class="p">&gt;</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="p">&lt;</span><span class="nt">button</span> <span class="na">id</span><span class="o">=</span><span class="s">"conectar-btn"</span><span class="p">&gt;</span>Conectar<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
 </code></pre></div></td></tr></table></div>
-<p>Repite la prueba de la ventana de incógnito <strong>sin</strong> token: <strong>comprueba</strong> que ahora el handshake es rechazado. Repite con un token válido: <strong>comprueba</strong> que sigue funcionando exactamente igual que antes.</p>
-<p><strong>Captura</strong>: las dos pruebas — el rechazo sin token, y el funcionamiento normal con token válido.</p></div>
+<div class="language-javascript highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">JavaScript</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-1-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-1-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-1-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-1-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-1-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-1-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-1-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-1-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-1-10">10</a></span>
+<span class="normal"><a href="#__codelineno-1-11">11</a></span>
+<span class="normal"><a href="#__codelineno-1-12">12</a></span>
+<span class="normal"><a href="#__codelineno-1-13">13</a></span>
+<span class="normal"><a href="#__codelineno-1-14">14</a></span>
+<span class="normal"><a href="#__codelineno-1-15">15</a></span>
+<span class="normal"><a href="#__codelineno-1-16">16</a></span>
+<span class="normal"><a href="#__codelineno-1-17">17</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="kd">let</span><span class="w"> </span><span class="nx">client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">'conectar-btn'</span><span class="p">).</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">'click'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">client</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="w">        </span><span class="nx">client</span><span class="p">.</span><span class="nx">deactivate</span><span class="p">();</span><span class="w"> </span><span class="c1">// cierra cualquier conexión anterior antes de abrir una nueva</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7"></a>
+<a id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">token</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">'token-input'</span><span class="p">).</span><span class="nx">value</span><span class="p">;</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9"></a>
+<a id="__codelineno-1-10" name="__codelineno-1-10"></a><span class="w">    </span><span class="nx">client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">StompJs</span><span class="p">.</span><span class="nx">Client</span><span class="p">({</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11"></a><span class="w">        </span><span class="nx">brokerURL</span><span class="o">:</span><span class="w"> </span><span class="sb">`ws://localhost:8080/ws-actividad?token=</span><span class="si">${</span><span class="nx">token</span><span class="si">}</span><span class="sb">`</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12"></a><span class="w">    </span><span class="p">});</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13"></a>
+<a id="__codelineno-1-14" name="__codelineno-1-14"></a><span class="w">    </span><span class="nx">client</span><span class="p">.</span><span class="nx">onConnect</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* igual que hasta ahora */</span><span class="w"> </span><span class="p">};</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15"></a><span class="w">    </span><span class="nx">client</span><span class="p">.</span><span class="nx">onWebSocketClose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* igual que hasta ahora */</span><span class="w"> </span><span class="p">};</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16"></a><span class="w">    </span><span class="nx">client</span><span class="p">.</span><span class="nx">activate</span><span class="p">();</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17"></a><span class="p">});</span>
+</code></pre></div></td></tr></table></div>
+<p>Con esto, cada prueba es tan simple como pegar un valor distinto en el campo y pulsar <strong>Conectar</strong> — sin volver a tocar el fichero ni recargar la página. Fíjate en que <code>client</code> ya no se declara dentro del propio <em>listener</em>: si pulsas <strong>Conectar</strong> dos veces (por ejemplo, primero con un token erróneo y después con uno válido), sin ese <code>deactivate()</code> el primer cliente se queda abierto de fondo, reintentando con el token equivocado — y su propio <code>onWebSocketClose</code>, al fallar, puede pisar el indicador del segundo cliente aunque ese sí esté conectado de verdad.</p>
+<div class="admonition tip">
+<p class="admonition-title">Descarga el cliente ya migrado</p>
+<p>📄 <a href="../recursos/actividad_4_3_cliente.html" rel="noopener" target="_blank">actividad_4_3_cliente.html</a> — descárgalo y sustituye con él el contenido de tu <code>src/main/resources/static/actividad.html</code>, si prefieres no aplicar el cambio a mano sobre el que ya tienes de la Actividad 4.2.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Así llega el token al servidor</p>
+<p>Al construir el cliente con ese <code>brokerURL</code>, el navegador manda esa URL exacta —con el token ya incrustado— como petición del <em>handshake</em>. Es de ahí de donde <code>beforeHandshake</code> lo lee, con <code>request.getURI().getQuery()</code>. Pulsa <strong>Conectar</strong> con el campo vacío y el <em>handshake</em> se rechaza — es justo el caso "sin token" que vas a comprobar primero.</p>
+</div>
+<p>Prueba ahora los dos casos: pulsa <strong>Conectar</strong> con el campo vacío — <strong>comprueba</strong> que el handshake es rechazado. Pega un <code>accessToken</code> real (login por Swagger o <code>curl</code> como siempre, Actividad 2.4) y pulsa <strong>Conectar</strong> de nuevo — <strong>comprueba</strong> que funciona exactamente igual que antes.</p>
+<div class="admonition tip">
+<p class="admonition-title">Al rechazarse, no esperes ningún mensaje de error en la página</p>
+<p>El indicador simplemente pasa a "desconectado" (tu propio <code>onWebSocketClose</code>, en <code>actividad_4_2_cliente.html</code>) — no hay ningún error visible, ni en la página ni en la consola. El navegador no expone a JavaScript el código de estado real de un <em>handshake</em> rechazado, por seguridad; el 401 solo se ve donde ya aprendiste a buscarlo en la Actividad 4.2: <strong>F12 → Network → filtro WS</strong>, en la petición del <em>handshake</em>. Ese "desconectado" sin más, sin token, es la prueba de que el rechazo funciona — no una señal de que algo se ha roto.</p>
+</div>
+<p><strong>Captura</strong>: las dos pruebas — el rechazo sin token, y el funcionamiento normal con token válido.</p>
+<p><strong>Pregunta</strong>: repite la prueba con un token válido pero de un usuario <strong>sin</strong> rol <code>ADMIN</code> (registra uno nuevo si no tienes ninguno). ¿Se conecta? Compáralo con lo que exige <code>GET /api/v1/actividad</code> por REST, y razona: ¿la remediación que acabas de aplicar deja completamente cerrado el hallazgo del Paso 1, o solo una parte? ¿Qué comprobación le falta a <code>JwtHandshakeInterceptor</code> para cerrarlo del todo?</p>
+<p><strong>Captura</strong>: esa misma prueba, con el token de un usuario sin rol <code>ADMIN</code>.</p>
+<p><strong>Documenta</strong>: añade la fila de <code>/ws-actividad</code> a tu <code>docs/seguridad.md</code> (mismo formato que el resto de la tabla, ver la teoría de este apartado).</p></div>
 
 
 
