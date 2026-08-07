@@ -2703,6 +2703,12 @@
 
 <div><p><a id="seguridad-basica-http-basic"></a></p>
 <h1 id="2-seguridad-basica-usuarios-en-memoria-y-http-basic">🧩 2. Seguridad básica: usuarios en memoria y HTTP Basic<a class="headerlink" href="#2-seguridad-basica-usuarios-en-memoria-y-http-basic" title="Permanent link">¶</a></h1>
+<p><embed alt="Seguridad básica: usuarios en memoria y HTTP Basic" src="../diapositivas/seguridad-basica-http-basic.pdf" style="width:100%;min-height:80vh" type="application/pdf"></embed></p>
+<div class="admonition info">
+<p class="admonition-title">Descarga de diapositivas</p>
+<p><a href="../diapositivas/seguridad-basica-http-basic.pdf" rel="noopener" target="_blank">Descarga las diapositivas</a></p>
+</div>
+<hr>
 <div class="admonition tip">
 <p class="admonition-title">¿Por qué empezar por algo que vas a sustituir?</p>
 <p>Lo que ves en este apartado —usuarios en memoria y HTTP Basic— no es la versión final: dentro de dos apartados no quedará ni rastro de ninguna de las dos piezas. Puede parecer que se pierde tiempo construyendo algo que se va a borrar, pero es al revés: los problemas concretos de esta versión (los vas a ver explícitamente más abajo) son justo los que motivan lo que viene después. Si empezaras directamente por la versión final —contraseñas protegidas mediante hash, autenticación con token— tendrías un código que funciona, pero no sabrías responder a "¿por qué hace falta proteger la contraseña mediante un hash?" o "¿por qué no basta con mandar usuario y contraseña en cada petición?": esas respuestas solo se entienden habiendo visto antes la versión sin esa pieza, y el problema real que causa. El camino completo es: usuarios en memoria y HTTP Basic (aquí), contraseñas protegidas con BCrypt en base de datos (próximo apartado), autenticación con JWT (dos apartados más adelante) — cada paso resuelve un problema concreto del anterior.</p>

@@ -2757,6 +2757,12 @@
 
 <div><p><a id="usuarios-persistidos-bcrypt"></a></p>
 <h1 id="3-usuarios-persistidos-y-bcrypt">🧩 3. Usuarios persistidos y BCrypt<a class="headerlink" href="#3-usuarios-persistidos-y-bcrypt" title="Permanent link">¶</a></h1>
+<p><embed alt="Usuarios persistidos y BCrypt" src="../diapositivas/usuarios-persistidos-bcrypt.pdf" style="width:100%;min-height:80vh" type="application/pdf"></embed></p>
+<div class="admonition info">
+<p class="admonition-title">Descarga de diapositivas</p>
+<p><a href="../diapositivas/usuarios-persistidos-bcrypt.pdf" rel="noopener" target="_blank">Descarga las diapositivas</a></p>
+</div>
+<hr>
 <h2 id="de-donde-partimos">📍 De dónde partimos<a class="headerlink" href="#de-donde-partimos" title="Permanent link">¶</a></h2>
 <p>Al terminar el apartado anterior, tu API ya distinguía autenticación de autorización, pero utilizaba dos piezas deliberadamente provisionales: los usuarios <code>user</code> y <code>admin</code> estaban definidos directamente en un <code>InMemoryUserDetailsManager</code>, con sus contraseñas en texto claro mediante el prefijo <code>{noop}</code>; y HTTP Basic enviaba esas credenciales en cada petición, codificadas en Base64, no cifradas.</p>
 <p>Esa versión dejaba dos problemas señalados a propósito. Hoy resuelves el primero: los usuarios estaban escritos en el propio código, visibles para cualquiera con acceso al repositorio y sin una persistencia real para las modificaciones realizadas durante la ejecución. A partir de ahora vivirán en PostgreSQL, con sus contraseñas protegidas mediante BCrypt.</p>
