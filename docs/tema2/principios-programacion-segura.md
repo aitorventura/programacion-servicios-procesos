@@ -2,6 +2,13 @@
 
 # 🧩 1. Principios de programación segura: validación y gestión de errores
 
+![Principios de programación segura](diapositivas/principios-programacion-segura.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
+
+!!!info "Descarga de diapositivas"
+    [Descarga las diapositivas](diapositivas/principios-programacion-segura.pdf){target="_blank" rel="noopener"}
+
+---
+
 Tu proyecto, tal y como está ahora, no comprueba quién hace las peticiones ni les pone ningún límite: cualquiera que sepa la URL puede leer, crear, modificar o borrar lo que quiera. Antes de tocar autenticación (eso empieza el apartado que viene), toca dar un paso atrás y preguntarse algo más básico: ¿qué significa exactamente que una aplicación sea "segura"?
 
 !!! example "Un caso concreto, sin que haga falta ningún atacante experto"

@@ -2,6 +2,13 @@
 
 # 🧩 3. Usuarios persistidos y BCrypt
 
+![Usuarios persistidos y BCrypt](diapositivas/usuarios-persistidos-bcrypt.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
+
+!!!info "Descarga de diapositivas"
+    [Descarga las diapositivas](diapositivas/usuarios-persistidos-bcrypt.pdf){target="_blank" rel="noopener"}
+
+---
+
 ## 📍 De dónde partimos
 
 Al terminar el apartado anterior, tu API ya distinguía autenticación de autorización, pero utilizaba dos piezas deliberadamente provisionales: los usuarios `user` y `admin` estaban definidos directamente en un `InMemoryUserDetailsManager`, con sus contraseñas en texto claro mediante el prefijo `{noop}`; y HTTP Basic enviaba esas credenciales en cada petición, codificadas en Base64, no cifradas.

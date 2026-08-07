@@ -2,6 +2,13 @@
 
 # 🧩 5. Roles y rutas protegidas
 
+![Roles y rutas protegidas](diapositivas/roles-y-rutas-protegidas.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
+
+!!!info "Descarga de diapositivas"
+    [Descarga las diapositivas](diapositivas/roles-y-rutas-protegidas.pdf){target="_blank" rel="noopener"}
+
+---
+
 Al terminar el apartado anterior, tu API ya distinguía quién eres (JWT) de qué puedes hacer (roles) — pero solo lo habías comprobado sobre una ruta suelta, `POST /videojuegos`, y ese `403` seguía saliendo con el formato por defecto de Spring, no con tu `ErrorResponse`. Hoy conviertes esa comprobación puntual en una política completa, ruta a ruta y cerrada por defecto, y cierras ese formato pendiente —y el de un `404` que en realidad sale disfrazado de `500`—.
 
 ---

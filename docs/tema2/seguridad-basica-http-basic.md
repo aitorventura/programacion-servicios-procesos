@@ -2,6 +2,13 @@
 
 # 🧩 2. Seguridad básica: usuarios en memoria y HTTP Basic
 
+![Seguridad básica: usuarios en memoria y HTTP Basic](diapositivas/seguridad-basica-http-basic.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
+
+!!!info "Descarga de diapositivas"
+    [Descarga las diapositivas](diapositivas/seguridad-basica-http-basic.pdf){target="_blank" rel="noopener"}
+
+---
+
 !!! tip "¿Por qué empezar por algo que vas a sustituir?"
     Lo que ves en este apartado —usuarios en memoria y HTTP Basic— no es la versión final: dentro de dos apartados no quedará ni rastro de ninguna de las dos piezas. Puede parecer que se pierde tiempo construyendo algo que se va a borrar, pero es al revés: los problemas concretos de esta versión (los vas a ver explícitamente más abajo) son justo los que motivan lo que viene después. Si empezaras directamente por la versión final —contraseñas protegidas mediante hash, autenticación con token— tendrías un código que funciona, pero no sabrías responder a "¿por qué hace falta proteger la contraseña mediante un hash?" o "¿por qué no basta con mandar usuario y contraseña en cada petición?": esas respuestas solo se entienden habiendo visto antes la versión sin esa pieza, y el problema real que causa. El camino completo es: usuarios en memoria y HTTP Basic (aquí), contraseñas protegidas con BCrypt en base de datos (próximo apartado), autenticación con JWT (dos apartados más adelante) — cada paso resuelve un problema concreto del anterior.
 

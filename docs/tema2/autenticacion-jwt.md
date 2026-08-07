@@ -2,6 +2,13 @@
 
 # 🧩 4. Autenticación con JWT
 
+![Autenticación con JWT](diapositivas/autenticacion-jwt.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
+
+!!!info "Descarga de diapositivas"
+    [Descarga las diapositivas](diapositivas/autenticacion-jwt.pdf){target="_blank" rel="noopener"}
+
+---
+
 Al terminar el apartado anterior, tus usuarios ya eran reales —persistidos en PostgreSQL, con la contraseña protegida por BCrypt— y hasta los secretos vivían ya fuera del código. Pero seguía quedando el problema señalado desde entonces: con HTTP Basic, cada petición —absolutamente todas— volvía a mandar usuario y contraseña, aunque fuera solo codificados en Base64, no cifrados.
 
 De paso, hoy documentas en OpenAPI el nuevo mecanismo Bearer. Swagger UI podrá guardar el token desde su botón "Authorize" y añadirlo automáticamente a las peticiones que ejecutes desde la documentación.
