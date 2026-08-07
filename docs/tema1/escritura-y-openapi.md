@@ -2,6 +2,13 @@
 
 # 🧩 2. Escritura en la API y documentación con OpenAPI
 
+![Escritura en la API y documentación con OpenAPI](diapositivas/escritura-y-openapi.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
+
+!!!info "Descarga de diapositivas"
+    [Descarga las diapositivas](diapositivas/escritura-y-openapi.pdf){target="_blank" rel="noopener"}
+
+---
+
 Ya conoces los DTOs de entrada y de salida, las anotaciones de Bean Validation, `@Valid` y `@Transactional` — los has usado para construir un CRUD completo. Aquí no repites nada de eso: ves esos mismos endpoints de escritura completos, con su código real, y añades algo que todavía no tenías — documentación automática de tu API con OpenAPI.
 
 ---

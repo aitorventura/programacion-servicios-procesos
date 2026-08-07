@@ -2,6 +2,13 @@
 
 # 🧩 1. Protocolos estándar y servicios REST: leyendo el controlador
 
+![Protocolos estándar y servicios REST: leyendo el controlador](diapositivas/protocolos-y-rest.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
+
+!!!info "Descarga de diapositivas"
+    [Descarga las diapositivas](diapositivas/protocolos-y-rest.pdf){target="_blank" rel="noopener"}
+
+---
+
 Ya sabes que dos programas pueden hablarse por red usando una IP y un puerto, y que para entenderse necesitan un protocolo: un conjunto de reglas fijas sobre cómo tiene que ser cada mensaje, que los dos lados conocen de antemano — como cuando rellenas un formulario con casillas fijas en vez de escribir una carta libre: quien lo lee sabe exactamente dónde va a encontrar cada dato, porque el formato ya está pactado. Hoy vas a ver ese protocolo en detalle en el caso concreto de una API web: qué forma exacta tiene cada mensaje, qué reglas sigue, y cómo termina convirtiéndose en código Java que se ejecuta de verdad. Esta semana no vas a escribir código nuevo — vas a aprender a **leer** un controlador REST ya hecho, del mismo tipo que vas a construir tú mismo la semana que viene.
 
 ---

@@ -2,6 +2,13 @@
 
 # 🧩 4. Comunicación simultánea y disponibilidad del servicio
 
+![Comunicación simultánea y disponibilidad del servicio](diapositivas/actuator-disponibilidad.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
+
+!!!info "Descarga de diapositivas"
+    [Descarga las diapositivas](diapositivas/actuator-disponibilidad.pdf){target="_blank" rel="noopener"}
+
+---
+
 Hasta ahora has comprobado que tu API responde bien a una petición aislada: el código de estado correcto, el JSON esperado, el test que pasa. Hoy cierras el tema con dos preguntas distintas, sobre ese mismo servicio ya en marcha: ¿aguanta varias peticiones a la vez sin que unas tengan que esperar a otras? Y, más allá de una petición concreta, ¿cómo sabes si el servicio en general sigue sano y disponible ahora mismo, sin tener que comprobarlo tú a mano?
 
 ---

@@ -2,6 +2,13 @@
 
 # 🧩 3. Probar servicios con MockMvc
 
+![Probar servicios con MockMvc](diapositivas/tests-mockmvc.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
+
+!!!info "Descarga de diapositivas"
+    [Descarga las diapositivas](diapositivas/tests-mockmvc.pdf){target="_blank" rel="noopener"}
+
+---
+
 Hasta ahora has probado la API a mano: con `curl` (Actividad 1.1) y con Swagger UI (Actividad 1.2). Los dos funcionan, pero comparten un problema — tienes que repetir los mismos clics o comandos cada vez que quieres comprobar que todo sigue funcionando. Hoy conoces un tercer cliente, uno que se ejecuta solo: un **test automatizado**.
 
 ---
