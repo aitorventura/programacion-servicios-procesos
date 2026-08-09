@@ -73,7 +73,7 @@ sequenceDiagram
 
 Nadie le entrega su `Socket` a nadie — cada lado se queda con el suyo propio, cada uno por su lado:
 
-- El **cliente** ya lo tiene desde el principio: su propio `connect()` se lo devuelve en cuanto la conexión queda lista.
+- El **cliente** obtiene su `Socket` al iniciar la conexión. En el código que vas a usar, `new Socket(host, puerto)` crea el objeto y realiza el *connect* antes de devolver el control al programa.
 - El **servidor** consigue el suyo en ese mismo momento, pero por otro camino: es `accept()` quien se lo devuelve a él. Y ojo, no es el mismo objeto que el `ServerSocket` — es un `Socket` nuevo, creado solo para hablar con ese cliente concreto.
 
 Dos objetos `Socket` distintos, uno en cada lado, cada uno apuntando a su propio extremo de la misma conexión. A partir de ahí, cada uno lee y escribe en el suyo con **streams** de entrada y salida — exactamente como ya haces en Java para leer y escribir.
@@ -116,26 +116,26 @@ sequenceDiagram
     Note over C,S: conexión TCP establecida
 ```
 
-Tu código Java nunca escribe esos tres mensajes — los intercambia el propio sistema operativo, por debajo. Lo único que hace tu programa es llamar a `connect()`; a partir de ahí, es el sistema operativo quien envía y recibe el SYN, el SYN-ACK y el ACK por su cuenta, mientras tu llamada se queda esperando, sin continuar, hasta que ese intercambio termina — solo entonces te devuelve el `Socket`. Es el mismo tipo de espera que ya has visto con `accept()` en el servidor — ninguno de los dos avanza hasta que la negociación termina.
+Tu código Java nunca escribe esos tres mensajes — los intercambia el propio sistema operativo, por debajo. En el código que vas a usar, `new Socket(host, puerto)` inicia la conexión y queda esperando mientras el sistema operativo completa el intercambio SYN → SYN-ACK → ACK. Solo cuando la conexión queda establecida termina la construcción del `Socket` y tu programa continúa. En el servidor ocurre algo parecido con `accept()`: permanece bloqueado hasta que hay una conexión lista para aceptar.
 
-Esa misma conexión, ya abierta, es la que TCP aprovecha después para cumplir su promesa de fiabilidad: cada paquete va numerado, y el otro lado responde con un **ACK** (de *acknowledgement*, "confirmación de recibido") por cada uno, para decir "este ya me ha llegado".
+Esa misma conexión, ya abierta, es la que TCP aprovecha después para ofrecer un flujo de datos **fiable y ordenado**. Internamente divide los datos en segmentos y utiliza números de secuencia y confirmaciones **ACK** (*acknowledgement*) para saber qué información ha llegado. Los ACK pueden confirmar de forma acumulativa varios datos recibidos — no tiene por qué existir exactamente un ACK por cada segmento enviado.
 
-Hay dos formas de que algo se pierda por el camino, y desde el cliente se ven exactamente igual —no le llega confirmación a tiempo—, así que reacciona igual en las dos: reenvía el paquete.
+Si el emisor no recibe a tiempo la confirmación que necesita, TCP puede retransmitir los datos pendientes. Esto puede ocurrir porque se hayan perdido los propios datos o porque se haya perdido la confirmación de vuelta.
 
 <div class="tabs-colored" markdown>
 
-=== "🔵 Se pierde el paquete"
+=== "🔵 Se pierde el segmento"
 
     ```mermaid
     sequenceDiagram
         participant C as Cliente
         participant S as Servidor
-        C->>S: Paquete #1
+        C->>S: Segmento #1
         S->>C: ACK #1
-        C->>S: Paquete #2
-        Note over C,S: el paquete #2 se pierde,<br/>nunca llega al servidor
+        C->>S: Segmento #2
+        Note over C,S: el segmento #2 se pierde,<br/>nunca llega al servidor
         Note over C: no llega ACK #2 a tiempo
-        C->>S: reenvía Paquete #2
+        C->>S: reenvía Segmento #2
         S->>C: ACK #2
     ```
 
@@ -145,19 +145,19 @@ Hay dos formas de que algo se pierda por el camino, y desde el cliente se ven ex
     sequenceDiagram
         participant C as Cliente
         participant S as Servidor
-        C->>S: Paquete #1
+        C->>S: Segmento #1
         S->>C: ACK #1
-        C->>S: Paquete #2
+        C->>S: Segmento #2
         S->>C: ACK #2
         Note over C,S: se pierde de vuelta —<br/>el cliente nunca lo ve
-        C->>S: reenvía Paquete #2
-        Note over S: ya lo tenía —<br/>lo descarta por el número de paquete
+        C->>S: reenvía Segmento #2
+        Note over S: ya lo tenía —<br/>lo descarta por el número de segmento
         S->>C: ACK #2
     ```
 
 </div>
 
-En el primer caso, el servidor no tenía el paquete y ahora sí. En el segundo, ya lo tenía, y le llega un duplicado — pero como cada paquete va numerado, TCP se da cuenta y lo descarta él solo, sin entregarlo dos veces a tu aplicación. Tu código nunca ve nada de este ir y venir: ni el reenvío, ni el duplicado descartado. Solo lees de un stream, y los datos te llegan completos, en orden, y una sola vez.
+En el primer caso, el servidor no había recibido el segmento y ahora sí. En el segundo, ya lo tenía y recibe un duplicado — pero gracias a los números de secuencia, TCP reconoce los datos repetidos y no los entrega dos veces a tu aplicación. Tu código nunca ve nada de este ir y venir: ni el reenvío, ni el duplicado descartado. Solo lees de un stream, y los datos te llegan completos y en orden.
 
 UDP no negocia nada de esto por delante: el cliente manda cada paquete directo, con la dirección de destino pegada a él, sin haber quedado antes con nadie.
 
@@ -165,7 +165,7 @@ UDP no negocia nada de esto por delante: el cliente manda cada paquete directo, 
 |---|---|---|
 | Antes de enviar datos | negocia la conexión primero | envía directo, sin avisar |
 | Si un paquete se pierde | se reenvía solo, tú no te enteras | se pierde y nadie te avisa |
-| Coste de todo eso | más lento | más rápido |
+| Coste del protocolo | Más mecanismos de control, confirmación y retransmisión | Menos mecanismos de control |
 
 Esa tabla explica por qué UDP sigue existiendo pese a ser menos fiable: en una videollamada o una partida online, un dato que llega tarde ya no sirve de nada —mejor perder un fotograma y seguir con el siguiente, que congelarse esperando a que TCP reenvíe el que faltó—, así que ahí compensa cambiar fiabilidad por velocidad. En cambio, al guardar una fila en base de datos o hacer una transferencia bancaria, perder un solo byte no es aceptable: ahí es TCP quien tiene sentido, y es exactamente lo que ha usado todo lo que has construido en este curso.
 
@@ -186,7 +186,7 @@ flowchart TB
 ```
 
 - **Petición-respuesta síncrono**: el cliente pide, el servidor responde, ahí termina esa conversación — el modelo de todo REST que has construido en PSP y AD.
-- **Cola de mensajes asíncrona**: el productor publica sin saber quién (ni si alguien) lo va a procesar, y cada mensaje concreto lo procesa un único consumidor — RabbitMQ, del Tema 3. Ojo, no es lo mismo que publicación-suscripción: en una cola, cada mensaje tiene un solo destinatario; en pub-sub, varios suscriptores reciben cada uno su propia copia del mismo mensaje.
+- **Cola de mensajes asíncrona**: el productor publica sin saber qué consumidor concreto procesará el mensaje. Dentro de una misma cola, cada mensaje lo procesa uno de sus consumidores — el patrón que has usado con RabbitMQ en el Tema 3. RabbitMQ también permite que un mismo mensaje llegue a varias colas mediante un *exchange*, pero dentro de cada cola sigue existiendo ese reparto entre consumidores.
 - **Canal bidireccional persistente**: una conexión que permanece abierta, por la que ambos lados pueden enviar datos en cualquier momento sin volver a conectar — el modelo que falta por conocer, WebSocket, en el próximo apartado.
 
 ---
@@ -206,5 +206,5 @@ El caso concreto que vas a construir en las próximas actividades: un panel de a
     - Un **socket** es el extremo programable de una conexión de red (IP + puerto) — está debajo de toda comunicación que ya has usado en el curso.
     - **Servidor** (`ServerSocket`: bind/listen/accept) escucha; **cliente** (`Socket`: connect) inicia la conexión.
     - **TCP** (orientado a conexión, fiable) es lo que usa todo lo construido en el curso; **UDP** (sin conexión, sin garantías) se usa donde la velocidad importa más que la fiabilidad total.
-    - Tres modelos de comunicación: petición-respuesta síncrono (REST), cola de mensajes asíncrona (RabbitMQ — un consumidor por mensaje, no publicación-suscripción), canal bidireccional persistente (WebSocket).
+    - Tres modelos de comunicación: petición-respuesta síncrono (REST), cola de mensajes asíncrona (RabbitMQ — dentro de una misma cola, cada mensaje lo procesa uno de sus consumidores) y canal bidireccional persistente (WebSocket).
     - Un servidor necesita avisar proactivamente al cliente cuando petición-respuesta no basta — el escenario que resuelve el panel de actividad en vivo de las próximas actividades.

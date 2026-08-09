@@ -306,6 +306,7 @@ Cada persona que clona el repositorio copia ese `.example` a `application-dev-lo
 Los usuarios ya no están definidos directamente en el código: viven en PostgreSQL y sus contraseñas se almacenan mediante hashes que no permiten recuperar el texto original. Pero sigue quedando el segundo problema del apartado anterior: HTTP Basic envía las credenciales en **cada** petición.
 
 En el próximo apartado, JWT permitirá autenticarse una vez y presentar un token en las peticiones siguientes.
+
 ---
 
 ## ✅ Ideas clave

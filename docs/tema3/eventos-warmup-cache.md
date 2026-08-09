@@ -168,7 +168,7 @@ public class LibroService {
 La misma línea de publicación va también en `update()` y en `delete()`, junto a su propio `@CacheEvict`: un libro editado o borrado puede cambiar igual de bien cuáles son los "más baratos", así que las tres operaciones de escritura necesitan avisar por igual.
 
 !!! warning "`beforeInvocation = true` no es un detalle menor"
-    Por defecto, `@CacheEvict` borra la entrada **después** de que el método entero termine — lo que, con `@Transactional` de por medio, puede caer justo alrededor del mismo instante en que el *commit* dispara el aviso a quien recalienta. Sin `beforeInvocation = true`, ese aviso podría llegar antes de que el evict haya limpiado nada, encontrarse la caché todavía con el valor viejo, y no recalcular nada — dejando la caché fría para el primer usuario real, exactamente el problema que este apartado quiere resolver.
+    Por defecto, `@CacheEvict` elimina la entrada después de que el método termine correctamente. Aquí usamos `beforeInvocation = true` para hacerlo **antes de entrar en `create()`/`update()`/`delete()`**, garantizando así que, cuando esos métodos publiquen el evento de invalidación, la entrada anterior ya se haya eliminado. La contrapartida es que, si la escritura termina fallando, la caché ya habrá sido vaciada y tendrá que calcularse de nuevo más adelante. Es una decisión sencilla y adecuada para este ejemplo, no una solución general a todos los posibles problemas de concurrencia.
 
 !!! tip "Esta pieza es nueva, no la tienes todavía"
     Es una mejora que tú vas a construir desde cero, sobre tu propio proyecto: no confundas este evento interno de Spring con el `LibroEvent` que ya conoces del apartado anterior, que es de RabbitMQ, entre módulos — son dos mecanismos distintos.
@@ -192,7 +192,7 @@ Con las dos primeras piezas montadas, ya tienes caché de verdad: la segunda pet
 ??? tip "Abrir resumen"
 
     - Una **caché** guarda el resultado de una operación cara para no repetir el trabajo. **Invalidar** borra un resultado que ya no es válido; **recalentar** la vuelve a calcular por adelantado, antes de que alguien la pida.
-    - `@Cacheable` hace que Spring intercepte la llamada: si ya hay un resultado guardado para esa clave, lo devuelve sin ejecutar el método; si no, lo ejecuta y guarda el resultado. `@CacheEvict(allEntries = true)` borra todo lo guardado, forzando el próximo recálculo — con `beforeInvocation = true`, para que el borrado ocurra antes de nada más, no después del commit.
+    - `@Cacheable` hace que Spring intercepte la llamada: si ya hay un resultado guardado para esa clave, lo devuelve sin ejecutar el método; si no, lo ejecuta y guarda el resultado. `@CacheEvict(allEntries = true)` borra todo lo guardado; con `beforeInvocation = true`, ese borrado ocurre antes de ejecutar el método anotado.    
     - `@EnableCaching` activa ese mecanismo para toda la aplicación — y, precisamente por eso, puede romper tests de una sola capa (`@WebMvcTest`) que carguen la clase principal sin traer la autoconfiguración que da soporte real a la caché.
     - **Redis** es una base de datos en memoria clave-valor, usada aquí como caché compartida real detrás de `@Cacheable` — el resultado se guarda físicamente en el contenedor Redis, no en memoria de la aplicación, y sobrevive a un reinicio.
     - Por defecto, Spring guarda en Redis con serialización JDK, que exige `Serializable` — un `record` no lo es por defecto. Se resuelve añadiendo `implements Serializable` al DTO.

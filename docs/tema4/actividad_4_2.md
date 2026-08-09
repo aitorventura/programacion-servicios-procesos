@@ -51,7 +51,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 }
 ```
 
-`setAllowedOriginPatterns("*")` es la autorización de origen que ya has visto en la teoría de este apartado — aquí, `*` acepta cualquier origen, cómodo para probar hoy desde tu propia máquina.
+`setAllowedOriginPatterns("*")` amplía la política de origen de Spring para aceptar conexiones WebSocket desde cualquier origen, algo cómodo para las pruebas de esta actividad.
 
 ---
 
@@ -157,7 +157,7 @@ Esto es todo lo que hace falta para que funcione — tres piezas: conectar, susc
 </html>
 ```
 
-`new StompJs.Client({ brokerURL: ... })` crea el cliente apuntando a tu endpoint. `onConnect` es el callback que se dispara en cuanto el *handshake* termina — dentro, `client.subscribe(destino, callback)` te suscribe a `/topic/actividad`, y ese `callback` se ejecuta **cada vez** que llega un mensaje nuevo a ese destino, con el mensaje ya en `mensaje.body` (una cadena de texto en JSON — recuerda convertirla con `JSON.parse(...)` si quieres leer sus campos, en vez de pintarla tal cual). Lo único que hace este mecanismo mínimo es crear un `<li>` con ese texto y añadirlo a la lista — nada más.
+`new StompJs.Client({ brokerURL: ... })` crea el cliente apuntando a tu endpoint. `onConnect` es el callback que se dispara cuando la conexión WebSocket ya está abierta y la sesión STOMP ha quedado establecida; dentro, `client.subscribe(destino, callback)` te suscribe a `/topic/actividad`, y ese `callback` se ejecuta **cada vez** que llega un mensaje nuevo a ese destino, con el mensaje ya en `mensaje.body` (una cadena de texto en JSON — recuerda convertirla con `JSON.parse(...)` si quieres leer sus campos, en vez de pintarla tal cual). Lo único que hace este mecanismo mínimo es crear un `<li>` con ese texto y añadirlo a la lista — nada más.
 
 Guarda esto ya como `src/main/resources/static/actividad.html`. Con esto ya tienes todo el código en su sitio —el endpoint (Paso 1), la ruta abierta (Paso 2), la emisión real (Paso 3) y ahora el cliente—, así que es el momento de reiniciar tu aplicación por fin: hasta ahora no tenías con qué comprobar nada de lo anterior. Ábrelo en `http://localhost:8080/actividad.html`.
 

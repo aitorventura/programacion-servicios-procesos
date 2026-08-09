@@ -20,7 +20,7 @@ Las tres funcionan, pero las tres dan vueltas alrededor del mismo obstáculo: el
 
 ## 🔗 WebSocket: el canal bidireccional persistente
 
-Recuerda los tres modelos de comunicación del apartado anterior: petición-respuesta síncrono (REST), cola de mensajes asíncrona (RabbitMQ), y canal bidireccional persistente — el que quedó pendiente de ver en detalle. **WebSocket** es exactamente eso: un socket de verdad entre navegador y servidor, abierto todo el tiempo que haga falta, por el que cualquiera de los dos lados puede enviar datos en cualquier momento.
+Recuerda los tres modelos de comunicación del apartado anterior: petición-respuesta síncrono (REST), cola de mensajes asíncrona (RabbitMQ), y canal bidireccional persistente — el que quedó pendiente de ver en detalle. **WebSocket** implementa ese modelo mediante un protocolo bidireccional sobre una conexión TCP que permanece abierta mientras ambos extremos la mantienen. Cliente y servidor pueden enviar mensajes en cualquier momento, sin abrir una conexión nueva para cada intercambio. No es el mismo API que el `Socket` de Java de la Actividad 4.1, aunque por debajo siga existiendo una conexión TCP.
 
 Para llegar a esa conexión persistente, el navegador manda una única petición HTTP normal, la de siempre. Lo único distinto es una cabecera especial (`Upgrade`) que pide cambiar de protocolo desde ya, en esa misma petición. Si el servidor acepta, ocurre algo que no pasa con ninguna otra petición HTTP: la conexión no se cierra al terminar de responder — se queda abierta de forma **permanente**, y a partir de ahí ya no habla HTTP, habla WebSocket:
 
@@ -41,9 +41,9 @@ Fíjate en las dos últimas líneas del diagrama: el servidor manda mensajes sin
 
 ## 📨 Qué es STOMP
 
-Imagina una librería online, con su catálogo de `Libro`/`Editorial` y sus notas de lectura de `NotaLectura` — el mismo dominio de ejemplo que ya conoces de otros apartados. Con WebSocket ya tienes el canal abierto — pero fíjate en qué es exactamente lo que has conseguido: un tubo por el que viajan mensajes sueltos, sin ninguna estructura encima. Todo lo que envíes por ahí llega mezclado, tal cual, sin ninguna etiqueta que diga de qué trata.
+Imagina una librería online, con su catálogo de `Libro`/`Editorial` y sus notas de lectura de `NotaLectura` — el mismo dominio de ejemplo que ya conoces de otros apartados. Con WebSocket ya tienes el canal abierto y puedes intercambiar mensajes de texto o binarios, pero todavía no has definido una organización para esos mensajes: no existen por sí solos conceptos como destinos, suscripciones o tipos de aviso.
 
-Imagina que por ese mismo canal quisieras mandar dos cosas distintas —por ejemplo, un aviso cada vez que alguien publica una `NotaLectura` nueva, y una alerta cuando un `Libro` se queda sin ejemplares disponibles— a la vez. Con WebSocket a secas, el cliente que recibe no tiene ninguna forma de distinguir uno de otro más que mirando el propio contenido del mensaje a mano, ni de decir "a mí solo me interesan las alertas de stock, no las notas de lectura".
+Imagina que por ese mismo canal quisieras mandar dos cosas distintas —por ejemplo, un aviso cada vez que alguien publica una `NotaLectura` nueva, y una alerta cuando un `Libro` se queda sin ejemplares disponibles— a la vez. WebSocket por sí solo no define conceptos como "topic", "suscripción" o "tipo de aviso". Podrías inventar tu propio protocolo —por ejemplo, incluir un campo `tipo` dentro de cada JSON y decidir tú cómo interpretarlo—, pero tendrías que diseñar y mantener esas reglas.
 
 Eso es justo lo que le falta a WebSocket y lo que añade **STOMP** (*Simple Text Oriented Messaging Protocol*), un protocolo sencillo que se monta encima: la posibilidad de dar un nombre a cada tipo de mensaje —un **destino**, como `/topic/notas` o `/topic/alertas-stock`— y de que cada cliente se **suscriba** solo a los destinos que le interesan, sin que le lleguen los demás. Nada de esto te lo inventas tú a mano: es el mismo patrón de publicación-suscripción que ya has visto con `ApplicationEventPublisher` en el Tema 3, ahora con el protocolo poniendo las reglas.
 
@@ -65,7 +65,7 @@ flowchart LR
     end
 ```
 
-Un destino STOMP puede tener varios suscriptores a la vez, y todos reciben su propia copia de cada mensaje — justo lo contrario de una cola de RabbitMQ, donde cada mensaje concreto lo procesa un único consumidor y desaparece de ahí. Piensa otra vez en la alerta de stock: si tienes varias personas de la librería con el panel de administración abierto a la vez, quieres que la reciban **todas**, no que se la quede solo la primera que la pida — exactamente el reparto que da un destino STOMP, y exactamente lo contrario de lo que haría una cola.
+Un destino STOMP puede tener varios suscriptores a la vez, y todos reciben su propia copia de cada mensaje. En una **misma cola** de RabbitMQ, en cambio, cada mensaje se entrega a uno de sus consumidores. RabbitMQ también puede distribuir una misma publicación a varias colas mediante un *exchange*, pero ese reparto requiere configurar explícitamente esas colas y sus *bindings*. Piensa otra vez en la alerta de stock: si tienes varias personas de la librería con el panel de administración abierto a la vez, quieres que la reciban **todas**, no que se la quede solo la primera que la pida — exactamente el reparto que da un destino STOMP, y exactamente lo contrario de lo que haría una cola.
 
 ---
 
@@ -127,7 +127,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 !!! tip "Aquí no hace falta ningún `@RestController`"
     `registerStompEndpoints` es, en sí misma, la declaración del endpoint — a diferencia de REST, no hace falta ningún `@GetMapping("/ws-actividad")`. Esta llamada le dice a Spring que las peticiones a esa URL no pasan por el despachador normal de controllers: las trata como negociación de WebSocket desde el principio. El `@MessageMapping` de más abajo (para `/app`) sí es el equivalente de `@RequestMapping`, pero solo para mensajes que llegan **después** de que la conexión ya esté establecida — el *handshake* inicial lo gestiona directamente esta configuración, sin ningún método de controller de por medio.
 
-Fíjate también en `.setAllowedOriginPatterns("*")`, justo detrás de `addEndpoint(...)`. Por defecto, un navegador no puede abrir una conexión hacia un dominio distinto del que sirve la propia página, sin que el servidor lo autorice explícitamente — `setAllowedOriginPatterns` es esa autorización, para WebSocket. `*` acepta cualquier origen, cómodo para probar mientras desarrollas; en una aplicación real restringirías esto al dominio concreto de tu frontend.
+Fíjate también en `.setAllowedOriginPatterns("*")`, justo detrás de `addEndpoint(...)`. Por defecto, Spring solo acepta conexiones WebSocket del mismo origen. Esta llamada amplía esa política: `*` permite cualquier origen, algo cómodo para las pruebas de desarrollo. En una aplicación real normalmente restringirías los orígenes permitidos al dominio concreto de tu frontend.
 
 El broker que activas aquí, `enableSimpleBroker("/topic")`, es uno simple, en memoria — suficiente para este caso; un broker externo como el propio RabbitMQ también podría hacer de intermediario STOMP, pero no hace falta para lo que vas a construir.
 
@@ -160,7 +160,7 @@ Con las dos piezas de código delante, ya se puede responder a "por qué no apar
 |---|---|---|
 | Qué declaras en la configuración | Cada cola, con su propio `@Bean` | Solo el prefijo (`"/topic"`) |
 | Dónde aparece el nombre concreto | En la propia declaración de la cola | Solo donde se publica y donde se suscribe |
-| Si el nombre no coincide en algún lado | Error claro al arrancar — la cola no existe | Ningún error — el mensaje simplemente no le llega a nadie |
+| Si publicador y receptor no coinciden | El *binding* y la *routing key* determinan si el mensaje llega a la cola; si no encajan, puede quedar sin enrutar | El mensaje se publica en otro destino y ese suscriptor no lo recibe |
 
 Y esa misma coincidencia de nombres decide, además, **qué recibe cada cliente**, no solo que lo reciba. Imagina un segundo cliente que hiciera esto:
 
@@ -216,7 +216,7 @@ El mismo método que ya guardaba algo en base de datos, ahora, además, lo publi
     En JavaScript, esa cadena no es todavía un objeto usable — hace falta convertirla tú mismo con `JSON.parse(mensaje.body)` antes de poder leer sus campos. Es el mismo paso que ya usa el cliente completo de la Actividad 4.2.
 
 !!! tip "¿En qué hilo se ejecuta ese `convertAndSend`?"
-    En tu proyecto real, `registrar(...)` no lo llamas tú directamente desde una petición HTTP — lo llama el consumer de RabbitMQ (Tema 3), en su propio hilo de escucha, no en el hilo del pool de Tomcat que atendió la petición original. El `push` hacia WebSocket se ejecuta ahí mismo, en ese hilo del listener, con una responsabilidad más de las que ya tenía.
+    En tu proyecto real, `registrar(...)` no lo llamas tú directamente desde una petición HTTP — lo llama el consumer de RabbitMQ (Tema 3), desde uno de sus hilos de escucha, no desde el hilo de Tomcat que atendió la petición original. La llamada a `convertAndSend(...)` nace, por tanto, desde ese listener; a partir de ahí Spring se encarga de distribuir el mensaje mediante su propia infraestructura de mensajería.
 
 ### Comparado con lo que ya conoces
 
@@ -231,8 +231,8 @@ Para que el contraste con REST quede claro de un vistazo:
 
 Y dos matices más, ya con el diagrama completo delante:
 
-- **El paralelismo correcto sigue siendo con `ApplicationEventPublisher`**, no con RabbitMQ (como ya has visto en el `tip` de más arriba): mismo modelo de publicación-suscripción. La única diferencia es quién es el suscriptor: con `ApplicationEventPublisher` era otro *bean*, dentro de la misma aplicación; aquí es un navegador, fuera del servidor por completo.
-- **La concurrencia de los dos navegadores del diagrama la gestiona Spring, no tú.** En la Actividad 4.1, cada cliente que se conectaba a tu servidor de sockets exigía que tú mismo lanzaras un hilo nuevo para atenderlo, a mano. Aquí no vas a escribir ni un `Thread` — Spring ya gestiona por ti, internamente, un hilo por cada cliente WebSocket conectado. La necesidad de atender varios clientes a la vez sigue siendo la misma, solo que esta capa más alta te la resuelve sin que tengas que programarla tú.
+- **La comparación conceptual más directa sigue siendo con `ApplicationEventPublisher`**, no con la cola de RabbitMQ (como ya has visto en el `tip` de más arriba): ambos siguen un modelo de publicación-suscripción.
+- **La concurrencia de los dos navegadores del diagrama la gestionan Spring y el servidor WebSocket, no tú.** En la Actividad 4.1 tenías que decidir explícitamente cómo atender varias conexiones y repartirlas entre hilos. Aquí no escribes ningún `Thread`: Spring gestiona las conexiones y hace pasar los mensajes por canales respaldados por pools de hilos. El problema de concurrencia sigue existiendo, pero esta capa más alta se ocupa de gestionarlo por ti.
 
 ---
 
@@ -242,6 +242,6 @@ Y dos matices más, ya con el diagrama completo delante:
 
     - El problema de fondo: con petición-respuesta puro, el cliente siempre pregunta primero — no hay forma de que el servidor avise por iniciativa propia. Recargar, polling y long polling son soluciones parciales al mismo problema.
     - **WebSocket** es el tercer modelo de comunicación (canal bidireccional persistente): petición HTTP inicial con cabecera `Upgrade` para cambiar de protocolo, después conexión permanente donde el servidor envía sin que el cliente pregunte, y el cliente recibe por *callback*, sin quedarse bloqueado esperando.
-    - **STOMP** añade semántica de mensajería (destinos, suscripción) sobre el tubo de bytes desnudo de WebSocket, para no tener que inventártela tú.
+    - **STOMP** añade semántica de mensajería (destinos, suscripciones) sobre WebSocket, para no tener que diseñar tú mismo esas reglas.
     - `@EnableWebSocketMessageBroker` + `registerStompEndpoints` + `configureMessageBroker` son las tres piezas de configuración base.
-    - Mismo modelo pub-sub que los eventos internos de Spring (`ApplicationEventPublisher`, Tema 3), pero con el suscriptor fuera de la JVM, en el navegador. RabbitMQ, en cambio, es una cola punto a punto — cada mensaje a un único consumidor, no lo mismo.
+    - Mismo modelo pub-sub que los eventos internos de Spring (`ApplicationEventPublisher`, Tema 3), pero con el suscriptor fuera de la JVM, en el navegador. En la cola RabbitMQ que construiste en el Tema 3, varios consumidores competirían por los mensajes de esa cola; en el topic STOMP, todos los suscriptores reciben cada publicación.

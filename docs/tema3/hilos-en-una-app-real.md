@@ -37,7 +37,7 @@ En ambos casos, **el planificador del sistema operativo decide** cuándo se ejec
 
 ## 🚀 Crear hilos en Java
 
-Java separa dos ideas que hasta ahora iban juntas: **qué** trabajo hay que hacer y **quién** lo va a ejecutar. `Runnable` describe el trabajo — es la orden de trabajo que le dejarías a un operario, con las instrucciones de qué hacer, pero todavía sin decir quién la ejecuta ni cuándo. `Thread` es el operario de verdad: al crearlo le entregas esa orden de trabajo (el `Runnable`) y, en cuanto le dices que empiece, la ejecuta por su cuenta, en paralelo con lo que esté haciendo el resto del taller.
+Java separa dos ideas que hasta ahora iban juntas: **qué** trabajo hay que hacer y **quién** lo va a ejecutar. `Runnable` describe el trabajo — es la orden de trabajo que le dejarías a un operario, con las instrucciones de qué hacer, pero todavía sin decir quién la ejecuta ni cuándo. `Thread` es el operario de verdad: al crearlo le entregas esa orden de trabajo (el `Runnable`) y, en cuanto le dices que empiece, la ejecuta de forma concurrente con los demás hilos. Si hay varios núcleos disponibles, algunos de esos hilos pueden llegar a ejecutarse realmente en paralelo.
 
 La forma más directa de repartir una tarea entre varios hilos: implementar `Runnable` con el trabajo a hacer, y envolverlo en tantos `Thread` como operarios quieras poner a trabajar a la vez:
 
@@ -59,7 +59,7 @@ public class HilosDemo {
 !!! warning "`start()`, no `run()`"
     Si llamas directamente a `tarea.run()`, ejecutas ese código en el hilo actual, como una llamada a método normal — no se crea ningún hilo nuevo. `start()` es lo que de verdad arranca un hilo nuevo del sistema operativo, que ejecutará el `run()` de forma independiente.
 
-Ejecuta este código dos veces seguidas: la salida por consola **no será idéntica** las dos veces. Si tu ordenador tiene varios núcleos —la mayoría los tiene hoy—, lo más probable es que Hilo-A e Hilo-B no se estén turnando en un único núcleo, sino ejecutando de verdad al mismo tiempo, cada uno en el suyo: este ejemplo, en tu máquina, casi seguro demuestra **paralelismo**, no la concurrencia de turnos que acabas de ver. Lo que sigue siendo no determinista es el **orden exacto** en que sus líneas llegan a la consola: aunque los dos hilos avancen en paralelo, no hay ninguna garantía de que vayan al mismo ritmo, así que qué línea imprime cada uno en cada instante depende de decisiones del sistema operativo que escapan a tu control — y por eso la salida cambia de una ejecución a otra. Así se ven dos ejecuciones reales del mismo código, una al lado de la otra:
+Ejecuta este código dos veces seguidas: la salida por consola probablemente no será idéntica. El orden en que aparecen las líneas depende de las decisiones del planificador del sistema operativo y no está garantizado. Aunque tu ordenador tenga varios núcleos y los hilos puedan llegar a ejecutarse realmente en paralelo, esta salida por consola no permite demostrar si en un instante concreto estaban usando núcleos distintos o simplemente alternándose. Lo importante aquí es observar que ambos hilos avanzan de forma concurrente y que su orden de ejecución es no determinista.
 
 <div class="grid" markdown>
 
@@ -69,7 +69,7 @@ Ejecuta este código dos veces seguidas: la salida por consola **no será idént
 
 </div>
 
-En la primera, Hilo-A e Hilo-B avanzan a un ritmo muy parecido, así que sus líneas se entrelazan casi una a una; en la segunda, Hilo-A ha ido más rápido y ha completado casi todo su trabajo antes de que las líneas de Hilo-B empiecen a aparecer. Ninguna de las dos es "la correcta" — las dos son resultados válidos del mismo programa corriendo en paralelo, y por eso no puedes dar por hecho en qué orden van a imprimir sus líneas dos hilos que se ejecutan a la vez.
+En la primera, Hilo-A e Hilo-B avanzan a un ritmo muy parecido, así que sus líneas se entrelazan casi una a una; en la segunda, Hilo-A ha ido más rápido y ha completado casi todo su trabajo antes de que las líneas de Hilo-B empiecen a aparecer. Ninguna de las dos es "la correcta" — las dos son resultados válidos del mismo programa ejecutando dos hilos concurrentes, y por eso no puedes dar por hecho en qué orden van a imprimir sus líneas dos hilos que se ejecutan a la vez.
 
 ---
 
@@ -120,7 +120,7 @@ Dos ejecuciones reales de este mismo código, en la misma máquina, una detrás 
 
 </div>
 
-Ni siquiera coinciden entre sí, y ninguna de las dos llega a 20.000 — la prueba de que el problema no es solo teórico. Si lanzas dos hilos que llaman a `incrementar()` 10.000 veces cada uno, el resultado final **no da 20.000** — casi siempre da menos, y un poco distinto cada vez. ¿Por qué? `valor++` no es una sola operación atómica: son **tres** pasos (leer el valor actual, sumarle uno, escribir el resultado), y esos tres pasos de un hilo se pueden intercalar con los de otro.
+Ni siquiera coinciden entre sí, y en estas dos ejecuciones ninguna llega a 20.000 — la prueba de que el problema no es solo teórico. Si lanzas dos hilos que llaman a `incrementar()` 10.000 veces cada uno, esperarías obtener 20.000, pero ese resultado **no está garantizado**: normalmente será menor y puede variar entre ejecuciones, aunque alguna podría llegar a dar exactamente 20.000 por casualidad **sin que eso signifique que la condición de carrera haya desaparecido**. ¿Por qué? `valor++` no es una sola operación atómica: son **tres** pasos (leer el valor actual, sumarle uno, escribir el resultado), y esos tres pasos de un hilo se pueden intercalar con los de otro.
 
 Así se pierde un incremento en la práctica — imagina que los dos hilos llegan casi a la vez, cuando `valor` todavía vale 0:
 
@@ -133,7 +133,7 @@ Así se pierde un incremento en la práctica — imagina que los dos hilos llega
 | 5 | escribe `valor = 1` | | 1 |
 | 6 | | escribe `valor = 1` | 1 |
 
-Dos llamadas a `incrementar()` deberían haber dejado `valor` en `2`, pero como ambos hilos han leído el mismo valor antes de que ninguno escribiera, el resultado final es `1` — se ha perdido un incremento entero. Multiplica este mismo entrelazado por miles de llamadas y por eso el resultado final casi nunca es exactamente 20.000.
+Dos llamadas a `incrementar()` deberían haber dejado `valor` en `2`, pero como ambos hilos han leído el mismo valor antes de que ninguno escribiera, el resultado final es `1` — se ha perdido un incremento entero. Multiplica este mismo entrelazado por miles de llamadas y entenderás por qué el resultado puede variar entre ejecuciones y no podemos garantizar que sea exactamente 20.000.
 
 La solución básica es `synchronized`: marca una **sección crítica** (un bloque de código) que solo un hilo puede ejecutar a la vez — cualquier otro hilo que quiera entrar debe esperar a que el primero salga. Ese "esperar" tiene nombre propio: el hilo que llega tarde queda bloqueado por un **lock**, el candado que el primer hilo mantiene ocupado mientras está dentro de la sección crítica. Es como el baño de una cafetería con una única llave colgada en el mostrador: mientras un cliente la tiene y está dentro, cualquier otro que quiera entrar se queda esperando fuera, por mucha prisa que tenga — nadie entra hasta que la llave vuelve a estar libre.
 
@@ -160,27 +160,34 @@ Un hilo no está siempre "ejecutando" sin más — pasa por varios estados bien 
 stateDiagram-v2
     [*] --> NEW
     NEW --> RUNNABLE: start()
-    RUNNABLE --> BLOCKED: lock ocupado por otro hilo
-    BLOCKED --> RUNNABLE: lock liberado
-    RUNNABLE --> WAITING: sleep() / join() / wait()
-    WAITING --> RUNNABLE: termina la pausa
+
+    RUNNABLE --> BLOCKED
+    BLOCKED --> RUNNABLE
+
+    RUNNABLE --> WAITING: espera sin límite
+    WAITING --> RUNNABLE: termina la espera
+
+    RUNNABLE --> TIMED_WAITING: espera con límite
+    TIMED_WAITING --> RUNNABLE: termina la espera
+
     RUNNABLE --> TERMINATED: termina run()
     TERMINATED --> [*]
 ```
 
-La tabla resume qué hace que un hilo entre en cada estado, y qué significa realmente estar ahí — la distinción importante es que `BLOCKED` es una espera **forzada** (no decides tú cuándo se acaba), mientras que `WAITING`/`TIMED_WAITING` es una pausa que el propio hilo **elige** tomar:
+La tabla resume qué hace que un hilo entre en cada estado y qué significa realmente estar ahí. La distinción importante es que `BLOCKED` aparece al intentar adquirir un *lock* que otro hilo mantiene ocupado, mientras que `WAITING` y `TIMED_WAITING` aparecen cuando el hilo entra explícitamente en alguna operación de espera.
 
 | Estado | ¿Cómo se llega? | ¿Qué significa? |
 |---|---|---|
 | `NEW` | Acabas de crearlo con `new Thread(...)` | Existe el objeto, pero todavía no has llamado a `start()` |
 | `RUNNABLE` | Llamas a `start()` — no a `run()` | Está ejecutando el código de tu `run()`, o listo para hacerlo en cuanto el planificador le dé turno |
-| `BLOCKED` | Intenta entrar en una sección `synchronized` que otro hilo ya ocupa | Espera **forzada** — como el cliente haciendo cola frente al baño ocupado, sin poder decidir cuándo va a entrar |
-| `WAITING` / `TIMED_WAITING` | El propio hilo llama a `sleep()`, `join()` o `wait()` | Pausa **voluntaria** — el hilo decide pararse un rato por su cuenta, nadie se lo impone |
+| `BLOCKED` | Intenta entrar en una sección `synchronized` que otro hilo ya ocupa | Espera a poder obtener el *lock* y entrar en esa sección |
+| `WAITING` | Llama a `join()` o `wait()` sin indicar un tiempo máximo | Espera sin límite de tiempo hasta que se produzca la condición que le permite continuar |
+| `TIMED_WAITING` | Llama a `sleep()`, `join(timeout)` o `wait(timeout)` | Espera durante un tiempo máximo determinado |
 | `TERMINATED` | Su `run()` acaba | Fin — ya no vuelve a ejecutarse nunca |
 
 Ojo con no confundir `start()` y `run()` aquí tampoco: es `start()` quien mueve el hilo de `NEW` a `RUNNABLE`, no `run()`. `run()` es solo el método con el código que ese hilo va a ejecutar mientras está en `RUNNABLE` — si llamas a `tarea.run()` directamente (como avisaba el primer recuadro de este apartado), no creas ningún hilo nuevo, así que no hay ningún estado que cambiar: ese código se ejecuta como una llamada normal dentro del hilo que ya tenías.
 
-Nada de esto se queda en la teoría: puedes preguntarle a un hilo en qué estado está en cualquier momento con `getState()`. Retomando el `Contador` de antes —ahora con `incrementar()` ya `synchronized`, y con una pausa añadida solo para que te dé tiempo a observar cada estado con calma—, dos hilos ejecutando exactamente la misma tarea son suficientes para forzar, uno detrás de otro, los cinco estados del diagrama: mientras uno ya está dentro incrementando y durmiendo, el otro se queda esperando el mismo *lock*.
+Nada de esto se queda en la teoría: puedes preguntarle a un hilo en qué estado está en cualquier momento con `getState()`. Retomando el `Contador` de antes —ahora con `incrementar()` ya `synchronized`, y con una pausa añadida solo para facilitar la observación—, el siguiente ejemplo está preparado para que puedas capturar **cinco de los seis estados**: `NEW`, `RUNNABLE`, `BLOCKED`, `TIMED_WAITING` y `TERMINATED`. `WAITING` no aparece en este ejemplo porque la pausa se realiza con `sleep()`, que coloca al hilo en `TIMED_WAITING`. Como `getState()` muestra una instantánea, el resultado exacto puede variar ligeramente según el planificador del sistema operativo.
 
 ```java
 class Contador {
@@ -234,11 +241,11 @@ public class EstadosDemo {
 !!! tip "Qué hace `Thread.currentThread().interrupt()`"
     `sleep()` puede terminar antes de tiempo si otro hilo llama a `.interrupt()` sobre este hilo — Java lo avisa lanzando `InterruptedException`. Volver a llamar a `interrupt()` dentro del propio `catch` es el patrón estándar para no perder ese aviso, por si algún código más arriba también necesita saber que ha pasado.
 
-Ejecútalo tú mismo — esta es la salida real, los cinco estados en el mismo orden del diagrama, uno detrás de otro:
+Ejecútalo tú mismo. Esta es una posible salida en la que se han conseguido capturar los cinco estados que busca este ejemplo:
 
 ![Salida de EstadosDemo: NEW, RUNNABLE, BLOCKED, TIMED_WAITING, TERMINATED, y Valor final: 2](img/estados-demo-salida.png)
 
-`Hilo-1` pasa literalmente por los cinco: nace en `NEW`, se vuelve `RUNNABLE` en cuanto llamas a `start()`, cae en `BLOCKED` mientras `Hilo-2` todavía tiene el *lock* ocupado, entra en `TIMED_WAITING` en cuanto por fin consigue el *lock* y llama a su propio `sleep()`, y acaba en `TERMINATED` cuando su `run()` termina — y el `Valor final: 2` confirma que, aun con dos hilos compitiendo por el mismo dato, `synchronized` ha dejado el resultado correcto.
+En esta ejecución hemos conseguido observar `Hilo-1` en esos cinco estados: nace en `NEW`, se vuelve `RUNNABLE` en cuanto llamas a `start()`, queda `BLOCKED` mientras `Hilo-2` mantiene ocupado el *lock*, aparece en `TIMED_WAITING` mientras ejecuta su propio `sleep()` y finalmente queda `TERMINATED` cuando acaba su `run()`.
 
 ---
 
@@ -374,15 +381,22 @@ Publicar es tan simple como llamar a `RabbitTemplate`, la clase que Spring te da
 public class LibroEventPublisher {
 
     private final RabbitTemplate rabbitTemplate;
+    private final JsonMapper jsonMapper;
 
     public void publicar(String tipo, Long libroId) {
-        LibroEvent event = new LibroEvent(tipo, libroId);
-        rabbitTemplate.convertAndSend(RabbitMQConfig.CATALOGO_EXCHANGE, "libro." + tipo, event);
+        try {
+            String payload = jsonMapper.writeValueAsString(new LibroEvent(tipo, libroId));
+            rabbitTemplate.convertAndSend(RabbitMQConfig.CATALOGO_EXCHANGE, "libro." + tipo.toLowerCase(), payload);
+        } catch (JacksonException e) {
+            throw new IllegalStateException("No se ha podido serializar el evento", e);
+        }
     }
 }
 ```
 
-`LibroService.create()` ahora llama a `publicar(...)` en vez de a `actividadService.registrar(...)` directamente — y ahí termina su trabajo: no espera respuesta de nadie, simplemente entrega el mensaje al exchange y responde al cliente:
+`JsonMapper` convierte el `LibroEvent` en JSON antes de enviarlo. De este modo no dependemos de que el `record` implemente `Serializable` ni de configurar todavía un conversor específico para RabbitMQ. En la actividad aplicarás este mismo mecanismo al evento real de GameVault.
+
+`LibroService.create()` llama ahora a `publicar(...)` en vez de invocar directamente a `actividadService.registrar(...)`. Una vez entregado el mensaje a RabbitMQ, continúa y responde al cliente:
 
 ```java
 @Service
@@ -394,13 +408,13 @@ public class LibroService {
 
     public LibroResponseDTO create(LibroCreateDTO dto) {
         Libro saved = libroRepository.save(mapToEntity(dto));
-        libroEventPublisher.publicar("CREADO", saved.getId()); // ya no llama a actividadService directamente
+        libroEventPublisher.publicar("CREADO", saved.getId());
         return mapToDTO(saved);
     }
 }
 ```
 
-El registro de verdad ocurre del otro lado, reaccionando cuando ese mensaje llega a su cola:
+El registro real ocurre en el otro extremo. El consumidor recibe la cadena JSON, la reconstruye como un `LibroEvent` y llama al servicio correspondiente:
 
 ```java
 @Service
@@ -408,16 +422,18 @@ El registro de verdad ocurre del otro lado, reaccionando cuando ese mensaje lleg
 public class ActividadLibroEventConsumer {
 
     private final ActividadService actividadService;
+    private final JsonMapper jsonMapper;
+
 
     @RabbitListener(queues = RabbitMQConfig.ACTIVIDAD_LIBRO_QUEUE)
     public void recibir(String payload) {
-        LibroEvent event = /* deserializar */;
+        LibroEvent event = jsonMapper.readValue(payload, LibroEvent.class);
         actividadService.registrar(event.tipo(), "Libro", event.libroId().toString());
     }
 }
 ```
 
-El flujo completo, con dos hilos distintos involucrados:
+El flujo completo implica dos hilos distintos:
 
 ```mermaid
 flowchart LR
@@ -426,7 +442,7 @@ flowchart LR
     C -.-> D["ActividadLibroEventConsumer<br/>@RabbitListener (hilo B, otro hilo)"]
 ```
 
-`LibroService.create()` (hilo A, el de la petición HTTP) publica el evento y **no espera** a que se procese — sigue su camino y responde al cliente. El consumer lo recoge y lo procesa en su propio hilo (hilo B), en su propio momento. Ese es exactamente el problema del principio, resuelto: la petición HTTP ya no se queda esperando a que se registre la actividad, y encima el mensaje sobrevive aunque en ese instante no hubiera ningún consumidor escuchando.
+`LibroService.create()` se ejecuta en el hilo de la petición HTTP, publica el mensaje y continúa sin esperar a que se registre la actividad. El consumidor lo procesa después en uno de los hilos destinados a los listeners de RabbitMQ. Así, una tarea secundaria no retrasa la respuesta principal y el mensaje puede permanecer en la cola hasta que algún consumidor lo procese.
 
 ---
 
@@ -438,7 +454,7 @@ flowchart LR
     - **Concurrencia** (turnarse) vs. **paralelismo** (a la vez, en núcleos distintos) — el planificador del SO decide, no tu programa.
     - `new Thread(runnable).start()` arranca un hilo real; llamar a `run()` directamente NO crea ningún hilo nuevo.
     - La **condición de carrera** ocurre cuando varios hilos modifican el mismo dato sin coordinación; `synchronized` la resuelve creando una sección crítica protegida por un **lock** — pero en exceso puede provocar **deadlock**.
-    - Ciclo de vida: NEW → RUNNABLE → BLOCKED (esperando un lock) / WAITING → TERMINATED.
+    - Ciclo de vida: `NEW` → `RUNNABLE` → `BLOCKED` / `WAITING` / `TIMED_WAITING` → `TERMINATED`.
     - `.interrupt()` puede hacer que `sleep()` termine antes lanzando `InterruptedException`; volver a llamar a `interrupt()` en el `catch` es el patrón estándar para no perder ese aviso.
     - **RabbitMQ**: un broker de mensajería con colas y exchanges; `@RabbitListener` procesa mensajes en un hilo aparte, distinto del hilo que publicó. Publicador y consumidor no se conocen entre sí — es el **binding** (exchange + patrón de *routing key* → cola) quien conecta a uno con el otro.
     - Publicar un mensaje y dejar que otro hilo lo procese evita que el trabajo no esencial (como registrar actividad) retrase la respuesta al cliente — y un broker, a diferencia de un `new Thread()` suelto, conserva el mensaje aunque en ese momento no haya nadie escuchando.

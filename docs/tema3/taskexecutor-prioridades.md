@@ -18,7 +18,7 @@ flowchart LR
     Q --> P["👷 Pool de hilos<br/>corePoolSize ... maxPoolSize"]
 ```
 
-- **`corePoolSize`**: cuántos hilos se mantienen siempre activos, incluso sin tareas que hacer.
+- **`corePoolSize`**: tamaño base del pool; los hilos se crean a medida que llegan tareas hasta alcanzar ese número y, una vez creados, normalmente permanecen disponibles para reutilizarse.
 - **`maxPoolSize`**: el límite máximo de hilos que el pool puede llegar a crear si la carga aumenta.
 - **`queueCapacity`**: cuántas tareas pueden esperar en cola antes de que el pool decida crear más hilos (hasta `maxPoolSize`) o, si ya está en el máximo, rechazar la tarea.
 
@@ -60,7 +60,7 @@ Hasta ahora, el `@Async` del warm-up usa el executor **por defecto** de Spring �
 
 | | Executor por defecto | `TaskExecutor` propio |
 |---|---|---|
-| ¿Quién más lo usa? | Cualquier otra tarea `@Async` del proyecto | Solo el warm-up |
+| ¿Quién lo usa? | Las tareas que usen el executor por defecto | Este listener lo selecciona explícitamente |
 | Nombre de hilo en el log | Genérico (`task-1`, `task-2`...) | Reconocible (`warmup-1`, `warmup-2`...) |
 | Tamaño del pool | El que decida Spring por defecto | El que tú decidas, ajustado a esta tarea concreta |
 
@@ -88,7 +88,7 @@ Cada valor tiene un porqué concreto, no es arbitrario:
 
 | Parámetro | Qué es | Valor elegido | Por qué |
 |---|---|---|---|
-| `corePoolSize` | Hilos que el pool mantiene siempre activos, incluso sin tareas | 2 | El warm-up no necesita mucha capacidad — es una tarea de fondo ocasional, no el núcleo de la aplicación |
+| `corePoolSize` | Tamaño base del pool | 2 | Permite atender hasta dos tareas simultáneas antes de que las siguientes tengan que esperar en cola |
 | `maxPoolSize` | Límite máximo de hilos que el pool puede llegar a crear | 4 | Un límite bajo a propósito: si hay un pico de escrituras, el pool no debe crecer sin control |
 | `queueCapacity` | Tareas que pueden esperar en cola antes de crear más hilos | 20 | Margen para picos breves de escrituras seguidas, sin llegar a disparar `maxPoolSize` por cada una |
 | `threadNamePrefix` | Prefijo del nombre de cada hilo que crea este pool | `"warmup-"` | La herramienta de **depuración** más útil de todo el apartado — cualquier hilo `warmup-1`, `warmup-2`... se distingue a simple vista en el log, sin confundirse con los `http-nio-*` de Tomcat o los genéricos del pool por defecto |
@@ -106,10 +106,10 @@ public void onTopNovedadesInvalidado(TopNovedadesInvalidadoEvent event) {
 }
 ```
 
-`@Async("warmupExecutor")`, con el nombre del bean entre paréntesis, dirige explícitamente la ejecución a ese pool concreto — en vez del genérico por defecto. Aislar las tareas de fondo en su propio pool pequeño evita que un pico de warm-ups (por ejemplo, muchas escrituras seguidas) "robe" hilos que deberían estar disponibles para atender peticiones de usuarios reales.
+`@Async("warmupExecutor")` dirige explícitamente este trabajo a su pool. Separarlo permite limitar cuántos warm-ups pueden ejecutarse a la vez y evita que compitan por los mismos hilos con otras tareas `@Async`. Las peticiones HTTP normales siguen teniendo el pool de Tomcat, aunque todos esos hilos sí pueden competir indirectamente por CPU, conexiones de base de datos u otros recursos.
 
-!!! tip "Cada tarea de fondo distinta, su propio pool"
-    `warmupExecutor` no tiene por qué ser el único. Si mañana añadieras otra tarea `@Async` con necesidades distintas —enviar correos, por ejemplo, que puede tardar por depender de un servidor externo, frente al warm-up, rápido y ocasional—, lo normal es darle su propio `@Bean` aparte: otro nombre (`emailExecutor`), otro `threadNamePrefix` (`email-`), y un tamaño de pool y una prioridad pensados para esa tarea, no para el warm-up. Compartir un mismo pool entre dos tareas con necesidades tan distintas es exactamente el problema que ya has visto con el executor por defecto —una puede "robarle" hilos a la otra en un pico—, solo que ahora entre dos pools propios en vez de entre uno propio y el genérico de Spring.
+!!! tip "Pools distintos cuando tenga sentido"
+    Si dos tareas `@Async` tienen cargas o necesidades de aislamiento muy diferentes, puede tener sentido darles pools separados. Si tienen un comportamiento parecido, también pueden compartir un pool dimensionado de forma consciente.
 
 ---
 
@@ -117,8 +117,8 @@ public void onTopNovedadesInvalidado(TopNovedadesInvalidadoEvent event) {
 
 ??? tip "Abrir resumen"
 
-    - Un pool de hilos se define por `corePoolSize` (mínimo activo), `maxPoolSize` (límite) y `queueCapacity` (cola de espera). Si la cola se llena con el pool al máximo, la política de rechazo (`AbortPolicy` por defecto, o `CallerRunsPolicy`/`DiscardPolicy`/`DiscardOldestPolicy`) decide qué pasa con la tarea que no cabe.
+    - Un pool de hilos se define por `corePoolSize` (tamaño base), `maxPoolSize` (límite) y `queueCapacity` (cola de espera). Si la cola se llena con el pool al máximo, la política de rechazo (`AbortPolicy` por defecto, o `CallerRunsPolicy`/`DiscardPolicy`/`DiscardOldestPolicy`) decide qué pasa con la tarea que no cabe.
     - La **prioridad** de un hilo es una sugerencia al planificador del SO, no una garantía — por eso se prefieren pools separados y acotados antes que confiar en prioridades.
     - `threadNamePrefix` es la herramienta de depuración más práctica: hilos identificables a simple vista en logs y herramientas de monitorización.
-    - `@Async("nombreDelBean")` dirige la ejecución a un `TaskExecutor` concreto, en vez del genérico por defecto — aislar tareas de fondo evita que roben hilos a las peticiones reales.
+    - `@Async("nombreDelBean")` dirige la ejecución a un `TaskExecutor` concreto; separar pools permite aislar tareas asíncronas con necesidades distintas.
     - Documentar la configuración (por qué esos tamaños, por qué esa prioridad) es parte del trabajo de depuración y documentación, no un extra opcional.

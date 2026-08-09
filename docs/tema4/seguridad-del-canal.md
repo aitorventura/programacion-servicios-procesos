@@ -105,8 +105,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 `beforeHandshake` se ejecuta **antes** de que la conexión WebSocket se establezca — si devuelve `false`, el *handshake* se rechaza y la conexión nunca llega a completarse. Reutilizas el mismo `JwtDecoder` que ya tenías configurado desde el Tema 2 para validar el token — no hace falta ninguna pieza criptográfica nueva, ni tampoco instanciar el interceptor a mano: al llevar `@RequiredArgsConstructor` en ambas clases, Spring construye y conecta las dos piezas solo.
 
-!!! tip "Por qué esto es la remediación mínima, y no la definitiva"
-    Pasar el token como parámetro de la URL (`?token=...`) tiene un riesgo conocido: a diferencia de una cabecera HTTP normal, puede quedar registrado en logs del servidor o en el historial del navegador. Para un canal de demostración es aceptable; en un canal real en producción, valdría la pena buscar una alternativa (por ejemplo, mandar el token en el primer mensaje STOMP tras conectar, en vez de en la propia URL).
+!!! tip "Por qué esto es una solución sencilla para la práctica"
+    Pasar el token como parámetro de la URL (`?token=...`) tiene un inconveniente conocido: la URL completa puede quedar registrada en logs del servidor, proxies o herramientas de monitorización. Para esta práctica local es una solución sencilla y fácil de observar; en una aplicación real convendría utilizar un mecanismo de autenticación del canal que no exponga el token en la propia URL.
 
 Fíjate también en qué comprueba exactamente `jwtDecoder.decode(token)`: que el token es válido, no que su dueño tiene rol `ADMIN`. Cierra la puerta a quien no ha hecho login en absoluto —que era el agujero real que has detectado en el Paso 1 de la Actividad 4.3—, pero no reproduce del todo la misma política que `GET /api/v1/actividad`: cualquier usuario autenticado, no solo uno con rol `ADMIN`, sigue viendo el canal en vivo. Es exactamente lo que vas a razonar en esa misma actividad.
 
@@ -121,7 +121,7 @@ WebSocket no aparece en Swagger (que solo describe HTTP tradicional), así que l
 
 | Ruta | Verbo | Quién puede |
 |---|---|---|
-| `/ws-actividad` (handshake, `Upgrade: websocket`) | GET | Cualquiera autenticado — no distingue rol |
+| `/ws-actividad` (handshake, `Upgrade: websocket`) | GET | Cualquiera con un JWT válido — no distingue rol |
 ```
 
 Es el mismo documento en el que ya clasificaste el resto de rutas del proyecto — no hace falta ningún criterio distinto para esta, aunque no sea HTTP tradicional.

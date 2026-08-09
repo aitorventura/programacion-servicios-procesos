@@ -67,13 +67,13 @@ spring:
 Como ya viste con `postgres` en Acceso a Datos: `rabbitmq` es el nombre del servicio en `.devcontainer/docker-compose.yml`, no `localhost` — tu aplicación corre dentro de `app`, y RabbitMQ es un contenedor hermano más en la misma red.
 
 !!! tip "¿No debería ir `guest`/`guest` a un fichero que no se commitea?"
-    `guest` es la cuenta por defecto de RabbitMQ, y RabbitMQ la bloquea por diseño para cualquier conexión que no venga de `localhost` — no importa qué configures, esa cuenta no sirve en remoto. Como todo esto corre dentro de tu Dev Container, en tu propia máquina, no hay riesgo real en dejarla en `application-dev.yml`. Es distinto del secreto de JWT o la contraseña de `admin` que ya proteges en `application-dev-local.yml`: si esos se filtraran, servirían para hacerse pasar por alguien en tu API real — `guest`/`guest`, fuera de tu propia máquina, no abre nada.
+    `guest`/`guest` se usa aquí únicamente en este entorno local de desarrollo. RabbitMQ restringe por defecto la cuenta `guest` a conexiones de *loopback*, por lo que no debes tomar esta configuración como válida para otros despliegues. En este Dev Container ya has comprobado que funciona; en un entorno real crearías un usuario propio con credenciales no triviales.
 
 ---
 
 ## Paso 2 — El exchange y la cola de actividad
 
-Un **exchange** es quien recibe los mensajes publicados y decide, según su *routing key*, a qué cola (o colas) los reenvía. `RabbitMQConfig` va en tu paquete `config` ya existente, junto a `SecurityConfig` — el mismo paquete `com.tunombre.gamevault.config`, `src/main/java/com/tunombre/gamevault/config/RabbitMQConfig.java`:
+Un **exchange** es quien recibe los mensajes publicados y decide, según su *routing key*, a qué cola (o colas) los reenvía. `RabbitMQConfig` va en tu paquete `config` ya existente, junto al resto de configuraciones técnicas de la aplicación — el mismo paquete `com.tunombre.gamevault.config`, `src/main/java/com/tunombre/gamevault/config/RabbitMQConfig.java`:
 
 ```java
 package com.tunombre.gamevault.config;
@@ -159,7 +159,7 @@ public class VideojuegoEventPublisher {
 }
 ```
 
-`RabbitTemplate` es el equivalente en mensajería de `JdbcTemplate`, que ya conoces de Acceso a Datos: Spring Boot lo configura solo en cuanto detecta `spring-boot-starter-amqp` en el classpath, sin que lo registres tú. `JsonMapper`, igual: es un bean que Spring Boot ya te da configurado (viene con Jackson), así que se inyecta por constructor como todo lo demás — nada de `new JsonMapper()` a mano.
+`RabbitTemplate` es el equivalente en mensajería de `JdbcTemplate`, que ya conoces de Acceso a Datos: Spring Boot lo configura solo en cuanto detecta `spring-boot-starter-amqp` en el classpath, sin que lo registres tú. `JsonMapper`, igual: es un bean que Spring Boot ya te da configurado (viene con Jackson), así que se inyecta por constructor como todo lo demás.
 
 Inyecta `VideojuegoEventPublisher` en `VideojuegoService` (constructor, como todo lo demás) y llama a `publicar(...)` al final de `create`, `update` y `delete`, con el tipo correspondiente y el `id` del videojuego.
 
@@ -356,12 +356,17 @@ Con estas dos líneas, la siguiente comprobación te sirve a la vez para validar
 
 Crea, modifica y borra un par de videojuegos con tu API de siempre, y consulta `GET /api/v1/actividad` (con un token de un usuario `ADMIN`). Aquí tienes los comandos con `curl`, pero puedes hacer exactamente lo mismo desde Swagger UI si lo prefieres:
 
+!!! note "Token de administrador"
+    Igual que en las Actividades 2.4 y 2.5, usa un `ADMIN_TOKEN` válido. Si has abierto una terminal nueva o el token ha caducado, inicia sesión de nuevo y guárdalo en esa variable.
+
 ```bash
 curl -X POST http://localhost:8080/api/v1/videojuegos \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"titulo":"Test","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'
 
-curl http://localhost:8080/api/v1/actividad -H "Authorization: Bearer $TOKEN_ADMIN"
+curl http://localhost:8080/api/v1/actividad \
+  -H "Authorization: Bearer $ADMIN_TOKEN"
 ```
 
 **Comprueba**: que aparece un registro por cada operación, más reciente primero.

@@ -84,7 +84,7 @@ public void onLibrosBaratosInvalidado(LibrosBaratosInvalidadoEvent event) {
 
 ## 🔄 Estados de un hilo, ahora observables de verdad
 
-Retoma el ciclo de estados del primer apartado de este tema (NEW → RUNNABLE → BLOCKED/WAITING → TERMINATED), esta vez con un caso perfectamente observable: el retraso artificial que simula el coste de recalcular los libros más baratos.
+Retoma el ciclo de estados del primer apartado de este tema (`NEW` → `RUNNABLE` → `BLOCKED` / `WAITING` / `TIMED_WAITING` → `TERMINATED`), esta vez con un caso perfectamente observable: el retraso artificial que simula el coste de recalcular los libros más baratos.
 
 | Momento | Estado del hilo del warm-up |
 |---|---|
@@ -99,9 +99,9 @@ Fíjate en que aquí no aparece `BLOCKED` — ese estado nace de esperar un *loc
 
 ## ⚠️ Problemas de compartición, en este caso concreto
 
-Dos preguntas que conviene hacerse antes de dar el warm-up por terminado:
+Tres preguntas que conviene hacerse antes de dar el warm-up por terminado:
 
-- **¿Qué pasa si dos escrituras casi simultáneas publican dos eventos?** Dos hilos distintos intentarían recalentar la misma caché casi a la vez — trabajo duplicado (ambos recalculan lo mismo) y, en el peor caso, una carrera sobre qué resultado queda finalmente guardado en la caché. No es un error grave (el resultado final sigue siendo correcto), pero sí ineficiente.
+- **¿Qué pasa si dos escrituras casi simultáneas publican dos eventos?** Se lanzan dos tareas de warm-up que pueden ejecutarse a la vez en hilos distintos del pool. Además del trabajo duplicado, aparece una carrera: si ambas encuentran la caché vacía, una tarea que empezó antes puede terminar después y dejar en Redis un resultado calculado sobre un estado anterior de la base de datos. En el flujo sencillo de esta práctica normalmente no lo vas a apreciar, pero en un sistema real habría que coordinar esos recálculos.
 - **¿Y si el listener leyera una entidad JPA compartida en vez de un evento inmutable?** Si `LibrosBaratosInvalidadoEvent` no fuera un `record` inmutable, sino que el listener leyera directamente un objeto mutable compartido con el hilo que publicó, existiría el riesgo de que ese objeto cambiara mientras el listener aún lo está usando — exactamente el tipo de condición de carrera que has visto en la Actividad 3.1. La inmutabilidad del evento elimina ese riesgo por diseño.
 - **¿Y si el listener necesitara algo del contexto del hilo original, como el usuario autenticado?** No lo tendría — un hilo nuevo no hereda lo que estuviera guardado en un `ThreadLocal` (así almacena Spring Security el usuario actual), así que ese dato tendría que pasarse como parámetro explícito, nunca leerse esperando que "ya esté ahí".
 
@@ -113,10 +113,10 @@ Dos preguntas que conviene hacerse antes de dar el warm-up por terminado:
 
 | | Antes (Actividad 3.2, sin warm-up) | Después (hoy, con warm-up) |
 |---|---|---|
-| Justo después de crear un libro | El siguiente usuario paga el coste completo | El listener ya ha recalentado la caché en segundo plano |
-| ¿Quién paga el coste de recalcular? | El primer usuario que pide el listado tras la escritura | Nadie — el warm-up lo paga antes de que nadie lo pida |
+| Tras crear un libro | La caché queda vacía hasta que alguien vuelve a consultar | El listener empieza a recalentarla automáticamente en segundo plano |
+| ¿Quién paga el coste de recalcular? | El primer usuario que pide el listado tras la escritura | El hilo del warm-up intenta asumir ese coste antes de que llegue la siguiente petición |
 
-Con las dos piezas montadas (evento + listener asíncrono sincronizado con el commit), el "primer usuario tras una escritura" ya no paga el coste de recalcular esa consulta cara — el warm-up lo paga por él, en segundo plano, mientras nadie espera. La Actividad 3.3 lo va a demostrar con mediciones reales, comparando el "antes" (Actividad 3.2) con el "después" (hoy).
+Con las dos piezas montadas (evento + listener asíncrono sincronizado con el commit), el recálculo de la caché empieza automáticamente en segundo plano después de cada escritura. **Si el warm-up termina antes de la siguiente petición**, ese usuario encontrará ya el resultado en caché y no pagará el coste de recalcularlo. Si una petición llega mientras el warm-up todavía está trabajando, puede encontrar la caché aún vacía y coincidir con ese recálculo. La Actividad 3.3 lo va a demostrar esperando a que el warm-up termine y comparando después los tiempos con los obtenidos en la Actividad 3.2.
 
 ---
 
@@ -128,5 +128,5 @@ Con las dos piezas montadas (evento + listener asíncrono sincronizado con el co
     - Llamar a un método `@Async` desde dentro de la misma clase (`this.metodo(...)`) hace que Spring no pueda interceptar la llamada: `@Async` se ignora en silencio y el método corre en el mismo hilo, sin ningún error que lo avise.
     - `@TransactionalEventListener(phase = AFTER_COMMIT)` sincroniza el arranque del listener con el momento en que la transacción que publicó el evento ya ha hecho commit — evita leer datos "a medias".
     - El retraso artificial del endpoint lento es un caso observable real del estado **TIMED_WAITING**.
-    - Publicaciones casi simultáneas pueden causar trabajo duplicado (no un error grave); un evento **inmutable** evita condiciones de carrera al compartir información entre hilos.
+    - Publicaciones casi simultáneas pueden provocar trabajo duplicado e incluso carreras entre varios recálculos de la misma caché; un evento **inmutable** evita, por su parte, condiciones de carrera sobre los propios datos que se comparten entre hilos.
     - Un hilo nuevo no hereda el contexto del hilo original: nada guardado en un `ThreadLocal` (como el `SecurityContext` de Spring Security) viaja solo. Por eso los datos que un método `@Async` necesita del contexto de la petición se pasan como parámetro explícito, no se leen "mágicamente" desde dentro.

@@ -34,7 +34,7 @@ services:
       - "6379:6379"
 ```
 
-A diferencia de `postgres`/`mongodb`/`rabbitmq`, aquí no hace falta `volumes`: Redis es una caché, no una fuente de verdad — si el contenedor se reinicia y pierde todo lo guardado, no pasa nada grave, la próxima petición simplemente vuelve a pagar el coste y `@Cacheable` la rellena otra vez.
+A diferencia de `postgres`/`mongodb`/`rabbitmq`, aquí no hace falta `volumes`: Redis es una caché, no una fuente de verdad — si el contenedor se recrea o se pierde su contenido, no pasa nada grave, la próxima petición simplemente vuelve a pagar el coste y `@Cacheable` la rellena otra vez.
 
 En tu `pom.xml`:
 
@@ -121,7 +121,7 @@ Repite `@CacheEvict(value = "topNovedades", allEntries = true, beforeInvocation 
 
     **Ejecuta también** `VideojuegoApiIntegrationTest` y comprueba que sigue pasando (no hace falta captura, esto es solo para que tu batería de tests no se quede rota).
 
-`beforeInvocation = true` no es opcional aquí: sin él, Spring evita **después** de que `create()`/`update()`/`delete()` terminen del todo (incluido el `commit`, que llega en el próximo apartado) — justo el mismo instante en que vas a disparar un aviso de "recalienta ya". Con el orden por defecto, ese aviso podría llegar antes de que el evict haya limpiado nada, encontrar la caché todavía con el valor viejo, y no recalcular nada de verdad.
+Aquí usamos `beforeInvocation = true` para que la caché se vacíe **antes de ejecutar** `create()`/`update()`/`delete()`. De este modo, cuando más adelante publiques el evento que ordenará recalentarla, sabes que el valor anterior ya se ha eliminado. Si la escritura terminara fallando, la caché quedaría igualmente vacía, pero no habría datos incorrectos: simplemente tendría que calcularse de nuevo en la siguiente consulta.
 
 Antes de probarlo, un detalle que si no lo añades ahora te va a dar un `500` en cuanto pidas `/top`: por defecto, Spring guarda en Redis usando la serialización estándar de Java, que exige que la clase sea `Serializable` — y `VideojuegoResponseDTO`, al ser un `record`, no lo es por defecto. Añádeselo:
 
@@ -158,6 +158,9 @@ docker exec -it <tu-contenedor-redis> redis-cli
 > FLUSHALL
 ```
 
+!!! note "Token de administrador"
+    Esta actividad vuelve a usar `ADMIN_TOKEN`. Si has abierto una terminal nueva o el token anterior ha caducado, vuelve a iniciar sesión como `admin` y guarda el nuevo `accessToken` en esa variable antes de continuar.
+
 ```bash
 # Primera llamada: paga el Thread.sleep(2000)
 time curl -s http://localhost:8080/api/v1/videojuegos/top > /dev/null
@@ -165,9 +168,9 @@ time curl -s http://localhost:8080/api/v1/videojuegos/top > /dev/null
 # Segunda llamada: sale de caché, instantánea
 time curl -s http://localhost:8080/api/v1/videojuegos/top > /dev/null
 
-# Crea un videojuego (invalida la caché con @CacheEvict) — recuerda: exige rol ADMIN
+# Crea un videojuego (invalida la caché con @CacheEvict) — exige rol ADMIN
 curl -X POST http://localhost:8080/api/v1/videojuegos \
-  -H "Authorization: Bearer $TOKEN_ADMIN" \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"titulo":"Test","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'
 
@@ -226,7 +229,7 @@ public class VideojuegoService {
 
 ## Paso 4 — Repite en `update()` y `delete()`
 
-Sin más código dado, añade la misma línea de publicación (`eventPublisher.publishEvent(new TopNovedadesInvalidadoEvent(Instant.now()))`) en `update()` y en `delete()` de `VideojuegoService` — en el mismo punto relativo donde ya está en `create()` (justo antes de devolver el resultado).
+Sin más código dado, añade la misma publicación en `update()` y en `delete()` de `VideojuegoService`: en `update()`, justo antes de devolver el resultado; en `delete()`, después de `deleteById(...)`, al final del método.
 
 ---
 

@@ -115,7 +115,7 @@ public class ServidorEco {
 
 `new ServerSocket(5000)` hace el *bind* al puerto 5000 y empieza a escuchar. `accept()` **bloquea** hasta que llega un cliente — cuando llega, devuelve un `Socket` para hablar con ese cliente concreto, que envuelves en tu `ConexionEco`. Al ser un *try-with-resources*, la conexión se cierra sola en cuanto el `while` termina (el cliente se desconecta), sin que tengas que acordarte de cerrarla a mano.
 
-**Fíjate en el problema**: mientras `atenderCliente(cliente)` está ocupado (dentro del `while` leyendo líneas de ese cliente), el bucle principal no vuelve a llamar a `accept()` — nadie más puede conectarse hasta que ese cliente termine.
+**Fíjate en el problema**: mientras `atenderCliente(cliente)` está ocupado (dentro del `while` leyendo líneas de ese cliente), el bucle principal no vuelve a llamar a `accept()`. Otros clientes pueden llegar a establecer la conexión TCP y quedar pendientes en la cola del sistema operativo, pero tu programa todavía no los acepta ni procesa sus mensajes.
 
 **Responde**:
 
@@ -167,9 +167,11 @@ public class ClienteEco {
 
 Con `ServidorEco` y un `ClienteEco` ya conectados (el cliente esperando en el bucle, sin cerrar), ejecuta un **segundo** `ClienteEco` en paralelo, como acabas de ver arriba.
 
-**Observa**: el segundo cliente se queda esperando, sin conectar — porque el servidor sigue "atrapado" atendiendo al primero dentro de `atenderCliente(...)`, y no ha vuelto a llamar a `accept()`.
+**Observa**: el segundo cliente puede llegar a establecer la conexión TCP, pero el servidor todavía no lo está atendiendo porque sigue "atrapado" dentro de `atenderCliente(...)` con el primero. Escribe una línea en el segundo cliente: la enviará, pero se quedará esperando la respuesta en `conexion.recibir()`.
 
-**Captura**: la ejecución del segundo `ClienteEco`, sin ninguna respuesta, mientras el primero sigue conectado.
+Ahora cierra el primer cliente. El servidor vuelve por fin a `accept()`, acepta la conexión pendiente del segundo y procesa el mensaje que este ya había enviado.
+
+**Captura**: el segundo `ClienteEco` esperando inicialmente una respuesta y, después de cerrar el primero, recibiendo finalmente su `ECO: ...`.
 
 ---
 
@@ -217,6 +219,9 @@ Un `ExecutorService` (el pool de hilos que ya conoces del Tema 3) atiende cada c
 
 `Executors.newCachedThreadPool()` es un tipo concreto de `ExecutorService` que no habías visto en código todavía. En el Tema 3 lo has pensado como "una plantilla fija de operarios" — pero fija es solo una de las formas posibles de montar un pool, no la única. `newCachedThreadPool()` no tiene un tamaño fijo: crea un hilo nuevo cada vez que hace falta uno y no hay ninguno libre, reutiliza los que quedan libres, y cierra los que llevan un rato sin trabajo. Encaja bien aquí porque no sabes de antemano cuántos clientes se van a conectar a la vez — a diferencia de la cola de tareas de warm-up del Tema 3, donde un número fijo de operarios ya bastaba.
 
+!!! note "Una elección sencilla para esta demostración"
+    `newCachedThreadPool()` resulta cómodo aquí porque vas a trabajar con muy pocos clientes y permite ver claramente cómo distintas conexiones se atienden de forma concurrente. No debes interpretar esto como una recomendación de servidor de producción: al no fijar un máximo pequeño de hilos, un número muy alto de conexiones podría consumir demasiados recursos.
+
 Cierra `ServidorEco` (Paso 2) y arranca `ServidorEcoMultihilo` en su lugar (mismo puerto 5000). Repite la prueba del Paso 4: conecta dos `ClienteEco` a la vez, y comprueba que **ambos** funcionan simultáneamente.
 
 **Captura**: la consola de `ServidorEcoMultihilo` mostrando dos trazas `Atendiendo en hilo: ...` con nombres de hilo distintos, y los dos `ClienteEco` recibiendo eco a la vez.
@@ -239,9 +244,9 @@ while ((linea = conexion.recibir()) != null) {
 }
 ```
 
-Con dos `ClienteEco` conectados a la vez, escribe `SALIR` en uno de ellos.
+Con dos `ClienteEco` conectados a la vez, escribe `SALIR` en uno de ellos. Como el servidor cierra esa conexión sin enviar una respuesta, el `recibir()` del cliente devuelve `null` y puedes ver `Respuesta: null`. El proceso cliente puede seguir esperando otra entrada de teclado aunque la conexión TCP ya esté cerrada — no hace falta corregirlo para esta actividad: lo importante es observar que el servidor ha cerrado solo esa conexión.
 
-**Captura**: el cliente que ha enviado `SALIR` desconectado (o a punto de cerrarse), mientras el otro cliente sigue funcionando con normalidad, sin verse afectado.
+**Captura**: el cliente que ha enviado `SALIR` mostrando que ya no recibe su respuesta `ECO` (puede aparecer `Respuesta: null`), mientras el otro cliente sigue funcionando con normalidad, sin verse afectado.
 
 **Responde**:
 
@@ -252,7 +257,7 @@ Con dos `ClienteEco` conectados a la vez, escribe `SALIR` en uno de ellos.
 
 ## Pregunta de comprensión
 
-¿Qué relación hay entre este "un hilo por cliente" que acabas de ver y lo que hace Tomcat con las peticiones HTTP de tu GameVault? ¿Y con el pool de hilos configurado que has construido en el Tema 3 (`ThreadPoolTaskExecutor`)? Explica con tus palabras por qué es, en el fondo, el mismo patrón — gestionado a mano aquí, y por el framework allí.
+¿Qué relación hay entre este servidor multihilo que acabas de construir y los pools que ya has visto en Tomcat y en `ThreadPoolTaskExecutor`? Explica qué idea comparten —reutilizar hilos para atender trabajo concurrente— y por qué eso no significa necesariamente que todos los frameworks utilicen literalmente "un hilo fijo por cliente".
 
 ---
 

@@ -4,8 +4,7 @@
     📄 [Plantilla 3.3 — El listener @Async del warm-up (2/2)](plantillas/Actividad_3_3_PSP_Plantilla.docx){target="_blank" rel="noopener"}
 
 !!! info "Práctica guiada — pieza 2 de 2"
-    Hoy completas el warm-up: el listener asíncrono que recalienta la caché, y la medición real de que ya no se paga el coste tras cada escritura.
-
+    Hoy completas el warm-up: el listener asíncrono que recalienta la caché, y mides cómo permite que la siguiente petición encuentre el resultado ya preparado cuando el recálculo ha terminado a tiempo.
 ## Qué vas a practicar
 
 - Construir un listener `@Async` + `@TransactionalEventListener(AFTER_COMMIT)`.
@@ -73,11 +72,14 @@ public class TopNovedadesWarmupListener {
 
 Si todavía tienes el `ListenerDePruebaTemporal` de la Actividad 3.2, **retíralo ahora** — ya no lo necesitas.
 
+!!! note "Token de administrador"
+    Esta actividad vuelve a usar `ADMIN_TOKEN`. Si has abierto una terminal nueva o el token anterior ha caducado, vuelve a iniciar sesión como `admin` y guarda el nuevo `accessToken` en esa variable antes de continuar.
+
 Crea un videojuego y mira el log. Aquí tienes el comando con `curl`, pero puedes hacer exactamente lo mismo desde Swagger UI si lo prefieres:
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/videojuegos \
-  -H "Authorization: Bearer $TOKEN_ADMIN" -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $ADMIN_TOKEN" -H "Content-Type: application/json" \
   -d '{"titulo":"Test2","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'
 ```
 
@@ -94,7 +96,7 @@ Repite el protocolo de medición de la Actividad 3.2, pero ahora con el warm-up 
 ```bash
 # Crea un videojuego (dispara el warm-up en segundo plano)
 curl -X POST http://localhost:8080/api/v1/videojuegos \
-  -H "Authorization: Bearer $TOKEN_ADMIN" -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $ADMIN_TOKEN" -H "Content-Type: application/json" \
   -d '{"titulo":"Test3","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'
 
 # Espera unos segundos a que el warm-up termine en segundo plano
@@ -122,7 +124,7 @@ public void onTopNovedadesInvalidado(TopNovedadesInvalidadoEvent event) {
 }
 ```
 
-Añade, también temporalmente, un log que consulte cuántos videojuegos ve el listener justo al empezar (por ejemplo, contando el resultado de `videojuegoService.findAll().size()` antes de recalentar).
+Añade también temporalmente una consulta que permita saber cuántos videojuegos ve el listener al empezar. La forma más directa para este experimento es inyectar `VideojuegoRepository` en el listener y mostrar `videojuegoRepository.count()` en el log. Esta dependencia es solo para la prueba y la retirarás al terminar.
 
 **Razona**, sin necesidad de reproducirlo de forma determinista (es una condición de carrera, puede que no falle siempre): si este listener se disparara justo antes de que el `INSERT` del nuevo videojuego se confirmara en la base de datos, ¿qué vería exactamente al consultar? ¿Qué consecuencia tendría eso sobre el contenido de la caché recalentada?
 
@@ -132,19 +134,20 @@ Vuelve a `@TransactionalEventListener(phase = AFTER_COMMIT)` y explica con tus p
 
 ## Paso 5 — Retira lo que era solo para medir y verificar
 
-Ya has medido y demostrado el warm-up de principio a fin. Toca retirar dos cosas que solo estaban ahí para eso, no para quedarse en el código final:
+Ya has medido y demostrado el warm-up de principio a fin. Toca retirar tres cosas que solo estaban ahí para medir y verificar:
 
-- El `Thread.sleep(2000)` de `getTopNovedades()` — ha cumplido su propósito. Quítalo otra vez, exactamente como hiciste al terminar la Actividad 1.4: `@Cacheable` sigue evitando el trabajo repetido cuando de verdad haga falta, sin necesidad de un retraso falso permanente en una funcionalidad real.
-- Las dos trazas `[WARMUP] Empieza...`/`Termina...` de `TopNovedadesWarmupListener` — eran para que pudieras comparar hilos en el Paso 2, no logging que tenga sentido dejar en una funcionalidad terminada.
+- El `Thread.sleep(2000)` de `getTopNovedades()`.
+- Las dos trazas `[WARMUP] Empieza...`/`Termina...` de `TopNovedadesWarmupListener`.
+- El log y la dependencia temporal de `VideojuegoRepository` que añadiste en el Paso 4 para comprobar cuántos videojuegos veía el listener.
 
 ---
 
 ## Pregunta final
 
-Si dos profesores del centro crean dos videojuegos casi a la vez (segundos de diferencia), ¿cuántos eventos se publican y cuántos hilos intentan recalentar la caché? ¿Es esto un error grave del sistema, o solo trabajo duplicado sin consecuencias incorrectas? Propón, sin implementarla, alguna forma de evitar ese trabajo duplicado (piensa en si haría falta algún tipo de coordinación entre los hilos, o si bastaría con alguna comprobación previa).
+Si dos profesores del centro crean dos videojuegos casi a la vez, ¿cuántos eventos y cuántas tareas de warm-up se generan? ¿Podrían ambas encontrar la caché vacía y recalcularla a la vez? Razona qué podría ocurrir si la tarea que empezó primero termina la última. Propón, sin implementarla, alguna forma de coordinar esos recálculos.
 
 ---
 
 ## ✅ Cierre
 
-El warm-up está completo y medido: tu GameVault ya no hace pagar al primer usuario el coste de recalcular las novedades tras cada escritura. En el apartado siguiente configuras manualmente el `TaskExecutor` que hay detrás de este `@Async`, con nombre y prioridad propios.
+El warm-up está completo y medido: si termina antes de la siguiente petición, el primer usuario ya encuentra la caché caliente y no paga el coste de recalcular las novedades.

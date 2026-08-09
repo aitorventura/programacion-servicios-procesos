@@ -24,11 +24,11 @@ Tu listener `@Async` del warm-up funcionando (Actividad 3.3).
 
 Crea, en tu paquete `config`, siguiendo el estilo de tu configuración de RabbitMQ, un `TaskExecutor` propio para el warm-up con esta configuración:
 
-- Como mucho **2 hilos siempre activos**, incluso sin tareas que hacer (`corePoolSize`).
+- Tamaño base de **2 hilos** (`corePoolSize`): el pool crea hilos a medida que llegan tareas hasta ese número.
 - El pool puede crecer hasta **3 hilos** si hace falta, nunca más (`maxPoolSize`).
 - Cola para **15 tareas** esperando antes de que el pool necesite crecer (`queueCapacity`).
 - Nombre de hilo reconocible, con el prefijo `"warmup-"` (`threadNamePrefix`).
-- Prioridad baja (`Thread.MIN_PRIORITY`) — es trabajo de fondo, no debe competir con las peticiones reales.
+- Prioridad baja (`Thread.MIN_PRIORITY`) — la marcamos como trabajo de fondo; es una pista al planificador, no una garantía de que vaya a ceder CPU a otras tareas.
 
 ```java
 package com.tunombre.gamevault.config;
@@ -75,11 +75,14 @@ Reinicia tu aplicación.
 
 ## Paso 3 — Verificación por el nombre del hilo
 
+!!! note "Token de administrador"
+    Esta actividad vuelve a usar `ADMIN_TOKEN`. Si has abierto una terminal nueva o el token anterior ha caducado, vuelve a iniciar sesión como `admin` y guarda el nuevo `accessToken` en esa variable antes de continuar.
+
 Crea un videojuego y mira el log:
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/videojuegos \
-  -H "Authorization: Bearer $TOKEN_ADMIN" -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $ADMIN_TOKEN" -H "Content-Type: application/json" \
   -d '{"titulo":"Test4","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'
 ```
 
@@ -98,7 +101,7 @@ Crea 3-4 videojuegos seguidos, muy rápido (uno detrás de otro, sin esperar ent
 ```bash
 for i in 1 2 3 4; do
   curl -s -X POST http://localhost:8080/api/v1/videojuegos \
-    -H "Authorization: Bearer $TOKEN_ADMIN" -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $ADMIN_TOKEN" -H "Content-Type: application/json" \
     -d "{\"titulo\":\"Rapido$i\",\"precio\":1,\"fechaLanzamiento\":\"2020-01-01\",\"estudioId\":1}" > /dev/null
 done
 ```

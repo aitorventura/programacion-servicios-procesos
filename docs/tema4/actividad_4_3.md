@@ -4,11 +4,12 @@
     📄 [Plantilla 4.3 — Seguridad del canal](plantillas/Actividad_4_3_PSP_Plantilla.docx){target="_blank" rel="noopener"}
 
 !!! info "Práctica guiada — última actividad del módulo"
-    Auditas la seguridad del canal WebSocket que ya tienes funcionando desde la Actividad 4.2, y la corriges — no basta con detectarla.
+    Auditas la seguridad del canal WebSocket que ya tienes funcionando desde la Actividad 4.2, corriges su acceso anónimo y compruebas después qué problema de autorización sigue pendiente.
 
 ## Qué vas a practicar
 
-- Detectar **y corregir** una vulnerabilidad real de seguridad.
+- Detectar y corregir la exposición de un canal a usuarios anónimos.
+- Distinguir **autenticación** (tener un JWT válido) de **autorización** (tener el rol necesario).
 - Razonar por escrito sobre qué información expone un canal, y a quién.
 
 ---
@@ -21,13 +22,15 @@ Tu endpoint `/ws-actividad` con la emisión real de `ActividadService` ya conect
 
 ## Paso 1 — La auditoría de seguridad
 
-Abre una ventana de **incógnito** (sin ninguna sesión iniciada, sin token) y conecta tu página `actividad.html` a `/ws-actividad` tal como está ahora mismo (sin la remediación todavía).
+Abre una ventana de **incógnito** (sin ninguna sesión iniciada, sin token) y carga `actividad.html` tal como está ahora mismo, antes de aplicar la remediación.
 
-**Comprueba**: que, sin haber hecho login, ves en vivo exactamente los mismos registros que `GET /api/v1/actividad` solo permite consultar a `ADMIN`.
+Con esa ventana abierta y conectada al canal, crea o modifica un videojuego desde otra ventana o desde `curl`, utilizando allí tu `ADMIN_TOKEN`.
 
-**Captura**: la ventana de incógnito mostrando esos registros en vivo, sin haber iniciado sesión.
+**Comprueba**: que la ventana de incógnito recibe en vivo el nuevo registro de actividad aunque ella no haya enviado ningún token ni haya iniciado sesión.
 
-**Escribe el hallazgo** como una mini-incidencia de seguridad: qué se expone (el contenido concreto), a quién (cualquiera, sin autenticar), y qué opciones de mitigación existen (las tres de la teoría: restringir el handshake, filtrar qué se emite, o documentarlo como decisión consciente).
+**Captura**: la ventana de incógnito mostrando el nuevo registro recibido, junto con la prueba de que ese cliente no se ha autenticado.
+
+**Escribe el hallazgo** como una mini-incidencia de seguridad: qué información se expone, a quién y qué opciones de mitigación existen.
 
 ---
 
@@ -77,8 +80,8 @@ Con esto, cada prueba es tan simple como pegar un valor distinto en el campo y p
 
 Prueba ahora los dos casos: pulsa **Conectar** con el campo vacío — **comprueba** que el handshake es rechazado. Pega un `accessToken` real (login por Swagger o `curl` como siempre, Actividad 2.4) y pulsa **Conectar** de nuevo — **comprueba** que funciona exactamente igual que antes.
 
-!!! tip "Al rechazarse, no esperes ningún mensaje de error en la página"
-    El indicador simplemente pasa a "desconectado" (tu propio `onWebSocketClose`, en `actividad_4_2_cliente.html`) — no hay ningún error visible, ni en la página ni en la consola. El navegador no expone a JavaScript el código de estado real de un *handshake* rechazado, por seguridad; el 401 solo se ve donde ya aprendiste a buscarlo en la Actividad 4.2: **F12 → Network → filtro WS**, en la petición del *handshake*. Ese "desconectado" sin más, sin token, es la prueba de que el rechazo funciona — no una señal de que algo se ha roto.
+!!! tip "Dónde comprobar un handshake rechazado"
+    La página puede limitarse a mostrar que la conexión no se ha establecido y la consola del navegador puede mostrar únicamente un error genérico de WebSocket. Para comprobar el código HTTP concreto del rechazo, utiliza **F12 → Network → filtro WS** y abre la petición del *handshake*. Ahí podrás distinguir claramente el rechazo de una conexión que sí ha llegado a establecerse.
 
 **Captura**: las dos pruebas — el rechazo sin token, y el funcionamiento normal con token válido.
 

@@ -167,7 +167,7 @@ Vuelve ahora a `docs/seguridad.md` (Paso 1) y rellena la fila de `/actuator/heal
 
 ## Paso 4 — Una ruta que no existe: por qué da `500`
 
-Necesitas un token de `admin` válido. Si ya no tienes a mano el de la Actividad 2.4 (Paso 5) —lo normal, si retomas esta actividad otro día—, pide uno nuevo:
+Necesitas un token de `admin` válido. Si ya no tienes disponible el de la Actividad 2.4 (Paso 5) —por ejemplo, porque has abierto una terminal nueva o retomas esta actividad otro día—, pide uno nuevo:
 
 ```bash
 curl -s -X POST http://localhost:8080/api/v1/auth/login \
