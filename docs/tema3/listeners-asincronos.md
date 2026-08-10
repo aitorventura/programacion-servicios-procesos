@@ -2,6 +2,13 @@
 
 # 🧩 3. Listeners asíncronos: el warm-up de caché (2/2)
 
+![Listeners asíncronos: el warm-up de caché (2/2)](diapositivas/listeners-asincronos.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
+
+!!! info "Descarga de diapositivas"
+    [Descarga las diapositivas](diapositivas/listeners-asincronos.pdf){target="_blank" rel="noopener"}
+
+---
+
 En el apartado anterior has construido el evento y su publicación — sin ningún efecto visible todavía. Hoy construyes la pieza que le da sentido a todo: el listener que reacciona, recalentando la caché en un hilo aparte. Aquí es donde entra en juego `@EnableAsync` — una capacidad que tu proyecto todavía no usa en ningún sitio, y que hoy activas tú mismo junto a la anotación `@Async`.
 
 ---

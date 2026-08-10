@@ -2,6 +2,13 @@
 
 # 🧩 3. Seguridad del canal
 
+![Seguridad del canal](diapositivas/seguridad-del-canal.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
+
+!!!info "Descarga de diapositivas"
+    [Descarga las diapositivas](diapositivas/seguridad-del-canal.pdf){target="_blank" rel="noopener"}
+
+---
+
 Último apartado del módulo. Tu canal `/ws-actividad` ya emite datos reales, conectado a `ActividadService` desde la Actividad 4.2. Hoy afrontas algo que has dejado pendiente a propósito: qué implica en seguridad haberlo abierto sin autenticación.
 
 ---

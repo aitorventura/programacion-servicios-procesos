@@ -2,6 +2,13 @@
 
 # 🧩 2. Eventos internos de Spring: el warm-up de caché (1/2)
 
+![Eventos internos de Spring: el warm-up de caché (1/2)](diapositivas/eventos-warmup-cache.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
+
+!!! info "Descarga de diapositivas"
+    [Descarga las diapositivas](diapositivas/eventos-warmup-cache.pdf){target="_blank" rel="noopener"}
+
+---
+
 Sabes que tu aplicación ya es multihilo (pool de Tomcat, listeners de RabbitMQ). Ahora vas a construir tú mismo una pieza nueva que se apoya en eso: el warm-up de una caché, repartido en dos apartados — hoy montas la caché y el evento que avisa cuando deja de ser válida; en el próximo apartado, el listener que reacciona a ese aviso.
 
 ---

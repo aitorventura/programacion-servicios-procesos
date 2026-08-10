@@ -2,6 +2,13 @@
 
 # 🧩 4. `TaskExecutor` propio y prioridades
 
+![TaskExecutor propio y prioridades](diapositivas/taskexecutor-prioridades.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
+
+!!! info "Descarga de diapositivas"
+    [Descarga las diapositivas](diapositivas/taskexecutor-prioridades.pdf){target="_blank" rel="noopener"}
+
+---
+
 El warm-up ya funciona de principio a fin: un evento se publica, un listener `@Async` lo recoge y recalienta la caché en segundo plano, sincronizado con el momento justo del commit. Queda una sola pieza suelta: **dónde** corre ese trabajo. Hasta ahora, en el pool de hilos genérico que Spring monta por defecto para cualquier `@Async` de tu proyecto, compartido con cualquier otra tarea asíncrona que pudiera existir — sin que tú hayas decidido nada al respecto. Hoy cierras el tema tomando ese control.
 
 ---

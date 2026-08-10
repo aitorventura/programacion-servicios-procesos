@@ -2,6 +2,13 @@
 
 # 🧩 1. Sockets: la base de toda comunicación en red
 
+![Sockets: la base de toda comunicación en red](diapositivas/sockets-cliente-servidor.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
+
+!!!info "Descarga de diapositivas"
+    [Descarga las diapositivas](diapositivas/sockets-cliente-servidor.pdf){target="_blank" rel="noopener"}
+
+---
+
 Todo lo que has hecho hasta ahora en este módulo —peticiones REST, JWT, RabbitMQ— viaja, por debajo, sobre una pieza que nunca has tocado directamente: el **socket**. Este apartado la saca a la superficie.
 
 ---

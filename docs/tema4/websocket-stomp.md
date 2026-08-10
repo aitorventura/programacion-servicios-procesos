@@ -2,6 +2,13 @@
 
 # 🧩 2. WebSocket con STOMP: el canal de actividad en vivo
 
+![WebSocket con STOMP: el canal de actividad en vivo](diapositivas/websocket-stomp.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
+
+!!!info "Descarga de diapositivas"
+    [Descarga las diapositivas](diapositivas/websocket-stomp.pdf){target="_blank" rel="noopener"}
+
+---
+
 Con sockets clásicos (Actividad 4.1) ya sabes, de principio a fin, cómo dos programas se comunican en red. En el apartado anterior has visto también tres modelos de comunicación, y has dejado uno pendiente para hoy: el canal bidireccional persistente. Este apartado lo construye, sobre un protocolo de nivel más alto, para resolver un problema muy concreto que todavía no has resuelto en el curso.
 
 ---

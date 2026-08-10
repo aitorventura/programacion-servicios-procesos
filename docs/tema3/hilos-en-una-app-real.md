@@ -2,6 +2,13 @@
 
 # 🧩 1. Hilos en una aplicación real: dónde ya los estás usando
 
+![Hilos en una aplicación real](diapositivas/hilos-en-una-app-real.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
+
+!!! info "Descarga de diapositivas"
+    [Descarga las diapositivas](diapositivas/hilos-en-una-app-real.pdf){target="_blank" rel="noopener"}
+
+---
+
 Este apartado es distinto a todos los anteriores: no vas a escribir código de producción — vas a aprender a **ver** algo que ya está pasando delante de ti sin que lo hayas notado. Ahora mismo, mientras tu aplicación Spring Boot atiende peticiones, hay varias tareas ejecutándose "a la vez" dentro de ella, sin que tú hayas escrito una sola línea de código pidiéndolo. El mecanismo detrás de eso tiene nombre — el **hilo** — y es el protagonista de todo este tema. Empecemos por ahí.
 
 ---
