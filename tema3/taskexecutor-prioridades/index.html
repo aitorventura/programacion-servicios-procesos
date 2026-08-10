@@ -2598,7 +2598,7 @@
 <p><embed alt="TaskExecutor propio y prioridades" src="../diapositivas/taskexecutor-prioridades.pdf" style="width:100%;min-height:80vh" type="application/pdf"></embed></p>
 <div class="admonition info">
 <p class="admonition-title">Descarga de diapositivas</p>
-<p><a href="../diapositivas/taskexecutor-prioridades.pdf" rel="noopener" target="_blank">Descarga las diapositivas</a></p>
+<p><a href="../diapositivas/taskexecutor-prioridades.pptx" rel="noopener" target="_blank">Descarga las diapositivas</a></p>
 </div>
 <hr>
 <p>El warm-up ya funciona de principio a fin: un evento se publica, un listener <code>@Async</code> lo recoge y recalienta la caché en segundo plano, sincronizado con el momento justo del commit. Queda una sola pieza suelta: <strong>dónde</strong> corre ese trabajo. Hasta ahora, en el pool de hilos genérico que Spring monta por defecto para cualquier <code>@Async</code> de tu proyecto, compartido con cualquier otra tarea asíncrona que pudiera existir — sin que tú hayas decidido nada al respecto. Hoy cierras el tema tomando ese control.</p>
