@@ -5,7 +5,7 @@
 ![Principios de programación segura](diapositivas/principios-programacion-segura.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
 
 !!!info "Descarga de diapositivas"
-    [Descarga las diapositivas](diapositivas/principios-programacion-segura.pdf){target="_blank" rel="noopener"}
+    [Descarga las diapositivas](diapositivas/principios-programacion-segura.pptx){target="_blank" rel="noopener"}
 
 ---
 

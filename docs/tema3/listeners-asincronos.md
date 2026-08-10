@@ -5,7 +5,7 @@
 ![Listeners asíncronos: el warm-up de caché (2/2)](diapositivas/listeners-asincronos.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
 
 !!! info "Descarga de diapositivas"
-    [Descarga las diapositivas](diapositivas/listeners-asincronos.pdf){target="_blank" rel="noopener"}
+    [Descarga las diapositivas](diapositivas/listeners-asincronos.pptx){target="_blank" rel="noopener"}
 
 ---
 

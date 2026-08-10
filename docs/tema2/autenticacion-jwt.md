@@ -5,7 +5,7 @@
 ![Autenticación con JWT](diapositivas/autenticacion-jwt.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
 
 !!!info "Descarga de diapositivas"
-    [Descarga las diapositivas](diapositivas/autenticacion-jwt.pdf){target="_blank" rel="noopener"}
+    [Descarga las diapositivas](diapositivas/autenticacion-jwt.pptx){target="_blank" rel="noopener"}
 
 ---
 

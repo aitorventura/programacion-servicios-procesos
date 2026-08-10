@@ -5,7 +5,7 @@
 ![Eventos internos de Spring: el warm-up de caché (1/2)](diapositivas/eventos-warmup-cache.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
 
 !!! info "Descarga de diapositivas"
-    [Descarga las diapositivas](diapositivas/eventos-warmup-cache.pdf){target="_blank" rel="noopener"}
+    [Descarga las diapositivas](diapositivas/eventos-warmup-cache.pptx){target="_blank" rel="noopener"}
 
 ---
 

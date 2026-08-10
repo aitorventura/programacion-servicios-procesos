@@ -5,7 +5,7 @@
 ![Usuarios persistidos y BCrypt](diapositivas/usuarios-persistidos-bcrypt.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
 
 !!!info "Descarga de diapositivas"
-    [Descarga las diapositivas](diapositivas/usuarios-persistidos-bcrypt.pdf){target="_blank" rel="noopener"}
+    [Descarga las diapositivas](diapositivas/usuarios-persistidos-bcrypt.pptx){target="_blank" rel="noopener"}
 
 ---
 

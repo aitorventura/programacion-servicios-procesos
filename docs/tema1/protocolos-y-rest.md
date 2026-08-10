@@ -5,7 +5,7 @@
 ![Protocolos estándar y servicios REST: leyendo el controlador](diapositivas/protocolos-y-rest.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
 
 !!!info "Descarga de diapositivas"
-    [Descarga las diapositivas](diapositivas/protocolos-y-rest.pdf){target="_blank" rel="noopener"}
+    [Descarga las diapositivas](diapositivas/protocolos-y-rest.pptx){target="_blank" rel="noopener"}
 
 ---
 

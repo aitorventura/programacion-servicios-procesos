@@ -5,7 +5,7 @@
 ![Roles y rutas protegidas](diapositivas/roles-y-rutas-protegidas.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
 
 !!!info "Descarga de diapositivas"
-    [Descarga las diapositivas](diapositivas/roles-y-rutas-protegidas.pdf){target="_blank" rel="noopener"}
+    [Descarga las diapositivas](diapositivas/roles-y-rutas-protegidas.pptx){target="_blank" rel="noopener"}
 
 ---
 

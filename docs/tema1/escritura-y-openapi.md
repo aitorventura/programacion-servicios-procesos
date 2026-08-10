@@ -5,7 +5,7 @@
 ![Escritura en la API y documentación con OpenAPI](diapositivas/escritura-y-openapi.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
 
 !!!info "Descarga de diapositivas"
-    [Descarga las diapositivas](diapositivas/escritura-y-openapi.pdf){target="_blank" rel="noopener"}
+    [Descarga las diapositivas](diapositivas/escritura-y-openapi.pptx){target="_blank" rel="noopener"}
 
 ---
 

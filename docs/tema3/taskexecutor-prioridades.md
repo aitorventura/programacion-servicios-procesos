@@ -5,7 +5,7 @@
 ![TaskExecutor propio y prioridades](diapositivas/taskexecutor-prioridades.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
 
 !!! info "Descarga de diapositivas"
-    [Descarga las diapositivas](diapositivas/taskexecutor-prioridades.pdf){target="_blank" rel="noopener"}
+    [Descarga las diapositivas](diapositivas/taskexecutor-prioridades.pptx){target="_blank" rel="noopener"}
 
 ---
 

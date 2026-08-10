@@ -5,7 +5,7 @@
 ![Hilos en una aplicación real](diapositivas/hilos-en-una-app-real.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
 
 !!! info "Descarga de diapositivas"
-    [Descarga las diapositivas](diapositivas/hilos-en-una-app-real.pdf){target="_blank" rel="noopener"}
+    [Descarga las diapositivas](diapositivas/hilos-en-una-app-real.pptx){target="_blank" rel="noopener"}
 
 ---
 
