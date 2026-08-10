@@ -2577,6 +2577,12 @@
 
 <div><p><a id="seguridad-del-canal"></a></p>
 <h1 id="3-seguridad-del-canal">🧩 3. Seguridad del canal<a class="headerlink" href="#3-seguridad-del-canal" title="Permanent link">¶</a></h1>
+<p><embed alt="Seguridad del canal" src="../diapositivas/seguridad-del-canal.pdf" style="width:100%;min-height:80vh" type="application/pdf"></embed></p>
+<div class="admonition info">
+<p class="admonition-title">Descarga de diapositivas</p>
+<p><a href="../diapositivas/seguridad-del-canal.pdf" rel="noopener" target="_blank">Descarga las diapositivas</a></p>
+</div>
+<hr>
 <p>Último apartado del módulo. Tu canal <code>/ws-actividad</code> ya emite datos reales, conectado a <code>ActividadService</code> desde la Actividad 4.2. Hoy afrontas algo que has dejado pendiente a propósito: qué implica en seguridad haberlo abierto sin autenticación.</p>
 <hr>
 <h2 id="el-aviso-de-seguridad-del-handshake">🔓 El aviso de seguridad del handshake<a class="headerlink" href="#el-aviso-de-seguridad-del-handshake" title="Permanent link">¶</a></h2>
@@ -2722,8 +2728,8 @@
 </code></pre></div></td></tr></table></div>
 <p><code>beforeHandshake</code> se ejecuta <strong>antes</strong> de que la conexión WebSocket se establezca — si devuelve <code>false</code>, el <em>handshake</em> se rechaza y la conexión nunca llega a completarse. Reutilizas el mismo <code>JwtDecoder</code> que ya tenías configurado desde el Tema 2 para validar el token — no hace falta ninguna pieza criptográfica nueva, ni tampoco instanciar el interceptor a mano: al llevar <code>@RequiredArgsConstructor</code> en ambas clases, Spring construye y conecta las dos piezas solo.</p>
 <div class="admonition tip">
-<p class="admonition-title">Por qué esto es la remediación mínima, y no la definitiva</p>
-<p>Pasar el token como parámetro de la URL (<code>?token=...</code>) tiene un riesgo conocido: a diferencia de una cabecera HTTP normal, puede quedar registrado en logs del servidor o en el historial del navegador. Para un canal de demostración es aceptable; en un canal real en producción, valdría la pena buscar una alternativa (por ejemplo, mandar el token en el primer mensaje STOMP tras conectar, en vez de en la propia URL).</p>
+<p class="admonition-title">Por qué esto es una solución sencilla para la práctica</p>
+<p>Pasar el token como parámetro de la URL (<code>?token=...</code>) tiene un inconveniente conocido: la URL completa puede quedar registrada en logs del servidor, proxies o herramientas de monitorización. Para esta práctica local es una solución sencilla y fácil de observar; en una aplicación real convendría utilizar un mecanismo de autenticación del canal que no exponga el token en la propia URL.</p>
 </div>
 <p>Fíjate también en qué comprueba exactamente <code>jwtDecoder.decode(token)</code>: que el token es válido, no que su dueño tiene rol <code>ADMIN</code>. Cierra la puerta a quien no ha hecho login en absoluto —que era el agujero real que has detectado en el Paso 1 de la Actividad 4.3—, pero no reproduce del todo la misma política que <code>GET /api/v1/actividad</code>: cualquier usuario autenticado, no solo uno con rol <code>ADMIN</code>, sigue viendo el canal en vivo. Es exactamente lo que vas a razonar en esa misma actividad.</p>
 <hr>
@@ -2737,7 +2743,7 @@
 <a id="__codelineno-3-2" name="__codelineno-3-2"></a>
 <a id="__codelineno-3-3" name="__codelineno-3-3"></a>| Ruta | Verbo | Quién puede |
 <a id="__codelineno-3-4" name="__codelineno-3-4"></a>|---|---|---|
-<a id="__codelineno-3-5" name="__codelineno-3-5"></a>| <span class="sb">`/ws-actividad`</span> (handshake, <span class="sb">`Upgrade: websocket`</span>) | GET | Cualquiera autenticado — no distingue rol |
+<a id="__codelineno-3-5" name="__codelineno-3-5"></a>| <span class="sb">`/ws-actividad`</span> (handshake, <span class="sb">`Upgrade: websocket`</span>) | GET | Cualquiera con un JWT válido — no distingue rol |
 </code></pre></div></td></tr></table></div>
 <p>Es el mismo documento en el que ya clasificaste el resto de rutas del proyecto — no hace falta ningún criterio distinto para esta, aunque no sea HTTP tradicional.</p>
 <hr>

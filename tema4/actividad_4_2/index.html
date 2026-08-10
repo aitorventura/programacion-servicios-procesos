@@ -2750,7 +2750,7 @@
 <a id="__codelineno-1-20" name="__codelineno-1-20"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-1-21" name="__codelineno-1-21"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p><code>setAllowedOriginPatterns("*")</code> es la autorización de origen que ya has visto en la teoría de este apartado — aquí, <code>*</code> acepta cualquier origen, cómodo para probar hoy desde tu propia máquina.</p>
+<p><code>setAllowedOriginPatterns("*")</code> amplía la política de origen de Spring para aceptar conexiones WebSocket desde cualquier origen, algo cómodo para las pruebas de esta actividad.</p>
 <hr>
 <h2 id="paso-2-abrir-la-ruta-en-securityconfig">Paso 2 — Abrir la ruta en <code>SecurityConfig</code><a class="headerlink" href="#paso-2-abrir-la-ruta-en-securityconfig" title="Permanent link">¶</a></h2>
 <p>Con tu <code>anyRequest().denyAll()</code> del Tema 2, el handshake a <code>/ws-actividad</code> va a quedar bloqueado si no le añades su propia regla:</p>
@@ -2882,7 +2882,7 @@
 <a id="__codelineno-5-24" name="__codelineno-5-24"></a><span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
 <a id="__codelineno-5-25" name="__codelineno-5-25"></a><span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
 </code></pre></div></td></tr></table></div>
-<p><code>new StompJs.Client({ brokerURL: ... })</code> crea el cliente apuntando a tu endpoint. <code>onConnect</code> es el callback que se dispara en cuanto el <em>handshake</em> termina — dentro, <code>client.subscribe(destino, callback)</code> te suscribe a <code>/topic/actividad</code>, y ese <code>callback</code> se ejecuta <strong>cada vez</strong> que llega un mensaje nuevo a ese destino, con el mensaje ya en <code>mensaje.body</code> (una cadena de texto en JSON — recuerda convertirla con <code>JSON.parse(...)</code> si quieres leer sus campos, en vez de pintarla tal cual). Lo único que hace este mecanismo mínimo es crear un <code>&lt;li&gt;</code> con ese texto y añadirlo a la lista — nada más.</p>
+<p><code>new StompJs.Client({ brokerURL: ... })</code> crea el cliente apuntando a tu endpoint. <code>onConnect</code> es el callback que se dispara cuando la conexión WebSocket ya está abierta y la sesión STOMP ha quedado establecida; dentro, <code>client.subscribe(destino, callback)</code> te suscribe a <code>/topic/actividad</code>, y ese <code>callback</code> se ejecuta <strong>cada vez</strong> que llega un mensaje nuevo a ese destino, con el mensaje ya en <code>mensaje.body</code> (una cadena de texto en JSON — recuerda convertirla con <code>JSON.parse(...)</code> si quieres leer sus campos, en vez de pintarla tal cual). Lo único que hace este mecanismo mínimo es crear un <code>&lt;li&gt;</code> con ese texto y añadirlo a la lista — nada más.</p>
 <p>Guarda esto ya como <code>src/main/resources/static/actividad.html</code>. Con esto ya tienes todo el código en su sitio —el endpoint (Paso 1), la ruta abierta (Paso 2), la emisión real (Paso 3) y ahora el cliente—, así que es el momento de reiniciar tu aplicación por fin: hasta ahora no tenías con qué comprobar nada de lo anterior. Ábrelo en <code>http://localhost:8080/actividad.html</code>.</p>
 <h3 id="la-misma-pagina-con-algo-mas-de-cuidado-visual">La misma página, con algo más de cuidado visual<a class="headerlink" href="#la-misma-pagina-con-algo-mas-de-cuidado-visual" title="Permanent link">¶</a></h3>
 <div class="admonition tip">

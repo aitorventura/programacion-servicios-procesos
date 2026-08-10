@@ -2621,11 +2621,11 @@
 <h2 id="paso-1-el-bean-con-tu-propia-configuracion">Paso 1 — El bean, con tu propia configuración<a class="headerlink" href="#paso-1-el-bean-con-tu-propia-configuracion" title="Permanent link">¶</a></h2>
 <p>Crea, en tu paquete <code>config</code>, siguiendo el estilo de tu configuración de RabbitMQ, un <code>TaskExecutor</code> propio para el warm-up con esta configuración:</p>
 <ul>
-<li>Como mucho <strong>2 hilos siempre activos</strong>, incluso sin tareas que hacer (<code>corePoolSize</code>).</li>
+<li>Tamaño base de <strong>2 hilos</strong> (<code>corePoolSize</code>): el pool crea hilos a medida que llegan tareas hasta ese número.</li>
 <li>El pool puede crecer hasta <strong>3 hilos</strong> si hace falta, nunca más (<code>maxPoolSize</code>).</li>
 <li>Cola para <strong>15 tareas</strong> esperando antes de que el pool necesite crecer (<code>queueCapacity</code>).</li>
 <li>Nombre de hilo reconocible, con el prefijo <code>"warmup-"</code> (<code>threadNamePrefix</code>).</li>
-<li>Prioridad baja (<code>Thread.MIN_PRIORITY</code>) — es trabajo de fondo, no debe competir con las peticiones reales.</li>
+<li>Prioridad baja (<code>Thread.MIN_PRIORITY</code>) — la marcamos como trabajo de fondo; es una pista al planificador, no una garantía de que vaya a ceder CPU a otras tareas.</li>
 </ul>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
@@ -2684,11 +2684,15 @@
 <p>Reinicia tu aplicación.</p>
 <hr>
 <h2 id="paso-3-verificacion-por-el-nombre-del-hilo">Paso 3 — Verificación por el nombre del hilo<a class="headerlink" href="#paso-3-verificacion-por-el-nombre-del-hilo" title="Permanent link">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Token de administrador</p>
+<p>Esta actividad vuelve a usar <code>ADMIN_TOKEN</code>. Si has abierto una terminal nueva o el token anterior ha caducado, vuelve a iniciar sesión como <code>admin</code> y guarda el nuevo <code>accessToken</code> en esa variable antes de continuar.</p>
+</div>
 <p>Crea un videojuego y mira el log:</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
 <span class="normal"><a href="#__codelineno-2-2">2</a></span>
 <span class="normal"><a href="#__codelineno-2-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/videojuegos<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN_ADMIN</span><span class="s2">"</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$ADMIN_TOKEN</span><span class="s2">"</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"titulo":"Test4","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'</span>
 </code></pre></div></td></tr></table></div>
 <p><strong>Comprueba</strong>: que la traza <code>[WARMUP] Empieza en hilo: ...</code> ahora muestra un nombre como <code>warmup-1</code>, en vez del nombre genérico <code>task-N</code> que tenía con el executor por defecto en la Actividad 3.3.</p>
@@ -2703,7 +2707,7 @@
 <span class="normal"><a href="#__codelineno-3-4">4</a></span>
 <span class="normal"><a href="#__codelineno-3-5">5</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="k">for</span><span class="w"> </span>i<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="m">4</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">  </span>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/videojuegos<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">    </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN_ADMIN</span><span class="s2">"</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">    </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$ADMIN_TOKEN</span><span class="s2">"</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="w">    </span>-d<span class="w"> </span><span class="s2">"{\"titulo\":\"Rapido</span><span class="nv">$i</span><span class="s2">\",\"precio\":1,\"fechaLanzamiento\":\"2020-01-01\",\"estudioId\":1}"</span><span class="w"> </span>&gt;<span class="w"> </span>/dev/null
 <a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="k">done</span>
 </code></pre></div></td></tr></table></div>

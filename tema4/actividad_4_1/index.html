@@ -2849,7 +2849,7 @@
 <a id="__codelineno-2-29" name="__codelineno-2-29"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
 <p><code>new ServerSocket(5000)</code> hace el <em>bind</em> al puerto 5000 y empieza a escuchar. <code>accept()</code> <strong>bloquea</strong> hasta que llega un cliente — cuando llega, devuelve un <code>Socket</code> para hablar con ese cliente concreto, que envuelves en tu <code>ConexionEco</code>. Al ser un <em>try-with-resources</em>, la conexión se cierra sola en cuanto el <code>while</code> termina (el cliente se desconecta), sin que tengas que acordarte de cerrarla a mano.</p>
-<p><strong>Fíjate en el problema</strong>: mientras <code>atenderCliente(cliente)</code> está ocupado (dentro del <code>while</code> leyendo líneas de ese cliente), el bucle principal no vuelve a llamar a <code>accept()</code> — nadie más puede conectarse hasta que ese cliente termine.</p>
+<p><strong>Fíjate en el problema</strong>: mientras <code>atenderCliente(cliente)</code> está ocupado (dentro del <code>while</code> leyendo líneas de ese cliente), el bucle principal no vuelve a llamar a <code>accept()</code>. Otros clientes pueden llegar a establecer la conexión TCP y quedar pendientes en la cola del sistema operativo, pero tu programa todavía no los acepta ni procesa sus mensajes.</p>
 <p><strong>Responde</strong>:</p>
 <ol>
 <li>El <code>while ((linea = conexion.recibir()) != null)</code> es el que mantiene viva la conversación con un cliente. ¿En qué momento exacto devuelve <code>null</code> — es decir, qué tiene que hacer el cliente para que ese <code>while</code> termine?</li>
@@ -2910,8 +2910,9 @@
 <p>Desde aquí en adelante vas a necesitar <strong>dos</strong> <code>ClienteEco</code> corriendo al mismo tiempo. Volver a pulsar <em>Run</em> sobre la misma clase, por defecto, no lanza una segunda instancia — <strong>reinicia</strong> la que ya tenías corriendo, cerrando su conexión sin que te des cuenta. En IntelliJ: <strong>Run → Edit Configurations</strong>, selecciona la configuración de <code>ClienteEco</code>, y en el desplegable <strong>"Modify options"</strong> activa <strong>"Allow multiple instances"</strong> (el nombre exacto varía un poco entre versiones, pero es esa opción). En cuanto la actives aparece como una casilla marcada en la propia configuración, y a partir de ahí cada <em>Run</em> abre una pestaña nueva e independiente, sin tocar la anterior. Si tu IDE no tiene esa opción, la alternativa segura es compilar una vez y ejecutar <code>java com.tunombre.sockets.ClienteEco</code> a mano, en dos terminales distintas.</p>
 </div>
 <p>Con <code>ServidorEco</code> y un <code>ClienteEco</code> ya conectados (el cliente esperando en el bucle, sin cerrar), ejecuta un <strong>segundo</strong> <code>ClienteEco</code> en paralelo, como acabas de ver arriba.</p>
-<p><strong>Observa</strong>: el segundo cliente se queda esperando, sin conectar — porque el servidor sigue "atrapado" atendiendo al primero dentro de <code>atenderCliente(...)</code>, y no ha vuelto a llamar a <code>accept()</code>.</p>
-<p><strong>Captura</strong>: la ejecución del segundo <code>ClienteEco</code>, sin ninguna respuesta, mientras el primero sigue conectado.</p>
+<p><strong>Observa</strong>: el segundo cliente puede llegar a establecer la conexión TCP, pero el servidor todavía no lo está atendiendo porque sigue "atrapado" dentro de <code>atenderCliente(...)</code> con el primero. Escribe una línea en el segundo cliente: la enviará, pero se quedará esperando la respuesta en <code>conexion.recibir()</code>.</p>
+<p>Ahora cierra el primer cliente. El servidor vuelve por fin a <code>accept()</code>, acepta la conexión pendiente del segundo y procesa el mensaje que este ya había enviado.</p>
+<p><strong>Captura</strong>: el segundo <code>ClienteEco</code> esperando inicialmente una respuesta y, después de cerrar el primero, recibiendo finalmente su <code>ECO: ...</code>.</p>
 <hr>
 <h2 id="paso-5-la-version-multihilo">Paso 5 — La versión multihilo<a class="headerlink" href="#paso-5-la-version-multihilo" title="Permanent link">¶</a></h2>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
@@ -2986,6 +2987,10 @@
 </code></pre></div></td></tr></table></div>
 <p>Un <code>ExecutorService</code> (el pool de hilos que ya conoces del Tema 3) atiende cada conexión en su propio hilo, en vez de bloquear el bucle principal — y como <code>ConexionEco</code> sigue siendo <em>try-with-resources</em>, cada hilo cierra su propia conexión al terminar, sin pisarse con los demás.</p>
 <p><code>Executors.newCachedThreadPool()</code> es un tipo concreto de <code>ExecutorService</code> que no habías visto en código todavía. En el Tema 3 lo has pensado como "una plantilla fija de operarios" — pero fija es solo una de las formas posibles de montar un pool, no la única. <code>newCachedThreadPool()</code> no tiene un tamaño fijo: crea un hilo nuevo cada vez que hace falta uno y no hay ninguno libre, reutiliza los que quedan libres, y cierra los que llevan un rato sin trabajo. Encaja bien aquí porque no sabes de antemano cuántos clientes se van a conectar a la vez — a diferencia de la cola de tareas de warm-up del Tema 3, donde un número fijo de operarios ya bastaba.</p>
+<div class="admonition note">
+<p class="admonition-title">Una elección sencilla para esta demostración</p>
+<p><code>newCachedThreadPool()</code> resulta cómodo aquí porque vas a trabajar con muy pocos clientes y permite ver claramente cómo distintas conexiones se atienden de forma concurrente. No debes interpretar esto como una recomendación de servidor de producción: al no fijar un máximo pequeño de hilos, un número muy alto de conexiones podría consumir demasiados recursos.</p>
+</div>
 <p>Cierra <code>ServidorEco</code> (Paso 2) y arranca <code>ServidorEcoMultihilo</code> en su lugar (mismo puerto 5000). Repite la prueba del Paso 4: conecta dos <code>ClienteEco</code> a la vez, y comprueba que <strong>ambos</strong> funcionan simultáneamente.</p>
 <p><strong>Captura</strong>: la consola de <code>ServidorEcoMultihilo</code> mostrando dos trazas <code>Atendiendo en hilo: ...</code> con nombres de hilo distintos, y los dos <code>ClienteEco</code> recibiendo eco a la vez.</p>
 <p><strong>Responde</strong>: fíjate en <code>pool.submit(() -&gt; atenderClienteConTraza(cliente))</code> — la variable <code>cliente</code> se declara dentro del <code>while (true)</code>, una vez por cada vuelta, y se usa dentro de una lambda que no se ejecuta necesariamente de inmediato. Si dos clientes se conectan casi a la vez, ¿podría el hilo que atiende al primero acabar usando, por error, el <code>Socket</code> del segundo? Explica por qué sí o por qué no, en función de dónde está declarada la variable <code>cliente</code>.</p>
@@ -3006,8 +3011,8 @@
 <a id="__codelineno-5-6" name="__codelineno-5-6"></a><span class="w">    </span><span class="n">conexion</span><span class="p">.</span><span class="na">enviar</span><span class="p">(</span><span class="s">"ECO: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">linea</span><span class="p">);</span>
 <a id="__codelineno-5-7" name="__codelineno-5-7"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p>Con dos <code>ClienteEco</code> conectados a la vez, escribe <code>SALIR</code> en uno de ellos.</p>
-<p><strong>Captura</strong>: el cliente que ha enviado <code>SALIR</code> desconectado (o a punto de cerrarse), mientras el otro cliente sigue funcionando con normalidad, sin verse afectado.</p>
+<p>Con dos <code>ClienteEco</code> conectados a la vez, escribe <code>SALIR</code> en uno de ellos. Como el servidor cierra esa conexión sin enviar una respuesta, el <code>recibir()</code> del cliente devuelve <code>null</code> y puedes ver <code>Respuesta: null</code>. El proceso cliente puede seguir esperando otra entrada de teclado aunque la conexión TCP ya esté cerrada — no hace falta corregirlo para esta actividad: lo importante es observar que el servidor ha cerrado solo esa conexión.</p>
+<p><strong>Captura</strong>: el cliente que ha enviado <code>SALIR</code> mostrando que ya no recibe su respuesta <code>ECO</code> (puede aparecer <code>Respuesta: null</code>), mientras el otro cliente sigue funcionando con normalidad, sin verse afectado.</p>
 <p><strong>Responde</strong>:</p>
 <ol>
 <li>¿Por qué cerrar esta <code>conexion</code> no afecta a los demás clientes que puedan estar conectados a la vez? Relaciónalo con lo que sabes sobre <code>ServerSocket</code> y los <code>Socket</code> nuevos que crea cada <code>accept()</code>.</li>
@@ -3015,7 +3020,7 @@
 </ol>
 <hr>
 <h2 id="pregunta-de-comprension">Pregunta de comprensión<a class="headerlink" href="#pregunta-de-comprension" title="Permanent link">¶</a></h2>
-<p>¿Qué relación hay entre este "un hilo por cliente" que acabas de ver y lo que hace Tomcat con las peticiones HTTP de tu GameVault? ¿Y con el pool de hilos configurado que has construido en el Tema 3 (<code>ThreadPoolTaskExecutor</code>)? Explica con tus palabras por qué es, en el fondo, el mismo patrón — gestionado a mano aquí, y por el framework allí.</p>
+<p>¿Qué relación hay entre este servidor multihilo que acabas de construir y los pools que ya has visto en Tomcat y en <code>ThreadPoolTaskExecutor</code>? Explica qué idea comparten —reutilizar hilos para atender trabajo concurrente— y por qué eso no significa necesariamente que todos los frameworks utilicen literalmente "un hilo fijo por cliente".</p>
 <hr>
 <h2 id="cierre">✅ Cierre<a class="headerlink" href="#cierre" title="Permanent link">¶</a></h2>
 <p>Has visto un servidor y un cliente TCP reales funcionando, y el mismo problema que Tomcat resuelve por ti en cada petición HTTP resuelto a mano, con hilos. Las próximas actividades amplían este mismo tema con WebSocket, sobre un caso de aplicación real de tu GameVault.</p></div>

@@ -2705,7 +2705,7 @@
 <a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
 <a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"6379:6379"</span>
 </code></pre></div></td></tr></table></div>
-<p>A diferencia de <code>postgres</code>/<code>mongodb</code>/<code>rabbitmq</code>, aquí no hace falta <code>volumes</code>: Redis es una caché, no una fuente de verdad — si el contenedor se reinicia y pierde todo lo guardado, no pasa nada grave, la próxima petición simplemente vuelve a pagar el coste y <code>@Cacheable</code> la rellena otra vez.</p>
+<p>A diferencia de <code>postgres</code>/<code>mongodb</code>/<code>rabbitmq</code>, aquí no hace falta <code>volumes</code>: Redis es una caché, no una fuente de verdad — si el contenedor se recrea o se pierde su contenido, no pasa nada grave, la próxima petición simplemente vuelve a pagar el coste y <code>@Cacheable</code> la rellena otra vez.</p>
 <p>En tu <code>pom.xml</code>:</p>
 <div class="language-xml highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">XML</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
 <span class="normal"><a href="#__codelineno-1-2">2</a></span>
@@ -2801,7 +2801,7 @@ No necesita ningún comportamiento real: ningún código de estos tests llega a 
 <p>Con <code>type: none</code>, Spring registra un <code>CacheManager</code> que no hace absolutamente nada — <code>@Cacheable</code>/<code>@CacheEvict</code> siguen ahí, pero se convierten en no-ops durante los tests, sin que necesites tocar ni una línea de <code>VideojuegoApiIntegrationTest</code>.</p>
 <p><strong>Ejecuta también</strong> <code>VideojuegoApiIntegrationTest</code> y comprueba que sigue pasando (no hace falta captura, esto es solo para que tu batería de tests no se quede rota).</p>
 </div>
-<p><code>beforeInvocation = true</code> no es opcional aquí: sin él, Spring evita <strong>después</strong> de que <code>create()</code>/<code>update()</code>/<code>delete()</code> terminen del todo (incluido el <code>commit</code>, que llega en el próximo apartado) — justo el mismo instante en que vas a disparar un aviso de "recalienta ya". Con el orden por defecto, ese aviso podría llegar antes de que el evict haya limpiado nada, encontrar la caché todavía con el valor viejo, y no recalcular nada de verdad.</p>
+<p>Aquí usamos <code>beforeInvocation = true</code> para que la caché se vacíe <strong>antes de ejecutar</strong> <code>create()</code>/<code>update()</code>/<code>delete()</code>. De este modo, cuando más adelante publiques el evento que ordenará recalentarla, sabes que el valor anterior ya se ha eliminado. Si la escritura terminara fallando, la caché quedaría igualmente vacía, pero no habría datos incorrectos: simplemente tendría que calcularse de nuevo en la siguiente consulta.</p>
 <p>Antes de probarlo, un detalle que si no lo añades ahora te va a dar un <code>500</code> en cuanto pidas <code>/top</code>: por defecto, Spring guarda en Redis usando la serialización estándar de Java, que exige que la clase sea <code>Serializable</code> — y <code>VideojuegoResponseDTO</code>, al ser un <code>record</code>, no lo es por defecto. Añádeselo:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1">1</a></span>
 <span class="normal"><a href="#__codelineno-8-2">2</a></span>
@@ -2833,6 +2833,10 @@ No necesita ningún comportamiento real: ningún código de estos tests llega a 
 <span class="normal"><a href="#__codelineno-10-2">2</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>&lt;tu-contenedor-redis&gt;<span class="w"> </span>redis-cli
 <a id="__codelineno-10-2" name="__codelineno-10-2"></a>&gt;<span class="w"> </span>FLUSHALL
 </code></pre></div></td></tr></table></div>
+<div class="admonition note">
+<p class="admonition-title">Token de administrador</p>
+<p>Esta actividad vuelve a usar <code>ADMIN_TOKEN</code>. Si has abierto una terminal nueva o el token anterior ha caducado, vuelve a iniciar sesión como <code>admin</code> y guarda el nuevo <code>accessToken</code> en esa variable antes de continuar.</p>
+</div>
 <div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-11-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-11-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-11-3"> 3</a></span>
@@ -2852,9 +2856,9 @@ No necesita ningún comportamiento real: ningún código de estos tests llega a 
 <a id="__codelineno-11-4" name="__codelineno-11-4"></a><span class="c1"># Segunda llamada: sale de caché, instantánea</span>
 <a id="__codelineno-11-5" name="__codelineno-11-5"></a><span class="nb">time</span><span class="w"> </span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8080/api/v1/videojuegos/top<span class="w"> </span>&gt;<span class="w"> </span>/dev/null
 <a id="__codelineno-11-6" name="__codelineno-11-6"></a>
-<a id="__codelineno-11-7" name="__codelineno-11-7"></a><span class="c1"># Crea un videojuego (invalida la caché con @CacheEvict) — recuerda: exige rol ADMIN</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7"></a><span class="c1"># Crea un videojuego (invalida la caché con @CacheEvict) — exige rol ADMIN</span>
 <a id="__codelineno-11-8" name="__codelineno-11-8"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/videojuegos<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-11-9" name="__codelineno-11-9"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN_ADMIN</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$ADMIN_TOKEN</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-11-10" name="__codelineno-11-10"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-11-11" name="__codelineno-11-11"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"titulo":"Test","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'</span>
 <a id="__codelineno-11-12" name="__codelineno-11-12"></a>
@@ -2918,7 +2922,7 @@ No necesita ningún comportamiento real: ningún código de estos tests llega a 
 <p><code>eventPublisher.publishEvent(...)</code> dispara el evento. Ahora mismo no pasa nada visible — no hay nadie escuchando todavía.</p>
 <hr>
 <h2 id="paso-4-repite-en-update-y-delete">Paso 4 — Repite en <code>update()</code> y <code>delete()</code><a class="headerlink" href="#paso-4-repite-en-update-y-delete" title="Permanent link">¶</a></h2>
-<p>Sin más código dado, añade la misma línea de publicación (<code>eventPublisher.publishEvent(new TopNovedadesInvalidadoEvent(Instant.now()))</code>) en <code>update()</code> y en <code>delete()</code> de <code>VideojuegoService</code> — en el mismo punto relativo donde ya está en <code>create()</code> (justo antes de devolver el resultado).</p>
+<p>Sin más código dado, añade la misma publicación en <code>update()</code> y en <code>delete()</code> de <code>VideojuegoService</code>: en <code>update()</code>, justo antes de devolver el resultado; en <code>delete()</code>, después de <code>deleteById(...)</code>, al final del método.</p>
 <hr>
 <h2 id="paso-5-comprobar-que-se-publica-con-un-listener-trivial-temporal">Paso 5 — Comprobar que se publica, con un listener trivial temporal<a class="headerlink" href="#paso-5-comprobar-que-se-publica-con-un-listener-trivial-temporal" title="Permanent link">¶</a></h2>
 <p>Añade, <strong>temporalmente</strong>, esta clase para verificar que tu evento realmente se dispara:</p>

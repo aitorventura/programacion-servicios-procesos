@@ -2570,11 +2570,12 @@
 </div>
 <div class="admonition info">
 <p class="admonition-title">Práctica guiada — última actividad del módulo</p>
-<p>Auditas la seguridad del canal WebSocket que ya tienes funcionando desde la Actividad 4.2, y la corriges — no basta con detectarla.</p>
+<p>Auditas la seguridad del canal WebSocket que ya tienes funcionando desde la Actividad 4.2, corriges su acceso anónimo y compruebas después qué problema de autorización sigue pendiente.</p>
 </div>
 <h2 id="que-vas-a-practicar">Qué vas a practicar<a class="headerlink" href="#que-vas-a-practicar" title="Permanent link">¶</a></h2>
 <ul>
-<li>Detectar <strong>y corregir</strong> una vulnerabilidad real de seguridad.</li>
+<li>Detectar y corregir la exposición de un canal a usuarios anónimos.</li>
+<li>Distinguir <strong>autenticación</strong> (tener un JWT válido) de <strong>autorización</strong> (tener el rol necesario).</li>
 <li>Razonar por escrito sobre qué información expone un canal, y a quién.</li>
 </ul>
 <hr>
@@ -2582,10 +2583,11 @@
 <p>Tu endpoint <code>/ws-actividad</code> con la emisión real de <code>ActividadService</code> ya conectada (Actividad 4.2).</p>
 <hr>
 <h2 id="paso-1-la-auditoria-de-seguridad">Paso 1 — La auditoría de seguridad<a class="headerlink" href="#paso-1-la-auditoria-de-seguridad" title="Permanent link">¶</a></h2>
-<p>Abre una ventana de <strong>incógnito</strong> (sin ninguna sesión iniciada, sin token) y conecta tu página <code>actividad.html</code> a <code>/ws-actividad</code> tal como está ahora mismo (sin la remediación todavía).</p>
-<p><strong>Comprueba</strong>: que, sin haber hecho login, ves en vivo exactamente los mismos registros que <code>GET /api/v1/actividad</code> solo permite consultar a <code>ADMIN</code>.</p>
-<p><strong>Captura</strong>: la ventana de incógnito mostrando esos registros en vivo, sin haber iniciado sesión.</p>
-<p><strong>Escribe el hallazgo</strong> como una mini-incidencia de seguridad: qué se expone (el contenido concreto), a quién (cualquiera, sin autenticar), y qué opciones de mitigación existen (las tres de la teoría: restringir el handshake, filtrar qué se emite, o documentarlo como decisión consciente).</p>
+<p>Abre una ventana de <strong>incógnito</strong> (sin ninguna sesión iniciada, sin token) y carga <code>actividad.html</code> tal como está ahora mismo, antes de aplicar la remediación.</p>
+<p>Con esa ventana abierta y conectada al canal, crea o modifica un videojuego desde otra ventana o desde <code>curl</code>, utilizando allí tu <code>ADMIN_TOKEN</code>.</p>
+<p><strong>Comprueba</strong>: que la ventana de incógnito recibe en vivo el nuevo registro de actividad aunque ella no haya enviado ningún token ni haya iniciado sesión.</p>
+<p><strong>Captura</strong>: la ventana de incógnito mostrando el nuevo registro recibido, junto con la prueba de que ese cliente no se ha autenticado.</p>
+<p><strong>Escribe el hallazgo</strong> como una mini-incidencia de seguridad: qué información se expone, a quién y qué opciones de mitigación existen.</p>
 <hr>
 <h2 id="paso-2-remediacion-minima-obligatoria">Paso 2 — Remediación mínima obligatoria<a class="headerlink" href="#paso-2-remediacion-minima-obligatoria" title="Permanent link">¶</a></h2>
 <p>Aplica la solución de la teoría de este apartado: el <code>JwtHandshakeInterceptor</code> que ya has visto ahí, letra por letra el mismo código — no hace falta repetirlo aquí. Dos detalles de conexión con tu propio proyecto, que sí son nuevos:</p>
@@ -2644,8 +2646,8 @@
 </div>
 <p>Prueba ahora los dos casos: pulsa <strong>Conectar</strong> con el campo vacío — <strong>comprueba</strong> que el handshake es rechazado. Pega un <code>accessToken</code> real (login por Swagger o <code>curl</code> como siempre, Actividad 2.4) y pulsa <strong>Conectar</strong> de nuevo — <strong>comprueba</strong> que funciona exactamente igual que antes.</p>
 <div class="admonition tip">
-<p class="admonition-title">Al rechazarse, no esperes ningún mensaje de error en la página</p>
-<p>El indicador simplemente pasa a "desconectado" (tu propio <code>onWebSocketClose</code>, en <code>actividad_4_2_cliente.html</code>) — no hay ningún error visible, ni en la página ni en la consola. El navegador no expone a JavaScript el código de estado real de un <em>handshake</em> rechazado, por seguridad; el 401 solo se ve donde ya aprendiste a buscarlo en la Actividad 4.2: <strong>F12 → Network → filtro WS</strong>, en la petición del <em>handshake</em>. Ese "desconectado" sin más, sin token, es la prueba de que el rechazo funciona — no una señal de que algo se ha roto.</p>
+<p class="admonition-title">Dónde comprobar un handshake rechazado</p>
+<p>La página puede limitarse a mostrar que la conexión no se ha establecido y la consola del navegador puede mostrar únicamente un error genérico de WebSocket. Para comprobar el código HTTP concreto del rechazo, utiliza <strong>F12 → Network → filtro WS</strong> y abre la petición del <em>handshake</em>. Ahí podrás distinguir claramente el rechazo de una conexión que sí ha llegado a establecerse.</p>
 </div>
 <p><strong>Captura</strong>: las dos pruebas — el rechazo sin token, y el funcionamiento normal con token válido.</p>
 <p><strong>Pregunta</strong>: repite la prueba con un token válido pero de un usuario <strong>sin</strong> rol <code>ADMIN</code> (registra uno nuevo si no tienes ninguno). ¿Se conecta? Compáralo con lo que exige <code>GET /api/v1/actividad</code> por REST, y razona: ¿la remediación que acabas de aplicar deja completamente cerrado el hallazgo del Paso 1, o solo una parte? ¿Qué comprobación le falta a <code>JwtHandshakeInterceptor</code> para cerrarlo del todo?</p>

@@ -2703,6 +2703,12 @@
 
 <div><p><a id="eventos-warmup-cache"></a></p>
 <h1 id="2-eventos-internos-de-spring-el-warm-up-de-cache-12">🧩 2. Eventos internos de Spring: el warm-up de caché (1/2)<a class="headerlink" href="#2-eventos-internos-de-spring-el-warm-up-de-cache-12" title="Permanent link">¶</a></h1>
+<p><embed alt="Eventos internos de Spring: el warm-up de caché (1/2)" src="../diapositivas/eventos-warmup-cache.pdf" style="width:100%;min-height:80vh" type="application/pdf"></embed></p>
+<div class="admonition info">
+<p class="admonition-title">Descarga de diapositivas</p>
+<p><a href="../diapositivas/eventos-warmup-cache.pdf" rel="noopener" target="_blank">Descarga las diapositivas</a></p>
+</div>
+<hr>
 <p>Sabes que tu aplicación ya es multihilo (pool de Tomcat, listeners de RabbitMQ). Ahora vas a construir tú mismo una pieza nueva que se apoya en eso: el warm-up de una caché, repartido en dos apartados — hoy montas la caché y el evento que avisa cuando deja de ser válida; en el próximo apartado, el listener que reacciona a ese aviso.</p>
 <hr>
 <h2 id="que-es-una-cache">💾 Qué es una caché<a class="headerlink" href="#que-es-una-cache" title="Permanent link">¶</a></h2>
@@ -2936,7 +2942,7 @@
 <p>La misma línea de publicación va también en <code>update()</code> y en <code>delete()</code>, junto a su propio <code>@CacheEvict</code>: un libro editado o borrado puede cambiar igual de bien cuáles son los "más baratos", así que las tres operaciones de escritura necesitan avisar por igual.</p>
 <div class="admonition warning">
 <p class="admonition-title"><code>beforeInvocation = true</code> no es un detalle menor</p>
-<p>Por defecto, <code>@CacheEvict</code> borra la entrada <strong>después</strong> de que el método entero termine — lo que, con <code>@Transactional</code> de por medio, puede caer justo alrededor del mismo instante en que el <em>commit</em> dispara el aviso a quien recalienta. Sin <code>beforeInvocation = true</code>, ese aviso podría llegar antes de que el evict haya limpiado nada, encontrarse la caché todavía con el valor viejo, y no recalcular nada — dejando la caché fría para el primer usuario real, exactamente el problema que este apartado quiere resolver.</p>
+<p>Por defecto, <code>@CacheEvict</code> elimina la entrada después de que el método termine correctamente. Aquí usamos <code>beforeInvocation = true</code> para hacerlo <strong>antes de entrar en <code>create()</code>/<code>update()</code>/<code>delete()</code></strong>, garantizando así que, cuando esos métodos publiquen el evento de invalidación, la entrada anterior ya se haya eliminado. La contrapartida es que, si la escritura termina fallando, la caché ya habrá sido vaciada y tendrá que calcularse de nuevo más adelante. Es una decisión sencilla y adecuada para este ejemplo, no una solución general a todos los posibles problemas de concurrencia.</p>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Esta pieza es nueva, no la tienes todavía</p>
@@ -2977,7 +2983,7 @@
 <summary>Abrir resumen</summary>
 <ul>
 <li>Una <strong>caché</strong> guarda el resultado de una operación cara para no repetir el trabajo. <strong>Invalidar</strong> borra un resultado que ya no es válido; <strong>recalentar</strong> la vuelve a calcular por adelantado, antes de que alguien la pida.</li>
-<li><code>@Cacheable</code> hace que Spring intercepte la llamada: si ya hay un resultado guardado para esa clave, lo devuelve sin ejecutar el método; si no, lo ejecuta y guarda el resultado. <code>@CacheEvict(allEntries = true)</code> borra todo lo guardado, forzando el próximo recálculo — con <code>beforeInvocation = true</code>, para que el borrado ocurra antes de nada más, no después del commit.</li>
+<li><code>@Cacheable</code> hace que Spring intercepte la llamada: si ya hay un resultado guardado para esa clave, lo devuelve sin ejecutar el método; si no, lo ejecuta y guarda el resultado. <code>@CacheEvict(allEntries = true)</code> borra todo lo guardado; con <code>beforeInvocation = true</code>, ese borrado ocurre antes de ejecutar el método anotado.    </li>
 <li><code>@EnableCaching</code> activa ese mecanismo para toda la aplicación — y, precisamente por eso, puede romper tests de una sola capa (<code>@WebMvcTest</code>) que carguen la clase principal sin traer la autoconfiguración que da soporte real a la caché.</li>
 <li><strong>Redis</strong> es una base de datos en memoria clave-valor, usada aquí como caché compartida real detrás de <code>@Cacheable</code> — el resultado se guarda físicamente en el contenedor Redis, no en memoria de la aplicación, y sobrevive a un reinicio.</li>
 <li>Por defecto, Spring guarda en Redis con serialización JDK, que exige <code>Serializable</code> — un <code>record</code> no lo es por defecto. Se resuelve añadiendo <code>implements Serializable</code> al DTO.</li>

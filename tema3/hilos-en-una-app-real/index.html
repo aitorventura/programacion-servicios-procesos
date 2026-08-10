@@ -2751,6 +2751,12 @@
 
 <div><p><a id="hilos-en-una-app-real"></a></p>
 <h1 id="1-hilos-en-una-aplicacion-real-donde-ya-los-estas-usando">🧩 1. Hilos en una aplicación real: dónde ya los estás usando<a class="headerlink" href="#1-hilos-en-una-aplicacion-real-donde-ya-los-estas-usando" title="Permanent link">¶</a></h1>
+<p><embed alt="Hilos en una aplicación real" src="../diapositivas/hilos-en-una-app-real.pdf" style="width:100%;min-height:80vh" type="application/pdf"></embed></p>
+<div class="admonition info">
+<p class="admonition-title">Descarga de diapositivas</p>
+<p><a href="../diapositivas/hilos-en-una-app-real.pdf" rel="noopener" target="_blank">Descarga las diapositivas</a></p>
+</div>
+<hr>
 <p>Este apartado es distinto a todos los anteriores: no vas a escribir código de producción — vas a aprender a <strong>ver</strong> algo que ya está pasando delante de ti sin que lo hayas notado. Ahora mismo, mientras tu aplicación Spring Boot atiende peticiones, hay varias tareas ejecutándose "a la vez" dentro de ella, sin que tú hayas escrito una sola línea de código pidiéndolo. El mecanismo detrás de eso tiene nombre — el <strong>hilo</strong> — y es el protagonista de todo este tema. Empecemos por ahí.</p>
 <hr>
 <h2 id="proceso-vs-hilo">🧵 Proceso vs. hilo<a class="headerlink" href="#proceso-vs-hilo" title="Permanent link">¶</a></h2>
@@ -2773,7 +2779,7 @@
 <p>En ambos casos, <strong>el planificador del sistema operativo decide</strong> cuándo se ejecuta cada hilo — tu programa no controla ese detalle.</p>
 <hr>
 <h2 id="crear-hilos-en-java">🚀 Crear hilos en Java<a class="headerlink" href="#crear-hilos-en-java" title="Permanent link">¶</a></h2>
-<p>Java separa dos ideas que hasta ahora iban juntas: <strong>qué</strong> trabajo hay que hacer y <strong>quién</strong> lo va a ejecutar. <code>Runnable</code> describe el trabajo — es la orden de trabajo que le dejarías a un operario, con las instrucciones de qué hacer, pero todavía sin decir quién la ejecuta ni cuándo. <code>Thread</code> es el operario de verdad: al crearlo le entregas esa orden de trabajo (el <code>Runnable</code>) y, en cuanto le dices que empiece, la ejecuta por su cuenta, en paralelo con lo que esté haciendo el resto del taller.</p>
+<p>Java separa dos ideas que hasta ahora iban juntas: <strong>qué</strong> trabajo hay que hacer y <strong>quién</strong> lo va a ejecutar. <code>Runnable</code> describe el trabajo — es la orden de trabajo que le dejarías a un operario, con las instrucciones de qué hacer, pero todavía sin decir quién la ejecuta ni cuándo. <code>Thread</code> es el operario de verdad: al crearlo le entregas esa orden de trabajo (el <code>Runnable</code>) y, en cuanto le dices que empiece, la ejecuta de forma concurrente con los demás hilos. Si hay varios núcleos disponibles, algunos de esos hilos pueden llegar a ejecutarse realmente en paralelo.</p>
 <p>La forma más directa de repartir una tarea entre varios hilos: implementar <code>Runnable</code> con el trabajo a hacer, y envolverlo en tantos <code>Thread</code> como operarios quieras poner a trabajar a la vez:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
@@ -2803,12 +2809,12 @@
 <p class="admonition-title"><code>start()</code>, no <code>run()</code></p>
 <p>Si llamas directamente a <code>tarea.run()</code>, ejecutas ese código en el hilo actual, como una llamada a método normal — no se crea ningún hilo nuevo. <code>start()</code> es lo que de verdad arranca un hilo nuevo del sistema operativo, que ejecutará el <code>run()</code> de forma independiente.</p>
 </div>
-<p>Ejecuta este código dos veces seguidas: la salida por consola <strong>no será idéntica</strong> las dos veces. Si tu ordenador tiene varios núcleos —la mayoría los tiene hoy—, lo más probable es que Hilo-A e Hilo-B no se estén turnando en un único núcleo, sino ejecutando de verdad al mismo tiempo, cada uno en el suyo: este ejemplo, en tu máquina, casi seguro demuestra <strong>paralelismo</strong>, no la concurrencia de turnos que acabas de ver. Lo que sigue siendo no determinista es el <strong>orden exacto</strong> en que sus líneas llegan a la consola: aunque los dos hilos avancen en paralelo, no hay ninguna garantía de que vayan al mismo ritmo, así que qué línea imprime cada uno en cada instante depende de decisiones del sistema operativo que escapan a tu control — y por eso la salida cambia de una ejecución a otra. Así se ven dos ejecuciones reales del mismo código, una al lado de la otra:</p>
+<p>Ejecuta este código dos veces seguidas: la salida por consola probablemente no será idéntica. El orden en que aparecen las líneas depende de las decisiones del planificador del sistema operativo y no está garantizado. Aunque tu ordenador tenga varios núcleos y los hilos puedan llegar a ejecutarse realmente en paralelo, esta salida por consola no permite demostrar si en un instante concreto estaban usando núcleos distintos o simplemente alternándose. Lo importante aquí es observar que ambos hilos avanzan de forma concurrente y que su orden de ejecución es no determinista.</p>
 <div class="grid">
 <p><img alt="Primera ejecución: los dos hilos se entrelazan en casi cada línea" src="../img/hilos-demo-ejecucion-1.png"></p>
 <p><img alt="Segunda ejecución: Hilo-A avanza casi entero antes de que el planificador le ceda el turno a Hilo-B" src="../img/hilos-demo-ejecucion-2.png"></p>
 </div>
-<p>En la primera, Hilo-A e Hilo-B avanzan a un ritmo muy parecido, así que sus líneas se entrelazan casi una a una; en la segunda, Hilo-A ha ido más rápido y ha completado casi todo su trabajo antes de que las líneas de Hilo-B empiecen a aparecer. Ninguna de las dos es "la correcta" — las dos son resultados válidos del mismo programa corriendo en paralelo, y por eso no puedes dar por hecho en qué orden van a imprimir sus líneas dos hilos que se ejecutan a la vez.</p>
+<p>En la primera, Hilo-A e Hilo-B avanzan a un ritmo muy parecido, así que sus líneas se entrelazan casi una a una; en la segunda, Hilo-A ha ido más rápido y ha completado casi todo su trabajo antes de que las líneas de Hilo-B empiecen a aparecer. Ninguna de las dos es "la correcta" — las dos son resultados válidos del mismo programa ejecutando dos hilos concurrentes, y por eso no puedes dar por hecho en qué orden van a imprimir sus líneas dos hilos que se ejecutan a la vez.</p>
 <hr>
 <h2 id="el-problema-central-compartir-memoria">⚠️ El problema central: compartir memoria<a class="headerlink" href="#el-problema-central-compartir-memoria" title="Permanent link">¶</a></h2>
 <p>Como los hilos de un mismo proceso comparten memoria, dos hilos pueden intentar modificar el mismo dato <strong>a la vez</strong> — y ahí aparece la <strong>condición de carrera</strong>: el resultado final del programa pasa a depender de en qué orden exacto llegan los hilos a leer y escribir ese dato compartido, un orden que, como ya has visto, es impredecible. Se llama "carrera" porque es literalmente eso — varios hilos compitiendo por el mismo dato — y el resultado cambia según quién "gane" esa carrera en cada ejecución concreta, sin que tú puedas controlarlo ni predecirlo de antemano.</p>
@@ -2871,7 +2877,7 @@
 <p><img alt="Primera ejecución: valor final 17423" src="../img/contador-demo-ejecucion-1.png"></p>
 <p><img alt="Segunda ejecución: valor final 12499" src="../img/contador-demo-ejecucion-2.png"></p>
 </div>
-<p>Ni siquiera coinciden entre sí, y ninguna de las dos llega a 20.000 — la prueba de que el problema no es solo teórico. Si lanzas dos hilos que llaman a <code>incrementar()</code> 10.000 veces cada uno, el resultado final <strong>no da 20.000</strong> — casi siempre da menos, y un poco distinto cada vez. ¿Por qué? <code>valor++</code> no es una sola operación atómica: son <strong>tres</strong> pasos (leer el valor actual, sumarle uno, escribir el resultado), y esos tres pasos de un hilo se pueden intercalar con los de otro.</p>
+<p>Ni siquiera coinciden entre sí, y en estas dos ejecuciones ninguna llega a 20.000 — la prueba de que el problema no es solo teórico. Si lanzas dos hilos que llaman a <code>incrementar()</code> 10.000 veces cada uno, esperarías obtener 20.000, pero ese resultado <strong>no está garantizado</strong>: normalmente será menor y puede variar entre ejecuciones, aunque alguna podría llegar a dar exactamente 20.000 por casualidad <strong>sin que eso signifique que la condición de carrera haya desaparecido</strong>. ¿Por qué? <code>valor++</code> no es una sola operación atómica: son <strong>tres</strong> pasos (leer el valor actual, sumarle uno, escribir el resultado), y esos tres pasos de un hilo se pueden intercalar con los de otro.</p>
 <p>Así se pierde un incremento en la práctica — imagina que los dos hilos llegan casi a la vez, cuando <code>valor</code> todavía vale 0:</p>
 <table>
 <thead>
@@ -2921,7 +2927,7 @@
 </tr>
 </tbody>
 </table>
-<p>Dos llamadas a <code>incrementar()</code> deberían haber dejado <code>valor</code> en <code>2</code>, pero como ambos hilos han leído el mismo valor antes de que ninguno escribiera, el resultado final es <code>1</code> — se ha perdido un incremento entero. Multiplica este mismo entrelazado por miles de llamadas y por eso el resultado final casi nunca es exactamente 20.000.</p>
+<p>Dos llamadas a <code>incrementar()</code> deberían haber dejado <code>valor</code> en <code>2</code>, pero como ambos hilos han leído el mismo valor antes de que ninguno escribiera, el resultado final es <code>1</code> — se ha perdido un incremento entero. Multiplica este mismo entrelazado por miles de llamadas y entenderás por qué el resultado puede variar entre ejecuciones y no podemos garantizar que sea exactamente 20.000.</p>
 <p>La solución básica es <code>synchronized</code>: marca una <strong>sección crítica</strong> (un bloque de código) que solo un hilo puede ejecutar a la vez — cualquier otro hilo que quiera entrar debe esperar a que el primero salga. Ese "esperar" tiene nombre propio: el hilo que llega tarde queda bloqueado por un <strong>lock</strong>, el candado que el primer hilo mantiene ocupado mientras está dentro de la sección crítica. Es como el baño de una cafetería con una única llave colgada en el mostrador: mientras un cliente la tiene y está dentro, cualquier otro que quiera entrar se queda esperando fuera, por mucha prisa que tenga — nadie entra hasta que la llave vuelve a estar libre.</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">synchronized</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">incrementar</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">valor</span><span class="o">++</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
@@ -2938,13 +2944,19 @@
 <pre class="mermaid"><code>stateDiagram-v2
     [*] --&gt; NEW
     NEW --&gt; RUNNABLE: start()
-    RUNNABLE --&gt; BLOCKED: lock ocupado por otro hilo
-    BLOCKED --&gt; RUNNABLE: lock liberado
-    RUNNABLE --&gt; WAITING: sleep() / join() / wait()
-    WAITING --&gt; RUNNABLE: termina la pausa
+
+    RUNNABLE --&gt; BLOCKED
+    BLOCKED --&gt; RUNNABLE
+
+    RUNNABLE --&gt; WAITING: espera sin límite
+    WAITING --&gt; RUNNABLE: termina la espera
+
+    RUNNABLE --&gt; TIMED_WAITING: espera con límite
+    TIMED_WAITING --&gt; RUNNABLE: termina la espera
+
     RUNNABLE --&gt; TERMINATED: termina run()
     TERMINATED --&gt; [*]</code></pre>
-<p>La tabla resume qué hace que un hilo entre en cada estado, y qué significa realmente estar ahí — la distinción importante es que <code>BLOCKED</code> es una espera <strong>forzada</strong> (no decides tú cuándo se acaba), mientras que <code>WAITING</code>/<code>TIMED_WAITING</code> es una pausa que el propio hilo <strong>elige</strong> tomar:</p>
+<p>La tabla resume qué hace que un hilo entre en cada estado y qué significa realmente estar ahí. La distinción importante es que <code>BLOCKED</code> aparece al intentar adquirir un <em>lock</em> que otro hilo mantiene ocupado, mientras que <code>WAITING</code> y <code>TIMED_WAITING</code> aparecen cuando el hilo entra explícitamente en alguna operación de espera.</p>
 <table>
 <thead>
 <tr>
@@ -2967,12 +2979,17 @@
 <tr>
 <td><code>BLOCKED</code></td>
 <td>Intenta entrar en una sección <code>synchronized</code> que otro hilo ya ocupa</td>
-<td>Espera <strong>forzada</strong> — como el cliente haciendo cola frente al baño ocupado, sin poder decidir cuándo va a entrar</td>
+<td>Espera a poder obtener el <em>lock</em> y entrar en esa sección</td>
 </tr>
 <tr>
-<td><code>WAITING</code> / <code>TIMED_WAITING</code></td>
-<td>El propio hilo llama a <code>sleep()</code>, <code>join()</code> o <code>wait()</code></td>
-<td>Pausa <strong>voluntaria</strong> — el hilo decide pararse un rato por su cuenta, nadie se lo impone</td>
+<td><code>WAITING</code></td>
+<td>Llama a <code>join()</code> o <code>wait()</code> sin indicar un tiempo máximo</td>
+<td>Espera sin límite de tiempo hasta que se produzca la condición que le permite continuar</td>
+</tr>
+<tr>
+<td><code>TIMED_WAITING</code></td>
+<td>Llama a <code>sleep()</code>, <code>join(timeout)</code> o <code>wait(timeout)</code></td>
+<td>Espera durante un tiempo máximo determinado</td>
 </tr>
 <tr>
 <td><code>TERMINATED</code></td>
@@ -2982,7 +2999,7 @@
 </tbody>
 </table>
 <p>Ojo con no confundir <code>start()</code> y <code>run()</code> aquí tampoco: es <code>start()</code> quien mueve el hilo de <code>NEW</code> a <code>RUNNABLE</code>, no <code>run()</code>. <code>run()</code> es solo el método con el código que ese hilo va a ejecutar mientras está en <code>RUNNABLE</code> — si llamas a <code>tarea.run()</code> directamente (como avisaba el primer recuadro de este apartado), no creas ningún hilo nuevo, así que no hay ningún estado que cambiar: ese código se ejecuta como una llamada normal dentro del hilo que ya tenías.</p>
-<p>Nada de esto se queda en la teoría: puedes preguntarle a un hilo en qué estado está en cualquier momento con <code>getState()</code>. Retomando el <code>Contador</code> de antes —ahora con <code>incrementar()</code> ya <code>synchronized</code>, y con una pausa añadida solo para que te dé tiempo a observar cada estado con calma—, dos hilos ejecutando exactamente la misma tarea son suficientes para forzar, uno detrás de otro, los cinco estados del diagrama: mientras uno ya está dentro incrementando y durmiendo, el otro se queda esperando el mismo <em>lock</em>.</p>
+<p>Nada de esto se queda en la teoría: puedes preguntarle a un hilo en qué estado está en cualquier momento con <code>getState()</code>. Retomando el <code>Contador</code> de antes —ahora con <code>incrementar()</code> ya <code>synchronized</code>, y con una pausa añadida solo para facilitar la observación—, el siguiente ejemplo está preparado para que puedas capturar <strong>cinco de los seis estados</strong>: <code>NEW</code>, <code>RUNNABLE</code>, <code>BLOCKED</code>, <code>TIMED_WAITING</code> y <code>TERMINATED</code>. <code>WAITING</code> no aparece en este ejemplo porque la pausa se realiza con <code>sleep()</code>, que coloca al hilo en <code>TIMED_WAITING</code>. Como <code>getState()</code> muestra una instantánea, el resultado exacto puede variar ligeramente según el planificador del sistema operativo.</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-3-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-3-3"> 3</a></span>
@@ -3079,9 +3096,9 @@
 <p class="admonition-title">Qué hace <code>Thread.currentThread().interrupt()</code></p>
 <p><code>sleep()</code> puede terminar antes de tiempo si otro hilo llama a <code>.interrupt()</code> sobre este hilo — Java lo avisa lanzando <code>InterruptedException</code>. Volver a llamar a <code>interrupt()</code> dentro del propio <code>catch</code> es el patrón estándar para no perder ese aviso, por si algún código más arriba también necesita saber que ha pasado.</p>
 </div>
-<p>Ejecútalo tú mismo — esta es la salida real, los cinco estados en el mismo orden del diagrama, uno detrás de otro:</p>
+<p>Ejecútalo tú mismo. Esta es una posible salida en la que se han conseguido capturar los cinco estados que busca este ejemplo:</p>
 <p><img alt="Salida de EstadosDemo: NEW, RUNNABLE, BLOCKED, TIMED_WAITING, TERMINATED, y Valor final: 2" src="../img/estados-demo-salida.png"></p>
-<p><code>Hilo-1</code> pasa literalmente por los cinco: nace en <code>NEW</code>, se vuelve <code>RUNNABLE</code> en cuanto llamas a <code>start()</code>, cae en <code>BLOCKED</code> mientras <code>Hilo-2</code> todavía tiene el <em>lock</em> ocupado, entra en <code>TIMED_WAITING</code> en cuanto por fin consigue el <em>lock</em> y llama a su propio <code>sleep()</code>, y acaba en <code>TERMINATED</code> cuando su <code>run()</code> termina — y el <code>Valor final: 2</code> confirma que, aun con dos hilos compitiendo por el mismo dato, <code>synchronized</code> ha dejado el resultado correcto.</p>
+<p>En esta ejecución hemos conseguido observar <code>Hilo-1</code> en esos cinco estados: nace en <code>NEW</code>, se vuelve <code>RUNNABLE</code> en cuanto llamas a <code>start()</code>, queda <code>BLOCKED</code> mientras <code>Hilo-2</code> mantiene ocupado el <em>lock</em>, aparece en <code>TIMED_WAITING</code> mientras ejecuta su propio <code>sleep()</code> y finalmente queda <code>TERMINATED</code> cuando acaba su <code>run()</code>.</p>
 <hr>
 <h2 id="la-escala-de-abstraccion">🪜 La escala de abstracción<a class="headerlink" href="#la-escala-de-abstraccion" title="Permanent link">¶</a></h2>
 <p>Crear hilos con <code>Thread</code>/<code>Runnable</code> a mano funciona, pero no escala: crear un hilo nuevo por cada tarea, sin límite, puede agotar los recursos del sistema. Es como contratar a un operario nuevo para cada tarea que aparece, por pequeña que sea, y despedirlo en cuanto termina — funciona, pero es un despilfarro si las tareas no dejan de llegar. La siguiente capa de abstracción es un <strong><code>ExecutorService</code></strong>: un <em>pool</em> de hilos reutilizables, más parecido a tener una plantilla fija de operarios ya contratados, que van cogiendo la siguiente tarea de una lista en cuanto terminan la anterior, en vez de crear un hilo nuevo cada vez. Así se ve la diferencia entre los dos enfoques:</p>
@@ -3223,19 +3240,30 @@
 <span class="normal"><a href="#__codelineno-7-8"> 8</a></span>
 <span class="normal"><a href="#__codelineno-7-9"> 9</a></span>
 <span class="normal"><a href="#__codelineno-7-10">10</a></span>
-<span class="normal"><a href="#__codelineno-7-11">11</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="nd">@Component</span>
+<span class="normal"><a href="#__codelineno-7-11">11</a></span>
+<span class="normal"><a href="#__codelineno-7-12">12</a></span>
+<span class="normal"><a href="#__codelineno-7-13">13</a></span>
+<span class="normal"><a href="#__codelineno-7-14">14</a></span>
+<span class="normal"><a href="#__codelineno-7-15">15</a></span>
+<span class="normal"><a href="#__codelineno-7-16">16</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="nd">@Component</span>
 <a id="__codelineno-7-2" name="__codelineno-7-2"></a><span class="nd">@RequiredArgsConstructor</span>
 <a id="__codelineno-7-3" name="__codelineno-7-3"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LibroEventPublisher</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-7-4" name="__codelineno-7-4"></a>
 <a id="__codelineno-7-5" name="__codelineno-7-5"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">RabbitTemplate</span><span class="w"> </span><span class="n">rabbitTemplate</span><span class="p">;</span>
-<a id="__codelineno-7-6" name="__codelineno-7-6"></a>
-<a id="__codelineno-7-7" name="__codelineno-7-7"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">publicar</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">tipo</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">libroId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-7-8" name="__codelineno-7-8"></a><span class="w">        </span><span class="n">LibroEvent</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LibroEvent</span><span class="p">(</span><span class="n">tipo</span><span class="p">,</span><span class="w"> </span><span class="n">libroId</span><span class="p">);</span>
-<a id="__codelineno-7-9" name="__codelineno-7-9"></a><span class="w">        </span><span class="n">rabbitTemplate</span><span class="p">.</span><span class="na">convertAndSend</span><span class="p">(</span><span class="n">RabbitMQConfig</span><span class="p">.</span><span class="na">CATALOGO_EXCHANGE</span><span class="p">,</span><span class="w"> </span><span class="s">"libro."</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tipo</span><span class="p">,</span><span class="w"> </span><span class="n">event</span><span class="p">);</span>
-<a id="__codelineno-7-10" name="__codelineno-7-10"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-7-11" name="__codelineno-7-11"></a><span class="p">}</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">JsonMapper</span><span class="w"> </span><span class="n">jsonMapper</span><span class="p">;</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7"></a>
+<a id="__codelineno-7-8" name="__codelineno-7-8"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">publicar</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">tipo</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">libroId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9"></a><span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10"></a><span class="w">            </span><span class="n">String</span><span class="w"> </span><span class="n">payload</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">jsonMapper</span><span class="p">.</span><span class="na">writeValueAsString</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">LibroEvent</span><span class="p">(</span><span class="n">tipo</span><span class="p">,</span><span class="w"> </span><span class="n">libroId</span><span class="p">));</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11"></a><span class="w">            </span><span class="n">rabbitTemplate</span><span class="p">.</span><span class="na">convertAndSend</span><span class="p">(</span><span class="n">RabbitMQConfig</span><span class="p">.</span><span class="na">CATALOGO_EXCHANGE</span><span class="p">,</span><span class="w"> </span><span class="s">"libro."</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tipo</span><span class="p">.</span><span class="na">toLowerCase</span><span class="p">(),</span><span class="w"> </span><span class="n">payload</span><span class="p">);</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12"></a><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">JacksonException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-13" name="__codelineno-7-13"></a><span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IllegalStateException</span><span class="p">(</span><span class="s">"No se ha podido serializar el evento"</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">);</span>
+<a id="__codelineno-7-14" name="__codelineno-7-14"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-7-15" name="__codelineno-7-15"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-7-16" name="__codelineno-7-16"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p><code>LibroService.create()</code> ahora llama a <code>publicar(...)</code> en vez de a <code>actividadService.registrar(...)</code> directamente — y ahí termina su trabajo: no espera respuesta de nadie, simplemente entrega el mensaje al exchange y responde al cliente:</p>
+<p><code>JsonMapper</code> convierte el <code>LibroEvent</code> en JSON antes de enviarlo. De este modo no dependemos de que el <code>record</code> implemente <code>Serializable</code> ni de configurar todavía un conversor específico para RabbitMQ. En la actividad aplicarás este mismo mecanismo al evento real de GameVault.</p>
+<p><code>LibroService.create()</code> llama ahora a <code>publicar(...)</code> en vez de invocar directamente a <code>actividadService.registrar(...)</code>. Una vez entregado el mensaje a RabbitMQ, continúa y responde al cliente:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-8-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-8-3"> 3</a></span>
@@ -3257,12 +3285,12 @@
 <a id="__codelineno-8-7" name="__codelineno-8-7"></a>
 <a id="__codelineno-8-8" name="__codelineno-8-8"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">LibroResponseDTO</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="n">LibroCreateDTO</span><span class="w"> </span><span class="n">dto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-8-9" name="__codelineno-8-9"></a><span class="w">        </span><span class="n">Libro</span><span class="w"> </span><span class="n">saved</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">libroRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">mapToEntity</span><span class="p">(</span><span class="n">dto</span><span class="p">));</span>
-<a id="__codelineno-8-10" name="__codelineno-8-10"></a><span class="w">        </span><span class="n">libroEventPublisher</span><span class="p">.</span><span class="na">publicar</span><span class="p">(</span><span class="s">"CREADO"</span><span class="p">,</span><span class="w"> </span><span class="n">saved</span><span class="p">.</span><span class="na">getId</span><span class="p">());</span><span class="w"> </span><span class="c1">// ya no llama a actividadService directamente</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10"></a><span class="w">        </span><span class="n">libroEventPublisher</span><span class="p">.</span><span class="na">publicar</span><span class="p">(</span><span class="s">"CREADO"</span><span class="p">,</span><span class="w"> </span><span class="n">saved</span><span class="p">.</span><span class="na">getId</span><span class="p">());</span>
 <a id="__codelineno-8-11" name="__codelineno-8-11"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mapToDTO</span><span class="p">(</span><span class="n">saved</span><span class="p">);</span>
 <a id="__codelineno-8-12" name="__codelineno-8-12"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-8-13" name="__codelineno-8-13"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p>El registro de verdad ocurre del otro lado, reaccionando cuando ese mensaje llega a su cola:</p>
+<p>El registro real ocurre en el otro extremo. El consumidor recibe la cadena JSON, la reconstruye como un <code>LibroEvent</code> y llama al servicio correspondiente:</p>
 <div class="language-java highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Java</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-9-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-9-3"> 3</a></span>
@@ -3274,25 +3302,29 @@
 <span class="normal"><a href="#__codelineno-9-9"> 9</a></span>
 <span class="normal"><a href="#__codelineno-9-10">10</a></span>
 <span class="normal"><a href="#__codelineno-9-11">11</a></span>
-<span class="normal"><a href="#__codelineno-9-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="nd">@Service</span>
+<span class="normal"><a href="#__codelineno-9-12">12</a></span>
+<span class="normal"><a href="#__codelineno-9-13">13</a></span>
+<span class="normal"><a href="#__codelineno-9-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="nd">@Service</span>
 <a id="__codelineno-9-2" name="__codelineno-9-2"></a><span class="nd">@RequiredArgsConstructor</span>
 <a id="__codelineno-9-3" name="__codelineno-9-3"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ActividadLibroEventConsumer</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-9-4" name="__codelineno-9-4"></a>
 <a id="__codelineno-9-5" name="__codelineno-9-5"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ActividadService</span><span class="w"> </span><span class="n">actividadService</span><span class="p">;</span>
-<a id="__codelineno-9-6" name="__codelineno-9-6"></a>
-<a id="__codelineno-9-7" name="__codelineno-9-7"></a><span class="w">    </span><span class="nd">@RabbitListener</span><span class="p">(</span><span class="n">queues</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RabbitMQConfig</span><span class="p">.</span><span class="na">ACTIVIDAD_LIBRO_QUEUE</span><span class="p">)</span>
-<a id="__codelineno-9-8" name="__codelineno-9-8"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">recibir</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">payload</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-9-9" name="__codelineno-9-9"></a><span class="w">        </span><span class="n">LibroEvent</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="cm">/* deserializar */</span><span class="p">;</span>
-<a id="__codelineno-9-10" name="__codelineno-9-10"></a><span class="w">        </span><span class="n">actividadService</span><span class="p">.</span><span class="na">registrar</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">tipo</span><span class="p">(),</span><span class="w"> </span><span class="s">"Libro"</span><span class="p">,</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="na">libroId</span><span class="p">().</span><span class="na">toString</span><span class="p">());</span>
-<a id="__codelineno-9-11" name="__codelineno-9-11"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-9-12" name="__codelineno-9-12"></a><span class="p">}</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">JsonMapper</span><span class="w"> </span><span class="n">jsonMapper</span><span class="p">;</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7"></a>
+<a id="__codelineno-9-8" name="__codelineno-9-8"></a>
+<a id="__codelineno-9-9" name="__codelineno-9-9"></a><span class="w">    </span><span class="nd">@RabbitListener</span><span class="p">(</span><span class="n">queues</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RabbitMQConfig</span><span class="p">.</span><span class="na">ACTIVIDAD_LIBRO_QUEUE</span><span class="p">)</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">recibir</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">payload</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-9-11" name="__codelineno-9-11"></a><span class="w">        </span><span class="n">LibroEvent</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">jsonMapper</span><span class="p">.</span><span class="na">readValue</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span><span class="w"> </span><span class="n">LibroEvent</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
+<a id="__codelineno-9-12" name="__codelineno-9-12"></a><span class="w">        </span><span class="n">actividadService</span><span class="p">.</span><span class="na">registrar</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">tipo</span><span class="p">(),</span><span class="w"> </span><span class="s">"Libro"</span><span class="p">,</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="na">libroId</span><span class="p">().</span><span class="na">toString</span><span class="p">());</span>
+<a id="__codelineno-9-13" name="__codelineno-9-13"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-9-14" name="__codelineno-9-14"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p>El flujo completo, con dos hilos distintos involucrados:</p>
+<p>El flujo completo implica dos hilos distintos:</p>
 <pre class="mermaid"><code>flowchart LR
     A["🌐 Petición HTTP&lt;br/&gt;(hilo A, pool Tomcat)"] --&gt; B["LibroService.create()"]
     B --&gt; C["LibroEventPublisher&lt;br/&gt;publica en RabbitMQ"]
     C -.-&gt; D["ActividadLibroEventConsumer&lt;br/&gt;@RabbitListener (hilo B, otro hilo)"]</code></pre>
-<p><code>LibroService.create()</code> (hilo A, el de la petición HTTP) publica el evento y <strong>no espera</strong> a que se procese — sigue su camino y responde al cliente. El consumer lo recoge y lo procesa en su propio hilo (hilo B), en su propio momento. Ese es exactamente el problema del principio, resuelto: la petición HTTP ya no se queda esperando a que se registre la actividad, y encima el mensaje sobrevive aunque en ese instante no hubiera ningún consumidor escuchando.</p>
+<p><code>LibroService.create()</code> se ejecuta en el hilo de la petición HTTP, publica el mensaje y continúa sin esperar a que se registre la actividad. El consumidor lo procesa después en uno de los hilos destinados a los listeners de RabbitMQ. Así, una tarea secundaria no retrasa la respuesta principal y el mensaje puede permanecer en la cola hasta que algún consumidor lo procese.</p>
 <hr>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
 <details class="tip">
@@ -3302,7 +3334,7 @@
 <li><strong>Concurrencia</strong> (turnarse) vs. <strong>paralelismo</strong> (a la vez, en núcleos distintos) — el planificador del SO decide, no tu programa.</li>
 <li><code>new Thread(runnable).start()</code> arranca un hilo real; llamar a <code>run()</code> directamente NO crea ningún hilo nuevo.</li>
 <li>La <strong>condición de carrera</strong> ocurre cuando varios hilos modifican el mismo dato sin coordinación; <code>synchronized</code> la resuelve creando una sección crítica protegida por un <strong>lock</strong> — pero en exceso puede provocar <strong>deadlock</strong>.</li>
-<li>Ciclo de vida: NEW → RUNNABLE → BLOCKED (esperando un lock) / WAITING → TERMINATED.</li>
+<li>Ciclo de vida: <code>NEW</code> → <code>RUNNABLE</code> → <code>BLOCKED</code> / <code>WAITING</code> / <code>TIMED_WAITING</code> → <code>TERMINATED</code>.</li>
 <li><code>.interrupt()</code> puede hacer que <code>sleep()</code> termine antes lanzando <code>InterruptedException</code>; volver a llamar a <code>interrupt()</code> en el <code>catch</code> es el patrón estándar para no perder ese aviso.</li>
 <li><strong>RabbitMQ</strong>: un broker de mensajería con colas y exchanges; <code>@RabbitListener</code> procesa mensajes en un hilo aparte, distinto del hilo que publicó. Publicador y consumidor no se conocen entre sí — es el <strong>binding</strong> (exchange + patrón de <em>routing key</em> → cola) quien conecta a uno con el otro.</li>
 <li>Publicar un mensaje y dejar que otro hilo lo procese evita que el trabajo no esencial (como registrar actividad) retrase la respuesta al cliente — y un broker, a diferencia de un <code>new Thread()</code> suelto, conserva el mensaje aunque en ese momento no haya nadie escuchando.</li>

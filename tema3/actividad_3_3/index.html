@@ -2660,7 +2660,7 @@
 </div>
 <div class="admonition info">
 <p class="admonition-title">Práctica guiada — pieza 2 de 2</p>
-<p>Hoy completas el warm-up: el listener asíncrono que recalienta la caché, y la medición real de que ya no se paga el coste tras cada escritura.</p>
+<p>Hoy completas el warm-up: el listener asíncrono que recalienta la caché, y mides cómo permite que la siguiente petición encuentre el resultado ya preparado cuando el recálculo ha terminado a tiempo.</p>
 </div>
 <h2 id="que-vas-a-practicar">Qué vas a practicar<a class="headerlink" href="#que-vas-a-practicar" title="Permanent link">¶</a></h2>
 <ul>
@@ -2744,11 +2744,15 @@
 <hr>
 <h2 id="paso-2-verificar-el-hilo-y-retirar-el-listener-de-prueba">Paso 2 — Verificar el hilo, y retirar el listener de prueba<a class="headerlink" href="#paso-2-verificar-el-hilo-y-retirar-el-listener-de-prueba" title="Permanent link">¶</a></h2>
 <p>Si todavía tienes el <code>ListenerDePruebaTemporal</code> de la Actividad 3.2, <strong>retíralo ahora</strong> — ya no lo necesitas.</p>
+<div class="admonition note">
+<p class="admonition-title">Token de administrador</p>
+<p>Esta actividad vuelve a usar <code>ADMIN_TOKEN</code>. Si has abierto una terminal nueva o el token anterior ha caducado, vuelve a iniciar sesión como <code>admin</code> y guarda el nuevo <code>accessToken</code> en esa variable antes de continuar.</p>
+</div>
 <p>Crea un videojuego y mira el log. Aquí tienes el comando con <code>curl</code>, pero puedes hacer exactamente lo mismo desde Swagger UI si lo prefieres:</p>
 <div class="language-bash highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Bash</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-2-1">1</a></span>
 <span class="normal"><a href="#__codelineno-2-2">2</a></span>
 <span class="normal"><a href="#__codelineno-2-3">3</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/videojuegos<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN_ADMIN</span><span class="s2">"</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$ADMIN_TOKEN</span><span class="s2">"</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"titulo":"Test2","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'</span>
 </code></pre></div></td></tr></table></div>
 <p><strong>Captura</strong>: las trazas <code>[WARMUP] Empieza en hilo: ...</code>/<code>Termina en hilo: ...</code> en la consola.</p>
@@ -2767,7 +2771,7 @@
 <span class="normal"><a href="#__codelineno-3-9"> 9</a></span>
 <span class="normal"><a href="#__codelineno-3-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="c1"># Crea un videojuego (dispara el warm-up en segundo plano)</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/videojuegos<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN_ADMIN</span><span class="s2">"</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$ADMIN_TOKEN</span><span class="s2">"</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"titulo":"Test3","precio":1,"fechaLanzamiento":"2020-01-01","estudioId":1}'</span>
 <a id="__codelineno-3-5" name="__codelineno-3-5"></a>
 <a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="c1"># Espera unos segundos a que el warm-up termine en segundo plano</span>
@@ -2791,22 +2795,23 @@
 <a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="w">    </span><span class="c1">// ...</span>
 <a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-<p>Añade, también temporalmente, un log que consulte cuántos videojuegos ve el listener justo al empezar (por ejemplo, contando el resultado de <code>videojuegoService.findAll().size()</code> antes de recalentar).</p>
+<p>Añade también temporalmente una consulta que permita saber cuántos videojuegos ve el listener al empezar. La forma más directa para este experimento es inyectar <code>VideojuegoRepository</code> en el listener y mostrar <code>videojuegoRepository.count()</code> en el log. Esta dependencia es solo para la prueba y la retirarás al terminar.</p>
 <p><strong>Razona</strong>, sin necesidad de reproducirlo de forma determinista (es una condición de carrera, puede que no falle siempre): si este listener se disparara justo antes de que el <code>INSERT</code> del nuevo videojuego se confirmara en la base de datos, ¿qué vería exactamente al consultar? ¿Qué consecuencia tendría eso sobre el contenido de la caché recalentada?</p>
 <p>Vuelve a <code>@TransactionalEventListener(phase = AFTER_COMMIT)</code> y explica con tus palabras qué diferencia concreta soluciona respecto al <code>@EventListener</code> a secas que acabas de probar.</p>
 <hr>
 <h2 id="paso-5-retira-lo-que-era-solo-para-medir-y-verificar">Paso 5 — Retira lo que era solo para medir y verificar<a class="headerlink" href="#paso-5-retira-lo-que-era-solo-para-medir-y-verificar" title="Permanent link">¶</a></h2>
-<p>Ya has medido y demostrado el warm-up de principio a fin. Toca retirar dos cosas que solo estaban ahí para eso, no para quedarse en el código final:</p>
+<p>Ya has medido y demostrado el warm-up de principio a fin. Toca retirar tres cosas que solo estaban ahí para medir y verificar:</p>
 <ul>
-<li>El <code>Thread.sleep(2000)</code> de <code>getTopNovedades()</code> — ha cumplido su propósito. Quítalo otra vez, exactamente como hiciste al terminar la Actividad 1.4: <code>@Cacheable</code> sigue evitando el trabajo repetido cuando de verdad haga falta, sin necesidad de un retraso falso permanente en una funcionalidad real.</li>
-<li>Las dos trazas <code>[WARMUP] Empieza...</code>/<code>Termina...</code> de <code>TopNovedadesWarmupListener</code> — eran para que pudieras comparar hilos en el Paso 2, no logging que tenga sentido dejar en una funcionalidad terminada.</li>
+<li>El <code>Thread.sleep(2000)</code> de <code>getTopNovedades()</code>.</li>
+<li>Las dos trazas <code>[WARMUP] Empieza...</code>/<code>Termina...</code> de <code>TopNovedadesWarmupListener</code>.</li>
+<li>El log y la dependencia temporal de <code>VideojuegoRepository</code> que añadiste en el Paso 4 para comprobar cuántos videojuegos veía el listener.</li>
 </ul>
 <hr>
 <h2 id="pregunta-final">Pregunta final<a class="headerlink" href="#pregunta-final" title="Permanent link">¶</a></h2>
-<p>Si dos profesores del centro crean dos videojuegos casi a la vez (segundos de diferencia), ¿cuántos eventos se publican y cuántos hilos intentan recalentar la caché? ¿Es esto un error grave del sistema, o solo trabajo duplicado sin consecuencias incorrectas? Propón, sin implementarla, alguna forma de evitar ese trabajo duplicado (piensa en si haría falta algún tipo de coordinación entre los hilos, o si bastaría con alguna comprobación previa).</p>
+<p>Si dos profesores del centro crean dos videojuegos casi a la vez, ¿cuántos eventos y cuántas tareas de warm-up se generan? ¿Podrían ambas encontrar la caché vacía y recalcularla a la vez? Razona qué podría ocurrir si la tarea que empezó primero termina la última. Propón, sin implementarla, alguna forma de coordinar esos recálculos.</p>
 <hr>
 <h2 id="cierre">✅ Cierre<a class="headerlink" href="#cierre" title="Permanent link">¶</a></h2>
-<p>El warm-up está completo y medido: tu GameVault ya no hace pagar al primer usuario el coste de recalcular las novedades tras cada escritura. En el apartado siguiente configuras manualmente el <code>TaskExecutor</code> que hay detrás de este <code>@Async</code>, con nombre y prioridad propios.</p></div>
+<p>El warm-up está completo y medido: si termina antes de la siguiente petición, el primer usuario ya encuentra la caché caliente y no paga el coste de recalcular las novedades.</p></div>
 
 
 

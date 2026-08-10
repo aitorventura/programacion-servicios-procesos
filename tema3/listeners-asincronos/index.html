@@ -2619,6 +2619,12 @@
 
 <div><p><a id="listeners-asincronos"></a></p>
 <h1 id="3-listeners-asincronos-el-warm-up-de-cache-22">🧩 3. Listeners asíncronos: el warm-up de caché (2/2)<a class="headerlink" href="#3-listeners-asincronos-el-warm-up-de-cache-22" title="Permanent link">¶</a></h1>
+<p><embed alt="Listeners asíncronos: el warm-up de caché (2/2)" src="../diapositivas/listeners-asincronos.pdf" style="width:100%;min-height:80vh" type="application/pdf"></embed></p>
+<div class="admonition info">
+<p class="admonition-title">Descarga de diapositivas</p>
+<p><a href="../diapositivas/listeners-asincronos.pdf" rel="noopener" target="_blank">Descarga las diapositivas</a></p>
+</div>
+<hr>
 <p>En el apartado anterior has construido el evento y su publicación — sin ningún efecto visible todavía. Hoy construyes la pieza que le da sentido a todo: el listener que reacciona, recalentando la caché en un hilo aparte. Aquí es donde entra en juego <code>@EnableAsync</code> — una capacidad que tu proyecto todavía no usa en ningún sitio, y que hoy activas tú mismo junto a la anotación <code>@Async</code>.</p>
 <hr>
 <h2 id="que-pasaria-si-el-listener-no-fuera-asincrono">🤔 Qué pasaría si el listener no fuera asíncrono<a class="headerlink" href="#que-pasaria-si-el-listener-no-fuera-asincrono" title="Permanent link">¶</a></h2>
@@ -2695,7 +2701,7 @@
 </code></pre></div></td></tr></table></div>
 <hr>
 <h2 id="estados-de-un-hilo-ahora-observables-de-verdad">🔄 Estados de un hilo, ahora observables de verdad<a class="headerlink" href="#estados-de-un-hilo-ahora-observables-de-verdad" title="Permanent link">¶</a></h2>
-<p>Retoma el ciclo de estados del primer apartado de este tema (NEW → RUNNABLE → BLOCKED/WAITING → TERMINATED), esta vez con un caso perfectamente observable: el retraso artificial que simula el coste de recalcular los libros más baratos.</p>
+<p>Retoma el ciclo de estados del primer apartado de este tema (<code>NEW</code> → <code>RUNNABLE</code> → <code>BLOCKED</code> / <code>WAITING</code> / <code>TIMED_WAITING</code> → <code>TERMINATED</code>), esta vez con un caso perfectamente observable: el retraso artificial que simula el coste de recalcular los libros más baratos.</p>
 <table>
 <thead>
 <tr>
@@ -2725,9 +2731,9 @@
 <p>Fíjate en que aquí no aparece <code>BLOCKED</code> — ese estado nace de esperar un <em>lock</em> ocupado por otro hilo (como en el <code>Contador</code> del primer apartado), y este warm-up no compite por ningún <em>lock</em>. Puedes verlo tú mismo con <code>Thread.getState()</code>, igual que has hecho con <code>EstadosDemo</code> en el primer apartado, capturando el estado del hilo justo durante ese retraso.</p>
 <hr>
 <h2 id="problemas-de-comparticion-en-este-caso-concreto">⚠️ Problemas de compartición, en este caso concreto<a class="headerlink" href="#problemas-de-comparticion-en-este-caso-concreto" title="Permanent link">¶</a></h2>
-<p>Dos preguntas que conviene hacerse antes de dar el warm-up por terminado:</p>
+<p>Tres preguntas que conviene hacerse antes de dar el warm-up por terminado:</p>
 <ul>
-<li><strong>¿Qué pasa si dos escrituras casi simultáneas publican dos eventos?</strong> Dos hilos distintos intentarían recalentar la misma caché casi a la vez — trabajo duplicado (ambos recalculan lo mismo) y, en el peor caso, una carrera sobre qué resultado queda finalmente guardado en la caché. No es un error grave (el resultado final sigue siendo correcto), pero sí ineficiente.</li>
+<li><strong>¿Qué pasa si dos escrituras casi simultáneas publican dos eventos?</strong> Se lanzan dos tareas de warm-up que pueden ejecutarse a la vez en hilos distintos del pool. Además del trabajo duplicado, aparece una carrera: si ambas encuentran la caché vacía, una tarea que empezó antes puede terminar después y dejar en Redis un resultado calculado sobre un estado anterior de la base de datos. En el flujo sencillo de esta práctica normalmente no lo vas a apreciar, pero en un sistema real habría que coordinar esos recálculos.</li>
 <li><strong>¿Y si el listener leyera una entidad JPA compartida en vez de un evento inmutable?</strong> Si <code>LibrosBaratosInvalidadoEvent</code> no fuera un <code>record</code> inmutable, sino que el listener leyera directamente un objeto mutable compartido con el hilo que publicó, existiría el riesgo de que ese objeto cambiara mientras el listener aún lo está usando — exactamente el tipo de condición de carrera que has visto en la Actividad 3.1. La inmutabilidad del evento elimina ese riesgo por diseño.</li>
 <li><strong>¿Y si el listener necesitara algo del contexto del hilo original, como el usuario autenticado?</strong> No lo tendría — un hilo nuevo no hereda lo que estuviera guardado en un <code>ThreadLocal</code> (así almacena Spring Security el usuario actual), así que ese dato tendría que pasarse como parámetro explícito, nunca leerse esperando que "ya esté ahí".</li>
 </ul>
@@ -2744,18 +2750,18 @@
 </thead>
 <tbody>
 <tr>
-<td>Justo después de crear un libro</td>
-<td>El siguiente usuario paga el coste completo</td>
-<td>El listener ya ha recalentado la caché en segundo plano</td>
+<td>Tras crear un libro</td>
+<td>La caché queda vacía hasta que alguien vuelve a consultar</td>
+<td>El listener empieza a recalentarla automáticamente en segundo plano</td>
 </tr>
 <tr>
 <td>¿Quién paga el coste de recalcular?</td>
 <td>El primer usuario que pide el listado tras la escritura</td>
-<td>Nadie — el warm-up lo paga antes de que nadie lo pida</td>
+<td>El hilo del warm-up intenta asumir ese coste antes de que llegue la siguiente petición</td>
 </tr>
 </tbody>
 </table>
-<p>Con las dos piezas montadas (evento + listener asíncrono sincronizado con el commit), el "primer usuario tras una escritura" ya no paga el coste de recalcular esa consulta cara — el warm-up lo paga por él, en segundo plano, mientras nadie espera. La Actividad 3.3 lo va a demostrar con mediciones reales, comparando el "antes" (Actividad 3.2) con el "después" (hoy).</p>
+<p>Con las dos piezas montadas (evento + listener asíncrono sincronizado con el commit), el recálculo de la caché empieza automáticamente en segundo plano después de cada escritura. <strong>Si el warm-up termina antes de la siguiente petición</strong>, ese usuario encontrará ya el resultado en caché y no pagará el coste de recalcularlo. Si una petición llega mientras el warm-up todavía está trabajando, puede encontrar la caché aún vacía y coincidir con ese recálculo. La Actividad 3.3 lo va a demostrar esperando a que el warm-up termine y comparando después los tiempos con los obtenidos en la Actividad 3.2.</p>
 <hr>
 <h2 id="ideas-clave">✅ Ideas clave<a class="headerlink" href="#ideas-clave" title="Permanent link">¶</a></h2>
 <details class="tip">
@@ -2765,7 +2771,7 @@
 <li>Llamar a un método <code>@Async</code> desde dentro de la misma clase (<code>this.metodo(...)</code>) hace que Spring no pueda interceptar la llamada: <code>@Async</code> se ignora en silencio y el método corre en el mismo hilo, sin ningún error que lo avise.</li>
 <li><code>@TransactionalEventListener(phase = AFTER_COMMIT)</code> sincroniza el arranque del listener con el momento en que la transacción que publicó el evento ya ha hecho commit — evita leer datos "a medias".</li>
 <li>El retraso artificial del endpoint lento es un caso observable real del estado <strong>TIMED_WAITING</strong>.</li>
-<li>Publicaciones casi simultáneas pueden causar trabajo duplicado (no un error grave); un evento <strong>inmutable</strong> evita condiciones de carrera al compartir información entre hilos.</li>
+<li>Publicaciones casi simultáneas pueden provocar trabajo duplicado e incluso carreras entre varios recálculos de la misma caché; un evento <strong>inmutable</strong> evita, por su parte, condiciones de carrera sobre los propios datos que se comparten entre hilos.</li>
 <li>Un hilo nuevo no hereda el contexto del hilo original: nada guardado en un <code>ThreadLocal</code> (como el <code>SecurityContext</code> de Spring Security) viaja solo. Por eso los datos que un método <code>@Async</code> necesita del contexto de la petición se pasan como parámetro explícito, no se leen "mágicamente" desde dentro.</li>
 </ul>
 </details></div>
