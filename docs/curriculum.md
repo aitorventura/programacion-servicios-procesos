@@ -1,7 +1,6 @@
 # Currículo: Módulo 0490 — Programación de Servicios y Procesos
 
-**Equivalencia ECTS:** 5  
-**Duración:** 40 horas
+**Duración:** 67 horas (2 horas semanales en el centro; el resto se completa en la Formación en Empresa)
 
 ---
 
@@ -72,63 +71,6 @@
 - f) Se han identificado métodos para asegurar la información transmitida.
 - g) Se han desarrollado aplicaciones que utilicen comunicaciones seguras para la transmisión de información.
 - h) Se han depurado y documentado las aplicaciones desarrolladas.
-
----
-
-## Contenidos Básicos
-
-### Programación multiproceso (→ RA1)
-- Ejecutables. Procesos. Servicios.
-- Estados de un proceso. Planificación de procesos.
-- Hilos.
-- Programación concurrente.
-- Programación paralela y distribuida.
-- Comunicación entre procesos.
-- Gestión de procesos. Herramientas de monitorización.
-- Sincronización entre procesos.
-- Programación de aplicaciones multiproceso.
-
-### Programación multihilo (→ RA2)
-- Contexto de ejecución de los hilos. Recursos compartidos.
-- Estados de un hilo. Cambios de estado.
-- Librerías y clases.
-- Gestión de hilos. Prioridades.
-- Sincronización de hilos.
-- Compartición de información entre hilos. Problemas.
-- Programación de aplicaciones multihilo.
-
-### Programación de comunicaciones en red (→ RA3)
-- Comunicación entre aplicaciones. Modelos.
-- Roles cliente y servidor.
-- Librerías y clases.
-- Sockets. Tipos. Características.
-- Creación de sockets.
-- Enlazado y establecimiento de conexiones.
-- Utilización de sockets para la transmisión y recepción de información.
-- Programación de aplicaciones cliente y servidor.
-- Utilización de hilos para la implementación de comunicaciones simultáneas con el servidor.
-
-### Generación de servicios en red (→ RA4)
-- Protocolos estándar de comunicación en red a nivel de aplicación. Ventajas de su utilización.
-- Servicios web.
-- Librerías de clases y componentes.
-- Programación de servidores.
-- Establecimiento y finalización de conexiones.
-- Transmisión de información.
-- Implementación de comunicaciones simultáneas.
-- Utilización de aplicaciones clientes.
-- Monitorización del servicio. Herramientas.
-
-### Utilización de técnicas de programación segura (→ RA5)
-- Prácticas de programación segura.
-- Criptografía de clave pública y clave privada.
-- Principales aplicaciones de la criptografía.
-- Protocolos criptográficos.
-- Política de seguridad. Roles.
-- Programación de mecanismos de control de acceso.
-- Encriptación de información.
-- Protocolos seguros de comunicaciones.
-- Programación de aplicaciones con comunicaciones seguras.
 
 ---
 
