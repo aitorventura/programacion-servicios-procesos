@@ -129,3 +129,18 @@
 - Encriptación de información.
 - Protocolos seguros de comunicaciones.
 - Programación de aplicaciones con comunicaciones seguras.
+
+---
+
+## Dónde se trabaja cada RA
+
+| RA | Tema | Peso orientativo |
+|---|---|---|
+| RA1 | Formación en Empresa (FE) | 10 % |
+| RA4 | Tema 1 | 20 % |
+| RA5 | Tema 2 | 30 % |
+| RA2 | Tema 3 | 25 % |
+| RA3 | Tema 4 | 25 % |
+
+!!! note "RA1 en la Formación en Empresa"
+    El RA1 (Programación multiproceso) se evalúa en la FE. Ese 10 % se reparte a partes iguales entre el resto de RA para calcular la nota final del módulo en el centro.
