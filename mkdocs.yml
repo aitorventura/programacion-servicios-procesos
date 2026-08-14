@@ -95,6 +95,7 @@ nav:
       - Seguridad del canal:
           - Seguridad del canal: tema4/seguridad-del-canal.md
           - Actividad 4.3 - Seguridad del canal: tema4/actividad_4_3.md
+  - Currículo: curriculum.md
   - Cierre del módulo: cierre.md
 
 markdown_extensions:
