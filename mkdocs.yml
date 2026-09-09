@@ -42,13 +42,13 @@ nav:
       - Tema 0 - Introducción: tema0/index.md
       - "Repaso rápido: variables, condicionales y bucles": tema0/01-repaso-rapido.md
       - Relaciones entre clases:
-          - tema0/02-relaciones-clases.md
+          - Relaciones entre clases: tema0/02-relaciones-clases.md
           - Actividad 0.1 - Relaciones entre clases: tema0/actividad_0_1.md
       - Colecciones:
-          - tema0/03-colecciones.md
+          - Colecciones: tema0/03-colecciones.md
           - Actividad 0.2 - Colecciones: tema0/actividad_0_2.md
       - Programación funcional:
-          - tema0/04-programacion-funcional.md
+          - Programación funcional: tema0/04-programacion-funcional.md
           - Actividad 0.3 - Programación funcional: tema0/actividad_0_3.md
   # - Tema 1 - Servicios en red:
   #     - Tema 1 - Introducción: tema1/index.md
