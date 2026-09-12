@@ -1,0 +1,89 @@
+name: Publicar apuntes
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  construir:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v7
+
+      - name: Configurar Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Construir el sitio
+        run: mkdocs build --strict
+
+      - name: Subir artefacto para GitHub Pages
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+      - name: Guardar sitio para el espejo
+        uses: actions/upload-artifact@v7
+        with:
+          name: sitio-mkdocs
+          path: site
+
+  publicar:
+    needs: construir
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Publicar GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+
+  publicar-espejo:
+    needs: construir
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Recuperar sitio construido
+        uses: actions/download-artifact@v8
+        with:
+          name: sitio-mkdocs
+          path: site
+
+      - name: Publicar en el repositorio espejo
+        env:
+          ALEJANDRO_MIRROR_TOKEN: ${{ secrets.ALEJANDRO_MIRROR_TOKEN }}
+        run: |
+          cd site
+
+          touch .nojekyll
+
+          git init -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add .
+          git commit -m "Publicación automática desde ${{ github.repository }}"
+          
+          git remote add origin \
+            https://x-access-token:${ALEJANDRO_MIRROR_TOKEN}@github.com/alejandroroig/programacion-servicios-procesos.git
+          git push --force origin gh-pages
