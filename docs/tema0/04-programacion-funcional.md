@@ -44,6 +44,12 @@ Compara las dos formas de resolver el mismo problema: dada una lista de personas
 
 </div>
 
+La comparación también puede leerse de un vistazo en la siguiente infografía, que contrapone ambos enfoques sobre el mismo problema.
+
+![Programación imperativa vs programación funcional](img/programacion-imperativa-vs-funcional.png)
+
+*Figura 1. Programación imperativa vs programación funcional: dos formas de resolver el mismo problema en Java. Elaboración propia.*
+
 La versión funcional es más compacta y encadena operaciones (composición de funciones), a costa de ser algo más propensa a errores si no tienes claro qué hace cada pieza — por eso merece la pena pararse en cada una.
 
 ---
@@ -53,7 +59,7 @@ La versión funcional es más compacta y encadena operaciones (composición de f
 !!! info "Idea clave"
     Una función lambda (o anónima) es una función sin nombre y sin clase propia, pensada para operaciones simples que se usan una sola vez.
 
-```
+```java
 (int a, int b) -> a + b
 ```
 
@@ -64,6 +70,12 @@ Fíjate en las tres piezas por separado, porque las vas a reconocer en todas las
 | Parte | `(int a, int b)` | `->` | `a + b` |
 |---|---|---|---|
 | Qué es | los parámetros de entrada | separa los parámetros del cuerpo | el cuerpo: lo que la lambda calcula y devuelve |
+
+La siguiente figura resume esa estructura visualmente y añade dos variantes habituales: una lambda de una sola expresión y otra con bloque de instrucciones.
+
+![Anatomía visual de una función lambda en Java](img/anatomia-visual-lambdas-java.png)
+
+*Figura 2. Anatomía visual de una función lambda en Java. Elaboración propia.*
 
 !!! warning "Cuidado"
     Una lambda, por sí sola, no tiene un tipo fijo — no puedes escribir `(int a, int b) -> a + b` suelta en tu código y ya está. Java necesita saber **qué interfaz funcional** estás implementando (cuántos parámetros tiene su método, de qué tipo, y qué debe devolver) para poder darle sentido a la lambda. Esa información la saca del contexto: por ejemplo, del tipo de la variable a la que se la asignas, o del tipo de parámetro que espera el método al que se la pasas. Por eso una misma lambda nunca aparece "sola": siempre va asignada a algo o pasada como argumento a algo.
@@ -131,12 +143,19 @@ Se usan sobre todo dentro de streams, cuando la lambda no hace más que delegar 
 !!! info "Idea clave"
     Un stream es un envoltorio sobre una colección que permite encadenar operaciones sobre sus datos sin modificar la colección original: cada operación intermedia crea un stream nuevo, y el original queda intacto.
 
-Piensa en un stream como una cadena de montaje: `personas` entra por un extremo, pasa por una serie de estaciones que le van haciendo cosas (una la filtra, otra la transforma, otra la ordena...), y al final sale un resultado. Cada estación solo sabe hacer su trabajo y pasarle el resultado a la siguiente; no le importa qué hay antes ni después:
+Piensa en un stream como una cadena de montaje: `personas` entra por un extremo, pasa por una serie de estaciones que le van haciendo cosas (una la filtra, otra la transforma, otra la ordena...), y al final sale un resultado.
 
-```mermaid
-flowchart LR
-    src["personas.stream()"] --> f["filter\n(elige)"] --> m["map\n(transforma)"] --> so["sorted\n(ordena)"] --> t["collect / forEach\n(operación final)"]
-```
+![Cómo funciona un stream en Java](img/como-funciona-stream-java.png)
+
+*Figura 3. Recorrido visual de un stream en Java: origen, operaciones intermedias y operación final. Elaboración propia.*
+
+La figura permite leer el flujo completo de izquierda a derecha:
+
+- la colección de origen aporta los datos iniciales;
+- `filter` descarta los elementos que no cumplen una condición;
+- `map` transforma cada elemento que ha pasado el filtro;
+- `sorted` reordena el resultado intermedio;
+- la operación final (`collect`, `forEach`, `reduce`...) materializa el resultado.
 
 Las operaciones de un stream se dividen en dos tipos, que corresponden a las estaciones intermedias de la cadena y a la última estación que recoge el resultado:
 
@@ -284,7 +303,7 @@ personas.stream()
 
 Ese primer `0` es el **valor inicial del acumulador**: el punto de partida antes de combinar el primer elemento. `reduce` va aplicando la función de acumulación (`Integer::sum`, que aquí equivale a `(acumulado, siguiente) -> acumulado + siguiente`) uno a uno:
 
-```
+```text
 0 + 20 = 20
 20 + 30 = 50
 50 + 40 = 90
@@ -313,11 +332,18 @@ double mediaEdadAdultos = personas.stream()
 
 ## Antes de seguir: cómo encajan todas las piezas
 
-Has visto varios conceptos nuevos seguidos, así que merece la pena pararse un momento a ver cómo se apoyan unos en otros:
+Has visto varios conceptos nuevos seguidos, así que merece la pena pararse un momento a ver cómo se apoyan unos en otros.
 
-- Una **lambda** es una función sin nombre que escribes en el sitio donde antes hacía falta una clase entera.
-- Una **interfaz funcional** (`Comparator`, `Predicate`, `Function`, `Consumer`...) es el "molde" que le dice a Java qué forma debe tener esa lambda: cuántos parámetros recibe y qué tiene que devolver.
-- Un **método de referencia** (`Persona::getEdad`) es solo un atajo para cuando la lambda no hace más que llamar a un método que ya existe.
-- Un **stream** es la cadena de montaje que usa lambdas, interfaces funcionales y métodos de referencia en cada una de sus estaciones (`filter`, `map`, `sorted`...) para procesar una colección de principio a fin, sin que tengas que escribir ni un solo bucle.
+![Cómo encajan las piezas de la programación funcional en Java](img/como-encajan-las-piezas-java.png)
 
-Si en algún momento te pierdes con una lambda concreta, vuelve a esta lista: casi siempre el bloqueo está en no tener claro cuál de estas cuatro piezas estás mirando.
+*Figura 4. Relación entre interfaces funcionales, lambdas, métodos de referencia y streams en Java. Elaboración propia.*
+
+La idea puede resumirse así:
+
+- una **interfaz funcional** (`Comparator`, `Predicate`, `Function`, `Consumer`...) marca la forma del comportamiento que espera Java;
+- una **lambda** es la implementación breve de ese comportamiento;
+- un **método de referencia** es una versión abreviada de algunas lambdas;
+- un **stream** utiliza esas piezas para procesar colecciones sin escribir bucles explícitos.
+
+!!! tip "Qué debes recordar"
+    Si en algún momento te pierdes con una expresión funcional, intenta identificar primero **qué papel está desempeñando**: si estás viendo el contrato (`Predicate`), la implementación (`p -> p.getEdad() >= 18`), el atajo (`Persona::getEdad`) o el contexto donde se usa (`stream().map(...)`). Casi siempre el bloqueo está ahí.
