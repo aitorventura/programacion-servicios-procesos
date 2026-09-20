@@ -48,13 +48,13 @@ Content-Type: application/json
 {"id": 3, "titulo": "El nombre del viento", "precio": 19.95}
 ```
 
-| Parte | En la petición | En la respuesta |
-|---|---|---|
-| Primera línea | Método + ruta + versión | Versión + código de estado |
-| Cabeceras (*headers*) | Metadatos: qué formato aceptas, quién eres... | Metadatos: qué formato devuelve, tamaño... |
-| Cuerpo (*body*) | Datos que envías (puede no haberlo) | Datos que devuelve (puede no haberlo) |
+La estructura completa puede verse de un vistazo en la siguiente figura: la petición viaja del cliente al servidor y la respuesta recorre el camino inverso.
 
-Fíjate en las dos cabeceras del ejemplo, porque se confunden fácilmente al principio: `Accept` la manda el cliente, y significa "esto es lo que quiero que me devuelvas"; `Content-Type` la manda quien envía un cuerpo (aquí, el servidor en la respuesta), y significa "esto es lo que de verdad te estoy mandando". Es la diferencia entre pedir y confirmar: es como pedir un plato en un restaurante — le dices al camarero qué quieres (`Accept`), y cuando te lo trae, la etiqueta del plato confirma qué es realmente lo que tienes delante (`Content-Type`). Un mismo servidor podría saber responder en JSON o en otro formato según lo que le pida cada cliente en su `Accept`; y `Content-Type` es lo que le dice a quien recibe el mensaje cómo tiene que leer ese cuerpo antes de intentarlo.
+![Anatomía de una conversación HTTP](img/anatomia-conversacion-http.png)
+
+*Figura 1. Anatomía de una conversación HTTP: petición, respuesta, cabeceras y cuerpo. Elaboración propia.*
+
+Fíjate especialmente en dos cabeceras que se confunden fácilmente al principio: `Accept` la manda el cliente y significa **"esto es lo que quiero recibir"**; `Content-Type` la manda quien envía un cuerpo y significa **"esto es lo que realmente estoy enviando"**. Un mismo servidor podría saber responder en JSON o en otro formato según lo que solicite cada cliente, y `Content-Type` indica a quien recibe el mensaje cómo debe interpretar ese cuerpo.
 
 ---
 
@@ -85,6 +85,12 @@ En el caso de `PATCH`, depende de la modificación concreta:
 
 * «Pon el precio en 19,95 €» es idempotente: repetirlo deja siempre el mismo precio.
 * «Aumenta el precio en 5 €» no lo es: cada repetición vuelve a sumar otros 5 €.
+
+La siguiente figura resume los verbos más habituales y su relación con la idempotencia. Úsala como mapa general; los matices anteriores siguen siendo importantes, especialmente en `PATCH`.
+
+![Verbos HTTP e idempotencia](img/verbos-http-idempotencia.png)
+
+*Figura 2. Verbos HTTP e idempotencia: intención de cada método y efecto de repetir una petición. Elaboración propia.*
 
 !!! info "Una novedad del estándar: el método `QUERY`"
     En junio de 2026 se incorporó al estándar HTTP el método `QUERY`, pensado para búsquedas cuyos criterios son demasiado complejos o extensos para expresarlos cómodamente mediante parámetros en la URL. En esos casos, el cliente puede describir la consulta mediante un cuerpo, normalmente en formato JSON.
@@ -180,20 +186,9 @@ Vuelve un momento a la petición en texto plano de antes: `GET /api/v1/libros/3 
 
 El viaje completo de una petición `GET /api/v1/libros/3`, ida y vuelta — fíjate en que la respuesta recorre exactamente el mismo camino que la petición, pero al revés: pasa otra vez por el controller (que la envuelve en la respuesta HTTP) y por Tomcat (que la manda de verdad por la red) antes de llegar al cliente:
 
-```mermaid
-sequenceDiagram
-    participant Cliente as 🌐 Cliente
-    participant Tomcat as 🐱 Tomcat
-    participant Controller as LibroController
-    participant Service as LibroService
+![Del HTTP al controlador REST](img/del-http-al-controlador-rest.png)
 
-    Cliente->>Tomcat: GET /api/v1/libros/3
-    Tomcat->>Controller: getById(3)
-    Controller->>Service: findById(3)
-    Service-->>Controller: LibroResponseDTO
-    Controller-->>Tomcat: ResponseEntity(200, JSON)
-    Tomcat-->>Cliente: HTTP/1.1 200 OK + JSON
-```
+*Figura 3. Del HTTP al controlador REST: cómo una petición se transforma en una llamada Java y vuelve como respuesta HTTP. Elaboración propia.*
 
 El puerto `8080` y el servidor **Tomcat** que escucha en él no son magia: los trae la dependencia `spring-boot-starter-webmvc` del `pom.xml` — es la "librería que implementa el servicio en red" de la que habla el currículo. Tú no arrancas ningún servidor a mano: Spring Boot lo hace por ti al ejecutar la clase anotada con `@SpringBootApplication`.
 
@@ -203,20 +198,11 @@ El puerto `8080` y el servidor **Tomcat** que escucha en él no son magia: los t
 
 Todo lo anterior supone que existe un libro con el `id` solicitado. Cuando no existe, el recorrido de la petición es casi el mismo:
 
-```mermaid
-sequenceDiagram
-    participant Cliente as 🌐 Cliente
-    participant Tomcat as 🐱 Tomcat
-    participant Controller as LibroController
-    participant Service as LibroService
+La estructura general es la misma que en el caso correcto; lo que cambia es el resultado que obtiene la aplicación al buscar el recurso.
 
-    Cliente->>Tomcat: GET /api/v1/libros/9999
-    Tomcat->>Controller: getById(9999)
-    Controller->>Service: findById(9999)
-    Service-->>Controller: null
-    Controller-->>Tomcat: ResponseEntity(404)
-    Tomcat-->>Cliente: HTTP/1.1 404 Not Found
-```
+![Éxito frente a error 404 en una petición REST](img/exito-vs-404-rest.png)
+
+*Figura 4. Comparación entre una petición REST resuelta con `200 OK` y otra que termina en `404 Not Found`. Elaboración propia.*
 
 En esta primera versión, el service intenta localizar el libro y devuelve `null` cuando no lo encuentra. El controller comprueba ese resultado y lo traduce al lenguaje HTTP:
 
@@ -251,12 +237,14 @@ Esta versión con `if` permite ver claramente cómo una situación de la aplicac
 
 Podrías diseñar tu propio protocolo casero sobre sockets (lo verás en el Tema 4) en vez de usar HTTP/REST. La diferencia es que HTTP es un protocolo **estándar**: cualquier cliente que exista — un navegador, `curl`, otra aplicación escrita en otro lenguaje — ya sabe hablarlo, sin que tengas que documentar ni acordar nada a medida. Con un protocolo propio, cada cliente nuevo tendría que aprender tus reglas particulares desde cero.
 
-| | Protocolo estándar (HTTP) | Protocolo propio a medida |
-|---|---|---|
-| ¿Quién ya sabe hablarlo? | Cualquier cliente existente: navegadores, `curl`, librerías de cualquier lenguaje. | Solo el que tú mismo escribas para hablarlo. |
-| Documentación necesaria | La del propio recurso (qué rutas, qué devuelve cada una) — el formato de mensaje ya está definido de antemano. | Tienes que documentar y mantener también el propio formato de mensaje. |
-| Herramientas de por medio | Servidores, proxies, balanceadores, cachés — todos entienden HTTP sin configuración especial. | Ninguna herramienta genérica te sirve; hay que escribirlas o adaptarlas todas. |
-| Coste de un cliente nuevo | Bajo: ya sabe HTTP, solo aprende tus rutas. | Alto: tiene que aprender tu protocolo entero desde cero. |
+La diferencia se entiende mejor si miras no solo el formato de los mensajes, sino también todo el ecosistema que existe alrededor de un estándar.
+
+![HTTP estándar frente a protocolo propio](img/http-estandar-vs-protocolo-propio.png)
+
+*Figura 5. Comparación entre reutilizar HTTP/REST y definir un protocolo propio para comunicar aplicaciones. Elaboración propia.*
+
+!!! tip "Idea práctica"
+    En una API web normalmente interesa reutilizar HTTP porque navegadores, `curl`, librerías, proxies, balanceadores y herramientas de diagnóstico ya saben trabajar con él. Un protocolo propio solo compensa cuando existe una necesidad muy específica que los estándares disponibles no cubren bien.
 
 ---
 
