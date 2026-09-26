@@ -9,24 +9,26 @@
 
 ---
 
-Hasta ahora has comprobado que tu API responde bien a una petición aislada: el código de estado correcto, el JSON esperado, el test que pasa. Hoy cierras el tema con dos preguntas distintas, sobre ese mismo servicio ya en marcha: ¿aguanta varias peticiones a la vez sin que unas tengan que esperar a otras? Y, más allá de una petición concreta, ¿cómo sabes si el servicio en general sigue sano y disponible ahora mismo, sin tener que comprobarlo tú a mano?
+Hasta ahora has comprobado que tu API responde correctamente a una petición aislada: devuelve el código de estado esperado, genera el JSON previsto y supera sus tests.
+
+Para cerrar el tema vamos a plantear dos preguntas distintas sobre ese mismo servicio cuando ya está en ejecución:
+
+- ¿puede atender **varias peticiones a la vez** sin obligarlas a esperar unas detrás de otras?;
+- ¿cómo podemos saber automáticamente si el servicio está **sano y disponible**, más allá de comprobar manualmente un endpoint concreto?
 
 ---
 
 ## 🧵 Comunicación simultánea de varios clientes
 
-Piensa en tu propio GameVault, ya en producción: no lo vas a usar solo tú. Si veinte personas consultan el catálogo a la vez y tu servidor las atendiera de una en una —terminar la primera antes de empezar la segunda—, la última persona esperaría veinte veces más que la primera.
+Piensa en GameVault funcionando para varios usuarios. Si veinte personas consultan el catálogo al mismo tiempo y el servidor atendiera las peticiones de una en una, las últimas tendrían que esperar a que terminaran todas las anteriores.
 
-Por suerte, no funciona así: Spring Web, sobre Tomcat, atiende cada petición HTTP en un **hilo** distinto —una línea de ejecución independiente dentro de tu propia aplicación, que avanza en paralelo con las demás— tomado de un ***pool***: un conjunto de hilos ya creados de antemano y listos para usar, en vez de crear uno nuevo por cada petición (verás ambas ideas con detalle en el Tema 3). Es como varios camareros, cada uno con su propia mesa, en vez de un único camarero que no pasa a la siguiente mesa hasta terminar con la anterior:
+Spring Web, sobre Tomcat, no trabaja así. Tomcat dispone de un **pool de hilos**: un conjunto de hilos preparados para atender peticiones. Cuando llegan varias solicitudes y hay hilos disponibles, distintas peticiones pueden avanzar de forma concurrente.
 
-```mermaid
-flowchart LR
-    C1["🧑‍🍳 Hilo 1"] --> M1["Petición 1"]
-    C2["🧑‍🍳 Hilo 2"] --> M2["Petición 2"]
-    C3["🧑‍🍳 Hilo 3"] --> M3["Petición 3"]
-```
+![Cómo atiende Tomcat varias peticiones a la vez](img/actuator/tomcat-peticiones-concurrentes.png)
 
-Vas a comprobarlo tú mismo en la Actividad 1.4: montarás un método del service con un `Thread.sleep(2000)` puesto a propósito, que simula una consulta lenta, y lanzarás dos peticiones **simultáneas** contra su endpoint, así:
+*Figura 1. Tomcat utiliza un pool de hilos para atender varias peticiones concurrentes sin procesarlas necesariamente de forma secuencial. Elaboración propia.*
+
+En la Actividad 1.4 comprobarás este comportamiento de forma experimental. Introducirás temporalmente un `Thread.sleep(2000)` en un método del service para simular una operación lenta y lanzarás dos peticiones simultáneas:
 
 ```bash
 time (curl -s http://localhost:8080/api/v1/libros/top & \
@@ -34,53 +36,71 @@ time (curl -s http://localhost:8080/api/v1/libros/top & \
       wait)
 ```
 
-Antes de probarlo tú mismo, compara las dos formas posibles en que tu servidor podría atender esas dos peticiones:
+Si se ejecutaran una detrás de otra, el tiempo total sería aproximadamente:
 
-```mermaid
-flowchart TD
-    subgraph SEC["🐢 Secuencial — un solo hilo"]
-        direction LR
-        A1["Petición 1 — 2s"] --> A2["Petición 2 — 2s"]
-    end
-    subgraph PAR["🐇 En paralelo — un hilo por petición"]
-        direction LR
-        B1["Petición 1 — 2s"]
-        B2["Petición 2 — 2s"]
-    end
+```text
+petición 1 → 2 s
+petición 2 → 2 s
+
+total ≈ 4 s
 ```
 
-Si las dos peticiones se atendieran una detrás de otra (el bloque "Secuencial"), el conjunto tardaría unos 4 segundos. Si se atienden en paralelo (el bloque "En paralelo"), tardan aproximadamente 2 — porque cada una la procesa un hilo distinto del pool, igual que los dos camareros de la analogía. Puedes confirmarlo añadiendo temporalmente una traza con `Thread.currentThread().getName()` en el método y mirando el log: verás dos nombres de hilo distintos (`http-nio-8080-exec-1`, `http-nio-8080-exec-2`...) para las dos peticiones.
+Si ambas se atienden en hilos distintos, el tiempo total debería acercarse a:
+
+```text
+petición 1 ─┐
+            ├→ aproximadamente 2 s
+petición 2 ─┘
+```
+
+Puedes comprobar además qué hilo atiende cada petición registrando temporalmente:
+
+```java
+Thread.currentThread().getName()
+```
+
+En el log aparecerán nombres distintos, por ejemplo:
+
+```text
+http-nio-8080-exec-1
+http-nio-8080-exec-2
+```
+
+!!! info "No significa que haya recursos infinitos"
+    El pool dispone de un número limitado de hilos. La idea importante en esta sesión es que Tomcat puede atender **varias peticiones concurrentemente** mientras haya capacidad disponible; estudiarás con más detalle hilos, pools y concurrencia en el Tema 3.
 
 ---
 
-## 🩺 Qué es la disponibilidad de un servicio
+## 🩺 Qué significa que un servicio esté disponible
 
-Todo lo anterior daba por hecho algo que no has cuestionado en ningún momento: que tu servicio está funcionando de verdad. ¿Cómo lo sabes, en realidad?
+Hasta ahora hemos dado por hecho que el servicio está funcionando. Pero que el proceso exista no garantiza que pueda realizar correctamente su trabajo.
 
-Imagina que tu GameVault, ya desplegado, se cae un sábado a las tres de la madrugada. Si nadie lo comprueba a mano, nadie se entera hasta que un usuario se queja de que la web no funciona — pueden pasar horas. Este es exactamente el problema que resuelve comprobar la disponibilidad de forma automática, sin esperar a que un humano lo note.
+La disponibilidad puede observarse en varios niveles:
 
-Que un servicio esté **disponible** no es una única cosa binaria — hay distintos niveles de "estar bien", cada uno más exigente que el anterior:
+![Niveles de disponibilidad de un servicio](img/actuator/niveles-disponibilidad.png)
 
-1. **El proceso está arrancado**: la aplicación no se ha caído, sigue viva.
-2. **Responde peticiones**: acepta conexiones y contesta algo, lo que sea.
-3. **Sus dependencias funcionan**: la base de datos, la cola de mensajería, cualquier servicio del que dependa, están accesibles — un proceso vivo que no puede hablar con su base de datos no está realmente "disponible" para hacer su trabajo.
+*Figura 2. Un proceso puede estar arrancado y responder peticiones sin que todas sus dependencias estén realmente disponibles. Elaboración propia.*
 
-```mermaid
-flowchart LR
-    A["🔴 Proceso caído"] --> B["🟡 Proceso vivo,<br/>no responde"]
-    B --> C["🟠 Responde,<br/>pero fallan sus dependencias"]
-    C --> D["🟢 Realmente<br/>disponible"]
-```
+Conviene distinguir al menos estas situaciones:
 
-Un **health check** (comprobación de salud) es una forma automática — pensada para que la ejecute una máquina, sin intervención humana — de responder a estas preguntas cada pocos segundos, sin que nadie tenga que mirar una pantalla. Quien consulta esa información no eres tú, a mano: puede ser un programa que compruebe el servicio cada pocos minutos y avise a alguien en cuanto deje de responder, un sistema de despliegue que reinicie el servicio automáticamente si detecta que ha dejado de estar sano, o el propio **CI**, que puede comprobar que el servicio arranca correctamente antes de darlo por bueno.
+1. **Proceso caído**: la aplicación ni siquiera está ejecutándose.
+2. **Proceso vivo pero sin respuesta útil**: existe, pero no atiende correctamente las peticiones.
+3. **Responde pero falla una dependencia**: por ejemplo, la API sigue levantada pero no puede acceder a la base de datos.
+4. **Servicio saludable**: la aplicación responde y las dependencias necesarias para realizar su trabajo también están disponibles.
+
+La consecuencia es importante:
+
+> **Responder una petición no siempre significa que el servicio esté sano.**
+
+Un **health check** es una comprobación automática diseñada precisamente para responder a esa pregunta. Normalmente no la ejecuta una persona manualmente, sino otro sistema de forma periódica.
 
 ---
 
 ## 🛠️ Spring Boot Actuator
 
-**Spring Boot Actuator** es la implementación de todo esto para una aplicación Spring Boot: un conjunto de endpoints HTTP listos para usar que exponen información operativa sobre tu aplicación — entre ellos, su salud.
+**Spring Boot Actuator** proporciona endpoints operativos preparados para observar el estado de una aplicación Spring Boot. Entre ellos se encuentra el endpoint de salud.
 
-Tu propio proyecto no incluye Actuator todavía (revisa tu `pom.xml`: no está la dependencia) — es la mejora que añades esta semana:
+Para utilizarlo añade la dependencia:
 
 ```xml
 <dependency>
@@ -89,15 +109,18 @@ Tu propio proyecto no incluye Actuator todavía (revisa tu `pom.xml`: no está l
 </dependency>
 ```
 
-!!! tip "No aparecen en Swagger UI con la configuración actual"
-    De forma predeterminada, springdoc no añade los endpoints de Actuator a Swagger UI. Por eso verás los endpoints de tu API, pero no `/actuator/health`.
+Con esta dependencia, Spring Boot expone automáticamente:
 
-    Tiene sentido mantenerlos separados: `/actuator/health` no es un recurso del catálogo pensado para sus usuarios, sino información operativa para comprobar el estado de la aplicación.
+```text
+/actuator/health
+```
 
-    Springdoc permite incluir también los endpoints de Actuator mediante una propiedad de configuración, pero no la necesitas en esta actividad. Consultarás `/actuator/health` directamente desde el navegador o mediante `curl`.
-    
+!!! tip "Actuator y Swagger UI cumplen funciones distintas"
+    Con la configuración actual, springdoc documenta tus propios endpoints REST, pero no añade automáticamente `/actuator/health` a Swagger UI.
 
-Con solo esa dependencia, Spring Boot expone automáticamente `/actuator/health`. Para ver durante el desarrollo el detalle de cada dependencia —y no solo un `UP` o `DOWN` general— añade esta configuración en `application-dev.yml`:
+    Tiene sentido mantener ambos espacios separados: los endpoints `/api/...` ofrecen **funcionalidad de negocio** a los clientes; `/actuator/...` ofrece **información operativa** sobre la aplicación.
+
+Para ver durante el desarrollo el detalle de los componentes comprobados, añade en `application-dev.yml`:
 
 ```yaml
 management:
@@ -105,16 +128,23 @@ management:
     health:
       show-details: always
 ```
-!!! warning "Configuración para desarrollo"
-    `show-details: always` permite que cualquiera que pueda acceder a `/actuator/health` vea el detalle de los componentes comprobados.
 
-En estas prácticas resulta útil porque trabajarás en local y podrás identificar rápidamente si ha fallado PostgreSQL, MongoDB u otra dependencia. En producción, estos detalles normalmente se ocultan o se muestran únicamente a usuarios autorizados.
+!!! warning "Configuración para desarrollo"
+    `show-details: always` permite que cualquier cliente con acceso a `/actuator/health` vea información sobre los componentes internos comprobados.
+
+    En local resulta muy útil para diagnosticar si ha fallado PostgreSQL, MongoDB u otra dependencia. En producción, este detalle suele ocultarse o restringirse a usuarios autorizados.
 
 ---
 
-## 🟢 El endpoint `/actuator/health`
+## 🟢 Cómo funciona `/actuator/health`
 
-Con los detalles activados, `/actuator/health` no solo dice si tu aplicación responde — agrega el estado de **cada dependencia real** que Spring Boot detecta en el classpath. En una aplicación con varias piezas de infraestructura (por ejemplo, tu propio GameVault más adelante, cuando tenga PostgreSQL y MongoDB a la vez), eso se ve así:
+Actuator no se limita a preguntar si el proceso Java sigue ejecutándose. Puede incorporar **health indicators** de componentes y dependencias que Spring Boot detecta en la aplicación.
+
+![Cómo Actuator comprueba la salud de la aplicación](img/actuator/actuator-health-componentes.png)
+
+*Figura 3. Actuator consulta distintos componentes, agrega sus estados y expone el resultado mediante `/actuator/health`. Elaboración propia.*
+
+Con los detalles activados, una aplicación con PostgreSQL y MongoDB podría responder:
 
 ```json
 {
@@ -126,12 +156,61 @@ Con los detalles activados, `/actuator/health` no solo dice si tu aplicación re
 }
 ```
 
-Fíjate en la implicación: si el contenedor de MongoDB se cae, `/actuator/health` pasa a `DOWN` con el detalle del componente `mongo` marcado como el culpable — **aunque la aplicación siga respondiendo peticiones sobre PostgreSQL sin ningún problema**. Es exactamente el matiz del punto 3 de más arriba: "responder" y "estar realmente sano" no son lo mismo.
+Si MongoDB deja de estar disponible, el estado del componente puede pasar a `DOWN` y afectar al estado agregado del servicio.
 
-!!! tip "Es un GET más, pensado para máquinas"
-    `/actuator/health` no deja de ser una petición HTTP estándar — el mismo protocolo de siempre. La diferencia es quién lo consulta: normalmente no una persona con un navegador, sino un orquestador o un monitor, cada pocos segundos, de forma automática. Eso es exactamente para lo que sirve: verificar la disponibilidad del servicio.
+La aplicación podría incluso seguir respondiendo correctamente a algún endpoint que solo dependa de PostgreSQL. Esa situación demuestra de nuevo que:
 
-Actuator trae también otros endpoints útiles, como `/actuator/info` (metadatos de la aplicación) o `/actuator/metrics` (métricas de rendimiento) — no vas a profundizar en ellos ahora, pero conviene que sepas que existen.
+```text
+responder una petición
+≠
+estar completamente sano
+```
+
+!!! tip "Sigue siendo HTTP"
+    `/actuator/health` es simplemente un endpoint HTTP que responde a un `GET`. La diferencia no está en el protocolo, sino en **qué información ofrece y quién suele consultarla**.
+
+---
+
+## 🤖 Quién consulta un health check
+
+Un health check está pensado principalmente para otras máquinas. Diferentes sistemas pueden consultar periódicamente `/actuator/health` y actuar según el resultado.
+
+![Quién consulta actuator health y para qué](img/actuator/quien-consulta-actuator-health.png)
+
+*Figura 4. Monitorización, sistemas de despliegue y procesos de CI pueden consultar automáticamente el estado del servicio. Elaboración propia.*
+
+Algunos usos habituales son:
+
+- **monitorización**: detectar una caída y generar una alerta;
+- **despliegue u orquestación**: decidir si una instancia debe recibir tráfico, reiniciarse o sustituirse;
+- **CI/verificación**: comprobar que la aplicación arranca correctamente antes de considerar válido un despliegue.
+
+En todos los casos se aprovecha el mismo principio: una máquina puede consultar el estado del servicio **sin intervención humana**.
+
+---
+
+## 📊 Otros endpoints de Actuator
+
+`/actuator/health` es el endpoint que utilizarás en esta actividad, pero Actuator ofrece más información operativa.
+
+![Otros endpoints útiles de Spring Boot Actuator](img/actuator/otros-endpoints-actuator.png)
+
+*Figura 5. Algunos endpoints de Actuator permiten consultar salud, metadatos y métricas de la aplicación. Elaboración propia.*
+
+Entre los más habituales:
+
+| Endpoint | Para qué sirve |
+|---|---|
+| `/actuator/health` | estado de salud de la aplicación y sus componentes |
+| `/actuator/info` | metadatos de la aplicación |
+| `/actuator/metrics` | métricas técnicas disponibles |
+
+No profundizarás todavía en `info` ni `metrics`; basta con situarlos dentro de una idea más amplia: **Actuator expone información operativa para observar y diagnosticar la aplicación**.
+
+!!! info "API de negocio y API operativa"
+    Swagger UI está orientado a explorar y probar los endpoints funcionales de tu API. Actuator expone información técnica sobre la aplicación.
+
+    Ambos utilizan HTTP, pero están dirigidos a necesidades distintas.
 
 ---
 
@@ -139,9 +218,12 @@ Actuator trae también otros endpoints útiles, como `/actuator/info` (metadatos
 
 ??? tip "Abrir resumen"
 
-    - Cada petición HTTP la atiende un hilo distinto del *pool* de Tomcat — por eso dos peticiones lentas simultáneas no tardan el doble, sino aproximadamente lo mismo que una sola.
-    - La **disponibilidad** de un servicio tiene varios niveles: proceso vivo, responde peticiones, dependencias funcionando — no son lo mismo.
-    - Un **health check** es una comprobación automática, pensada para que la consulte una máquina (un programa de monitorización, un sistema de despliegue, el propio CI), no una persona.
-    - **Spring Boot Actuator** expone `/actuator/health` con la dependencia `spring-boot-starter-actuator`; `management.endpoint.health.show-details: always` durante el desarrollo, permite ver el detalle de los componentes comprobados por Actuator.
-    - `/actuator/health` agrega el estado de cada dependencia real (PostgreSQL, MongoDB...) — si una cae, el estado general pasa a `DOWN` aunque el resto siga funcionando.
-    - Los endpoints de Actuator no aparecen en Swagger UI: springdoc solo escanea tus propios `@RestController`, no el mecanismo aparte que usa Actuator.
+    - Tomcat utiliza un **pool de hilos** y puede atender varias peticiones concurrentemente mientras haya capacidad disponible.
+    - Dos operaciones de 2 segundos atendidas en paralelo pueden completar el conjunto en aproximadamente 2 segundos, no necesariamente en 4.
+    - Que el proceso esté vivo o incluso responda peticiones no garantiza que el servicio esté **completamente sano**.
+    - Un **health check** es una comprobación automática pensada para ser consultada periódicamente por otras máquinas.
+    - **Spring Boot Actuator** añade endpoints operativos como `/actuator/health`.
+    - `/actuator/health` puede agregar el estado de dependencias reales y señalar cuál está fallando.
+    - `management.endpoint.health.show-details: always` resulta útil durante el desarrollo, pero expone información interna que normalmente debe restringirse en producción.
+    - Monitorización, CI/CD y sistemas de despliegue u orquestación pueden utilizar el health check para tomar decisiones automáticas.
+    - `/actuator/info` y `/actuator/metrics` forman parte del mismo conjunto de herramientas operativas, aunque no se trabajen en profundidad en esta sesión.

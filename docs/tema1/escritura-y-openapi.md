@@ -9,7 +9,7 @@
 
 ---
 
-Ya conoces los DTOs de entrada y de salida, las anotaciones de Bean Validation, `@Valid` y `@Transactional` — los has usado para construir un CRUD completo. Aquí no repites nada de eso: ves esos mismos endpoints de escritura completos, con su código real, y añades algo que todavía no tenías — documentación automática de tu API con OpenAPI.
+Ya conoces los DTOs de entrada y de salida, las anotaciones de Bean Validation, `@Valid` y `@Transactional`: los has usado para construir un CRUD completo. Aquí no repites nada de eso. Vas a leer esos mismos endpoints de escritura completos, con su código real, y añadirás algo que todavía no tenías: **documentación automática de la API mediante OpenAPI**.
 
 ---
 
@@ -35,12 +35,17 @@ public class LibroController {
     }
 
     @PostMapping
-    public ResponseEntity<LibroResponseDTO> create(@Valid @RequestBody LibroCreateDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(libroService.create(dto));
+    public ResponseEntity<LibroResponseDTO> create(
+            @Valid @RequestBody LibroCreateDTO dto) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(libroService.create(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LibroResponseDTO> update(@PathVariable Long id, @Valid @RequestBody LibroCreateDTO dto) {
+    public ResponseEntity<LibroResponseDTO> update(
+            @PathVariable Long id,
+            @Valid @RequestBody LibroCreateDTO dto) {
         return ResponseEntity.ok(libroService.update(id, dto));
     }
 
@@ -60,55 +65,43 @@ public class LibroController {
 | `PUT` | `200 OK` | El recurso se ha reemplazado correctamente y se devuelve su estado actualizado. |
 | `DELETE` | `204 No Content` | El recurso se ha eliminado y no hay ningún cuerpo que devolver. |
 
-Y, elemento a elemento, lo que hace cada pieza de esos tres métodos:
+!!! tip "Qué debes reconocer"
+    - `@RequestBody` convierte el JSON recibido en un objeto Java.
+    - `@Valid` valida el DTO antes de ejecutar el método.
+    - `ResponseEntity` permite decidir explícitamente el código de estado y el cuerpo de la respuesta.
 
-| Elemento | Qué representa |
-|---|---|
-| `ResponseEntity.status(HttpStatus.CREATED).body(...)` | `201`, con el recurso creado en el cuerpo — la respuesta natural de un `POST`. |
-| `ResponseEntity.ok(...)` en el `PUT` | `200`, con el recurso ya actualizado en el cuerpo. |
-| `ResponseEntity.noContent().build()` | `204`, sin cuerpo — la respuesta natural de un `DELETE`. |
-| `@RequestBody LibroCreateDTO dto` | El cuerpo JSON de la petición, convertido automáticamente en un objeto Java. |
-| `@Valid` | La misma validación que ya conoces, ahora en el flujo de escritura: si el DTO incumple alguna restricción, la petición nunca llega a ejecutar el método — se profundiza en el Tema 2. |
-
-Fíjate en algo: nada de este código menciona OpenAPI ni Swagger. Eso es justo lo que viene ahora — cómo este mismo controller, sin tocarle una línea, termina documentado y ejecutable desde el navegador.
+Nada de este código menciona todavía OpenAPI ni Swagger. Eso es precisamente lo que viene ahora: cómo el mismo controller puede terminar documentado y ejecutable desde el navegador sin duplicar manualmente toda su estructura.
 
 ---
 
 ## 📜 El contrato de una API: qué es OpenAPI
 
-Toda esa semántica —qué verbo usar, qué código esperar, si es seguro reintentar— la conoces tú, porque ya la has visto en el apartado anterior. Pero cuando el consumidor de tu API es otro programa (o un compañero de equipo que no ha leído tu código), necesita saber lo mismo sin adivinar: qué rutas existen, qué verbo usa cada una, qué reciben y qué devuelven. A esa descripción formal se la llama el **contrato** de la API.
+Cuando quien consume tu API es otro programa —o un compañero que no ha leído tu código— necesita conocer qué rutas existen, qué verbo usa cada una, qué reciben y qué devuelven. A esa descripción formal se la llama el **contrato** de la API.
 
-**OpenAPI** es el formato estándar más usado para escribir ese contrato (un documento, normalmente en YAML o JSON, que describe rutas, verbos, parámetros y esquemas de datos). **Swagger UI** es un visor interactivo que lee ese documento y genera, automáticamente, una página web donde se puede explorar la API — y también **ejecutarla de verdad**.
+**OpenAPI** es el formato estándar más usado para expresar ese contrato. Describe rutas, verbos, parámetros, cuerpos, códigos de respuesta y esquemas de datos. En nuestro proyecto, **springdoc** puede generar automáticamente gran parte de esa información a partir de los controllers, DTOs y anotaciones que ya utilizas.
 
-```mermaid
-flowchart LR
-    A["📝 Anotaciones en tu código<br/>(@RestController, @GetMapping...)"] -- "genera" --> B["📄 Contrato OpenAPI<br/>(/v3/api-docs)"]
-    B -- "se visualiza en" --> C["🖥️ Swagger UI<br/>(/swagger-ui.html)"]
-```
+![Del código Java al contrato OpenAPI y Swagger UI](img/openapi/del-codigo-java-a-swagger-ui.png)
 
-Lo importante: tú no escribes el documento OpenAPI completo a mano. Una librería genera automáticamente gran parte del contrato leyendo las mismas anotaciones (`@RestController`, `@GetMapping`, los DTOs...) que ya utilizas para construir la API.
+*Figura 1. Del código Java al contrato OpenAPI y su representación mediante Swagger UI. Elaboración propia.*
 
-Así, las rutas, los verbos y los esquemas básicos se mantienen vinculados al código. Más adelante añadirás algunas anotaciones de OpenAPI para completar información que springdoc no puede deducir por sí solo, como la descripción de cada operación o los distintos códigos de respuesta posibles.
+La idea importante es que **Swagger UI no inspecciona directamente tu controller**. Lee el documento OpenAPI generado por springdoc en `/v3/api-docs` y lo representa como una interfaz navegable.
 
-Esto evita duplicar mucha información: si añades un nuevo endpoint o cambias los campos de un DTO, la documentación generada refleja esos cambios automáticamente. Algunos detalles, como las descripciones o los códigos de respuesta posibles, sí tendrás que indicarlos mediante anotaciones específicas.
+Así, las rutas, los verbos y los esquemas básicos permanecen vinculados al código. Si añades un endpoint o cambia un DTO, springdoc puede reflejar automáticamente gran parte de ese cambio en el contrato. Otros detalles, como una descripción legible o todos los códigos de respuesta posibles, necesitan información adicional que añadiremos mediante anotaciones específicas de OpenAPI.
 
-### 🖥️ Así se ve Swagger UI, paso a paso
+### Así se ve Swagger UI, paso a paso
 
-Esto es exactamente lo que vas a tener delante en tu propia pantalla, sobre tu propio `LibroController` (o el equivalente en tu proyecto):
+Swagger UI no sirve únicamente para leer documentación. También actúa como un **cliente HTTP real**.
 
-1. Abres `/swagger-ui.html` en el navegador y ves los controllers de tu API agrupados por *tag* (normalmente, el nombre de la clase), cada uno desplegable.
-2. Despliegas, por ejemplo, `POST /api/v1/libros` — Swagger UI te muestra el esquema esperado del cuerpo (los mismos campos de `LibroCreateDTO`, con sus tipos y sus restricciones de Bean Validation) y un ejemplo de JSON ya relleno.
-3. Pulsas **Try it out**: ese ejemplo se vuelve editable. Cambias los valores que quieras.
-4. Pulsas **Execute**.
+![De Swagger UI a una petición HTTP real](img/openapi/swagger-ui-peticion-http-real.png)
 
-!!! info "Swagger UI no es solo documentación: manda peticiones HTTP reales"
-    Al pulsar **Execute**, Swagger UI construye y envía una petición HTTP real contra tu aplicación.
+*Figura 2. Swagger UI actúa como cliente HTTP y ejecuta peticiones reales contra la aplicación. Elaboración propia.*
 
-    Es una petición equivalente a la que podrías enviar mediante `curl`, Postman o cualquier otro cliente HTTP: llega al mismo endpoint y ejecuta el mismo código del controller.
+El proceso es sencillo: seleccionas un endpoint, pulsas **Try it out**, modificas los datos si es necesario y finalmente pulsas **Execute**. Swagger UI construye entonces una petición HTTP y la envía al mismo endpoint que utilizarían `curl`, Postman, una aplicación web o cualquier otro cliente.
 
-    La respuesta que aparece debajo —código de estado, cabeceras y cuerpo— es la respuesta real del servidor. Si ejecutas un `POST` y se crea un libro, quedará guardado en la base de datos.
+!!! warning "No es una simulación"
+    Si ejecutas un `POST`, `PUT` o `DELETE` desde Swagger UI, estás modificando realmente el estado de la aplicación y, cuando corresponda, de su base de datos.
 
-### Documentando con OpenAPI
+### Configuración de OpenAPI y rutas de documentación
 
 La documentación se genera con la dependencia `springdoc-openapi-starter-webmvc-ui` y una clase de configuración mínima:
 
@@ -122,56 +115,101 @@ public class OpenApiConfig {
                 .info(new Info()
                         .title("Librería API")
                         .version("v1")
-                        .description("API para gestionar el catálogo de libros, editoriales, reseñas..."));
+                        .description(
+                                "API para gestionar el catálogo de libros, "
+                                + "editoriales, reseñas..."));
     }
 }
 ```
 
-Con solo esa dependencia y esa clase, springdoc escanea todos los `@RestController` del proyecto y genera, sin más trabajo por tu parte, la especificación OpenAPI en `/v3/api-docs` y la interfaz visual en `/swagger-ui.html` — los mismos endpoints que el controller ya tenía quedan documentados, y puedes ejecutarlos de verdad desde el navegador con "Try it out", tal como acabas de ver.
+Con la dependencia y esta configuración, springdoc examina los `@RestController` del proyecto y genera:
 
-`/v3/api-docs` es la especificación en sí: el JSON (el `3` es por OpenAPI 3, la versión del estándar) que describe tus rutas, generado automáticamente por springdoc. Swagger UI no es más que una página que **lee** ese JSON y lo pinta como interfaz interactiva — no tiene información propia. Por eso las dos rutas van siempre juntas: si Swagger UI no puede llegar a `/v3/api-docs`, la página carga pero se queda vacía, sin nada que mostrar.
+```text
+/v3/api-docs
+```
+
+como **contrato OpenAPI** en formato JSON, y:
+
+```text
+/swagger-ui.html
+```
+
+como punto de entrada a la interfaz visual.
+
+`/v3/api-docs` contiene la especificación. Swagger UI **lee esa especificación** y la presenta de forma navegable; no mantiene una descripción independiente de la API. Por eso ambas piezas están relacionadas: si Swagger UI no puede acceder al contrato, la interfaz no tendrá endpoints que mostrar.
 
 !!! tip "Cambiar la ruta de Swagger UI"
-    En tu `application-dev.yml` puedes mover la documentación a otra ruta:
+    En `application-dev.yml` puedes mover el punto de entrada:
+
     ```yaml
     springdoc:
       swagger-ui:
         path: /documentacion
     ```
-    Con esto, entrar en `/documentacion` te lleva a Swagger UI — pero fíjate en que el navegador acaba redirigido a `/swagger-ui/index.html`: esa es la página real donde vive la interfaz (el propio recurso estático del *webjar*), y `/documentacion` es solo un punto de entrada más cómodo de recordar hacia ella. Por eso, si más adelante proteges tu API con Spring Security, tendrás que dejar pasar **las tres rutas** —`/documentacion`, `/swagger-ui/**` y `/v3/api-docs/**`—, no solo la que tú has elegido — lo verás en el Tema 2.
+
+    Con esto, `/documentacion` lleva a Swagger UI, aunque el navegador termina redirigido a `/swagger-ui/index.html`, que es donde vive realmente la interfaz.
+
+    Si más adelante proteges la aplicación con Spring Security, tendrás que permitir las rutas necesarias para servir la documentación y el contrato, no únicamente `/documentacion`.
 
 !!! warning "`operations-sorter: method` no hace lo que parece"
-    Existe esta propiedad, pero cuidado con lo que promete: no ordena por un criterio "lógico" (`GET → POST → PUT → DELETE`) — ordena **alfabéticamente por el nombre del verbo**, así que el resultado real es `DELETE, GET, PATCH, POST, PUT` (`D` va antes que `G` en el alfabeto). No hay ninguna propiedad simple en springdoc para conseguir el orden CRUD habitual; si lo necesitas de verdad, hay que sobrescribir la función de ordenación de Swagger UI, algo que queda fuera del alcance de este curso.
+    Esta propiedad ordena **alfabéticamente por el nombre del verbo**, no con un orden CRUD conceptual. El resultado es `DELETE, GET, PATCH, POST, PUT`.
 
-### Documentando qué puede devolver cada endpoint: `@ApiResponses`
+---
 
-Hasta aquí, Swagger UI documenta un endpoint, pero no del todo bien: por defecto solo declara un `200` genérico ("successful operation"), aunque tú ya sabes que `create()` puede devolver un `201`, o un `400` si el DTO no pasa la validación, o un `404` si la editorial indicada no existe. `@ApiResponses` deja eso explícito:
+## 📝 Documentar qué puede devolver cada endpoint
+
+Springdoc puede deducir automáticamente mucha información, pero no puede conocer por sí solo toda la **semántica** de cada operación. Para añadir un resumen legible y documentar los códigos de respuesta posibles podemos usar `@Operation` y `@ApiResponses`.
+
+Por ejemplo:
 
 ```java
 @Operation(summary = "Crear un libro nuevo")
 @ApiResponses({
-        @ApiResponse(responseCode = "201", description = "Libro creado correctamente"),
-        @ApiResponse(responseCode = "400", description = "El cuerpo de la petición no supera las validaciones"),
-        @ApiResponse(responseCode = "404", description = "La editorial indicada no existe")
+        @ApiResponse(
+                responseCode = "201",
+                description = "Libro creado correctamente"),
+        @ApiResponse(
+                responseCode = "400",
+                description = "El cuerpo de la petición no supera las validaciones"),
+        @ApiResponse(
+                responseCode = "404",
+                description = "La editorial indicada no existe")
 })
 @PostMapping
-public ResponseEntity<LibroResponseDTO> create(@Valid @RequestBody LibroCreateDTO dto) {
-    return ResponseEntity.status(HttpStatus.CREATED).body(libroService.create(dto));
+public ResponseEntity<LibroResponseDTO> create(
+        @Valid @RequestBody LibroCreateDTO dto) {
+    return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(libroService.create(dto));
 }
 ```
 
-`@Operation(summary = ...)` pone un texto legible sobre el endpoint, en vez del nombre técnico del método Java. `@ApiResponses` agrupa uno o varios `@ApiResponse(responseCode =, description =)`: cada uno añade, en la sección "Responses" de Swagger UI, una entrada más además del `200` por defecto — con su código y una frase explicando cuándo ocurre. Nada de esto cambia el comportamiento real del endpoint (los códigos que de verdad devuelve siguen siendo los que decide tu código); solo hace que la documentación dependa de ti en vez de generarse a ciegas.
+`@Operation(summary = ...)` aporta una descripción legible de la operación. `@ApiResponses` agrupa varios `@ApiResponse`, cada uno con un código y una explicación de cuándo puede producirse.
 
-Este mismo par de anotaciones se repite en `getById` (`200`/`404`), `getAll` (`200`), `update` (`200`/`400`/`404`) y `delete` (`204`/`404`) — no es algo exclusivo de `create()`, es el mismo criterio aplicado a los cinco métodos: qué códigos puede devolver de verdad cada uno.
+Estas anotaciones **enriquecen el contrato**, pero no sustituyen al código que realmente ejecuta la aplicación:
+
+![Código que ejecuta la API frente a código que documenta la API](img/openapi/codigo-ejecucion-vs-documentacion.png)
+
+*Figura 3. Diferencia entre el código que determina el comportamiento real del endpoint y las anotaciones que describen ese comportamiento en OpenAPI. Elaboración propia.*
+
+!!! warning "Documentar no cambia el comportamiento"
+    Declarar un `404` mediante `@ApiResponse` **no hace que el endpoint devuelva un `404`**. La anotación documenta esa posibilidad; el código de la aplicación sigue siendo el responsable de producir realmente esa respuesta.
+
+El mismo criterio se aplica al resto del controller: `getById` puede documentar `200`/`404`, `getAll` un `200`, `update` `200`/`400`/`404` y `delete` `204`/`404`.
 
 ---
 
-## 🆚 Ventajas del protocolo estándar, con ejemplos concretos
+## 🔗 OpenAPI como contrato compartido
 
-Para el diagrama de arriba —anotaciones, contrato OpenAPI, Swagger UI— existe una condición: tu API tiene que hablar un protocolo que herramientas de terceros (springdoc, Swagger UI) ya entiendan de fábrica, sin que tú les enseñes nada. Ya has visto en el apartado anterior que un protocolo estándar permite eso: que cualquier cliente hable con tu API sin acordar nada a medida. Aquí tienes dos consecuencias prácticas, ahora que ya has visto OpenAPI en marcha:
+Una API no suele tener un único consumidor. El mismo servicio puede ser utilizado desde Swagger UI, una herramienta de línea de comandos, una aplicación web, una aplicación móvil u otros servicios.
 
-- Los **códigos de estado son universales**: cualquier cliente (el tuyo, el de un compañero, una app de otro lenguaje) sabe qué significa un `201` o un `404` sin necesidad de leer tu documentación particular — es parte del estándar HTTP, no una convención tuya.
-- Las **herramientas funcionan sin configuración específica**: Swagger UI, `curl`... todas saben "hablar HTTP" de fábrica. No has tenido que instalar ni configurar nada especial en Swagger UI para que entienda las respuestas de tu API — el protocolo ya es compartido.
+![OpenAPI como contrato común para distintos consumidores](img/openapi/openapi-contrato-compartido.png)
+
+*Figura 4. Un mismo contrato OpenAPI puede ser utilizado por herramientas y clientes diferentes. Elaboración propia.*
+
+El valor de utilizar un contrato estándar es precisamente ese: los consumidores no necesitan leer el código Java para descubrir cómo utilizar la API. Comparten una descripción formal que puede ser interpretada tanto por personas como por herramientas.
+
+Esto enlaza con una idea del apartado anterior: los **códigos de estado HTTP son universales** y las herramientas como Swagger UI o `curl` pueden comunicarse con la API sin que tengas que inventar un protocolo o un cliente específico para cada caso.
 
 ---
 
@@ -179,8 +217,10 @@ Para el diagrama de arriba —anotaciones, contrato OpenAPI, Swagger UI— exist
 
 ??? tip "Abrir resumen"
 
-    - El **contrato** de una API describe sus rutas, verbos y datos; **OpenAPI** es un formato estándar para representarlo. Springdoc genera automáticamente gran parte de ese contrato a partir de los controllers, los DTOs y sus anotaciones.
-    - **Swagger UI** agrupa tus endpoints por controller; al desplegar uno ves su esquema, y con "Try it out" + "Execute" mandas una petición HTTP real contra tu aplicación, sin escribir código — la misma petición que mandarías con `curl`.
-    - `@RequestBody` mapea el cuerpo JSON a un objeto Java; `@Valid` activa su validación.
-    - `@ApiResponses`/`@ApiResponse` documentan explícitamente qué códigos puede devolver un endpoint (más allá del `200` genérico por defecto); `springdoc.swagger-ui.path` mueve la ruta de entrada a Swagger UI, aunque por debajo siempre redirige a `/swagger-ui/index.html`.
-    - Que Swagger UI y `curl` puedan hablar los dos con la misma API sin adaptar nada en el servidor es la demostración práctica de qué aporta un protocolo estándar.
+    - El **contrato** de una API describe sus rutas, verbos, parámetros, cuerpos, respuestas y esquemas de datos; **OpenAPI** es un estándar para representarlo.
+    - **Springdoc** genera automáticamente gran parte del contrato a partir de los controllers, DTOs y anotaciones ya existentes.
+    - **Swagger UI** lee `/v3/api-docs`; no inspecciona directamente el código Java.
+    - **Try it out** y **Execute** envían peticiones HTTP reales contra la aplicación.
+    - `@RequestBody` mapea el cuerpo JSON a un objeto Java y `@Valid` activa su validación.
+    - `@Operation` y `@ApiResponses` enriquecen la documentación, pero **no cambian el comportamiento real** del endpoint.
+    - Un mismo contrato OpenAPI puede ser utilizado por personas, herramientas y aplicaciones diferentes.
