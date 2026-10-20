@@ -5,7 +5,6 @@
 #   3. mkdocs gh-deploy
 # Los temas listados en exclude_docs NO se generan en el sitio (ni siquiera por URL directa).
 exclude_docs: |
-  tema2/*
   tema3/*
   tema4/*
   cierre.md
