@@ -10,148 +10,145 @@
 ---
 
 !!! tip "¿Por qué empezar por algo que vas a sustituir?"
-    Lo que ves en este apartado —usuarios en memoria y HTTP Basic— no es la versión final: dentro de dos apartados no quedará ni rastro de ninguna de las dos piezas. Puede parecer que se pierde tiempo construyendo algo que se va a borrar, pero es al revés: los problemas concretos de esta versión (los vas a ver explícitamente más abajo) son justo los que motivan lo que viene después. Si empezaras directamente por la versión final —contraseñas protegidas mediante hash, autenticación con token— tendrías un código que funciona, pero no sabrías responder a "¿por qué hace falta proteger la contraseña mediante un hash?" o "¿por qué no basta con mandar usuario y contraseña en cada petición?": esas respuestas solo se entienden habiendo visto antes la versión sin esa pieza, y el problema real que causa. El camino completo es: usuarios en memoria y HTTP Basic (aquí), contraseñas protegidas con BCrypt en base de datos (próximo apartado), autenticación con JWT (dos apartados más adelante) — cada paso resuelve un problema concreto del anterior.
+    Lo que ves en este apartado —usuarios en memoria y HTTP Basic— no es la versión final. Es un estado **intermedio deliberado**: sus limitaciones explican por qué después necesitaremos usuarios persistidos, contraseñas protegidas con BCrypt y autenticación mediante JWT.
+
+    El recorrido será: **usuarios en memoria + HTTP Basic → PostgreSQL + BCrypt → JWT**. Cada paso resuelve un problema concreto del anterior.
 
 ---
 
 ## 🔒 Lo primero que hace Spring Security: cerrarlo todo
 
-**Spring Security** es el framework de seguridad del propio ecosistema Spring: una librería que se encarga de comprobar quién hace cada petición y qué tiene permiso para hacer, en vez de que tengas que escribir ese código a mano en cada controller. Se instala como una dependencia más de Maven, igual que `spring-boot-starter-webmvc` o `spring-boot-starter-data-jpa` — pero con una diferencia importante frente a esas otras: en cuanto está en el proyecto, empieza a actuar sola, con un comportamiento por defecto muy estricto, sin que hayas escrito ni una línea de configuración propia todavía.
+**Spring Security** es el framework de seguridad del ecosistema Spring. Se encarga de comprobar quién realiza cada petición y qué tiene permiso para hacer, en lugar de obligarte a repetir esa lógica en cada controller.
 
-Hasta ahora, la API de la librería respondía a cualquiera que le preguntara. Imagina que, sobre ese proyecto, añadieras la dependencia `spring-boot-starter-security` al `pom.xml` y reiniciaras, sin tocar nada más — y repitieras la misma petición de siempre:
+Si añades `spring-boot-starter-security` al `pom.xml` de una API que hasta ese momento era pública y reinicias sin escribir ninguna configuración propia, el comportamiento cambia inmediatamente. Por ejemplo:
 
 ```bash
 curl -i http://localhost:8080/api/v1/libros
 ```
 
-Antes de esa dependencia, esta petición daba un `200` con el catálogo. Con Spring Security ya en el proyecto, la respuesta pasa a ser un `401 Unauthorized`, sin cuerpo útil, y con una cabecera nueva: `WWW-Authenticate: Basic realm="Realm"`. **Toda** la API deja de responder libremente de golpe — cada petición exige autenticarse, incluida la que hace un momento era pública. Es el principio de "mínima exposición" que has visto en el apartado anterior, llevado al extremo por defecto: Spring Security asume que, si no se le dice explícitamente qué dejar abierto, todo debe estar cerrado.
+Antes podía devolver un `200 OK`. Con Spring Security presente, pasa a responder `401 Unauthorized` y añade una cabecera como:
 
-Eso lo consigue insertando un **filtro** delante de todos los controllers — un filtro, en Spring, es una pieza que intercepta la petición HTTP antes de que llegue al código de la aplicación, la inspecciona (o la modifica), y decide si la deja continuar o la corta ahí mismo. Spring Security no añade uno, sino una cadena entera de ellos (la *filter chain*), y el primero que se encuentra cualquier petición es uno que, por defecto, exige credenciales válidas antes de dejarla pasar.
+```text
+WWW-Authenticate: Basic realm="Realm"
+```
+
+Spring Security aplica por defecto una política muy restrictiva: **si no se indica expresamente qué puede quedar abierto, exige autenticación**. Es la mínima exposición llevada a la práctica.
+
+Esto ocurre porque Spring Security inserta una **cadena de filtros** delante de Spring MVC. Esos filtros inspeccionan cada petición antes de que alcance el `DispatcherServlet` y deciden si puede continuar.
+
+![Dónde actúa Spring Security en una petición](img/seguridad/01-donde-actua-spring-security.png)
+
+*Figura 1. Spring Security intercepta la petición antes de que llegue al `DispatcherServlet` y al controller. Elaboración propia.*
+
+La consecuencia principal es sencilla: **una petición puede ser rechazada por seguridad sin que ningún controller llegue a ejecutarse**.
 
 ---
 
-## 🚦 Dónde encaja Spring Security en una petición
+## 🚦 Tres recorridos por la cadena de seguridad
 
-Antes de tocar código, conviene ver el mapa completo: por dónde pasa una petición desde que sale del cliente hasta que llega al `Controller`, y qué pieza decide, en cada paso, si la deja continuar. Mejor verlo en tres pasos, de menos a más complicado, que de golpe.
+El resultado visible puede ser parecido —por ejemplo, dos peticiones distintas pueden acabar en `401`—, pero el camino interno no siempre es el mismo.
 
-### 1. Cuando todo va bien
+![Tres recorridos por la cadena de seguridad](img/seguridad/02-tres-recorridos-seguridad.png)
 
-```mermaid
-sequenceDiagram
-    participant Cliente
-    participant Filtro as Filtro de seguridad<br/>(BasicAuthenticationFilter)
-    participant AuthManager as AuthenticationManager
-    participant UserDetails as UserDetailsService
-    participant Dispatcher as DispatcherServlet
-    participant Controller
+*Figura 2. Una petición puede continuar hasta Spring MVC o terminar en `401` por recorridos distintos según las credenciales enviadas. Elaboración propia.*
 
-    Cliente->>Filtro: GET /libros<br/>Authorization: Basic ...
-    Filtro->>Filtro: Decodifica Base64 → user / user123
-    Filtro->>AuthManager: ¿Son válidas estas credenciales?
-    AuthManager->>UserDetails: Busca al usuario "user"
-    UserDetails-->>AuthManager: Sus datos (contraseña, roles)
-    AuthManager-->>Filtro: Sí, autenticado
-    Filtro->>Dispatcher: Deja pasar la petición
-    Dispatcher->>Controller: getAll()
-    Controller-->>Cliente: 200 OK
+### 1. Credenciales correctas
+
+Con una cabecera `Authorization` válida, `BasicAuthenticationFilter` extrae las credenciales y el `AuthenticationManager` coordina su comprobación. Para localizar al usuario utiliza un `UserDetailsService`.
+
+Si la autenticación es correcta y la ruta permite el acceso, la petición llega al `DispatcherServlet`, que resuelve el método del controller correspondiente.
+
+```text
+Cliente
+→ SecurityFilterChain
+→ AuthenticationManager
+→ UserDetailsService
+→ autorización
+→ DispatcherServlet
+→ Controller
+→ 200 OK
 ```
 
-El filtro intercepta la petición y decodifica la cabecera; el `AuthenticationManager` coordina la comprobación; el `UserDetailsService` es quien de verdad sabe si ese usuario existe y con qué contraseña y roles. Si todo eso sale bien, la petición llega al `DispatcherServlet` — la pieza de Spring MVC que recibe las peticiones que han alcanzado el circuito de Spring MVC, y decide a qué método de qué controller mandar cada una, mirando la URL y el verbo HTTP contra las anotaciones `@GetMapping`/`@PostMapping` que ya conoces. Es el mismo mecanismo que llevas usando desde tu primer `@RestController`, solo que hasta ahora nunca lo habías visto actuar de forma explícita, porque siempre acertaba sin que hicieras nada especial. Con Spring Security delante, el `DispatcherServlet` sigue haciendo exactamente lo mismo que siempre — lo único que cambia es que, antes de llegar hasta él, la petición ahora tiene que pasar primero el control del filtro.
+### 2. Sin cabecera `Authorization`
 
-### 2. Sin ninguna cabecera `Authorization`
+Si la petición no trae credenciales, no existe nada que validar. La petición continúa como usuario anónimo hasta que la autorización detecta que está intentando acceder a una ruta protegida.
 
-El fallo más simple: la petición no trae credenciales de ningún tipo.
-
-```mermaid
-sequenceDiagram
-    participant Cliente
-    participant Basic as BasicAuthenticationFilter
-    participant Authorization as AuthorizationFilter
-    participant Exception as ExceptionTranslationFilter
-    participant EntryPoint as AuthenticationEntryPoint
-    participant Dispatcher as DispatcherServlet
-
-    Cliente->>Basic: GET /libros<br/>(sin cabecera Authorization)
-    Basic->>Authorization: Continúa sin usuario autenticado
-    Authorization-->>Exception: Ruta protegida y usuario anónimo
-    Exception->>EntryPoint: commence(...)
-    EntryPoint-->>Cliente: 401 Unauthorized
-
-    Note over Basic,Dispatcher: La petición nunca llega al DispatcherServlet
-```
-
-Ni `AuthenticationManager` ni `UserDetailsService` llegan a intervenir, porque no hay credenciales que comprobar. `BasicAuthenticationFilter` continúa sin autenticar al usuario; después, la autorización detecta que un usuario anónimo intenta acceder a una ruta protegida y `ExceptionTranslationFilter` activa el `AuthenticationEntryPoint`, que devuelve el `401`. Todo ocurre antes de llegar al `DispatcherServlet`.
+Spring Security activa entonces el `AuthenticationEntryPoint` y devuelve un `401 Unauthorized`. Ni el controller ni el `GlobalExceptionHandler` llegan a intervenir.
 
 ### 3. Credenciales incorrectas
 
-El caso menos evidente: la petición sí trae una cabecera `Authorization`, con forma correcta, pero el usuario no existe o la contraseña no coincide.
+Aquí sí existen credenciales y se intenta autenticarlas. El `AuthenticationManager` consulta al `UserDetailsService`, pero el usuario no existe o la contraseña no coincide.
 
-```mermaid
-sequenceDiagram
-    participant Cliente
-    participant Filtro as Filtro de seguridad<br/>(BasicAuthenticationFilter)
-    participant AuthManager as AuthenticationManager
-    participant UserDetails as UserDetailsService
-    participant Dispatcher as DispatcherServlet
-    participant Controller
+El resultado vuelve a ser un `401 Unauthorized`, aunque el recorrido interno ha sido distinto al caso anterior.
 
-    Cliente->>Filtro: GET /libros<br/>Authorization: Basic ...
-    Filtro->>Filtro: Decodifica Base64 → user / contraseñaMala
-    Filtro->>AuthManager: ¿Son válidas estas credenciales?
-    AuthManager->>UserDetails: Busca al usuario "user"
-    UserDetails-->>AuthManager: Sus datos (contraseña, roles)
-    AuthManager-->>Filtro: No, la contraseña no coincide
-    Filtro-->>Cliente: 401 Unauthorized<br/>(nunca llega a Dispatcher ni a Controller)
-```
-
-Este es casi idéntico al del punto 1 hasta el penúltimo paso — el filtro sí pregunta, `AuthenticationManager` sí consulta al `UserDetailsService`, todo el circuito se recorre igual — y solo al final cambia la respuesta. El resultado es el mismo `401` que en el punto 2, pero el camino para llegar hasta ahí es bastante más largo.
-
-En los tres casos, la decisión de seguridad se produce antes del `DispatcherServlet`. Con credenciales incorrectas, falla la autenticación realizada por `BasicAuthenticationFilter`; sin credenciales, la petición continúa como anónima hasta que la autorización bloquea el acceso a la ruta protegida. En ambos casos, Spring Security activa un `AuthenticationEntryPoint` y la petición no llega al controller.
-
-!!! note "Queda pendiente un tercer tipo de fallo: el `403`"
-    Los tres diagramas de arriba son todos sobre **autenticación** (¿quién eres?): o se resuelve, o no. Pero hay un cuarto caso que no aparece aquí: credenciales perfectamente válidas, de un usuario real, que simplemente no tiene permiso para *esa* ruta en concreto — eso ya no es autenticación, es **autorización**, y da un `403 Forbidden`, no un `401`. Ese caso lo trabajarás a fondo más adelante en el tema, con su propia comparación `401` vs `403`.
+!!! note "El `403` pertenece a otro problema"
+    Un `401` significa que la petición **no está autenticada correctamente**. Un `403 Forbidden` aparece cuando Spring Security sí sabe quién eres, pero esa identidad **no tiene permiso** para realizar la operación solicitada. La gestión completa del `403` se trabajará más adelante en el tema.
 
 ---
 
 ## 🎭 Autenticación vs. autorización
 
-Dos preguntas distintas, que conviene no confundir:
+Son dos preguntas distintas y conviene separarlas desde el principio.
 
-| | Pregunta que responde | Ejemplo |
+![Autenticación frente a autorización](img/seguridad/03-autenticacion-vs-autorizacion.png)
+
+*Figura 3. La autenticación comprueba la identidad; la autorización decide qué puede hacer esa identidad. Elaboración propia.*
+
+| | Pregunta | Ejemplo |
 |---|---|---|
-| **Autenticación** | ¿Quién eres? | Comprobar que el usuario y la contraseña son correctos. |
-| **Autorización** | ¿Puedes hacer esto? | Comprobar que, siendo tú, tienes permiso para borrar un libro del catálogo. |
+| **Autenticación** | ¿Quién eres? | Comprobar que usuario y contraseña son válidos. |
+| **Autorización** | ¿Puedes hacer esto? | Comprobar si el usuario puede borrar un libro. |
 
-Puedes estar autenticado (Spring Security sabe quién eres) y aun así no autorizado para una acción concreta (no tienes el rol necesario). Son dos capas distintas, y las vas a ver aplicadas por separado.
+La analogía de una tarjeta de acceso ayuda a distinguirlas: primero el lector verifica que la tarjeta identifica a una persona válida; después, cada puerta comprueba si esa persona tiene permiso para abrirla.
 
-Piensa en la tarjeta de acceso de un edificio de oficinas. Cuando presentas la tarjeta, el lector comprueba quién eres y que la tarjeta sigue activa: eso es autenticación. Después, la puerta concreta comprueba si esa identidad tiene permiso para abrirla: eso es autorización.
-
-En una API, ambas comprobaciones se realizan sobre cada petición. Con HTTP Basic, además, el cliente vuelve a enviar el usuario y la contraseña cada vez. Spring Security separa igualmente las dos responsabilidades: `httpBasic(...)` configura el mecanismo de autenticación y `authorizeHttpRequests(...)` decide qué puede hacer el usuario autenticado en cada ruta.
+En Spring Security también son responsabilidades separadas. El mecanismo de autenticación puede ser HTTP Basic, JWT u otro distinto, mientras que `authorizeHttpRequests(...)` define las reglas que determinan qué puede hacer el usuario ya identificado.
 
 ---
 
-## 📦 HTTP Basic: cómo viaja usuario y contraseña
+## 📦 HTTP Basic: codificar no es cifrar
 
-**HTTP Basic** es el mecanismo de autenticación más simple de HTTP: el cliente manda usuario y contraseña en una cabecera `Authorization`, codificados en **Base64** — un sistema que convierte cualquier secuencia de bytes en texto imprimible, para que quepa sin problemas dentro de una cabecera HTTP. La construcción es mecánica, sin ningún secreto de por medio:
+**HTTP Basic** es uno de los mecanismos de autenticación más sencillos de HTTP. El cliente construye una cadena con usuario y contraseña separados por `:` y la codifica en Base64.
 
+![HTTP Basic y Base64](img/seguridad/04-http-basic-base64.png)
+
+*Figura 4. HTTP Basic codifica `usuario:contraseña` en Base64 y lo envía en cada petición; Base64 no cifra las credenciales. Elaboración propia.*
+
+Por ejemplo:
+
+```text
+user:user123
+    ↓ Base64
+dXNlcjp1c2VyMTIz
 ```
-"user:user123"  →  codificar en Base64  →  "dXNlcjp1c2VyMTIz"
-```
 
-Usuario y contraseña, separados por `:`, codificados de un tirón. Así queda la cabecera completa:
+La cabecera enviada es:
 
-```
+```text
 Authorization: Basic dXNlcjp1c2VyMTIz
 ```
 
+Puedes comprobar que la transformación es reversible sin ninguna clave:
+
+```bash
+echo "dXNlcjp1c2VyMTIz" | base64 -d
+```
+
+Resultado:
+
+```text
+user:user123
+```
+
 !!! danger "Base64 NO es cifrado"
-    Si decodificaras esa cabecera —`echo "dXNlcjp1c2VyMTIz" | base64 -d`— obtendrías `user:user123`, en texto legible. Base64 es solo una **codificación** (una forma de representar bytes como texto), no una forma de ocultar información: cualquiera que intercepte esa cabecera lee la contraseña directamente. HTTP Basic solo es aceptable sobre una conexión cifrada con HTTPS — sin eso, la contraseña viaja prácticamente en claro en cada petición.
+    Base64 solo representa bytes como texto. Cualquiera que intercepte la cabecera puede recuperar el usuario y la contraseña.
+
+    Por eso HTTP Basic solo debe utilizarse sobre **HTTPS**. Sin cifrado en el transporte, las credenciales viajan prácticamente en claro y, además, se repiten en cada petición.
 
 ---
 
 ## 🧑‍🤝‍🧑 Usuarios en memoria y una primera política de rutas
 
-Para empezar, sin base de datos todavía de por medio, Spring Security permite declarar usuarios directamente en código con `InMemoryUserDetailsManager` — es la pieza que en el diagrama de antes aparecía como `UserDetailsService`: quien responde cuando el `AuthenticationManager` pregunta "¿quién es el usuario `user`, y con qué contraseña y roles?".
+Para comprender el mecanismo sin introducir todavía persistencia, Spring Security permite declarar usuarios directamente en memoria mediante `InMemoryUserDetailsManager`.
 
 ```java
 @Bean
@@ -170,12 +167,14 @@ public UserDetailsService userDetailsService() {
 }
 ```
 
-El prefijo `{noop}` le dice a Spring Security "esta contraseña está almacenada en texto claro y no se le aplica ningún `PasswordEncoder`; compárala tal cual"
+`InMemoryUserDetailsManager` implementa `UserDetailsService`: cuando Spring Security necesita localizar un usuario, consulta este almacén en memoria.
 
-!!! tip "`.roles("USER")` no es literalmente el rol"
-    Por debajo, Spring Security le añade el prefijo `ROLE_`: el rol real que queda registrado es `ROLE_USER`, no `USER`. No tienes que escribir ese prefijo tú mismo —`.roles("USER")` ya se encarga de añadirlo—, pero si más adelante lo comparas a mano en algún sitio (o ves `ROLE_USER` en un log o en un test), ya sabes de dónde sale.
+El prefijo `{noop}` indica que la contraseña está almacenada en texto claro y debe compararse sin aplicar ningún `PasswordEncoder`. Es válido como demostración, pero precisamente constituye una de las limitaciones que resolveremos en la siguiente sesión.
 
-Y una primera política de acceso, con `authorizeHttpRequests`:
+!!! tip "`.roles("USER")` termina siendo `ROLE_USER`"
+    Spring Security añade automáticamente el prefijo `ROLE_`. Por eso `.roles("USER")` registra internamente `ROLE_USER`, y `.roles("ADMIN")` registra `ROLE_ADMIN`.
+
+Con los usuarios definidos, podemos establecer una primera política de acceso:
 
 ```java
 @Bean
@@ -191,36 +190,44 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
 }
 ```
 
-Léela como una lista de reglas, de arriba abajo:
+Léela de arriba abajo:
 
 | Pieza | Qué significa |
 |---|---|
-| `.requestMatchers(HttpMethod.GET, "/api/v1/libros/**")` | Esta regla se aplica solo a peticiones `GET` bajo `/api/v1/libros/` (el `**` cubre cualquier cosa después, incluidos sub-recursos). |
-| `.permitAll()` | Esa regla concreta no exige ninguna autenticación — pasan hasta las peticiones anónimas. |
-| `.anyRequest()` | La regla "para todo lo demás" — solo se aplica a lo que ninguna regla anterior haya capturado ya. |
-| `.authenticated()` | Exige estar autenticado (con cualquier usuario válido, sin mirar el rol todavía). |
-| `.csrf(AbstractHttpConfigurer::disable)` | Desactiva la protección CSRF (ver aviso justo debajo). |
-| `.httpBasic(Customizer.withDefaults())` | Activa HTTP Basic como mecanismo de autenticación — es lo que registra el `BasicAuthenticationFilter` del diagrama de antes en la cadena de filtros. |
+| `.requestMatchers(HttpMethod.GET, "/api/v1/libros/**")` | Selecciona los `GET` del catálogo de libros y sus subrutas. |
+| `.permitAll()` | Permite esas peticiones incluso sin autenticación. |
+| `.anyRequest()` | Representa cualquier petición que no haya coincidido antes. |
+| `.authenticated()` | Exige un usuario válido, sin comprobar todavía un rol concreto. |
+| `.csrf(AbstractHttpConfigurer::disable)` | Desactiva CSRF para esta API y este mecanismo de credenciales. |
+| `.httpBasic(Customizer.withDefaults())` | Activa HTTP Basic como mecanismo de autenticación. |
 
-!!! warning "El orden importa: gana la primera regla que encaje"
-    Spring Security evalúa las reglas de `authorizeHttpRequests` de arriba abajo, y aplica la **primera** que encaje con la petición — no la más específica, la primera en el código. Si pusieras `.anyRequest().authenticated()` antes que la regla de `/api/v1/libros/**`, esa segunda regla nunca llegaría a aplicarse: `anyRequest()` ya lo captura todo. Por eso las reglas más concretas (una ruta exacta) van siempre antes que las más generales (`anyRequest()`), nunca al revés.
+!!! warning "El orden de las reglas importa"
+    Spring Security evalúa las reglas de `authorizeHttpRequests` de arriba abajo y aplica la **primera que encaja**. Si `.anyRequest().authenticated()` apareciera antes de la regla pública de `/api/v1/libros/**`, esa regla posterior no llegaría a utilizarse.
 
-!!! warning "Por qué hace falta `.csrf(AbstractHttpConfigurer::disable)`"
-    Sin esta línea, una petición `POST`, `PUT` o `DELETE` sin un token CSRF válido devolverá normalmente un `403 Forbidden`, aunque incluya unas credenciales HTTP Basic correctas. El `CsrfFilter` se ejecuta antes que `BasicAuthenticationFilter`, por lo que puede rechazar la petición antes de que se comprueben esas credenciales.
+    Por tanto, las reglas concretas deben aparecer antes que las generales.
 
-    CSRF protege especialmente a las aplicaciones donde el navegador adjunta automáticamente las credenciales, como ocurre con las cookies de sesión. En esta actividad, las peticiones se realizan mediante clientes que añaden explícitamente la cabecera `Authorization` y no utilizamos autenticación basada en cookies, por lo que desactivamos CSRF para simplificar la API.
+!!! warning "Por qué desactivamos CSRF aquí"
+    Sin `.csrf(AbstractHttpConfigurer::disable)`, una petición `POST`, `PUT` o `DELETE` puede ser rechazada con `403 Forbidden` por el `CsrfFilter`, incluso aunque las credenciales HTTP Basic sean válidas.
 
-    Esto no significa que CSRF deba desactivarse en cualquier aplicación REST: depende de cómo se transporten y almacenen las credenciales.
+    CSRF resulta especialmente importante cuando el navegador adjunta automáticamente las credenciales, como ocurre con cookies de sesión. En esta API el cliente envía explícitamente la cabecera `Authorization` y no estamos utilizando autenticación basada en cookies, por lo que lo desactivamos para simplificar este escenario.
 
-Esta es una versión simplificada — lectura del catálogo pública, todo lo demás exige estar autenticado — de la matriz de rutas completa que construirás más adelante en el tema. Los roles `ADMIN` y `USER` que acabas de usar son los mismos que vas a formalizar más adelante como un enum `RolUsuario` — solo esos dos valores, sin más complicación.
+    Esto **no significa que CSRF deba desactivarse en cualquier API REST**: la decisión depende de cómo se transporten las credenciales.
+
+Esta política sigue siendo provisional: los `GET` del catálogo son públicos y el resto exige simplemente estar autenticado. Más adelante construiremos una matriz de rutas completa con permisos por rol.
 
 ---
 
 ## 🩹 Cerrando la grieta: `AuthenticationEntryPoint`
 
-Prueba a pedir una ruta protegida sin credenciales y mira el cuerpo del `401` que recibes: no tiene el formato de tu `ErrorResponse` (`timestamp`, `status`, `error`, `message`, `path`) — es la respuesta por defecto de Spring Security. La razón es la misma que separaba, en el apartado anterior, las excepciones que sí atrapa tu `@RestControllerAdvice` de las que no: este `401` lo genera un filtro de seguridad, **antes** de que la petición llegue al `DispatcherServlet` — tu `GlobalExceptionHandler` nunca llega a intervenir. Un `@ExceptionHandler` más no serviría de nada: ese código nunca se ejecuta para este caso, porque la petición no llega tan lejos.
+En la sesión anterior construiste un `GlobalExceptionHandler` para que los errores de la aplicación utilizaran siempre el mismo `ErrorResponse`. Sin embargo, un `401` producido por Spring Security no pasa por ese handler.
 
-Spring Security tiene su propia pieza para el mismo trabajo, con otro nombre: un **`AuthenticationEntryPoint`**. Es una interfaz con un único método, `commence(...)`, que Spring Security llama exactamente cuando una petición no autenticada intenta entrar en una ruta protegida — el mismo momento en el que, sin esta pieza, se genera la respuesta por defecto que acabas de ver.
+![AuthenticationEntryPoint frente a GlobalExceptionHandler](img/seguridad/05-entrypoint-vs-globalexceptionhandler.png)
+
+*Figura 5. Los errores de autenticación se producen antes de Spring MVC y necesitan un `AuthenticationEntryPoint`; las excepciones de la aplicación sí pueden pasar por `@RestControllerAdvice`. Elaboración propia.*
+
+La razón es arquitectónica: el fallo de autenticación ocurre dentro de la cadena de filtros, **antes** de que la petición llegue al `DispatcherServlet`. Por tanto, añadir otro `@ExceptionHandler` no resolvería el problema: Spring MVC nunca llega a recibir esa petición.
+
+Spring Security dispone de una pieza específica: **`AuthenticationEntryPoint`**. Su método `commence(...)` se ejecuta cuando una petición no autenticada intenta acceder a un recurso protegido.
 
 ```java
 @Component
@@ -231,11 +238,13 @@ public class ErrorResponseAuthenticationEntryPoint implements AuthenticationEntr
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
-                          AuthenticationException authException) throws IOException {
+                         AuthenticationException authException) throws IOException {
 
         ErrorResponse error = new ErrorResponse(
-                LocalDateTime.now().toString(), HttpStatus.UNAUTHORIZED.value(),
-                "No autenticado", "Se requieren credenciales válidas para acceder a este recurso",
+                LocalDateTime.now().toString(),
+                HttpStatus.UNAUTHORIZED.value(),
+                "No autenticado",
+                "Se requieren credenciales válidas para acceder a este recurso",
                 request.getRequestURI()
         );
 
@@ -247,18 +256,19 @@ public class ErrorResponseAuthenticationEntryPoint implements AuthenticationEntr
 }
 ```
 
-`JsonMapper` es la pieza de Jackson que convierte objetos Java a JSON y viceversa — la misma que usa Spring por debajo para las respuestas de tus controllers, aunque ahí nunca la has visto directamente. Aquí la necesitas a la vista porque, como ya has visto arriba, este `401` nunca llega al `DispatcherServlet` — y con él, tampoco al mecanismo normal de serialización de Spring MVC. Se inyecta como cualquier otra dependencia, con `@RequiredArgsConstructor` — Spring Boot ya te la configura como bean, sin que tengas que instanciarla tú a mano.
+Aquí no devolvemos un `ResponseEntity<ErrorResponse>` porque no estamos dentro del circuito normal de Spring MVC. Trabajamos directamente con `HttpServletResponse` y utilizamos `JsonMapper` para convertir manualmente `ErrorResponse` a JSON.
 
-!!! tip "No hace falta memorizar esto"
-    Esta clase es prácticamente idéntica en cualquier proyecto Spring Security que quiera dar errores coherentes — cambia poco más que el mensaje del `ErrorResponse`. No merece la pena memorizar la sintaxis exacta de `commence(...)` ni los detalles de `HttpServletResponse`; lo que importa es entender **qué hace y por qué hace falta**: que Spring Security tiene su propio punto de entrada para este caso, fuera del circuito normal de tu `GlobalExceptionHandler`. El código, cuando lo necesites, se copia y se adapta — es la misma idea en todos los proyectos.
+!!! tip "No necesitas memorizar esta clase"
+    Lo importante es entender **por qué existe**. Los detalles de `commence(...)`, `HttpServletResponse` y `JsonMapper` son mecánicos y se adaptan de forma muy parecida entre proyectos.
 
-Fíjate en la diferencia con un `@ExceptionHandler` normal: ahí devuelves un `ResponseEntity<ErrorResponse>` y Spring MVC se encarga solo de convertirlo a JSON. Aquí no hay ningún `ResponseEntity` — trabajas directamente sobre `HttpServletResponse`, la clase de bajo nivel que representa la respuesta HTTP en crudo, porque `commence(...)` se ejecuta **antes** de que exista ningún mecanismo de Spring MVC que convierta objetos a JSON por ti. Por eso el método usa el `JsonMapper` inyectado (la misma pieza de Jackson que usa Spring MVC por debajo) y llama a `writeValueAsString(...)` a mano.
-
-Falta un último paso: decirle a Spring Security que use esta pieza en vez de la suya por defecto. Se registra en el mismo `securityFilterChain` que has visto un poco más arriba, añadiendo un bloque nuevo:
+Falta registrar esta pieza en la configuración:
 
 ```java
 @Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
+public SecurityFilterChain securityFilterChain(
+        HttpSecurity http,
+        AuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
+
     return http
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers(HttpMethod.GET, "/api/v1/libros/**").permitAll()
@@ -273,24 +283,35 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http, Authentication
 }
 ```
 
-Fíjate en que `.httpBasic(Customizer.withDefaults())` no cambia — sigue activando HTTP Basic exactamente igual que antes. La pieza nueva vive en `.exceptionHandling(...)`, un bloque **independiente de qué mecanismo de autenticación esté activo**: le dice a Spring Security "cuando falle cualquier autenticación, consulta primero aquí, antes de aplicar tu respuesta por defecto" — sin importar si el fallo viene de HTTP Basic, de JWT, o de cualquier otro mecanismo que uses en el futuro. El propio `AuthenticationEntryPoint` que has anotado con `@Component` se inyecta solo, como parámetro del método, sin que tengas que instanciarlo tú.
+`exceptionHandling(...)` está separado de `httpBasic(...)`. Esa decisión es útil porque el formato del `401` no depende necesariamente del mecanismo concreto de autenticación. Cuando HTTP Basic sea sustituido por JWT, el `AuthenticationEntryPoint` podrá seguir registrado en el mismo lugar.
 
-!!! tip "Por qué no va dentro de `.httpBasic(...)`"
-    Podrías registrarlo como `.httpBasic(basic -> basic.authenticationEntryPoint(...))`, y también funcionaría — pero quedaría atado a HTTP Basic. Dentro de dos apartados sustituyes `.httpBasic(...)` por la configuración de JWT, y esa línea desaparecería con él, rompiendo la conexión. Puesto en `.exceptionHandling(...)`, en cambio, sobrevive al cambio sin tocar nada: es el mismo bloque, pase lo que pase con el mecanismo de autenticación que tengas encima.
+!!! note "El `403` tiene la misma grieta"
+    Un usuario correctamente autenticado pero sin permisos recibe un `403 Forbidden`. Ese error también se genera en Spring Security, fuera de `GlobalExceptionHandler`.
 
-Con esto, el `401` de HTTP Basic pasa a tener el mismo formato que cualquier otro error de tu API — aunque, técnicamente, nunca llegue a pasar por tu `GlobalExceptionHandler`. Vas a construir esta pieza tú mismo en la Actividad 2.2.
-
-!!! note "El `403` tiene la misma grieta, y queda pendiente"
-    Todo lo de aquí es sobre **autenticación** — el `401`. La **autorización** (un usuario autenticado, pero sin el rol necesario) genera un `403` con el mismo problema de fondo, por la misma razón: lo construye Spring Security por su cuenta, fuera de tu `GlobalExceptionHandler`. La pieza equivalente se llama `AccessDeniedHandler`, y se registra en este mismo `.exceptionHandling(...)`, con `.accessDeniedHandler(...)` junto a `.authenticationEntryPoint(...)`. La trabajarás más adelante en el tema.
+    La pieza equivalente es `AccessDeniedHandler`. La construiremos más adelante, cuando completemos la política de autorización.
 
 ---
 
 ## ⚠️ Las limitaciones de esta versión — a propósito
 
-Esta configuración tiene dos problemas serios, y son intencionados: sirven de motivación para lo que viene.
+La solución actual funciona, pero tiene dos problemas importantes que hemos introducido deliberadamente:
 
-1. **Usuarios definidos en código y sin persistencia**: `user` y `admin` se reconstruyen con los mismos valores cada vez que arranca la aplicación. Cualquier modificación realizada durante la ejecución se perdería al reiniciar y cualquiera con acceso al repositorio podría ver sus contraseñas.
-2. **Credenciales que viajan en cada petición**: con HTTP Basic, cada única petición volvería a mandar usuario y contraseña, apenas ofuscados en Base64. Más adelante en el tema esto se sustituye por JWT: te autenticas una vez, y presentas un token en las peticiones siguientes.
+1. **Usuarios definidos en código y sin persistencia.** `user` y `admin` se reconstruyen cada vez que arranca la aplicación, sus contraseñas aparecen en el código y cualquier cambio se pierde al reiniciar.
+2. **Las credenciales completas viajan en cada petición.** HTTP Basic vuelve a enviar usuario y contraseña continuamente, simplemente codificados en Base64.
+
+Cada problema conduce al siguiente paso del tema:
+
+```text
+Usuarios en memoria
+      ↓
+PostgreSQL + BCrypt
+
+HTTP Basic
+      ↓
+JWT
+```
+
+En el próximo apartado resolveremos el primero: los usuarios pasarán a PostgreSQL y las contraseñas dejarán de almacenarse en texto claro.
 
 ---
 
@@ -298,12 +319,13 @@ Esta configuración tiene dos problemas serios, y son intencionados: sirven de m
 
 ??? tip "Abrir resumen"
 
-    - Spring Security, nada más añadirse, cierra **todo** por defecto — mínima exposición llevada al extremo — insertando un filtro que examina cada petición antes de que llegue a tu `DispatcherServlet`.
-    - **Autenticación** (¿quién eres?) y **autorización** (¿puedes hacer esto?) son capas distintas — la tarjeta de acceso de un edificio ilustra las dos: te identifica en la entrada, pero no todas las puertas se abren con ella.
-    - **HTTP Basic** manda `usuario:contraseña` codificado en Base64 en la cabecera `Authorization` — Base64 no es cifrado, así que Basic solo es seguro sobre HTTPS.
-    - `InMemoryUserDetailsManager` es tu `UserDetailsService`: declara los usuarios directamente en código y los reconstruye en cada arranque, pero no conserva modificaciones realizadas durante la ejecución.
-    - En `authorizeHttpRequests`, las reglas se evalúan de arriba abajo y gana la primera que encaje — las rutas concretas van siempre antes que `anyRequest()`.
-    - `.roles("USER")` registra internamente `ROLE_USER`, con el prefijo `ROLE_` añadido por Spring Security.
-    - Sin `.csrf(AbstractHttpConfigurer::disable)`, un `POST`/`PUT`/`DELETE` sin token CSRF devuelve normalmente `403`, incluso aunque incluya credenciales HTTP Basic correctas, porque el filtro de CSRF actúa antes que el de autenticación. En esta API se desactiva porque no utilizamos autenticación basada en cookies.    
-    - El `401` que genera Spring Security no pasa por tu `GlobalExceptionHandler` — lo lanza un filtro, antes de llegar al `DispatcherServlet`, así que no tiene el formato de tu `ErrorResponse`. Un `AuthenticationEntryPoint` a medida (Actividad 2.2) lo arregla, porque un `@ExceptionHandler` no puede.
-    - Esta configuración es un estado **intermedio** deliberado: más adelante en el tema se resuelven, por separado, los usuarios hardcodeados (BCrypt + PostgreSQL) y las credenciales viajando en cada petición (JWT).
+    - Spring Security inserta una **cadena de filtros antes de Spring MVC** y, por defecto, protege todas las rutas.
+    - **Autenticación** responde a “¿quién eres?”; **autorización** responde a “¿puedes hacer esto?”.
+    - Dos peticiones pueden acabar en `401` por caminos distintos: no enviar credenciales y enviar credenciales incorrectas no son el mismo caso interno.
+    - HTTP Basic envía `usuario:contraseña` en Base64 en cada petición. **Base64 codifica, no cifra**, por lo que Basic solo debe utilizarse sobre HTTPS.
+    - `InMemoryUserDetailsManager` permite declarar usuarios de forma sencilla, pero es un almacén provisional y las contraseñas con `{noop}` permanecen en texto claro.
+    - Las reglas de `authorizeHttpRequests` se evalúan de arriba abajo: las más concretas deben ir antes que `anyRequest()`.
+    - En esta API desactivamos CSRF porque las credenciales se envían explícitamente en `Authorization` y no usamos autenticación basada en cookies.
+    - Los errores `401` de Spring Security se producen antes del `DispatcherServlet`, por lo que no los captura `GlobalExceptionHandler`.
+    - `AuthenticationEntryPoint` permite dar a esos `401` el mismo formato `ErrorResponse` que al resto de la API.
+    - Este estado es deliberadamente provisional: la siguiente sesión sustituirá los usuarios en memoria por PostgreSQL + BCrypt y, después, JWT sustituirá a HTTP Basic.
