@@ -64,24 +64,24 @@ nav:
       - Comunicación simultánea y disponibilidad (Actuator):
           - Comunicación simultánea y disponibilidad (Actuator): tema1/actuator-disponibilidad.md
           - Actividad 1.4 - Comunicación simultánea y disponibilidad: tema1/actividad_1_4.md
-  # - Tema 2 - Programación segura:
-  #     - Tema 2 - Introducción: tema2/index.md
-  #     - Principios de programación segura:
-  #         - Principios de programación segura: tema2/principios-programacion-segura.md
-  #         - Actividad 2.1 - Validación y GlobalExceptionHandler: tema2/actividad_2_1.md
-  #     - Seguridad básica (HTTP Basic):
-  #         - Seguridad básica (HTTP Basic): tema2/seguridad-basica-http-basic.md
-  #         - Actividad 2.2 - Primera línea de defensa, HTTP Basic: tema2/actividad_2_2.md
-  #     - Usuarios persistidos y BCrypt:
-  #         - Usuarios persistidos y BCrypt: tema2/usuarios-persistidos-bcrypt.md
-  #         - Actividad 2.3 - Usuarios reales con BCrypt: tema2/actividad_2_3.md
-  #     - Autenticación con JWT:
-  #         - Autenticación con JWT: tema2/autenticacion-jwt.md
-  #         - Anexo opcional - HTTPS en desarrollo: tema2/anexo-https.md
-  #         - Actividad 2.4 - Login con JWT: tema2/actividad_2_4.md
-  #     - Roles y rutas protegidas:
-  #         - Roles y rutas protegidas: tema2/roles-y-rutas-protegidas.md
-  #         - Actividad 2.5 - Roles y rutas protegidas: tema2/actividad_2_5.md
+  - Tema 2 - Programación segura:
+      - Tema 2 - Introducción: tema2/index.md
+      - Principios de programación segura:
+          - Principios de programación segura: tema2/principios-programacion-segura.md
+          - Actividad 2.1 - Validación y GlobalExceptionHandler: tema2/actividad_2_1.md
+      - Seguridad básica (HTTP Basic):
+          - Seguridad básica (HTTP Basic): tema2/seguridad-basica-http-basic.md
+          - Actividad 2.2 - Primera línea de defensa, HTTP Basic: tema2/actividad_2_2.md
+      - Usuarios persistidos y BCrypt:
+          - Usuarios persistidos y BCrypt: tema2/usuarios-persistidos-bcrypt.md
+          - Actividad 2.3 - Usuarios reales con BCrypt: tema2/actividad_2_3.md
+      - Autenticación con JWT:
+          - Autenticación con JWT: tema2/autenticacion-jwt.md
+          - Anexo opcional - HTTPS en desarrollo: tema2/anexo-https.md
+          - Actividad 2.4 - Login con JWT: tema2/actividad_2_4.md
+      - Roles y rutas protegidas:
+          - Roles y rutas protegidas: tema2/roles-y-rutas-protegidas.md
+          - Actividad 2.5 - Roles y rutas protegidas: tema2/actividad_2_5.md
   # - Tema 3 - Programación multihilo:
   #     - Tema 3 - Introducción: tema3/index.md
   #     - Hilos en una aplicación real:
