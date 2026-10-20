@@ -22,8 +22,8 @@ Los temas se van publicando a medida que avanza el curso. Los que todavía no es
 | Tema | Qué cubre | RA |
 |------|-----------|-----|
 | 🔁 [Tema 0 — Repaso](tema0/index.md) | Relaciones entre clases, colecciones y programación funcional | — |
-| 🔒 Tema 1 — Servicios en red *(próximamente)* | HTTP y REST, OpenAPI, tests MockMvc y monitorización con Actuator | RA4 |
-| 🔒 Tema 2 — Programación segura *(próximamente)* | Validación, HTTP Basic, BCrypt, JWT y roles | RA5 |
+| 🔁 [Tema 1 — Servicios en red](tema1/index.md) | HTTP y REST, OpenAPI, tests MockMvc y monitorización con Actuator | RA4 |
+| 🔁 [Tema 2 — Programación segura](tema2/index.md) | Validación, HTTP Basic, BCrypt, JWT y roles | RA5 |
 | 🔒 Tema 3 — Programación multihilo *(próximamente)* | Hilos, eventos internos, listeners `@Async` y `TaskExecutor` | RA2 |
 | 🔒 Tema 4 — Comunicaciones en red *(próximamente)* | Sockets clásicos y WebSocket/STOMP con actividad en vivo | RA3 |
 
