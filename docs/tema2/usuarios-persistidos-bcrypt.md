@@ -1,81 +1,71 @@
 <a id="usuarios-persistidos-bcrypt"></a>
 
-# 🧩 3. Usuarios persistidos y BCrypt
+# 3. Usuarios persistidos y BCrypt
 
 ![Usuarios persistidos y BCrypt](diapositivas/usuarios-persistidos-bcrypt.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
 
-!!!info "Descarga de diapositivas"
+!!! info "Descarga de diapositivas"
     [Descarga las diapositivas](diapositivas/usuarios-persistidos-bcrypt.pptx){target="_blank" rel="noopener"}
-
----
 
 ## 📍 De dónde partimos
 
-Al terminar el apartado anterior, tu API ya distinguía autenticación de autorización, pero utilizaba dos piezas deliberadamente provisionales: los usuarios `user` y `admin` estaban definidos directamente en un `InMemoryUserDetailsManager`, con sus contraseñas en texto claro mediante el prefijo `{noop}`; y HTTP Basic enviaba esas credenciales en cada petición, codificadas en Base64, no cifradas.
+En el apartado anterior, la API ya distinguía **autenticación** de **autorización**, pero los usuarios `user` y `admin` estaban definidos en un `InMemoryUserDetailsManager`, con contraseñas en texto claro mediante `{noop}`. Además, HTTP Basic enviaba las credenciales en cada petición, codificadas en Base64.
 
-Esa versión dejaba dos problemas señalados a propósito. Hoy resuelves el primero: los usuarios estaban escritos en el propio código, visibles para cualquiera con acceso al repositorio y sin una persistencia real para las modificaciones realizadas durante la ejecución. A partir de ahora vivirán en PostgreSQL, con sus contraseñas protegidas mediante BCrypt.
+Ahora sustituirás ese almacén provisional por usuarios persistidos en **PostgreSQL**, cuyas contraseñas se protegerán mediante **BCrypt**. Los ejemplos utilizan la aplicación Librería.
 
-El segundo problema —las credenciales viajando en cada petición— sigue abierto; lo resolverá JWT más adelante.
+!!! tip "Una pieza que se mantiene"
+    La persistencia de usuarios y la protección de contraseñas seguirán siendo necesarias cuando incorpores JWT. En este apartado mantienes HTTP Basic; más adelante cambiará la forma de presentar las credenciales.
 
-!!! tip "Esta pieza sí se mantendrá"
-    A diferencia de los usuarios en memoria del apartado anterior, la persistencia en PostgreSQL y la protección de las contraseñas mediante BCrypt ya forman parte de la solución que mantendrás cuando sustituyas HTTP Basic por JWT.
+## 🔐 Proteger las contraseñas
 
----
+Para autenticar a una persona necesitas comprobar su contraseña sin guardar una copia legible. Antes de implementar las clases, conviene entender qué se almacena y por qué.
 
-## 🔐 Cifrar vs. hashear
+### 1. Cifrar y hashear
 
-Dos operaciones criptográficas que se confunden con facilidad, pero son opuestas en una propiedad clave:
-
-| | Cifrar | Hashear |
+| Operación | ¿Permite recuperar el original? | Uso habitual |
 |---|---|---|
-| **Reversible** | Sí, con la clave correcta | No, nunca |
-| **Para qué sirve** | Proteger datos que necesitas recuperar tal cual | Proteger datos que solo necesitas **comparar**, nunca leer de vuelta |
+| **Cifrar** | Sí, utilizando la clave correspondiente. | Proteger información que después necesitas recuperar. |
+| **Hashear** | No incorpora una operación de descifrado. | Obtener un resultado con el que comprobar una entrada. |
 
-Una contraseña no necesitas nunca "leerla de vuelta" — solo necesitas comprobar si la que te acaban de dar coincide con la que el usuario registró. Por eso las contraseñas se **hashean**, no se cifran: ni siquiera tú, con acceso total a la base de datos, deberías poder recuperar la contraseña original a partir del hash guardado.
+Al almacenar contraseñas, la aplicación guarda un **hash**. Cuando recibe una contraseña para autenticar al usuario, comprueba si corresponde al resultado almacenado.
 
----
+!!! warning "Un hash no impide probar candidatos"
+    Un atacante que robe los hashes puede probar contraseñas hasta encontrar una que coincida. Por eso importan tanto la calidad de la contraseña como el algoritmo utilizado para protegerla.
 
-## 🧂 Hash con sal
+### 2. La sal: contraseñas iguales, resultados distintos
 
-Si simplemente aplicaras una función hash (`hash("miPassword123")`) a cada contraseña, dos usuarios con la misma contraseña tendrían **el mismo hash guardado**. Eso permitiría detectar que comparten contraseña y facilitaría ataques basados en hashes precalculados, como las **tablas arcoíris**.
+Sin sal, una misma contraseña produciría siempre el mismo resultado. Eso permitiría reconocer coincidencias entre usuarios y reutilizar cálculos preparados de antemano.
 
-!!! info "¿Qué es una tabla arcoíris?"
-    Es una colección precalculada que relaciona contraseñas habituales con los hashes que producen. Si un atacante roba una tabla de hashes, puede buscar coincidencias directamente en esa colección, sin calcular cada contraseña desde cero.
+La **sal** (*salt*) es un valor aleatorio que interviene en el cálculo. Al generar una nueva sal en cada codificación, la misma contraseña puede producir resultados distintos, incluso si vuelves a codificarla para el mismo usuario.
 
-La **sal** (*salt*) resuelve este problema: es un valor aleatorio distinto para cada contraseña, que se combina con ella antes de calcular el hash. Así, dos usuarios con la misma contraseña obtienen hashes completamente distintos.
+![Dos usuarios con la misma contraseña obtienen resultados distintos al utilizar sales diferentes.](img/usuarios-bcrypt/01-misma-contrasena-distinta-sal.png)
 
-Con datos concretos, dos usuarios que eligen exactamente la misma contraseña:
+*Figura 1. Una misma contraseña produce resultados distintos al utilizar sales diferentes. Elaboración propia.*
 
-| Usuario | Contraseña | Sal | Hash guardado |
-|---|---|---|---|
-| `ana` | `miPassword123` | aleatoria, propia de `ana` | `{bcrypt}$2a$10$x7Ff…9kLp` |
-| `luis` | `miPassword123` | aleatoria, propia de `luis` | `{bcrypt}$2a$10$q2Rt…3mWx` |
+La sal se almacena junto al hash y no necesita ser secreta. Su función es impedir la comparación directa de resultados y la reutilización de un único cálculo para todos los usuarios.
 
-Nadie que mire la tabla `usuarios` puede saber que `ana` y `luis` comparten contraseña. Además, una tabla arcoíris calculada sin tener en cuenta esas sales deja de ser reutilizable: el atacante necesitaría realizar cálculos específicos para cada sal.
+??? info "Tablas arcoíris"
+    Son estructuras precalculadas que permiten buscar contraseñas a partir de sus hashes. Una sal aleatoria dificulta su reutilización: los cálculos tendrían que considerar también la sal concreta de cada resultado almacenado.
 
----
+### 3. BCrypt: aumentar el coste de cada intento
 
-## 🐌 Por qué BCrypt y no un hash rápido
+SHA-256 es una función hash rápida y útil en otros contextos, pero utilizarla directamente para almacenar contraseñas permite probar candidatos con demasiada rapidez.
 
-Podrías pensar en usar **SHA-256** directamente — otra función hash, de propósito general, muy usada para comprobar que un fichero descargado no se ha corrompido o alterado. El problema es justo su virtud en ese otro contexto: **es rápido**, pensado para calcularse millones de veces por segundo sin apenas coste. Aplicado a contraseñas, eso juega en tu contra: un atacante con acceso a una tabla de hashes robada puede probar miles de millones de contraseñas por segundo contra un hash SHA-256, por fuerza bruta.
+**BCrypt** incorpora sal y un **factor de coste** que regula el trabajo necesario para calcular o comprobar una contraseña. Subir el coste en una unidad duplica aproximadamente ese trabajo.
 
-**BCrypt** está diseñado deliberadamente para ser **lento**, con un coste computacional configurable (el llamado *factor de coste*): cuanto mayor el coste, más tiempo (y recursos) hace falta para calcular un solo hash — insignificante para un login legítimo (una fracción de segundo), pero devastador para un atacante que necesita probar millones de combinaciones. BCrypt incluye además la sal automáticamente, como parte del propio hash resultante.
-
-Una referencia meramente orientativa —los tiempos cambian mucho según el hardware y la implementación—:
-
-| Factor de coste | Tiempo aprox. por hash |
+| Factor de coste | Trabajo aproximado respecto al coste 10 |
 |---|---|
-| 4 | ~1 ms |
-| 10 (el valor por defecto) | ~60-100 ms |
-| 12 | ~250-400 ms |
+| 10 | Referencia: ×1 |
+| 11 | ×2 |
+| 12 | ×4 |
 
-Cien milisegundos son imperceptibles para un usuario que hace login una vez. Pero multiplicados por los millones de intentos que necesitaría un ataque de fuerza bruta, la diferencia entre "factible" e "inviable" se cuenta en años de cómputo.
+El objetivo es encarecer los intentos masivos manteniendo un tiempo de autenticación asumible. El tiempo concreto depende del equipo y de la carga; esta tabla compara trabajo relativo, no garantiza milisegundos.
 
----
+## 🗄️ Persistir y cargar usuarios
 
-## 🗄️ Usuarios reales en la base de datos
+La implementación combina una entidad JPA, un codificador de contraseñas y un servicio que permite a Spring Security consultar los usuarios. Primero verás cada pieza; después, cómo colaboran al registrar y autenticar.
 
-### La entidad `Usuario`
+### 1. La entidad `Usuario`
 
 ```java
 @Entity
@@ -99,9 +89,9 @@ public class Usuario {
 }
 ```
 
-Territorio ya conocido de Acceso a Datos: una entidad JPA más, con su repositorio (`UsuarioRepository extends JpaRepository<Usuario, Long>`, con un `findByUsername` añadido). La única novedad real es el campo `password`: nunca va a contener texto legible, solo el hash BCrypt.
+Es una entidad JPA como las que ya utilizas en Acceso a Datos. El campo `password` almacenará la cadena codificada completa, incluido el prefijo de Spring, en lugar de la contraseña recibida.
 
-El campo `rol` usa el enum que ya se adelantó en el apartado anterior — solo dos valores, sin más complicación:
+El rol se representa con el enum presentado en el apartado anterior:
 
 ```java
 public enum RolUsuario {
@@ -110,9 +100,19 @@ public enum RolUsuario {
 }
 ```
 
-Y el campo `activo` es una baja lógica, no física: en vez de borrar la fila de un usuario al que le retiras el acceso, lo marcas como `activo = false` y lo conservas — así no pierdes el histórico de qué creó o modificó ese usuario mientras tuvo cuenta. Lo usarás en el siguiente paso.
+El campo `activo` permite deshabilitar una cuenta sin borrar su fila. Así puedes conservar sus relaciones con otros datos; el histórico de cambios dependerá de cómo lo haya modelado la aplicación.
 
-### El `PasswordEncoder`
+El repositorio añade una búsqueda por nombre de usuario:
+
+```java
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+    Optional<Usuario> findByUsername(String username);
+}
+```
+
+Los fragmentos omiten imports y métodos de acceso para centrarse en la configuración de seguridad. La entidad debe disponer de los getters y setters utilizados en los ejemplos.
+
+### 2. El bean `PasswordEncoder`
 
 ```java
 @Bean
@@ -121,17 +121,25 @@ public PasswordEncoder passwordEncoder() {
 }
 ```
 
-`createDelegatingPasswordEncoder()` construye un `DelegatingPasswordEncoder`: un encoder que antepone un prefijo al hash almacenado (por ejemplo, `{bcrypt}`) indicando qué algoritmo se usó — así, si en el futuro cambiaras de algoritmo, los hashes antiguos con prefijos distintos seguirían siendo reconocibles y verificables, sin migrar toda la tabla de golpe. Este mismo bean se usa tanto para **codificar** una contraseña al crear un usuario como para **verificar** una contraseña al hacer login (BCrypt no "descifra" el hash — vuelve a calcularlo con la contraseña recibida y compara).
+`createDelegatingPasswordEncoder()` crea un `DelegatingPasswordEncoder` que utiliza BCrypt para las nuevas contraseñas en esta configuración. El prefijo `{bcrypt}` identifica el algoritmo y permite seleccionar el verificador correspondiente al leer la cadena almacenada.
 
-Un hash BCrypt real tiene esta forma:
+![Cadena almacenada dividida en prefijo de Spring, versión de BCrypt, coste, sal y hash.](img/usuarios-bcrypt/02-anatomia-bcrypt.png)
 
-```
-{bcrypt}$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy
-```
+*Figura 2. Prefijo de Spring y componentes de una cadena BCrypt: versión, coste, sal y hash. Elaboración propia.*
 
-Diseccionado: `{bcrypt}` es el prefijo añadido por `DelegatingPasswordEncoder`; `$2a$` identifica la versión de BCrypt; `10$` indica el factor de coste, cuyo trabajo aumenta exponencialmente; y el resto contiene la sal y el hash codificados en una misma cadena. No hace falta guardar la sal en otra columna.
+El bean ofrece dos operaciones que utilizarás en momentos diferentes:
 
-### Un `UserDetailsService` propio: el sustituto del `InMemoryUserDetailsManager`
+| Operación | Momento | Resultado |
+|---|---|---|
+| `encode(contraseña)` | Al crear o cambiar la contraseña. | Una nueva cadena codificada para guardar. |
+| `matches(contraseña, hashAlmacenado)` | Al comprobar las credenciales. | `true` o `false`. |
+
+!!! warning "Verificar con `matches()`"
+    No compares `encode(contraseña)` con el valor guardado: una nueva codificación genera otra sal. `matches()` utiliza la información incluida en la cadena almacenada para realizar la comprobación.
+
+El prefijo también facilita mantener contraseñas antiguas si se cambia de algoritmo, siempre que el encoder conserve soporte para sus identificadores.
+
+### 3. Un `UserDetailsService` que consulta PostgreSQL
 
 ```java
 @Service
@@ -154,16 +162,31 @@ public class BdUserDetailsService implements UserDetailsService {
 }
 ```
 
-Es el reemplazo directo del `InMemoryUserDetailsManager` del apartado anterior: implementa `UserDetailsService`, y en vez de buscar en una lista fija en memoria, busca en `UsuarioRepository` — la misma base de datos que usas para todo lo demás. Spring Security llama a `loadUserByUsername(...)` automáticamente cuando alguien intenta autenticarse; tú solo tienes que decirle dónde encontrar al usuario. El `.disabled(!usuario.isActivo())` es justo lo que usa el `activo` que has visto al definir la entidad: un usuario con `activo = false` sigue existiendo en la tabla, pero Spring Security lo trata como deshabilitado y rechaza sus intentos de login.
+`BdUserDetailsService` sustituye al `InMemoryUserDetailsManager`: busca al usuario en el repositorio y adapta sus datos al objeto `UserDetails` que entiende Spring Security.
 
-!!! tip "Cambiar el almacén de usuarios no obliga a modificar `securityFilterChain`"
-    Sustituir `InMemoryUserDetailsManager` por `BdUserDetailsService` no obliga a modificar `.csrf(...)`, `.exceptionHandling(...)`, `.httpBasic(...)` ni las reglas que ya existen. Spring Security utiliza el bean `UserDetailsService` disponible en el contexto junto con el `PasswordEncoder` para configurar la autenticación por usuario y contraseña.
+La llamada `.password(usuario.getPassword())` entrega el hash almacenado. Este servicio **carga los datos**, mientras que la comprobación de la contraseña se realiza mediante el `PasswordEncoder`.
 
-    Más adelante sí añadirás una regla nueva a `authorizeHttpRequests(...)`, pero será porque aparece un endpoint público nuevo, `/api/v1/auth/register`, no porque los usuarios hayan pasado de memoria a PostgreSQL.
+Con `.disabled(!usuario.isActivo())`, una cuenta inactiva sigue existiendo en PostgreSQL, pero Spring Security rechaza su autenticación.
 
-### El registro: `AuthController`
+!!! tip "Sustituir el almacén provisional"
+    Retira el bean `InMemoryUserDetailsManager` anterior. En la configuración de estos apuntes, Spring Security utiliza el nuevo `UserDetailsService` y el bean `PasswordEncoder` para autenticar por usuario y contraseña.
 
-Todo lo de arriba explica cómo se **verifica** un usuario que ya existe — pero no cómo llega a existir el primero. Para eso hace falta un endpoint público que reciba usuario y contraseña, codifique la contraseña con el mismo `PasswordEncoder` de antes, y guarde el `Usuario` resultante:
+    Este cambio no exige modificar por sí mismo las reglas de acceso, HTTP Basic ni la gestión de errores de `securityFilterChain`. Más adelante abrirás una ruta nueva porque añadirás el registro público.
+
+## 🔄 Registrar y autenticar
+
+Registrar crea una cuenta; autenticar comprueba las credenciales de una cuenta existente. La figura relaciona las clases anteriores con ambos recorridos.
+
+![Recorridos de registro y autenticación, con las responsabilidades del controlador, el servicio de usuarios y el codificador.](img/usuarios-bcrypt/03-registro-autenticacion.png)
+
+*Figura 3. Registro y autenticación de usuarios: almacenamiento y comprobación de contraseñas con BCrypt. Elaboración propia.*
+
+!!! info "`DaoAuthenticationProvider` lo proporciona Spring Security"
+    No tienes que programar esa clase. Coordina la autenticación utilizando el `UserDetailsService` y el `PasswordEncoder`. Tú implementas `BdUserDetailsService` y declaras el bean del encoder; el proveedor utiliza ambas piezas.
+
+### 1. El registro público: `AuthController`
+
+El registro recibe los datos de la cuenta mediante un DTO. El cliente aporta el nombre y la contraseña; los privilegios los decide el servidor.
 
 ```java
 public record RegisterRequestDTO(
@@ -199,22 +222,22 @@ public class AuthController {
 }
 ```
 
-`passwordEncoder.encode(...)` genera aquí el hash que se guarda en la base de datos. Durante el login, `BdUserDetailsService` solo carga el usuario y devuelve ese hash; es `DaoAuthenticationProvider` quien utiliza el mismo `PasswordEncoder` para comparar la contraseña recibida con el hash almacenado. Si alguien intentara registrar un `username` que ya existe, la restricción `unique = true` de la entidad lo bloquea en la base de datos — y ese error ya sabes gestionarlo, es el mismo `DataIntegrityViolationException` que tu `GlobalExceptionHandler` convierte en un `409` desde el primer apartado del tema.
+`encode(...)` produce la cadena que se guarda en `password`. Si el nombre ya existe, la restricción `unique = true` provoca un error de integridad: tu `GlobalExceptionHandler` lo convierte en `409 Conflict`, como en el primer apartado del tema.
 
-!!! warning "El rol nunca lo decide quien se registra"
-    Fíjate en que `RolUsuario.USER` está fijado aquí mismo, en el servidor — no viene del DTO que manda el cliente. Si `RegisterRequestDTO` incluyera un campo `rol` y lo guardaras tal cual, cualquiera podría registrarse a sí mismo como `ADMIN` con solo añadirlo al JSON. La regla es simple: nunca dejes que el cliente decida sus propios privilegios.
+!!! warning "El cliente no elige sus privilegios"
+    El DTO no incluye el rol. `RolUsuario.USER` se asigna en el servidor para impedir que alguien se registre como `ADMIN` enviando ese valor en el JSON.
 
-Como cualquier otra ruta nueva, hay que abrirla explícitamente en tu política de acceso. Añade esta regla **antes de `anyRequest().authenticated()`**, porque esa regla final captura todo lo que no haya coincidido anteriormente:
+Para permitir el registro sin autenticación, añade esta regla **antes de `anyRequest().authenticated()`** en la política de acceso:
 
 ```java
 .requestMatchers(HttpMethod.POST, "/api/v1/auth/register").permitAll()
 ```
 
-Pero ese mismo aviso deja una pregunta abierta: si nadie puede auto-asignarse `ADMIN`, ¿de dónde sale el primero? Ese usuario tiene que venir de fuera del propio flujo de registro.
+### 2. El primer administrador: `ApplicationRunner`
 
-### El primer `ADMIN`: un `ApplicationRunner`
+Como el registro público solo crea cuentas `USER`, el primer administrador se incorpora mediante un proceso de inicialización o *seed*.
 
-La pieza que hace falta es un `ApplicationRunner`: una interfaz de Spring Boot con un único método, `run(...)`, que el framework ejecuta automáticamente **una vez en cada arranque**, después de crear el contexto de la aplicación y antes de considerarla preparada para aceptar tráfico. Es un sitio adecuado para insertar datos que deben existir desde el primer momento:
+`ApplicationRunner` permite ejecutar código en cada arranque, después de crear el contexto y antes de que Spring Boot considere preparada la aplicación. La anotación `@Component` hace que detecte esta implementación:
 
 ```java
 @Component
@@ -240,84 +263,85 @@ public class UsuariosSeed implements ApplicationRunner {
 }
 ```
 
-Igual que con `UserDetailsService`, no hace falta registrar nada a mano: basta con anotar la clase `@Component` e implementar `ApplicationRunner`, y Spring Boot la detecta y la ejecuta sola en cada arranque. El `if (...isEmpty())` es imprescindible por eso mismo —`run(...)` se ejecuta en **cada** arranque, no solo la primera vez—: sin esa comprobación, intentarías insertar el mismo `admin` cada vez que reinicies, y chocarías con la restricción `unique = true` del `username`.
+El `if (...isEmpty())` evita insertar de nuevo al administrador cuando ya existe. La contraseña procede de la propiedad externa `libreria.admin.password` y se codifica con el mismo encoder que utiliza el registro.
 
-Fíjate en que la contraseña ya no está escrita directamente en el código: viene de `${libreria.admin.password}`, una propiedad externa. El motivo lo ves en la siguiente sección.
+!!! note "Inicializar no significa actualizar"
+    Cambiar esa propiedad después de crear `admin` no modifica su contraseña: este código solo actúa cuando la cuenta todavía no existe. Tampoco reactiva ni cambia el rol de una cuenta existente.
 
-### Esa contraseña tampoco debería estar en tu repositorio
+## 🔑 Configuración compartida y secretos
 
-Aunque `admin123` ya no viva en ningún `.java`, si la escribieras tal cual en `application-dev.yml` seguirías teniendo el mismo problema: ese fichero se sube a Git, así que cualquiera con acceso al repositorio la vería igual. La solución es un fichero de propiedades **aparte, que nunca se versiona**:
+Sacar la contraseña del código Java es solo el primer paso. Si la escribes en un fichero versionado, seguirá siendo visible en el repositorio. La configuración compartida debe indicar qué necesita la aplicación; cada entorno debe proporcionar sus valores secretos.
+
+![Configuración compartida por Git y suministro de valores secretos en el equipo local y en CI o despliegue.](img/usuarios-bcrypt/04-configuracion-secretos.png)
+
+*Figura 4. Distribución de la configuración mediante Git y suministro de secretos en cada entorno. Elaboración propia.*
+
+### 1. Configurar el entorno local
+
+En el perfil de desarrollo, importa un fichero adicional que quedará fuera de Git:
 
 ```yaml
-# application-dev.yml (SÍ se sube a Git)
+# application-dev.yml (versionado)
 spring:
   config:
     import: "optional:application-dev-local.yml"
 ```
 
-```yaml
-# application-dev-local.yml (en .gitignore, NO se sube a Git)
-libreria:
-  admin:
-    password: admin123
-```
-
-El prefijo `optional:` indica que la ausencia del fichero no debe provocar por sí sola un error al procesar `spring.config.import`. Sin embargo, `@Value("${libreria.admin.password}")` exige que esa propiedad exista en alguna fuente de configuración.
-
-Por tanto, si el fichero local no existe y la propiedad tampoco se proporciona mediante una variable de entorno, un parámetro u otra fuente, la aplicación no podrá completar el arranque. El error señalará qué propiedad obligatoria falta, en lugar de utilizar silenciosamente una contraseña vacía o predeterminada.
-
-Para que cualquiera sepa qué tiene que rellenar sin tener que adivinarlo, se acompaña de una plantilla que sí se sube a Git:
+Junto a él, guarda una plantilla que permita conocer las propiedades necesarias:
 
 ```yaml
-# application-dev-local.yml.example (SÍ se sube a Git — sin valores reales)
+# application-dev-local.yml.example (versionado, sin secretos reales)
 libreria:
   admin:
-    password: pon-aqui-tu-propia-contraseña
+    password: "pon-aqui-tu-propia-contraseña"
 ```
 
-Cada persona que clona el repositorio copia ese `.example` a `application-dev-local.yml`, rellena sus propios valores, y ese fichero final se queda solo en su máquina. Es el mismo patrón, exactamente, que vas a reutilizar para el secreto de JWT más adelante en el tema.
+Cada persona copia la plantilla a `application-dev-local.yml` y sustituye el marcador por su contraseña. Ambos ficheros se sitúan junto a `application-dev.yml`; el perfil `dev` debe estar activo para cargar esta configuración.
 
-!!! warning "Ese fichero no existe fuera de tu máquina — piénsalo cuando montes CI o un despliegue"
-    Poner un valor en `.gitignore` es la otra cara de una moneda: si no se sube a Git, **no llega a ningún sitio por Git**. Tu máquina lo tiene porque lo has rellenado a mano, pero cualquier entorno que arranque tu aplicación desde el repositorio limpio —un pipeline de integración continua, un servidor de despliegue, el ordenador de un compañero— no tiene ese fichero, y con él ausente la aplicación no arranca (por el `@Value` sin valor por defecto que acabas de ver). En esos entornos tienes que **inyectar** cada uno de esos valores por otra vía: una variable de entorno, un parámetro del comando, o un "secreto" del propio sistema de CI. No es un caso raro: es lo primero con lo que te vas a topar la primera vez que uno de estos secretos tenga que existir en algún sitio que no sea tu portátil.
+Incluye el fichero local en `.gitignore`, manteniendo versionada la plantilla:
 
-!!! example "Cómo se vería en GitHub Actions, el día que hiciera falta"
-    Tu CI actual (Actividad 1.3) no necesita este valor: solo ejecuta `*ControllerTest`, que mockean el servicio y nunca arrancan un `DataSource` ni leen la contraseña inicial del administrador.
+```gitignore
+application-dev-local.yml
+```
 
-    Pero si algún día un workflow sí lo necesitara —por ejemplo, para arrancar la aplicación completa contra una base de datos real—, el sitio para guardarlo no sería el código ni el propio `ci.yml`, sino los secretos del repositorio: en GitHub, **Settings → Secrets and variables → Actions → New repository secret**, con un nombre como `GAMEVAULT_ADMIN_PASSWORD`.
+!!! warning "Ignorar un fichero no lo retira del historial"
+    La regla debe aplicarse antes de añadir el fichero a Git. Si ya se ha publicado una contraseña real, añadirla a `.gitignore` no borra los commits anteriores ni sustituye la necesidad de cambiarla.
 
-    En GameVault, la propiedad equivalente se habrá adaptado a `gamevault.admin.password`, siguiendo el nombre del proyecto. Por eso el workflow la proporciona con ese nombre:
+### 2. Proporcionar valores en otros entornos
+
+`optional:` permite que falte el fichero importado. Sin embargo, `@Value("${libreria.admin.password}")` exige que exista la propiedad: si ninguna fuente la proporciona, la aplicación no completa el arranque.
+
+Esto también se cumple cuando `admin` ya existe: Spring debe resolver el campo anotado con `@Value` al crear `UsuariosSeed`, antes de ejecutar la búsqueda del usuario.
+
+Un servidor o un proceso de CI que arranque la aplicación completa necesitará recibir el valor mediante su configuración externa o su sistema de secretos. El fichero local de tu equipo no llega allí al clonar el repositorio.
+
+??? example "Ejemplo para una futura prueba de integración en GitHub Actions"
+    Si un workflow necesita arrancar la aplicación completa, puedes guardar el valor como un secreto del repositorio llamado `LIBRERIA_ADMIN_PASSWORD` y exponerlo como variable de entorno:
 
     ```yaml
-    - name: Ejecutar los tests
-      run: ./mvnw test -Dgamevault.admin.password=${{ secrets.GAMEVAULT_ADMIN_PASSWORD }}
+    - name: Ejecutar las pruebas
+      env:
+        LIBRERIA_ADMIN_PASSWORD: ${{ secrets.LIBRERIA_ADMIN_PASSWORD }}
+      run: ./mvnw test
     ```
 
-    Es solo una referencia para el día que haga falta desplegar o ejecutar pruebas de integración completas — no tienes que tocar nada de esto ahora.
+    Spring Boot permite proporcionar `libreria.admin.password` mediante esa variable. Un test aislado que no cargue `UsuariosSeed` no necesita esta propiedad por ese componente. Esta ampliación no requiere modificar ahora el workflow de la actividad.
 
-!!! note "¿No es esto lo mismo que la contraseña de Postgres, que has dejado en el fichero versionado?"
-    Buena pregunta, y la respuesta es matizada. Tal y como está tu proyecto **hoy** —corriendo solo en tu Dev Container, sin desplegar en ningún sitio—, el riesgo real de que `admin123` se filtre por GitHub es prácticamente el mismo que el de la contraseña de Postgres del primer apartado del tema: nadie fuera de tu máquina puede usarla ahora mismo, porque no hay ningún servidor público al que dirigirla.
+El mismo criterio se aplica a otras credenciales, como las de PostgreSQL, y al secreto de JWT que incorporarás después. Los valores de demostración de un entorno local no deben reutilizarse en un despliegue real.
 
-    La diferencia no está en el peligro de hoy, sino en lo fácil que es que este secreto concreto sobreviva sin querer hasta un despliegue real. La contraseña de Postgres solo importaría si algún día reconfiguraras a propósito tu aplicación contra una base de datos en la nube — un paso consciente. Pero es muy típico coger un proyecto que ya funciona como base para algo real y desplegarlo copiando la configuración tal cual, sin darte cuenta de que ese `admin123` o ese secreto de JWT siguen siendo los mismos del primer commit. Protegerlo ahora, cuando no cuesta nada y no urge, es más barato que aprender por qué hacía falta el día que sí urja.
+## 🧭 El siguiente paso
 
----
+Los usuarios ya viven en PostgreSQL y la aplicación puede comprobar sus contraseñas sin guardar el texto original. Sin embargo, con HTTP Basic el cliente sigue enviando las credenciales en cada petición.
 
-## 🧭 Lo que aún falta
-
-Los usuarios ya no están definidos directamente en el código: viven en PostgreSQL y sus contraseñas se almacenan mediante hashes que no permiten recuperar el texto original. Pero sigue quedando el segundo problema del apartado anterior: HTTP Basic envía las credenciales en **cada** petición.
-
-En el próximo apartado, JWT permitirá autenticarse una vez y presentar un token en las peticiones siguientes.
-
----
+JWT permitirá presentar un token en las peticiones posteriores a la autenticación. Tanto las credenciales como los tokens requieren **HTTPS** para proteger su transmisión; Base64 y JWT no sustituyen el cifrado del transporte.
 
 ## ✅ Ideas clave
 
 ??? tip "Abrir resumen"
+    - **BCrypt combina sal y coste** para dificultar la reutilización de cálculos y encarecer cada intento de adivinación.
+    - **`encode()` guarda; `matches()` comprueba.** La sal está incluida en la cadena almacenada.
+    - **`BdUserDetailsService` carga usuarios.** Spring Security coordina la comprobación mediante `DaoAuthenticationProvider` y `PasswordEncoder`.
+    - **El servidor asigna los roles.** El registro público crea cuentas `USER`; el administrador inicial se incorpora mediante un *seed*.
+    - **Git comparte la configuración y la plantilla.** Cada entorno proporciona sus secretos; una propiedad obligatoria debe existir aunque la importación del fichero sea opcional.
 
-    - **Cifrar** es reversible (con clave); **hashear** no lo es — las contraseñas se hashean, nunca se cifran.
-    - La **sal** hace que contraseñas iguales produzcan hashes distintos, evitando comparación directa y tablas arcoíris.
-    - **BCrypt** es deliberadamente lento (factor de coste configurable), lo que lo hace resistente a fuerza bruta frente a un hash rápido como SHA-256 a secas.
-    - `DelegatingPasswordEncoder` antepone un prefijo (`{bcrypt}`) al hash, indicando el algoritmo usado — el mismo bean codifica y verifica.
-    - Un `UserDetailsService` propio sustituye al `InMemoryUserDetailsManager`: busca los usuarios en la base de datos real.
-    - Spring Security utiliza el `UserDetailsService` y el `PasswordEncoder` del contexto para autenticar mediante usuario y contraseña; cambiar el almacén de usuarios no obliga por sí mismo a modificar `securityFilterChain`.
-    - Un endpoint de registro público crea usuarios reales, siempre con rol `USER` fijado en el servidor — nunca confíes en que el cliente decida sus propios privilegios. El primer `ADMIN` no puede salir de ahí: hace falta un *seed* aparte.
-    - Ese *seed* no debe llevar la contraseña escrita en el código ni en un fichero versionado: va en `application-dev-local.yml` (en `.gitignore`), importado con `spring.config.import: optional:...`, acompañado de un `.example` sin valores reales que sí se sube a Git.
+<!-- Referencia técnica: https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/dao-authentication-provider.html -->

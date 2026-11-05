@@ -1,172 +1,108 @@
 <a id="autenticacion-jwt"></a>
 
-# 🧩 4. Autenticación con JWT
+# 4. Autenticación con JWT
 
 ![Autenticación con JWT](diapositivas/autenticacion-jwt.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
 
-!!!info "Descarga de diapositivas"
+!!! info "Descarga de diapositivas"
     [Descarga las diapositivas](diapositivas/autenticacion-jwt.pptx){target="_blank" rel="noopener"}
 
----
+## 📍 De dónde partimos
 
-Al terminar el apartado anterior, tus usuarios ya eran reales —persistidos en PostgreSQL, con la contraseña protegida por BCrypt— y hasta los secretos vivían ya fuera del código. Pero seguía quedando el problema señalado desde entonces: con HTTP Basic, cada petición —absolutamente todas— volvía a mandar usuario y contraseña, aunque fuera solo codificados en Base64, no cifrados.
+La aplicación Librería ya conserva sus usuarios en PostgreSQL y protege las contraseñas con BCrypt. El registro público crea cuentas `USER` y un proceso de inicialización incorpora el primer administrador.
 
-De paso, hoy documentas en OpenAPI el nuevo mecanismo Bearer. Swagger UI podrá guardar el token desde su botón "Authorize" y añadirlo automáticamente a las peticiones que ejecutes desde la documentación.
+Hasta ahora, HTTP Basic permitía autenticar cada petición enviando usuario y contraseña en la cabecera `Authorization`. Las rutas públicas no necesitaban esas credenciales. En este apartado, un **login** comprobará la contraseña y entregará un **token JWT** que el cliente presentará en las peticiones posteriores.
 
-HTTP es un protocolo **sin estado**: cada petición llega sola, sin memoria de la anterior. El servidor no "recuerda" que hace un segundo te has autenticado — por eso, hasta ahora, cada petición ha tenido que volver a mandar usuario y contraseña. Hoy sustituyes eso por algo mejor.
+!!! tip "Qué se mantiene"
+    Continúan la entidad `Usuario`, su repositorio, `BdUserDetailsService`, el bean `PasswordEncoder` y el registro. Añadirás la emisión y validación de tokens y sustituirás HTTP Basic como mecanismo para las peticiones protegidas.
 
----
+## 🍪 Sesiones y tokens
 
-## 🍪 Dos soluciones históricas al problema de "recordar quién eres"
+HTTP es un protocolo sin estado: una petición no demuestra por sí sola que el cliente se autenticó anteriormente. La aplicación necesita un mecanismo que permita reconocerlo en las peticiones siguientes.
 
-### Sesión en el servidor
+### 1. Dónde reside la información de autenticación
 
-El servidor, tras el login, guarda en su propia memoria (o en una base de datos de sesiones) quién eres, y te entrega una **cookie** con un identificador de sesión. En cada petición posterior, mandas esa cookie, y el servidor busca en su almacén "¿quién es el dueño de esta sesión?".
+Con una **sesión en servidor**, el cliente conserva normalmente una cookie con un identificador. El servidor lo utiliza para recuperar la sesión guardada. Si existen varias instancias de la aplicación, deben poder acceder a esa información o utilizar una estrategia de afinidad de sesiones.
 
-Límite: el servidor tiene que **guardar** el estado de cada sesión activa, en algún sitio. El problema aparece en cuanto tu aplicación corre en varias copias detrás de un **balanceador de carga** —un componente que reparte las peticiones entrantes entre esas copias, sin fijarse en quién atendió la anterior—:
+Con un **token autocontenido**, el cliente presenta una credencial que incorpora información sobre su identidad. El servidor comprueba su validez sin necesitar un almacén de sesiones de autenticación.
 
-```mermaid
-flowchart LR
-    A["🔑 Login"] --> B["⚖️ Balanceador"]
-    B --> C["🖥️ Servidor 1<br/>guarda tu sesión"]
-    D["📨 Siguiente petición"] --> E["⚖️ Balanceador"]
-    E -.-> F["🖥️ Servidor 2<br/>❌ no te reconoce"]
+![Comparación entre una sesión en servidor y un token JWT firmado.](img/autenticacion-jwt/01-sesion-y-token.png)
+
+*Figura 1. Identificación del usuario mediante una sesión en servidor o un token JWT firmado. Elaboración propia.*
+
+Ambas opciones son válidas y tienen costes distintos. Aquí utilizarás JWT para estudiar una API que autentica peticiones sin conservar sesiones de autenticación en el servidor. Esto no impide consultar PostgreSQL para obtener libros o realizar otras operaciones.
+
+### 2. Qué significa Bearer
+
+Un **token Bearer** es una credencial que puede utilizar quien la posee. Después del login, el cliente la envía así:
+
+```http
+Authorization: Bearer <token>
 ```
 
-Tu sesión vive solo en la memoria del Servidor 1 — si la siguiente petición cae en el Servidor 2, es como si no hubieras iniciado sesión nunca. Arreglarlo exige que todas las copias compartan el mismo almacén de sesiones, o forzar al balanceador a mandarte siempre contra la misma copia — ninguna de las dos es gratis.
+`<token>` representa la cadena recibida, sin los signos `<` y `>`. La contraseña vuelve a ser necesaria cuando hay que autenticarse para obtener otro token. Tanto el login como las peticiones con token necesitan HTTPS para proteger su transmisión.
 
-### Token autocontenido
+## 🧬 Qué contiene un JWT firmado
 
-El servidor no necesita guardar el estado de autenticación de cada sesión. En el login, te entrega un **token**: un "carné" protegido criptográficamente que contiene, dentro de sí mismo, quién eres y qué puedes hacer. En cada petición posterior, presentas ese token, y el servidor puede validarlo sin consultar ningún almacén de sesiones, porque la información necesaria viaja dentro del propio token.
+JWT es un formato para representar información mediante **claims**. En este proyecto utilizarás un JWT firmado con `HS256`, cuya representación compacta tiene tres partes separadas por puntos.
 
-```mermaid
-sequenceDiagram
-    participant Cliente
-    participant Servidor
+### 1. Header, payload y firma
 
-    Cliente->>Servidor: Login (usuario + contraseña)
-    Servidor->>Servidor: Verifica credenciales y firma un token
-    Servidor-->>Cliente: 🎫 Token
+El `header` describe el algoritmo, el `payload` contiene los claims y la tercera parte permite comprobar la integridad y autenticidad del contenido.
 
-    Note over Cliente,Servidor: Peticiones siguientes:<br/>ninguna consulta a ningún almacén
+![Partes de un JWT firmado con HS256 y significado de sus claims.](img/autenticacion-jwt/02-anatomia-jwt.png)
 
-    Cliente->>Servidor: Petición + token
-    Servidor->>Servidor: Valida el token
-    Servidor-->>Cliente: Respuesta
-```
+*Figura 2. Estructura de un JWT firmado con HS256: header, payload y código de autenticación. Elaboración propia.*
 
-Fíjate en que el login (el primer paso del diagrama) **sigue** mandando usuario y contraseña — eso no desaparece, y ahí sigues expuesto exactamente igual que con HTTP Basic. Lo que cambia es la frecuencia: en vez de en todas y cada una de las peticiones, viajan una única vez, contra un único endpoint (`/login`) que puedes proteger a fondo. Todas las peticiones posteriores —pueden ser cientos, durante toda tu sesión de trabajo— ya no llevan la contraseña en ningún sitio, solo el token.
+Las partes se representan mediante **Base64URL**, una codificación que no oculta la información. El JSON de la figura está decodificado; no es la cadena que se envía en la cabecera HTTP. Sus fechas son ilustrativas y no corresponden a un token utilizable.
 
-De las dos, esta —el token autocontenido— es la que vas a construir en tu API: resuelve justo el problema que acabas de ver con la sesión en servidor, porque no hay que compartir ni coordinar un almacén de sesiones entre las distintas copias de la aplicación, y encaja con una API pensada para poder escalar en varias instancias. **JWT** (*JSON Web Token*) es el formato estándar de ese token autocontenido, y es lo que vas a implementar hoy.
+| Claim | Significado en Librería |
+|---|---|
+| `sub` | Nombre del usuario autenticado. |
+| `iat` | Instante de emisión, en segundos Unix. |
+| `exp` | Instante de caducidad, en segundos Unix. |
+| `iss` | Emisor. En este ejemplo, `libreria`. |
+| `roles` | Roles asignados al usuario. Es un claim personalizado. |
 
----
+Los roles aportan información para autorizar, pero son las reglas del servidor las que deciden qué operaciones permiten.
 
-## ✍️ Qué significa "firmado"
+### 2. Firmar con HS256
 
-**Firmar no es lo mismo que cifrar**. Proteger un dato mediante una firma o un código de autenticación no oculta su contenido: sigue siendo legible por cualquiera. Lo que permite es comprobar que no se ha modificado y que fue generado por alguien que conocía la clave necesaria.
+`HS256` utiliza **HMAC-SHA256** con un secreto compartido: la misma clave sirve para generar y verificar el código de autenticación. Aunque se hable habitualmente de «firma», técnicamente se trata de un MAC simétrico.
 
-En este proyecto utilizarás **HMAC** (*Hash-based Message Authentication Code*) con el algoritmo `HS256`. HMAC combina una función hash —SHA-256 en este caso— con un secreto compartido. Solo quien conoce ese secreto puede generar un código válido para el contenido del token.
+El cálculo protege el header y el payload codificados, unidos por su punto separador. Si alguien modifica un claim y conserva la firma anterior, la comprobación falla.
 
-Aunque habitualmente se hable de «firmar un JWT», `HS256` utiliza técnicamente un código MAC simétrico: la misma clave sirve para generar y para verificar el token. Su finalidad es comprobar la integridad y autenticidad del mensaje, no proteger contraseñas como hace BCrypt.
+!!! warning "El payload es legible"
+    No incluyas contraseñas ni secretos en los claims. Poder leer un token no permite modificarlo conservando una firma válida, pero quien robe un token intacto y vigente puede utilizarlo como credencial.
 
----
+## 🔄 Dos recorridos de autenticación
 
-## 🧬 Anatomía de un JWT
+El login verifica usuario y contraseña. Las peticiones posteriores verifican el token. Entender esta separación permite situar cada clase antes de entrar en el código.
 
-El JWT firmado que utilizarás en este proyecto sigue la serialización compacta JWS y tiene tres partes separadas por puntos: `header.payload.signature`. Las tres se codifican mediante **Base64URL**, una variante de Base64 segura para URLs y sin el relleno final `=`.
+![Emisión de un token durante el login y validación de una petición Bearer.](img/autenticacion-jwt/03-obtener-utilizar-token.png)
 
-```
-eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGVzIjpbIkFETUlOIl0sImlhdCI6MTczMDAwMDAwMCwiZXhwIjoxNzMwMDAzNjAwfQ.SflKxwRJ...
-```
+*Figura 3. Emisión del token durante el login y validación en las peticiones protegidas. Elaboración propia.*
 
-| Parte | Qué contiene | En este ejemplo |
-|---|---|---|
-| `header` | Metadatos sobre la protección del token, como el algoritmo utilizado (`alg`). También puede incluir `typ`, normalmente con el valor `"JWT"`, pero este campo es opcional. | `eyJhbGciOiJIUzI1NiJ9` |
-| `payload` | Los **claims**: los datos reales, quién eres y qué puedes hacer (los ves decodificados justo debajo) | `eyJzdWIiOiJhZG1pbiIsInJvbGVzIjpbIkFETUlOIl0sImlhdCI6MTczMDAwMDAwMCwiZXhwIjoxNzMwMDAzNjAwfQ` |
-| `signature` | El código HMAC calculado sobre el `header` y el `payload` codificados, utilizando el secreto del servidor. Permite detectar cualquier modificación del contenido. | `SflKxwRJ...` |
+### 1. Obtener el token
 
-Si decodificas el `payload` de un token de prueba con una herramienta para JWT, verás algo como:
+`AuthController` pide al `AuthenticationManager` que autentique las credenciales. Spring Security utiliza `DaoAuthenticationProvider`, que se apoya en tu servicio de usuarios y en el encoder de contraseñas. Si todo es correcto, el controller solicita a `JwtService` que genere el token.
 
-```json
-{"sub": "admin", "roles": ["ADMIN"], "iat": 1730000000, "exp": 1730003600}
-```
+### 2. Utilizar el token
 
-Tres de estos campos son estándar de JWT (los define la propia especificación, con ese nombre exacto); `roles` no lo es — te lo inventas tú, según lo que tu aplicación necesite saber de cada usuario:
+En una petición Bearer, los filtros de Spring Security delegan la autenticación en un `AuthenticationManager` con `JwtAuthenticationProvider`. Este utiliza el `JwtDecoder` y el `JwtAuthenticationConverter` para validar la credencial y construir la identidad con sus autoridades.
 
-| Campo | Qué es | ¿De dónde sale? |
-|---|---|---|
-| `sub` (*subject*) | Quién eres — el usuario autenticado | Estándar de JWT |
-| `iat` (*issued at*) | Cuándo se emitió el token, como timestamp Unix (segundos desde 1970) | Estándar de JWT |
-| `exp` (*expiration*) | Cuándo caduca el token, mismo formato que `iat` | Estándar de JWT |
-| `roles` | Qué puedes hacer — tus roles | Personalizado: lo añades tú, con el nombre que quieras |
+En este recorrido no se vuelve a comprobar la contraseña con BCrypt ni se carga al usuario desde PostgreSQL. Después se evalúan las reglas de acceso y, si lo permiten, la petición llega al controller.
 
-!!! danger "El contenido NO va cifrado — y eso tiene dos consecuencias distintas"
-    Cualquiera que capture un JWT puede leer su payload completo, sin necesitar ninguna clave — igual que has decodificado HTTP Basic en la Actividad 2.2. De ahí salen dos escenarios que conviene no mezclar:
+!!! info "Qué tienes que programar"
+    Implementas `JwtService` y el método de login. Configuras los beans de `JwtEncoder`, `JwtDecoder`, `AuthenticationManager` y los conversores utilizando clases de las bibliotecas. Los proveedores `DaoAuthenticationProvider` y `JwtAuthenticationProvider` los proporciona Spring Security; no tienes que programarlos ni crear un filtro JWT propio.
 
-    **Si alguien roba un token válido y lo reenvía tal cual**, sin tocarlo, el servidor lo acepta como credencial válida — para el servidor es indistinguible de una petición tuya de verdad. La firma no protege de esto: el token sigue siendo perfectamente válido, solo que en manos equivocadas. Por eso necesitas HTTPS: cifra el transporte para que quien observe el tráfico no pueda leer ni obtener el token.
+## 🔑 Preparar la configuración
 
-    **Si alguien intenta modificarlo, o fabricar uno nuevo desde cero** —por ejemplo, cambiando tu rol de `USER` a `ADMIN` en un token robado—, ahí sí entra en juego la **firma** (la tercera parte del token): se calcula con HMAC, el algoritmo que acabas de ver, y un secreto que solo conoce el servidor. Sin ese secreto, resulta computacionalmente inviable calcular un código válido.
+Las piezas de seguridad se añaden a tu `SecurityConfig`, que continúa siendo una clase de configuración. Los fragmentos omiten imports; se indican los tipos concretos cuando pueden resultar ambiguos.
 
----
+### 1. Dependencia y propiedades
 
-## 🔑 El flujo completo, pieza a pieza
-
-Antes de entrar en el código de cada pieza, aquí tienes el mapa completo: primero cómo se genera el token en el login, después cómo se valida ese mismo token en cada petición posterior. Los nombres son los mismos que vas a ver en el código de más abajo — vuelve a este mapa si te pierdes en algún punto.
-
-```mermaid
-sequenceDiagram
-    participant Cliente
-    participant AuthController
-    participant AuthenticationManager
-    participant JwtService
-    participant JwtEncoder
-
-    Cliente->>AuthController: POST /login (usuario + contraseña)
-    AuthController->>AuthenticationManager: authenticate(credenciales)
-    Note right of AuthenticationManager: Verifica contra tu UserDetailsService<br/>y tu PasswordEncoder
-    AuthenticationManager-->>AuthController: Authentication válido, con roles
-    AuthController->>JwtService: generarToken(authentication)
-    Note right of JwtService: Construye los claims:<br/>sub, roles, iat, exp
-    JwtService->>JwtEncoder: encode(claims)
-    Note right of JwtEncoder: Firma con HS256 y el secreto compartido
-    JwtEncoder-->>JwtService: token JWT
-    JwtService-->>AuthController: token
-    AuthController-->>Cliente: 200 + token
-```
-
-Ese token, en cada petición posterior, sigue un camino distinto —ya no pasa por el login ni por `AuthenticationManager`—. Retomando el tipo de regla que ya probaste de forma puntual con HTTP Basic, imagina que `POST /api/v1/libros` está protegido con `hasRole("ADMIN")`. El objetivo del diagrama es mostrar cómo el claim `roles` del token se transforma en una autoridad que Spring Security puede comprobar:
-
-```mermaid
-sequenceDiagram
-    participant Cliente
-    participant SecurityFilterChain
-    participant JwtDecoder
-    participant JwtAuthenticationConverter
-    participant LibroController
-
-    Cliente->>SecurityFilterChain: POST /api/v1/libros<br/>Authorization: Bearer eyJhbGci...
-    SecurityFilterChain->>JwtDecoder: decode(token)
-    Note right of JwtDecoder: Verifica la firma y la caducidad<br/>del token.<br/>Si el token es válido, extrae los claims:<br/>sub=admin, roles=["ADMIN"]
-    JwtDecoder-->>SecurityFilterChain: claims validados
-    SecurityFilterChain->>JwtAuthenticationConverter: lee el claim roles=["ADMIN"]
-    Note right of JwtAuthenticationConverter: Añade el prefijo ROLE_ →<br/>autoridad "ROLE_ADMIN"
-    JwtAuthenticationConverter-->>SecurityFilterChain: Authentication con ROLE_ADMIN
-    Note over SecurityFilterChain: .requestMatchers(POST, "/api/v1/libros")<br/>.hasRole("ADMIN") → coincide, deja pasar
-    SecurityFilterChain->>LibroController: la petición ya autenticada y autorizada llega aquí
-    Note right of LibroController: Ni se entera de JWT, tokens o roles —<br/>solo ve que ha llegado hasta él
-    LibroController-->>SecurityFilterChain: 201 Created
-    SecurityFilterChain-->>Cliente: 201 Created
-```
-
-Esta es la parte que suele pasar desapercibida: `SecurityFilterChain` no genera la respuesta, solo decide si la petición **llega** o no a tu controller. Si `hasRole("ADMIN")` coincide, la deja pasar sin más —tu `LibroController` ejecuta exactamente el mismo código que ejecutaría con HTTP Basic, sin saber nada de JWT—; si no coincide, la petición nunca llega a tu controller, y es `SecurityFilterChain` quien responde directamente con `403`.
-
-Si el token fuera de un usuario sin `ADMIN`, la firma seguiría siendo válida —`JwtDecoder` no rechaza nada por ahí—, pero la autoridad resultante sería `ROLE_USER`, no coincidiría con `hasRole("ADMIN")`, y la petición se cortaría ahí mismo, sin llegar nunca a `LibroController`: la firma certifica que el token es auténtico, no que tengas permiso para todo.
-
-Siguiendo con la API de la librería: vas a ver las cuatro piezas que convierten el login en un token y ese token en identidad para el resto de peticiones.
-
-### El secreto y los beans de `SecurityConfig`
-
-Todas las clases de este apartado —`JwtEncoder`, `JwtDecoder`, `JwtAuthenticationConverter`...— vienen de un starter que no habías necesitado hasta ahora, aparte de `spring-boot-starter-security`:
+Añade al `pom.xml`, junto al starter de seguridad que ya existe:
 
 ```xml
 <dependency>
@@ -175,11 +111,44 @@ Todas las clases de este apartado —`JwtEncoder`, `JwtDecoder`, `JwtAuthenticat
 </dependency>
 ```
 
-`JwtEncoder` firma tokens nuevos; `JwtDecoder` verifica los que llegan en cada petición. Pero ninguno de los dos hace nada por sí solo: ambos necesitan la misma clave, el **secreto** con el que se calcula la firma HMAC — es el mismo secreto en los dos lados, porque HMAC usa una única clave tanto para firmar como para verificar (a diferencia de la criptografía de clave pública/privada, que usa dos distintas).
+El starter incorpora el soporte para procesar tokens Bearer y JWT. Utilizar estas piezas no convierte tu aplicación en una implementación completa de un servidor de autorización OAuth2.
 
-Todo lo que ves en esta pieza va en tu misma `SecurityConfig` de siempre, junto a lo que ya has construido en los apartados anteriores.
+En `application-dev.yml`, conserva la importación local y añade una duración positiva, expresada en minutos:
 
-Ese secreto sigue el mismo patrón que ya has usado para la contraseña del primer `ADMIN`, en el apartado anterior: vive en tu fichero de propiedades excluido de Git, nunca en el código ni en la configuración que sí subes.
+```yaml
+spring:
+  config:
+    import: "optional:application-dev-local.yml"
+
+libreria:
+  jwt:
+    expiration-minutes: 15
+```
+
+Añade el secreto a `application-dev-local.yml`, sin eliminar la contraseña del administrador que ya contiene:
+
+```yaml
+libreria:
+  admin:
+    password: "tu-contraseña-local-del-administrador"
+  jwt:
+    secret: "sustituye-este-marcador-por-el-valor-generado"
+```
+
+Para generar un valor aleatorio desde Bash:
+
+```bash
+openssl rand -hex 32
+```
+
+Copia los 64 caracteres obtenidos en `secret`. En el código siguiente se utiliza ese texto hexadecimal directamente como bytes UTF-8, sin decodificarlo. Procede de 32 bytes aleatorios y su representación ocupa 64 bytes ASCII.
+
+!!! warning "El secreto queda fuera de Git"
+    HS256 requiere una clave de al menos 32 bytes y suficientemente aleatoria. No utilices una frase predecible ni el marcador del ejemplo. Actualiza también la plantilla `.example` con la nueva propiedad, pero sin copiar el valor real. El fichero local continúa excluido de Git y el perfil `dev` debe estar activo para cargarlo.
+
+### 2. Encoder, decoder y AuthenticationManager
+
+En `SecurityConfig`, añade el campo y los beans siguientes. `ImmutableSecret` pertenece a `com.nimbusds.jose.jwk.source`; `SecretKeySpec`, a `javax.crypto.spec`.
 
 ```java
 @Value("${libreria.jwt.secret}")
@@ -187,44 +156,39 @@ private String jwtSecret;
 
 @Bean
 public JwtEncoder jwtEncoder() {
-    return new NimbusJwtEncoder(new ImmutableSecret<>(jwtSecret.getBytes(StandardCharsets.UTF_8)));
+    return new NimbusJwtEncoder(
+            new ImmutableSecret<>(jwtSecret.getBytes(StandardCharsets.UTF_8))
+    );
 }
 
 @Bean
 public JwtDecoder jwtDecoder() {
-    SecretKeySpec secretKey = new SecretKeySpec(jwtSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
-    return NimbusJwtDecoder.withSecretKey(secretKey).macAlgorithm(MacAlgorithm.HS256).build();
+    SecretKeySpec secretKey = new SecretKeySpec(
+            jwtSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"
+    );
+    NimbusJwtDecoder decoder = NimbusJwtDecoder.withSecretKey(secretKey)
+            .macAlgorithm(MacAlgorithm.HS256)
+            .build();
+    decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer("libreria"));
+    return decoder;
 }
-```
 
-!!! warning "El secreto tiene que ser largo y aleatorio"
-    HS256 requiere una clave de al menos **256 bits (32 bytes)**. Como en este código conviertes directamente el texto a bytes UTF-8, una cadena ASCII de 32 caracteres ocupa esos 32 bytes mínimos.
-
-    La longitud no basta por sí sola: `"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"` tiene 32 caracteres, pero sigue siendo una clave predecible. Utiliza una cadena generada aleatoriamente y guardada fuera del repositorio.
-
-    Una clave demasiado corta será rechazada cuando la biblioteca intente utilizarla para firmar o validar el token.
-
-Aprovecha esta misma clase para exponer una pieza más, que no tiene que ver con el secreto pero sí hace falta para el login: el `AuthenticationManager`. Es la interfaz de Spring Security con un único trabajo: recibir unas credenciales todavía sin comprobar y, si son correctas, devolver un `Authentication` ya validado —o lanzar una excepción si no lo son—. Es justo lo que necesitas en tu endpoint de login para verificar `usuario`/`contraseña`.
-
-Por debajo, el `AuthenticationManager` usa dos piezas que ya tienes en tu contexto desde el apartado anterior: tu `UserDetailsService` (busca al usuario) y tu `PasswordEncoder` (compara la contraseña con el hash BCrypt guardado). No conectas nada de esto a mano — es el mismo mecanismo que ya has visto entonces: como en tu contexto de Spring solo existe **un** bean de cada tipo (tu única clase `BdUserDetailsService`, tu único `@Bean PasswordEncoder`), no hay ambigüedad que resolver, y Spring Boot los detecta y los usa sin que se lo indiques por nombre.
-
-```mermaid
-flowchart LR
-    A["AuthController<br/>authenticationManager.authenticate(...)"] --> B["AuthenticationManager"]
-    B -->|"1. busca el usuario"| D["Tu UserDetailsService"]
-    B -->|"2. compara la contraseña"| E["Tu PasswordEncoder"]
-```
-
-Lo único que falta es poder acceder a esa cadena ya montada desde tu propio código: Spring Security la construye internamente, pero no la publica como bean inyectable por su cuenta. `AuthenticationConfiguration.getAuthenticationManager()` es la forma soportada de pedírsela — sin este método, no podrías inyectar un `AuthenticationManager` en tu `AuthController`, como vas a hacer un poco más abajo.
-
-```java
 @Bean
-public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+public AuthenticationManager authenticationManager(
+        AuthenticationConfiguration configuration) throws Exception {
     return configuration.getAuthenticationManager();
 }
 ```
 
-### Generar el token: `JwtService`
+El encoder firma con la clave configurada. El decoder acepta `HS256` y comprueba la firma, la ventana temporal y el emisor `libreria`. Declarar `iss` al emitirlo no basta: aquí también configuras su validación.
+
+El último bean permite inyectar en tu controller el gestor que utilizará el servicio de usuarios y el encoder existentes para autenticar el login. Mantén retirado el antiguo `InMemoryUserDetailsManager`.
+
+## 🎫 Emitir el token en el login
+
+La emisión comienza con credenciales válidas y termina con una respuesta que contiene el token y su duración. Las clases de este apartado se añaden a las que ya existen.
+
+### 1. Construir los claims con `JwtService`
 
 ```java
 @Service
@@ -241,19 +205,20 @@ public class JwtService {
         List<String> roles = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .filter(a -> a.startsWith("ROLE_"))
-                .map(a -> a.replace("ROLE_", ""))
+                .map(a -> a.substring("ROLE_".length()))
                 .toList();
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("libreria")
                 .issuedAt(ahora)
-                .expiresAt(ahora.plusSeconds(expirationMinutes * 60))
+                .expiresAt(ahora.plusSeconds(getExpiresInSeconds()))
                 .subject(authentication.getName())
                 .claim("roles", roles)
                 .build();
 
-        JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS256).build();
-        return jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
+        JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
+        return jwtEncoder.encode(JwtEncoderParameters.from(header, claims))
+                .getTokenValue();
     }
 
     public long getExpiresInSeconds() {
@@ -262,73 +227,61 @@ public class JwtService {
 }
 ```
 
-Ese `Authentication` es el mismo que has visto en el diagrama de arriba: te lo entrega `authenticationManager.authenticate(...)`, en el endpoint de login que ves justo después de esta pieza. `generarToken` no lo construye, solo lo lee.
+El servicio recibe un `Authentication` ya validado. Extrae sus roles, elimina el prefijo `ROLE_` y construye los claims. No acepta roles enviados en el JSON del login.
 
-Los **claims** son los datos que viajan dentro del token: `subject` (quién eres), `roles` (qué puedes hacer, extraído de las autoridades que ya tenía la `Authentication` tras el login), `issuedAt`/`expiresAt` (cuándo se emitió y cuándo caduca). `jwtEncoder.encode(...)` firma todo esto con el algoritmo `HS256` (HMAC-SHA256) y el secreto configurado.
+`getExpiresInSeconds()` expresa la duración configurada en la unidad utilizada por la respuesta. No calcula en cada llamada cuánto le queda a un token antiguo.
 
-`getExpiresInSeconds()` es un pequeño ayudante para el endpoint de login, que ves justo después: expresa esa misma duración en segundos, para que el cliente sepa cuánto le queda de validez al token sin tener que decodificarlo.
+### 2. Ampliar `AuthController`
 
-### El endpoint de login
-
-Antes de tocar el controller, dos records sencillos para lo que entra y lo que sale del login:
+Define estos DTO en sus propios ficheros:
 
 ```java
 public record LoginRequestDTO(
         @NotBlank(message = "El nombre de usuario no puede estar vacío") String username,
         @NotBlank(message = "La contraseña no puede estar vacía") String password
 ) {}
-
-public record LoginResponseDTO(String accessToken, String tokenType, long expiresInSeconds) {}
 ```
 
-`LoginResponseDTO` no llama a su campo `token` a secas, sino `accessToken` —el nombre habitual en APIs con JWT/OAuth2—; `tokenType` viaja siempre como `"Bearer"`, el prefijo que el cliente tendrá que anteponer en la cabecera `Authorization` de sus siguientes peticiones.
+```java
+public record LoginResponseDTO(
+        String accessToken, String tokenType, long expiresInSeconds
+) {}
+```
 
-`AuthController` ya existe desde el apartado anterior, con el endpoint de registro. Hoy le añades el login, con dos dependencias nuevas:
+Añade a tu `AuthController` las dos dependencias siguientes y el método de login. Conserva las dependencias y el método de registro anteriores:
 
 ```java
-@RestController
-@RequestMapping("/api/v1/auth")
-@RequiredArgsConstructor
-public class AuthController {
+private final AuthenticationManager authenticationManager;
+private final JwtService jwtService;
 
-    private final UsuarioRepository usuarioRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
-    private final JwtService jwtService;
-
-    @PostMapping("/register")
-    public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequestDTO dto) {
-        // el mismo método del apartado anterior, sin cambios
-    }
-
-    @Operation(summary = "Autenticarse y obtener un token JWT")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Login correcto, token generado"),
-            @ApiResponse(responseCode = "400", description = "El cuerpo de la petición no supera las validaciones"),
-            @ApiResponse(responseCode = "401", description = "Usuario o contraseña incorrectos")
-    })
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO dto) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(dto.username(), dto.password())
-        );
-        String token = jwtService.generarToken(authentication);
-        return ResponseEntity.ok(new LoginResponseDTO(token, "Bearer", jwtService.getExpiresInSeconds()));
-    }
+@Operation(summary = "Autenticarse y obtener un token JWT")
+@ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Token generado"),
+        @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos"),
+        @ApiResponse(responseCode = "401", description = "Credenciales incorrectas")
+})
+@PostMapping("/login")
+public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO dto) {
+    Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(dto.username(), dto.password())
+    );
+    String token = jwtService.generarToken(authentication);
+    return ResponseEntity.ok(
+            new LoginResponseDTO(token, "Bearer", jwtService.getExpiresInSeconds())
+    );
 }
 ```
 
-`authenticationManager.authenticate(...)` dispara la verificación que has visto en la pieza anterior (tu `UserDetailsService` + tu `PasswordEncoder`). Si las credenciales son correctas, te devuelve el `Authentication` con el que generas el token; si no, lanza una `AuthenticationException` (en la práctica, casi siempre `BadCredentialsException`, que hereda de ella).
+`@RequestMapping("/api/v1/auth")` y `@RequiredArgsConstructor` siguen en la clase. Lombok incluirá los nuevos campos `final` en el constructor. `tokenType` indica cómo presentar `accessToken` en la cabecera.
 
-Aquí hay una diferencia importante con el `401` de HTTP Basic, que nunca llegaba a tu `GlobalExceptionHandler` —lo generaba un filtro de seguridad, antes de que la petición llegara al `DispatcherServlet`—. Esta excepción es distinta: `authenticate(...)` se llama aquí dentro de tu propio método de controller, no en ningún filtro, así que sí pasa por el ciclo normal de Spring MVC.
+### 3. Gestionar las credenciales incorrectas
 
-Un sexto `@ExceptionHandler`, en el mismo `GlobalExceptionHandler` que has construido en el primer apartado del tema, la atrapa sin problema:
+Si la autenticación falla, `authenticate(...)` lanza una `AuthenticationException`. Como ahora la llamada ocurre dentro de un controller, puedes gestionarla en el `GlobalExceptionHandler` existente:
 
 ```java
 @ExceptionHandler(AuthenticationException.class)
 public ResponseEntity<ErrorResponse> handleAuthenticationException(
         AuthenticationException ex, HttpServletRequest request) {
-
     ErrorResponse response = new ErrorResponse(
             LocalDateTime.now().toString(), 401, "No autenticado",
             "Usuario o contraseña incorrectos", request.getRequestURI()
@@ -337,50 +290,21 @@ public ResponseEntity<ErrorResponse> handleAuthenticationException(
 }
 ```
 
-Añádelo a la misma clase de siempre, junto a los otros cinco. Es un caso distinto al `AuthenticationEntryPoint` que has construido en la Actividad 2.2, aunque los dos acaben resolviendo un `401`. La diferencia está en **quién llama a `authenticate(...)`**:
+La excepción es `org.springframework.security.core.AuthenticationException`. El mensaje público no revela si la cuenta existe o está deshabilitada. El handler genérico anterior continúa resolviendo las excepciones que no tengan un tratamiento más específico.
 
-| | `AuthenticationEntryPoint` (Actividad 2.2) | Este `@ExceptionHandler` (hoy) |
+| Situación | Dónde se produce el fallo | Quién responde |
 |---|---|---|
-| ¿Quién genera el fallo? | Spring Security, dentro de un filtro, antes de cualquier controller | Tu propio código, dentro de `AuthController.login(...)` |
-| Ejemplo concreto | `GET /api/v1/libros/1` sin token | `POST /api/v1/auth/login` con la contraseña equivocada |
-| ¿La petición llega a un controller? | No — se corta antes | Sí — la ruta es `permitAll()`, y falla ya dentro |
-| ¿Pasa por `DispatcherServlet`? | No | Sí |
-| Respuesta | `401` | `401` |
+| Login con credenciales incorrectas | En `AuthController.login(...)`. | Este `@ExceptionHandler`, con `401`. |
+| `GET /api/v1/auth/me` sin token o con uno inválido | En los filtros de seguridad. | El `AuthenticationEntryPoint`, con `401`. |
+| Usuario autenticado sin el rol requerido | En la autorización previa al controller. | El `AccessDeniedHandler`, con `403`. |
 
-Misma herramienta de siempre, `@ExceptionHandler`, aplicada a un caso que hasta ahora no se había dado.
+## 🛡️ Validar y autorizar las peticiones
 
-### El cambio de modo en `SecurityConfig`
+El token aporta una identidad y unos roles. Para utilizarlos, necesitas configurar su conversión a autoridades y activar la autenticación Bearer en la cadena de seguridad.
 
-Este es el mismo bean `securityFilterChain(...)` que ya has construido en la seguridad básica —el `SecurityFilterChain` que acabas de ver como protagonista del segundo diagrama—, con el método completo. Las rutas, `exceptionHandling` (tu `AuthenticationEntryPoint`) y `csrf` son exactamente lo que ya tenías; lo nuevo de hoy es `sessionManagement`, `oauth2ResourceServer` y el cambio en `httpBasic`:
+### 1. Traducir `roles` a autoridades
 
-```java
-@Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
-    return http
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(HttpMethod.POST, "/api/v1/auth/register", "/api/v1/auth/login").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/v1/libros/**").permitAll()
-                    .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/documentacion").permitAll()
-                    .anyRequest().authenticated()
-            )
-            .exceptionHandling(exceptions -> exceptions
-                    .authenticationEntryPoint(customAuthenticationEntryPoint)
-            )
-            .csrf(AbstractHttpConfigurer::disable)
-            .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
-            .httpBasic(AbstractHttpConfigurer::disable)
-            .build();
-}
-```
-
-`SessionCreationPolicy.STATELESS` es la consecuencia directa de usar tokens autocontenidos: con JWT no hace falta que el servidor guarde ninguna sesión, así que se lo dices explícitamente a Spring Security. `oauth2ResourceServer(oauth2 -> oauth2.jwt(...))` activa la autenticación mediante JWT en las peticiones que incluyen un token Bearer. Spring utiliza el `JwtDecoder` configurado para comprobar el token y extraer sus claims. `httpBasic(AbstractHttpConfigurer::disable)` retira oficialmente el mecanismo provisional de los apartados anteriores: JWT es ahora el único mecanismo de autenticación.
-
-La regla de `/v3/api-docs/**`, `/swagger-ui/**` y `/documentacion` también es nueva: desde la seguridad básica, Swagger ha estado bloqueado detrás de autenticación, igual que el resto de la API. Sin ella, el navegador no podría ni cargar `/documentacion` —`STATELESS` no manda ningún token solo por navegar a una URL—, y el botón "Authorize" que ves un poco más abajo no sería alcanzable.
-
-Hay una pieza más en esa misma línea que merece explicación aparte: `jwtAuthenticationConverter()`. Por defecto, Spring Security espera encontrar los roles en un claim llamado `scope` o `scp` —el habitual en OAuth2—, pero tú los guardas en un claim propio, `roles`.
-
-Sin decírselo explícitamente, Spring no sabría traducir tu token en autoridades utilizables por `hasRole(...)`, y todas tus reglas de autorización dejarían de reconocer ningún rol, aunque el token en sí fuera perfectamente válido:
+Por defecto, el conversor de Spring utiliza los scopes de `scope` o `scp` y les añade el prefijo `SCOPE_`. Librería utiliza un claim propio llamado `roles`, por lo que debes indicar cómo leerlo:
 
 ```java
 @Bean
@@ -389,90 +313,190 @@ public JwtAuthenticationConverter jwtAuthenticationConverter() {
     authoritiesConverter.setAuthoritiesClaimName("roles");
     authoritiesConverter.setAuthorityPrefix("ROLE_");
 
-    JwtAuthenticationConverter authenticationConverter = new JwtAuthenticationConverter();
-    authenticationConverter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
-    return authenticationConverter;
+    JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+    converter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
+    return converter;
 }
 ```
 
-`setAuthoritiesClaimName("roles")` le dice dónde mirar; `setAuthorityPrefix("ROLE_")` reconstruye el prefijo que ya conoces de la seguridad básica —recuerda que `JwtService` te lo quitó al generar el token, precisamente para no guardarlo por duplicado dentro del JWT—.
+![Conversión del claim roles en autoridades y aplicación de una regla hasRole.](img/autenticacion-jwt/04-roles-autorizacion.png)
 
-Con eso, cuando declares reglas como `hasRole("ADMIN")`, Spring Security podrá reconocer los roles almacenados en el claim `roles`.
+*Figura 4. Conversión de los roles del JWT a autoridades de Spring Security y evaluación de la política de acceso. Elaboración propia.*
 
-### `GET /api/v1/auth/me`
+El `JwtGrantedAuthoritiesConverter` realiza la extracción y añade el prefijo. El `JwtAuthenticationConverter` lo utiliza para construir la autenticación. Así, `hasRole("ADMIN")` comprueba la autoridad `ROLE_ADMIN`.
+
+### 2. Sustituir HTTP Basic en `SecurityFilterChain`
+
+Sustituye el bean anterior por el siguiente. Además de mantener las lecturas públicas, concreta una regla de ejemplo: **crear libros requiere `ADMIN`**. Esto hace reproducible la comparación de la figura 4; las demás rutas siguen exigiendo autenticación.
+
+```java
+@Bean
+public SecurityFilterChain securityFilterChain(
+        HttpSecurity http,
+        AuthenticationEntryPoint customAuthenticationEntryPoint,
+        JwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
+
+    AuthenticationEntryPoint bearerEntryPoint = (request, response, ex) -> {
+        response.setHeader(HttpHeaders.WWW_AUTHENTICATE, "Bearer");
+        customAuthenticationEntryPoint.commence(request, response, ex);
+    };
+
+    return http
+            .sessionManagement(session -> session
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers(HttpMethod.POST,
+                            "/api/v1/auth/register", "/api/v1/auth/login").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/libros/**").permitAll()
+                    .requestMatchers("/v3/api-docs/**", "/swagger-ui/**",
+                            "/swagger-ui.html", "/documentacion").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/v1/libros").hasRole("ADMIN")
+                    .anyRequest().authenticated()
+            )
+            .exceptionHandling(exceptions -> exceptions
+                    .authenticationEntryPoint(bearerEntryPoint))
+            .csrf(AbstractHttpConfigurer::disable)
+            .oauth2ResourceServer(oauth2 -> oauth2
+                    .authenticationEntryPoint(bearerEntryPoint)
+                    .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)))
+            .httpBasic(AbstractHttpConfigurer::disable)
+            .build();
+}
+```
+
+`STATELESS` indica que Spring Security no creará una sesión HTTP ni la utilizará para recuperar la autenticación. `oauth2ResourceServer(...).jwt(...)` activa el procesamiento de JWT y HTTP Basic queda desactivado. No necesitas implementar un filtro para leer manualmente la cabecera.
+
+El entry point se conecta también al resource server para dar el mismo `ErrorResponse` a los fallos de validación del token. El pequeño adaptador conserva la cabecera de desafío `WWW-Authenticate: Bearer` y delega el cuerpo JSON en tu componente existente. Este debe escribir un mensaje público genérico y conservar la cabecera.
+
+!!! note "El 403 tiene su propio tratamiento"
+    La configuración mantiene el tratamiento de acceso denegado del resource server. El estado será `403`, pero su cuerpo no adopta automáticamente tu `ErrorResponse`. Para uniformarlo se necesita un `AccessDeniedHandler` propio, una ampliación distinta de la gestión del `401`.
+
+Desactivas CSRF en el escenario de esta API, donde el cliente aporta explícitamente el token en `Authorization`. Si cambias el mecanismo para que el navegador envíe credenciales automáticamente mediante cookies, debes revisar esa decisión.
+
+!!! warning "Una ruta pública no ignora un token incorrecto"
+    `permitAll()` permite acceder sin credenciales. Si envías una cabecera Bearer con un token inválido, el filtro puede rechazarla antes de evaluar el acceso público. Para repetir el login tras una caducidad, retira el token antiguo de esa petición.
+
+### 3. Consultar la identidad con `/me`
+
+Define un DTO de respuesta y añade el método al mismo `AuthController`. El parámetro `Authentication` lo proporciona Spring MVC a partir del contexto de seguridad:
+
+```java
+public record AuthMeResponse(String username, List<String> roles) {}
+```
 
 ```java
 @GetMapping("/me")
-public ResponseEntity<AuthMeResponse> getCurrentUser() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    // construir la respuesta con authentication.getName() y sus roles
+public ResponseEntity<AuthMeResponse> getCurrentUser(Authentication authentication) {
+    List<String> roles = authentication.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .filter(a -> a.startsWith("ROLE_"))
+            .map(a -> a.substring("ROLE_".length()))
+            .toList();
+    return ResponseEntity.ok(new AuthMeResponse(authentication.getName(), roles));
 }
 ```
 
-Un endpoint sencillo para verificar qué información viaja dentro de tu propio token: útil tanto para probar como para entender qué sabe el servidor de ti en cada petición autenticada.
+Este endpoint refleja la identidad del **token validado**, no una lectura actualizada del usuario en PostgreSQL. Es una ruta protegida porque no coincide con ninguna regla pública.
 
-### Configurar "Authorize" en Swagger para el token Bearer
+## 📖 Documentar y comprobar el acceso
 
-Swagger UI puede trabajar con distintos mecanismos de autenticación, entre ellos HTTP Basic y Bearer, siempre que estén declarados en la especificación OpenAPI. En el apartado anterior no configuraste un esquema para HTTP Basic; ahora sí declararás el nuevo esquema Bearer para poder pegar el JWT una sola vez y reutilizarlo en las peticiones posteriores.
+La configuración de Spring protege la aplicación. OpenAPI describe esa protección y permite que Swagger UI envíe la cabecera de forma cómoda; no sustituye las reglas del backend.
 
-Se declara en el mismo `OpenApiConfig` que ya tienes, añadiendo un `SecurityScheme`:
+### 1. Declarar Bearer en OpenAPI
+
+Actualiza el bean de `OpenApiConfig`, conservando el resto de metadatos que ya tengas:
 
 ```java
 @Bean
 public OpenAPI libreriaOpenAPI() {
-    final String esquema = "bearerAuth";
     return new OpenAPI()
             .info(new Info()
                     .title("Mi librería")
                     .version("v1")
                     .description("API de la librería del curso."))
             .components(new Components()
-                    .addSecuritySchemes(esquema, new SecurityScheme()
+                    .addSecuritySchemes("bearerAuth", new SecurityScheme()
                             .type(SecurityScheme.Type.HTTP)
                             .scheme("bearer")
-                            .bearerFormat("JWT")))
-            .addSecurityItem(new SecurityRequirement().addList(esquema));
+                            .bearerFormat("JWT")));
 }
 ```
 
-`addSecuritySchemes(...)` define el esquema —tipo `HTTP`, variante `bearer`, formato `JWT`, solo para que Swagger sepa cómo mostrarlo, no cambia nada del backend—; `addSecurityItem(...)` lo aplica por defecto a **todos** los endpoints de la especificación.
+Aquí defines el esquema sin aplicarlo globalmente. En los métodos protegidos, como `/me` o la creación de libros, añade a su `@Operation` el requisito correspondiente:
 
-¿Y de dónde sacas el token la primera vez? No hace falta salir a curl: `/login` es `permitAll()`, así que aparece en `/documentacion` como cualquier otro endpoint. Reinicia, entra en `/documentacion`, busca `POST /api/v1/auth/login` y pruébalo con "Try it out" —sin pulsar "Authorize" antes, no lo necesita—; copia el `accessToken` de la respuesta.
+```java
+@Operation(summary = "Consultar mi identidad",
+        security = @SecurityRequirement(name = "bearerAuth"))
+@GetMapping("/me")
+```
 
-Con eso, pulsa "Authorize", pega el token (sin escribir `Bearer `, Swagger lo añade solo) y prueba cualquier endpoint protegido con "Try it out" — ya no hace falta pegar la cabecera `Authorization` a mano en cada petición.
+`SecurityRequirement` es la anotación de `io.swagger.v3.oas.annotations.security`. No dupliques el método: incorpora la anotación al que acabas de crear. Login, registro y lecturas públicas no llevan ese requisito. Si existía un `addSecurityItem(...)` global o una anotación de seguridad en toda la clase, retíralos para mantener esta estrategia coherente.
 
----
+### 2. Comprobar con Swagger UI y curl
 
-## 🔒 HTTPS: lo que JWT resuelve y lo que no
+Abre `/documentacion` y ejecuta `POST /api/v1/auth/login` con las credenciales de una cuenta existente. Copia `accessToken`, pulsa **Authorize** y pega solo el token: Swagger UI añade `Bearer`.
 
-JWT evita reenviar la contraseña en cada petición — un avance real. Pero el **canal** en sí sigue siendo el mismo: si no hay HTTPS, tanto el login como el propio token viajan en claro por la red, interceptables por cualquiera con acceso a esa red. La firma del JWT garantiza **integridad** (que no se ha modificado), no **confidencialidad del transporte** — son dos cosas distintas, y JWT solo resuelve la primera.
+Prueba `/me`. Debe devolver el nombre y los roles de la cuenta utilizada. Para reproducir la comprobación desde Bash, introduce el token cuando se solicite:
 
-HTTPS añade esa confidencialidad cifrando el canal con TLS, mediante un certificado: en desarrollo se suele usar uno autofirmado (`keytool`, incluido en el propio JDK, genera uno sin depender de nada externo); en producción, lo emite una autoridad certificadora (CA) reconocida, o el cifrado se delega a un proxy/gateway (Nginx, un balanceador) que termina la conexión segura antes de reenviar al servidor de aplicación.
+```bash
+read -r -s -p 'Pega el accessToken: ' TOKEN
+printf '\n'
+curl -i http://localhost:8080/api/v1/auth/me \
+  -H "Authorization: Bearer $TOKEN"
+```
 
-El resto de este curso sigue trabajando en HTTP simple, sin HTTPS — es una simplificación deliberada para no complicar cada actividad con certificados, no la recomendación para un proyecto real.
+Compara con la misma ruta sin credencial y con una credencial inválida:
 
----
+```bash
+curl -i http://localhost:8080/api/v1/auth/me
+curl -i http://localhost:8080/api/v1/auth/me \
+  -H 'Authorization: Bearer token-invalido'
+unset TOKEN
+```
 
-## 🔁 Lo que JWT tampoco resuelve: revocar un token
+La primera petición, con un token vigente emitido por tu aplicación, debe devolver `200`; las dos últimas, `401`. No utilices un GET público de libros para demostrar que falta autenticación.
 
-Hay otra pregunta que probablemente te has hecho ya: si un usuario cierra sesión, o un administrador quiere echarlo del sistema ahora mismo, ¿cómo se invalida su token? La respuesta incómoda es que, con JWT tal y como lo has construido hoy, **no se puede**: el servidor no guarda ningún registro de qué tokens ha emitido —es justo lo que lo hace *stateless*—, así que un token firmado sigue siendo válido para el servidor hasta que caduca por su cuenta (`exp`), pase lo que pase mientras tanto.
+Para comprobar la autorización, utiliza en Swagger UI la creación de libros con un cuerpo válido: una cuenta `USER` debe recibir `403`, mientras que una cuenta `ADMIN` debe superar la regla de acceso. El resultado final también depende de las validaciones y de los datos del libro.
 
-Esto afecta también al campo `activo` que añadiste al usuario: marcarlo como `activo = false` impedirá que vuelva a autenticarse y obtenga tokens nuevos, pero no invalida automáticamente un JWT que ya tenía emitido. Como las peticiones posteriores se autentican a partir del propio token y no vuelven a consultar al usuario en PostgreSQL, ese JWT seguirá funcionando hasta que caduque.
+## 🔒 Límites del token y protección del transporte
 
-No vas a implementar una solución en este curso, pero merece la pena saber que el problema existe y cómo se aborda en un proyecto real: o bien el servidor mantiene una lista negra de tokens revocados que consulta en cada petición (lo que reintroduce parte del estado que JWT prometía evitar), o bien se usan tokens de vida muy corta —minutos, no horas— combinados con un *refresh token* aparte, de forma que un token robado o que haya que revocar deja de ser útil por sí solo, sin más que esperar.
+Validar la firma, comprobar la vigencia y autorizar una operación resuelven problemas diferentes. La última figura resume qué ocurre cuando cambia la credencial o quién la utiliza.
 
----
+![Comportamiento de un JWT válido, manipulado, caducado o robado y alcance de HTTPS.](img/autenticacion-jwt/05-token-valido-manipulado-caducado-robado.png)
+
+*Figura 5. Comportamiento de un JWT válido, manipulado, caducado o robado y alcance de la protección de HTTPS. Elaboración propia.*
+
+### 1. HTTPS y custodia de la credencial
+
+HTTPS cifra el transporte mediante TLS. Protege tanto la contraseña del login como el token de las peticiones posteriores frente a la interceptación del tráfico. La firma del JWT protege su integridad y autenticidad, pero deja el contenido legible.
+
+En las pruebas locales de estos apuntes se utiliza HTTP para centrar la atención en el mecanismo. Esa simplificación no debe trasladarse a un servicio expuesto. HTTPS tampoco evita todas las formas de robo: no publiques tokens, no los subas a Git ni los copies en capturas o herramientas externas con credenciales reales.
+
+### 2. Caducidad, cierre de sesión y cambios de cuenta
+
+La implementación no mantiene una lista de tokens emitidos ni revocados. Eliminar el token del cliente al cerrar sesión no invalida una copia que conserve otra persona.
+
+Lo mismo ocurre si deshabilitas una cuenta o modificas sus roles: el cambio afecta a los siguientes logins, pero los tokens emitidos conservan sus claims hasta que dejan de ser aceptados. En particular, `activo = false` impide obtener nuevos tokens, sin retirar automáticamente los anteriores.
+
+??? info "Revocación y refresh tokens"
+    Una lista de revocación o una comprobación del estado de la cuenta permite retirar acceso antes de la caducidad, a cambio de consultar estado adicional. Los tokens de acceso cortos limitan el tiempo durante el que una credencial robada sigue siendo útil.
+
+    Un *refresh token* permite solicitar nuevos tokens de acceso bajo una política propia. Revocarlo puede impedir renovaciones, pero no invalida por sí mismo un token de acceso ya emitido. Estas ampliaciones quedan fuera de esta implementación.
+
+La validación temporal suele admitir un pequeño margen por diferencias entre relojes. Si reduces la duración para comprobar la caducidad, espera también ese margen antes de concluir que `exp` no funciona.
 
 ## ✅ Ideas clave
 
 ??? tip "Abrir resumen"
+    - El login conserva la comprobación de usuario y contraseña mediante PostgreSQL y BCrypt. Después, el cliente presenta un token Bearer.
+    - El JWT firmado contiene claims legibles. HS256 permite comprobar integridad y autenticidad utilizando un secreto compartido.
+    - Spring Security autentica el token con sus componentes. Configuras el decoder y la conversión de `roles` a autoridades `ROLE_`.
+    - Un token válido no concede acceso a todo: las reglas del servidor autorizan cada operación. Los fallos de autenticación producen `401`; la falta de permisos, `403`.
+    - Swagger UI documenta el mecanismo y facilita enviarlo. La protección real reside en la configuración de Spring Security.
+    - HTTPS y la custodia del token siguen siendo necesarios. Cerrar sesión o desactivar una cuenta no revoca automáticamente los JWT emitidos.
 
-    - HTTP es sin estado; la **sesión en servidor** (cookie + almacén) y el **token autocontenido** (JWT) son las dos soluciones clásicas para "recordar quién eres".
-    - **Proteger ≠ cifrar**: el contenido de un JWT es legible, pero HMAC permite detectar modificaciones y comprobar que fue generado utilizando el secreto compartido.
-    - El JWT firmado utilizado en este proyecto tiene tres partes (`header.payload.signature`); los **claims** del payload llevan quién eres, tus roles y la expiración.
-    - `SessionCreationPolicy.STATELESS` + `oauth2ResourceServer(...).jwt(...)` activan la validación automática de JWT; `httpBasic(disable)` retira el mecanismo provisional.
-    - Spring construye internamente el `AuthenticationManager`, pero debes exponerlo como bean para poder inyectarlo en el login. También defines un `JwtAuthenticationConverter` propio porque tus roles están en el claim `roles`, no en los claims `scope` o `scp` que Spring utiliza por defecto.
-    - JWT resuelve el reenvío de contraseña en cada petición, pero **no** sustituye a HTTPS — la firma da integridad, no confidencialidad del canal.
-    - `authenticate(...)` se llama dentro de tu controller, no en un filtro — por eso, a diferencia del `401` de HTTP Basic, su excepción sí llega a tu `GlobalExceptionHandler`: un sexto `@ExceptionHandler(AuthenticationException.class)` le da el mismo formato que al resto de errores.
-    - Un `SecurityScheme` Bearer en `OpenApiConfig` configura el botón "Authorize" de Swagger UI: pegas el token una vez y la interfaz lo añade automáticamente a las peticiones posteriores.
-    - JWT tampoco resuelve la revocación: un token firmado es válido hasta que caduca, sin importar si el usuario cierra sesión — se aborda con listas negras o con tokens de vida corta + *refresh token*, ninguna implementada en este curso.
+<!-- Referencias técnicas de la revisión:
+https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html
+https://docs.spring.io/spring-security/reference/api/java/org/springframework/security/config/annotation/web/configurers/oauth2/server/resource/OAuth2ResourceServerConfigurer.html
+https://swagger.io/docs/specification/v3_0/authentication/bearer-authentication/
+-->
