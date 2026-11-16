@@ -4,110 +4,78 @@
 
 ![Roles y rutas protegidas](diapositivas/roles-y-rutas-protegidas.pdf){ type=application/pdf style="width:100%;min-height:80vh" }
 
-!!!info "Descarga de diapositivas"
+!!! info "Descarga de diapositivas"
     [Descarga las diapositivas](diapositivas/roles-y-rutas-protegidas.pptx){target="_blank" rel="noopener"}
 
----
-
-Al terminar el apartado anterior, tu API ya distinguía quién eres (JWT) de qué puedes hacer (roles) — pero solo lo habías comprobado sobre una ruta suelta, `POST /videojuegos`, y ese `403` seguía saliendo con el formato por defecto de Spring, no con tu `ErrorResponse`. Hoy conviertes esa comprobación puntual en una política completa, ruta a ruta y cerrada por defecto, y cierras ese formato pendiente —y el de un `404` que en realidad sale disfrazado de `500`—.
-
----
+En la sesión de JWT probaste a crear un libro con el token de una cuenta `USER`. La API devolvió `403` porque identificó al usuario, pero crear libros exige `ADMIN`. En esta sesión vas a extender esa decisión al resto de rutas de Librería y a reconocer en qué punto se produce cada error para devolverlo con el formato `ErrorResponse`.
 
 ## 🗺️ La política de autorización, leída como tabla
 
-El bloque `authorizeHttpRequests` de tu `SecurityConfig.java` define **toda** la política de acceso de la aplicación. Léelo como una tabla, no como código:
+El bloque `authorizeHttpRequests` de `SecurityConfig` recoge las reglas de acceso. En Librería, el catálogo es público y el equipo que lo gestiona tiene el rol `ADMIN`. La tabla permite revisar cada permiso antes de escribir el código.
 
-| Ruta | Verbo | Quién puede |
+| Ruta o patrón | Método | Acceso |
 |---|---|---|
-| `/api/v1/auth/register`, `/api/v1/auth/login` | POST | Cualquiera |
-| `/api/v1/auth/me` | GET | Cualquiera **autenticado** — cualquier rol vale, no hace falta `ADMIN` |
-| `/api/v1/libros`, `/api/v1/editoriales` | GET | Cualquiera |
-| `/api/v1/libros`, `/api/v1/editoriales` | POST/PUT/DELETE | Solo `ADMIN` |
-| `/swagger-ui/**`, `/v3/api-docs/**`, `/error` | — | Cualquiera |
-| Cualquier otra ruta no listada | — | **Nadie** |
+| `/api/v1/auth/register`, `/api/v1/auth/login` | `POST` | Público |
+| `/api/v1/auth/me` | `GET` | Cualquier usuario autenticado |
+| `/api/v1/libros`, `/api/v1/libros/**`, `/api/v1/editoriales`, `/api/v1/editoriales/**` | `GET` | Público |
+| `/api/v1/libros`, `/api/v1/editoriales` | `POST` | `ADMIN` |
+| `/api/v1/libros/*`, `/api/v1/editoriales/*` | `PUT`, `DELETE` | `ADMIN` |
+| `/documentacion`, `/swagger-ui.html`, `/swagger-ui/**`, `/v3/api-docs/**` | Cualquiera | Público |
+| Cualquier petición que no coincida con las reglas anteriores | Cualquiera | Denegado |
 
-Es un ejemplo con el dominio de siempre (`libro`/`editorial`) — no un catálogo cerrado de casos. Cuando lleves esto a tu propio proyecto en la actividad, verás la tabla real, con todas tus rutas.
+![Spring Security aplica la primera regla que coincide. La consulta de libros es pública y la creación requiere ADMIN. Las peticiones restantes se deniegan.](img/roles-y-rutas-protegidas/01-decision-acceso.png)
+
+*Figura 1. Evaluación de las reglas de acceso según el método HTTP y la ruta. Elaboración propia.*
+
+Sobre la configuración JWT de la sesión anterior, sustituye el bloque `authorizeHttpRequests`. Importa `jakarta.servlet.DispatcherType` para permitir el despacho interno de errores.
 
 ```java
 .authorizeHttpRequests(auth -> auth
+        .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
         .requestMatchers(HttpMethod.POST, "/api/v1/auth/register", "/api/v1/auth/login").permitAll()
         .requestMatchers(HttpMethod.GET, "/api/v1/auth/me").authenticated()
         .requestMatchers(HttpMethod.GET, "/api/v1/libros", "/api/v1/libros/**").permitAll()
         .requestMatchers(HttpMethod.GET, "/api/v1/editoriales", "/api/v1/editoriales/**").permitAll()
-        .requestMatchers(HttpMethod.POST, "/api/v1/libros").hasRole("ADMIN")
-        .requestMatchers(HttpMethod.PUT, "/api/v1/libros/*").hasRole("ADMIN")
-        .requestMatchers(HttpMethod.DELETE, "/api/v1/libros/*").hasRole("ADMIN")
-        .requestMatchers(HttpMethod.POST, "/api/v1/editoriales").hasRole("ADMIN")
-        .requestMatchers(HttpMethod.PUT, "/api/v1/editoriales/*").hasRole("ADMIN")
-        .requestMatchers(HttpMethod.DELETE, "/api/v1/editoriales/*").hasRole("ADMIN")
-        .requestMatchers("/error").permitAll()
-        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+        .requestMatchers(HttpMethod.POST, "/api/v1/libros", "/api/v1/editoriales").hasRole("ADMIN")
+        .requestMatchers(HttpMethod.PUT, "/api/v1/libros/*", "/api/v1/editoriales/*").hasRole("ADMIN")
+        .requestMatchers(HttpMethod.DELETE, "/api/v1/libros/*", "/api/v1/editoriales/*").hasRole("ADMIN")
+        .requestMatchers("/documentacion", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
         .anyRequest().denyAll()
 )
 ```
 
-`/error` es la ruta interna que usa el propio Spring Boot para construir la respuesta cuando una petición termina en un error que no ha llegado a capturar ninguno de tus `@ExceptionHandler` (un fallo a nivel de servlet, por ejemplo): Spring reenvía la petición, por dentro, a `/error`. Si esa ruta no es pública, ese reenvío también pasa por tu política de seguridad — y puedes acabar viendo un `401`/`403` de tu propia `denyAll()` en vez del error real que se suponía que ibas a ver. Por eso va siempre en `permitAll()`, junto a las rutas de Swagger.
+Spring Security también comprueba el acceso cuando el servidor vuelve a tramitar una petición para presentar un error. La primera regla permite ese despacho interno de tipo `ERROR`, que Spring Boot puede dirigir a `/error`. Una petición HTTP directa a `/error` sigue sujeta a las reglas de rutas. Consulta la [documentación de autorización de Spring Security](https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html).
 
-La línea más importante de todo el bloque es la última: **`anyRequest().denyAll()`**. Cualquier ruta que no aparezca explícitamente en las reglas anteriores queda **cerrada por defecto** — es el principio de mínima exposición del primer apartado del tema, llevado hasta el final: nada se abre "por accidente" simplemente por existir.
+!!! warning "Revisa las rutas al activar `denyAll()`"
+    `/api/v1/auth/me` necesita la regla `authenticated()` que antes aportaba la regla final. Si añades `POST /api/v1/libros/5/aplicar-descuento`, recuerda que la regla del `POST` a `/api/v1/libros` cubre únicamente la ruta de colección.
 
-!!! info "La tabla de arriba no es una ley universal — es una decisión de negocio"
-    Que `POST`/`PUT`/`DELETE` sobre `/api/v1/libros` sean solo para `ADMIN` no es una regla fija de Spring Security ni una convención que debas copiar siempre: es la decisión correcta **para este dominio**, donde el catálogo lo gestiona el equipo del videoclub, no los usuarios. No hay una tabla de verbo → rol que valga para cualquier API. Piensa en una red social: ahí un `DELETE` sobre una publicación normalmente sí lo puede hacer un `USER`, siempre que sea el autor de esa publicación —algo que ni siquiera se resuelve con un rol, sino comprobando de quién es el recurso—. La pregunta que de verdad importa, ruta a ruta, no es "¿qué verbo es?", sino "¿qué tiene sentido para lo que hace este endpoint, en esta aplicación concreta?". Es exactamente el mismo razonamiento que vas a aplicar tú mismo en la actividad, al decidir toda la política de `EstudioController` — apoyándote en la que ya está decidida para `Videojuego`, pero sin copiarla a ciegas donde no tenga sentido.
+!!! info "El permiso depende de la operación y del recurso"
+    En Librería, borrar un libro es tarea de `ADMIN`. En una red social, un `USER` podría borrar su propia publicación si el servicio comprueba además que es su autor. Al diseñar la política, piensa quién puede realizar la operación y sobre qué recurso.
 
-!!! warning "Cada ruta nueva necesita su propia regla, o `denyAll()` la bloquea"
-    Con `.anyRequest().authenticated()` como tenías hasta ahora, cualquier ruta sin regla propia (como `/api/v1/auth/me`) funcionaba igual, con solo estar autenticado. Al cambiar el catch-all a `denyAll()`, eso deja de ser cierto: lo que no tenga su línea explícita queda bloqueado, aunque el endpoint funcione perfectamente y mandes un token válido — "me da 403/401 sin motivo aparente" casi siempre significa "me he dejado esta ruta sin regla". Ojo también con los verbos de escritura sobre **subrutas de una acción concreta** (`POST /libros/5/aplicar-descuento`): no coinciden con la regla de la ruta base (`/api/v1/libros`) y necesitan la suya propia. En la actividad revisas tu propio proyecto ruta a ruta para no dejarte ninguna.
+## 🚦 Dónde se produce cada error
 
----
+Cuando una solicitud falla, averigua hasta dónde ha llegado. Un rechazo en los filtros de Spring Security ocurre antes de que Spring MVC pueda seleccionar un controlador. Dentro de MVC, la petición también puede fallar al resolver la ruta, al convertir un parámetro o al ejecutar la búsqueda del libro.
 
-## 🚦 401 vs. 403 vs. 404, con criterio
+![Spring Security resuelve el 401 por falta de autenticación y el 403 por falta de permisos. Si se permite el acceso, Spring MVC puede resolver un 400 o un 404.](img/roles-y-rutas-protegidas/02-quien-responde-a-cada-error.png)
 
-Tres códigos que se confunden con frecuencia, pero responden a preguntas distintas:
+*Figura 2. Origen de los errores HTTP en Spring Security y Spring MVC en la API de Librería. Elaboración propia.*
 
-| Código | Significa | Cuándo aparece |
-|---|---|---|
-| `401 Unauthorized` | No sabes quién eres (no autenticado) | Falta el token, o es inválido/caducado. |
-| `403 Forbidden` | Sabemos quién eres, pero no puedes hacer esto (no autorizado) | Token válido, pero rol insuficiente para esa regla concreta. |
-| `404 Not Found` | La ruta pedida no corresponde a ningún endpoint real | La petición pasa tu política de seguridad (coincide con una regla que la permite), pero no hay ningún controller que la atienda. |
+!!! note "La regla `denyAll()` puede acabar en `401` o en `403`"
+    En esta configuración, si una petición anónima llega a `denyAll()`, Spring Security activa el `AuthenticationEntryPoint` y devuelve `401`. Si llega con una autenticación válida, activa el `AccessDeniedHandler` y devuelve `403`. En ambos casos el acceso queda denegado.
 
-Con la tabla de arriba: un `POST /api/v1/libros` sin token da `401`; el mismo `POST` con el token de un usuario `USER` (no `ADMIN`) da `403`. El `404` es distinto a los otros dos: no depende de quién eres, sino de si ese endpoint existe de verdad.
+## 🔎 Resolver los errores de rutas e identificadores en Spring MVC
 
-!!! note "`denyAll()` sin token también da `401`, no `403`"
-    `denyAll()` rechaza siempre cualquier petición que llegue hasta esa regla. Después, Spring Security distingue quién ha realizado la petición: si no existe una autenticación válida, `ExceptionTranslationFilter` llama al `AuthenticationEntryPoint` y devuelve `401`; si la petición lleva un token válido, delega en el `AccessDeniedHandler` y devuelve `403`.
+Prueba las tres peticiones de la figura con **No Auth** en Postman o sin cabecera `Authorization`. Las admite la regla pública de `GET /api/v1/libros/**`. Usa un ID que no exista en tus datos para la primera petición. En la demo, la búsqueda de ese libro ya produce `404` mediante la `ResponseStatusException` que maneja `GlobalExceptionHandler`.
 
-    Por tanto, la misma regla `denyAll()` puede terminar en uno u otro código: la diferencia no está en la regla, sino en si el solicitante está autenticado.
+![Tres peticiones GET a Librería. Un ID válido sin libro devuelve 404, un ID que no se convierte a Long devuelve 400 y una ruta con un segmento adicional devuelve 404.](img/roles-y-rutas-protegidas/03-tres-peticiones-tres-resultados.png)
 
-### 🐛 Cuando el 404 no es un 404: `NoResourceFoundException`
+*Figura 3. Respuestas de la API de Librería ante un libro inexistente, un ID inválido y una ruta inexistente. Elaboración propia.*
 
-Pruébalo tú mismo: con un token válido, pide una ruta que no existe pero que sí coincide con una regla que la permite —por ejemplo, `GET /api/v1/libros/999/no-existe` (dos segmentos tras la base: no coincide con ningún endpoint real, pero sí cae dentro de `/api/v1/libros/**`, que es pública). Deberías ver un `404`... pero lo que sale es un `500 Error interno`, generado por tu propio `GlobalExceptionHandler`.
+Si en las otras dos peticiones aparece `500`, comprueba si las está capturando el `@ExceptionHandler(Exception.class)` del primer apartado. Añade los siguientes métodos al mismo `GlobalExceptionHandler`. Para cada una de estas excepciones, Spring MVC selecciona el método específico del mismo `@RestControllerAdvice`.
 
-!!! warning "No cualquier ruta 'inexistente' sirve para este ejemplo"
-    Si en vez de dos segmentos pruebas con uno solo —por ejemplo, `GET /api/v1/libros/esto-no-existe`—, esa ruta **sí coincide** con `GET /api/v1/libros/{id}`: Spring intenta convertir `"esto-no-existe"` al `Long id` del método, y lanza una excepción de conversión de tipo distinta (`MethodArgumentTypeMismatchException`), no `NoResourceFoundException`. Para provocar de verdad una ruta que no existe necesitas algo que no coincida con ningún patrón de tu controller, ni siquiera por accidente — de ahí los dos segmentos del ejemplo de arriba.
+### 1. ID con formato inválido
 
-La causa: cuando ninguna ruta de tu aplicación coincide con la petición, Spring lanza `NoResourceFoundException` — y como también es una `Exception`, el Handler 5 que has construido en el primer apartado del tema (`@ExceptionHandler(Exception.class)`, la "red de seguridad final") la atrapa antes de que Spring pueda darle su tratamiento por defecto, que sería un `404` correcto. Es exactamente el mismo problema que ese handler evitaba —una excepción sin capturar, filtrando un código erróneo— aplicado a un caso que nunca se había probado: una ruta que sencillamente no existe.
-
-La solución es la misma de siempre: un handler más específico, que Spring prioriza automáticamente sobre el genérico, sin que tengas que tocar el orden de nada:
-
-```java
-@ExceptionHandler(NoResourceFoundException.class)
-public ResponseEntity<ErrorResponse> handleNoResourceFoundException(
-        NoResourceFoundException ex, HttpServletRequest request) {
-
-    ErrorResponse response = new ErrorResponse(
-            LocalDateTime.now().toString(), 404, "Not Found",
-            "El recurso solicitado no existe", request.getRequestURI()
-    );
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-}
-```
-
-Añádelo a tu `GlobalExceptionHandler` de siempre, junto a los que ya tenías. Spring elige automáticamente el handler más específico para cada excepción —no el primero que encuentra ni el último—, así que este nuevo handler se antepone al genérico solo para `NoResourceFoundException`, sin afectar a ningún otro caso ya construido.
-
-### 🐛 Un id que no es un id: `MethodArgumentTypeMismatchException`
-
-El aviso de arriba ya lo ha adelantado: hay otra forma de colarse un `500` donde debería haber un código más preciso. Pruébalo tú mismo: `GET /api/v1/libros/no-es-un-numero` (un solo segmento, coincide con `GET /api/v1/libros/{id}`). Deberías ver un `400` —el id no tiene el formato correcto, es un problema de la petición, no del servidor—, pero lo que sale es otra vez un `500 Error interno`.
-
-La causa es la misma estructura de siempre, con un disparador distinto: Spring intenta convertir el segmento de la URL al tipo que espera el parámetro (`Long id`), no puede, y lanza `MethodArgumentTypeMismatchException`. Como tampoco tiene handler propio, cae en el `Handler 5` genérico — la excepción sin capturar, filtrando otra vez un código erróneo.
-
-La solución, el mismo patrón exacto:
+La ruta con `no-es-un-numero` encaja en `/api/v1/libros/{id}`. MVC intenta convertir ese segmento a `Long` antes de ejecutar el método del controlador y lanza `MethodArgumentTypeMismatchException` si la conversión falla. Usa `getName()` y `getValue()` para identificar el parámetro y el valor en el mensaje.
 
 ```java
 @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -115,7 +83,8 @@ public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
         MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
 
     ErrorResponse response = new ErrorResponse(
-            LocalDateTime.now().toString(), 400, "Parámetro inválido",
+            LocalDateTime.now().toString(), HttpStatus.BAD_REQUEST.value(),
+            "Parámetro inválido",
             "El valor '%s' no es válido para el parámetro '%s'".formatted(ex.getValue(), ex.getName()),
             request.getRequestURI()
     );
@@ -123,15 +92,29 @@ public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
 }
 ```
 
-`ex.getValue()` te da el valor que ha llegado y `ex.getName()` el nombre del parámetro — con eso, el mensaje dice exactamente qué ha fallado, sin que tengas que escribir uno genérico ni adivinarlo.
+### 2. Ruta sin controlador
 
----
+En la demo, `/api/v1/libros/999/no-existe` queda fuera de los patrones del controlador y llega al manejador de recursos estáticos de MVC. Si este no encuentra un recurso, lanza `NoResourceFoundException`. Devuelve `404` con el cuerpo habitual de la API. Consulta la [referencia de `NoResourceFoundException`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/resource/NoResourceFoundException.html).
 
-## 🩹 Cerrando la última grieta: `AccessDeniedHandler`
+```java
+@ExceptionHandler(NoResourceFoundException.class)
+public ResponseEntity<ErrorResponse> handleNoResourceFoundException(
+        NoResourceFoundException ex, HttpServletRequest request) {
 
-Queda una grieta más, del mismo tipo que ya has cerrado con `AuthenticationEntryPoint` en la seguridad básica, pero para el otro lado de la moneda: el `403` de la tabla de arriba tampoco pasa por tu `GlobalExceptionHandler` —lo genera un filtro de seguridad, igual que el `401`—, así que sale con el formato por defecto de Spring, no con tu `ErrorResponse`.
+    ErrorResponse response = new ErrorResponse(
+            LocalDateTime.now().toString(), HttpStatus.NOT_FOUND.value(),
+            "Recurso no encontrado", "El recurso solicitado no existe",
+            request.getRequestURI()
+    );
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+}
+```
 
-Spring Security tiene, otra vez, su propia pieza para este trabajo: un **`AccessDeniedHandler`**, la contraparte exacta de `AuthenticationEntryPoint` —mismo patrón, mismo momento del ciclo de la petición, pero para "sí sé quién eres, no puedes hacer esto" en vez de "no sé quién eres":
+## 🛡️ Devolver el `403` con `AccessDeniedHandler`
+
+Al intentar crear un libro con el token de `USER`, el rechazo ocurre en Spring Security. Para darle el formato `ErrorResponse`, registra un `AccessDeniedHandler` en la cadena de seguridad. `GlobalExceptionHandler` se encarga de los errores que se resuelven dentro de MVC.
+
+Si ya tienes `ErrorResponseAccessDeniedHandler` de la demo, reutilízalo. Esta es la implementación de referencia.
 
 ```java
 @Component
@@ -142,7 +125,7 @@ public class ErrorResponseAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
-                        AccessDeniedException accessDeniedException) throws IOException {
+                       AccessDeniedException accessDeniedException) throws IOException {
 
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now().toString(), HttpStatus.FORBIDDEN.value(),
@@ -158,33 +141,17 @@ public class ErrorResponseAccessDeniedHandler implements AccessDeniedHandler {
 }
 ```
 
-Se registra en el mismo `.exceptionHandling(...)` donde ya tenías el `AuthenticationEntryPoint` — los dos conviven en el mismo bloque, cada uno resolviendo su propio caso:
+Añade `ErrorResponseAccessDeniedHandler accessDeniedHandler` a los parámetros del bean `securityFilterChain` y regístralo en `.exceptionHandling(...)`. `bearerEntryPoint` es el punto de entrada de la sesión de JWT. Conserva también su registro en `oauth2ResourceServer(...)` para los errores de validación del token.
 
 ```java
 .exceptionHandling(exceptions -> exceptions
-        .authenticationEntryPoint(customAuthenticationEntryPoint)
-        .accessDeniedHandler(customAccessDeniedHandler)
+        .authenticationEntryPoint(bearerEntryPoint)
+        .accessDeniedHandler(accessDeniedHandler)
 )
 ```
 
-Con esto, los tres códigos de la tabla de arriba —`401`, `403` y `404`— tienen ya el mismo formato `ErrorResponse` que el resto de tu API, sin excepciones sueltas por ningún sitio.
+Comprueba el mismo `POST /api/v1/libros` con un cuerpo válido. Sin token debe devolver `401`. Con un JWT válido de `USER` debe devolver `403`. En ambos, revisa el estado HTTP, el campo `status` del JSON y el `path` de la petición original. Con un JWT de `ADMIN`, la petición pasa la autorización y MVC puede tramitar el alta.
 
----
+## 📝 Documentar la política de acceso
 
-## 📝 Documentación como buena práctica
-
-Depurar **y documentar** van de la mano. La propia tabla de política de rutas que has visto al principio de este apartado ya es esa documentación — un documento vivo que cualquiera (tú dentro de seis meses, un compañero de equipo) puede consultar para saber exactamente qué puede hacer cada rol, sin tener que leer el código Java línea a línea. Mantener esa tabla al día, en un fichero aparte de tu propio proyecto (por ejemplo `docs/seguridad.md`), es exactamente el tipo de documentación que se espera de ti.
-
----
-
-## ✅ Ideas clave
-
-??? tip "Abrir resumen"
-
-    - La política de autorización se lee mejor como **tabla** (ruta × verbo × quién puede) que como código suelto.
-    - No existe una tabla verbo → rol universal: "solo `ADMIN` puede borrar" es correcto para este catálogo, pero no para cualquier API (en una red social, un `USER` sí puede borrar sus propias publicaciones). Cada ruta se decide según lo que hace y para quién existe, no por convención.
-    - `anyRequest().denyAll()` cierra por defecto cualquier ruta sin regla explícita — cada ruta nueva necesita su propia regla o queda bloqueada, incluidas rutas que ya funcionaban con `authenticated()` (como `/auth/me`) y `POST` sobre subrutas de acciones concretas (`/libros/5/aplicar-descuento`), que no coinciden con la regla de la ruta exacta.
-    - **401** = no sabemos quién eres; **403** = sabemos quién eres, pero no tienes permiso; **404** = la ruta no existe, y eso no depende de quién eres. Ojo: `denyAll()` sin ningún token también da `401`, no `403` — el `403` solo aparece cuando ya hay un token válido de por medio.
-    - `NoResourceFoundException` (ruta inexistente) caía en el Handler 5 genérico del primer apartado del tema, dando `500` en vez de `404` — un handler específico lo arregla, sin tocar nada más: Spring prioriza el más concreto automáticamente. `MethodArgumentTypeMismatchException` (un id con el tipo equivocado, como `/libros/no-es-un-numero`) es el mismo problema con otro disparador — mismo patrón, `400` en vez de `500`.
-    - `AccessDeniedHandler` es la contraparte de `AuthenticationEntryPoint` para el `403`: mismo patrón, registrado en el mismo `.exceptionHandling(...)`, para que autenticación y autorización tengan ambas el formato `ErrorResponse`.
-    - La tabla de política de rutas es, en sí misma, esa documentación.
+Una tabla con **método, ruta y permiso** permite comprobar los cambios de seguridad sin leer toda la configuración Java. Al añadir un endpoint, actualiza su regla y su fila en `docs/seguridad.md`. En la [actividad 2.5](actividad_2_5.md) aplicarás este criterio a las rutas de tu propio proyecto.
